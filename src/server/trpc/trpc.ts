@@ -1,6 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server"
 import { CreateNextContextOptions } from "@trpc/server/adapters/next"
 import { getServerSession } from "../auth"
+import { db } from "../db/client"
 import SuperJSON from "superjson"
 
 export async function createContext({ req, res }: CreateNextContextOptions) {
@@ -8,6 +9,7 @@ export async function createContext({ req, res }: CreateNextContextOptions) {
 
   return {
     user: session?.user,
+    db,
   }
 }
 
