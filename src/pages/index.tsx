@@ -1,6 +1,6 @@
-import Head from "next/head";
+import Head from "next/head"
 
-export default function Home() {
+export default function HomePage() {
   return (
     <>
       <Head>
@@ -10,7 +10,9 @@ export default function Home() {
           content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
         />
       </Head>
-      <main className="font-semibold text-2xl max-w-6xl mx-auto px-6 py-4 text-center">Hello, world!</main>
+      <main className="font-semibold text-2xl max-w-6xl mx-auto px-6 py-4 text-center">
+        This is the Home page.
+      </main>
     </>
   )
 }
