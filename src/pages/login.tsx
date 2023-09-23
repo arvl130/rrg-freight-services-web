@@ -98,7 +98,7 @@ export default function LoginPage() {
             <Image
               src="/assets/img/login/right-bg.png"
               alt="Ship, truck, and plane on a globe"
-              className="object-contain object-right-bottom"
+              className="w-full object-contain object-right-bottom"
               width={600}
               height={384}
             />
