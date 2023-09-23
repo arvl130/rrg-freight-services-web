@@ -8,6 +8,6 @@ const poolConnection = mysql.createPool({
 })
 
 export const db = drizzle(poolConnection, {
-  mode: "default",
+  mode: serverEnv.DATABASE_MODE,
   schema,
 })
