@@ -24,27 +24,50 @@ export const auth = getAuth(app)
 const AuthContext = createContext<{
   isLoading: boolean
   user: User | null
+  role: string | null
 }>({
   isLoading: true,
   user: null,
+  role: null,
 })
 
 export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
   const [session, setSession] = useState<{
     isLoading: boolean
     user: User | null
+    role: string | null
   }>({
     isLoading: true,
     user: null,
+    role: null,
   })
 
   useEffect(() => {
-    return onAuthStateChanged(auth, (user) =>
-      setSession({
-        isLoading: false,
-        user,
-      })
-    )
+    return onAuthStateChanged(auth, async (user) => {
+      if (user === null) {
+        setSession({
+          isLoading: false,
+          user: null,
+          role: null,
+        })
+        return
+      }
+
+      try {
+        const idTokenResult = await user.getIdTokenResult()
+        setSession({
+          isLoading: false,
+          user,
+          role: (idTokenResult.claims.role as string) ?? null,
+        })
+      } catch {
+        setSession({
+          isLoading: false,
+          user: null,
+          role: null,
+        })
+      }
+    })
   }, [])
 
   return <AuthContext.Provider value={session} {...props} />
