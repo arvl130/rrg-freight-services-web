@@ -11,6 +11,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.1",
     "@t3-oss/env-nextjs": "^0.6.1",
     "@tanstack/react-query": "^4.35.3",
     "@trpc/client": "^10.38.3",
@@ -31,6 +32,7 @@
     "postcss": "8.4.29",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.46.2",
     "superjson": "^1.13.1",
     "tailwindcss": "3.3.3",
     "typescript": "5.2.2",
