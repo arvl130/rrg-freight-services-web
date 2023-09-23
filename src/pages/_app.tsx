@@ -13,7 +13,7 @@ const dmSans = DM_Sans({
 export default api.withTRPC(({ Component, pageProps }: AppProps) => {
   return (
     <AuthProvider>
-      <div className={`${dmSans.variable} font-sans`}>
+      <div className={`${dmSans.variable} font-sans text-brand-black`}>
         <Component {...pageProps} />
       </div>
     </AuthProvider>
