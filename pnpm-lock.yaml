@@ -8,6 +8,9 @@ dependencies:
   '@hookform/resolvers':
     specifier: ^3.3.1
     version: 3.3.1(react-hook-form@7.46.2)
+  '@phosphor-icons/react':
+    specifier: ^2.0.13
+    version: 2.0.13(react-dom@18.2.0)(react@18.2.0)
   '@t3-oss/env-nextjs':
     specifier: ^0.6.1
     version: 0.6.1(typescript@5.2.2)(zod@3.22.2)
@@ -1163,6 +1166,17 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
+    dev: false
+
+  /@phosphor-icons/react@2.0.13(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-lRjFfCv4pU8vDnPgZ8/QFzYmAJS08Vx+J2/+Ldh217pXaxvaayBZMC/3EinuMwmMylc97+XYCMPdH+y10I+f0g==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>= 16.8'
+      react-dom: '>= 16.8'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /@protobufjs/aspromise@1.1.2:

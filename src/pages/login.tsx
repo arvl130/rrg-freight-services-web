@@ -9,6 +9,8 @@ import { useEffect, useState } from "react"
 import { FirebaseError } from "firebase/app"
 import { useSession } from "@/utils/auth"
 import { useRouter } from "next/router"
+import { Eye } from "@phosphor-icons/react/Eye"
+import { EyeSlash } from "@phosphor-icons/react/EyeSlash"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -62,6 +64,8 @@ export default function LoginPage() {
     message: string
   }>(null)
 
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+
   if (isLoading || user !== null)
     return (
       <>
@@ -94,7 +98,7 @@ export default function LoginPage() {
             <Image
               src="/assets/img/login/right-bg.png"
               alt="Ship, truck, and plane on a globe"
-              className="w-full h-96 object-contain object-right-bottom"
+              className="object-contain object-right-bottom"
               width={600}
               height={384}
             />
@@ -206,14 +210,31 @@ export default function LoginPage() {
                 )}
               </div>
               <div className="mt-4">
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-                  {...register("password", {
-                    onChange: () => setSignInError(null),
-                  })}
-                />
+                <div className="relative">
+                  <input
+                    type={isPasswordVisible ? "text" : "password"}
+                    placeholder="Password"
+                    className="text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                    {...register("password", {
+                      onChange: () => setSignInError(null),
+                    })}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-2.5"
+                    onClick={() =>
+                      setIsPasswordVisible(
+                        (currentIsPasswordVisible) => !currentIsPasswordVisible
+                      )
+                    }
+                  >
+                    {isPasswordVisible ? (
+                      <Eye size={20} className="text-gray-600" />
+                    ) : (
+                      <EyeSlash size={20} className="text-gray-600" />
+                    )}
+                  </button>
+                </div>
                 {errors.password && (
                   <p className="text-red-600 mt-1">
                     {errors.password.message}.
