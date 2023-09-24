@@ -86,22 +86,26 @@ export default function LoginPage() {
             width={600}
             height={800}
           />
-          <div className="flex flex-col justify-between items-end">
-            <Image
-              src="/assets/img/logos/logo-with-name.png"
-              alt="RRG Freight Services logo with its name on the right"
-              className="w-56 h-20 mt-12 mr-12"
-              width={224}
-              height={80}
-            />
+          <div className="grid grid-rows-[8rem_1fr]">
+            <div className="flex justify-end pt-12 pr-12">
+              <Image
+                src="/assets/img/logos/logo-with-name.png"
+                alt="RRG Freight Services logo with its name on the right"
+                className="w-56 h-20"
+                width={224}
+                height={80}
+              />
+            </div>
 
-            <Image
-              src="/assets/img/login/right-bg.png"
-              alt="Ship, truck, and plane on a globe"
-              className="w-full object-contain object-right-bottom"
-              width={600}
-              height={384}
-            />
+            <div className="flex justify-end items-end">
+              <Image
+                src="/assets/img/login/right-bg.png"
+                alt="Ship, truck, and plane on a globe"
+                className="w-[90%] object-contain object-right-bottom"
+                width={600}
+                height={384}
+              />
+            </div>
           </div>
         </div>
         <section className="max-w-md mx-auto bg-white px-4 py-3 rounded-md shadow-lg relative">
