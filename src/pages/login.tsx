@@ -11,6 +11,7 @@ import { useSession } from "@/utils/auth"
 import { useRouter } from "next/router"
 import { Eye } from "@phosphor-icons/react/Eye"
 import { EyeSlash } from "@phosphor-icons/react/EyeSlash"
+import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -265,7 +266,9 @@ export default function LoginPage() {
             </form>
           </div>
           <div className="text-sm">
-            <Link href="/">&lt; Back to Homepage</Link>
+            <Link href="/" className="inline-flex items-center">
+              <CaretLeft height={12} /> Back to Homepage
+            </Link>
           </div>
         </section>
       </main>
