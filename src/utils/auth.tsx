@@ -21,22 +21,34 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
 const auth = getAuth(app)
 
-const AuthContext = createContext<{
-  isLoading: boolean
-  user: User | null
-  role: string | null
-}>({
+type AuthContextType =
+  // Initial state
+  | {
+      isLoading: true
+      user: null
+      role: null
+    }
+  // Unauthenticated state
+  | {
+      isLoading: false
+      user: null
+      role: null
+    }
+  // Authenticated state
+  | {
+      isLoading: false
+      user: User
+      role: string | null
+    }
+
+const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   user: null,
   role: null,
 })
 
 export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
-  const [session, setSession] = useState<{
-    isLoading: boolean
-    user: User | null
-    role: string | null
-  }>({
+  const [session, setSession] = useState<AuthContextType>({
     isLoading: true,
     user: null,
     role: null,
@@ -46,7 +58,7 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
     return onAuthStateChanged(auth, async (user) => {
       if (user === null) {
         setSession({
-          isLoading: false,
+          isLoading: true,
           user: null,
           role: null,
         })
