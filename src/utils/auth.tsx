@@ -58,7 +58,7 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
     return onAuthStateChanged(auth, async (user) => {
       if (user === null) {
         setSession({
-          isLoading: true,
+          isLoading: false,
           user: null,
           role: null,
         })
