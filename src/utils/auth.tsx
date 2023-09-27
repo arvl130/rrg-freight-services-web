@@ -21,6 +21,9 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
 const auth = getAuth(app)
 
+const sessionRoles = ["ADMIN", "WAREHOUSE", "SENDER", "RECEIVER"] as const
+export type SessionRole = (typeof sessionRoles)[number]
+
 type AuthContextType =
   // Initial state
   | {
@@ -38,7 +41,7 @@ type AuthContextType =
   | {
       isLoading: false
       user: User
-      role: string | null
+      role: SessionRole | null
     }
 
 const AuthContext = createContext<AuthContextType>({
@@ -70,7 +73,7 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
         setSession({
           isLoading: false,
           user,
-          role: (idTokenResult.claims.role as string) ?? null,
+          role: (idTokenResult.claims.role as SessionRole) ?? null,
         })
       } catch {
         setSession({
@@ -86,7 +89,19 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
 }
 
 export function useSession(
-  { required }: { required: boolean } = { required: false }
+  {
+    required,
+  }: {
+    required:
+      | false // Session is not required.
+      | true // Session is required, but any user is allowed.
+      // Session is required, with a particular type.
+      | {
+          role: SessionRole
+        }
+  } = {
+    required: false,
+  }
 ) {
   const session = useContext(AuthContext)
   const router = useRouter()
@@ -97,7 +112,21 @@ export function useSession(
 
     // If a session is required, but there is no session user,
     // then redirect to the login page.
-    if (required && session.user === null) router.push("/login")
+    if (typeof required === "boolean" && required && session.user === null) {
+      router.push("/login")
+      return
+    }
+
+    if (typeof required === "object") {
+      for (const index in sessionRoles) {
+        const sessionRole = sessionRoles[index]
+
+        if (required.role === sessionRole && session.role !== sessionRole) {
+          router.push("/login")
+          return
+        }
+      }
+    }
 
     // TODO: Handle return urls.
   }, [router, required, session])
