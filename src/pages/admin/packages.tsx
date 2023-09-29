@@ -1,3 +1,4 @@
+import { AdminLayout } from "@/layouts/AdminLayout"
 import { useSession } from "@/utils/auth"
 
 export default function PackagesPage() {
@@ -9,5 +10,9 @@ export default function PackagesPage() {
 
   if (isLoading || role !== "ADMIN") return <>...</>
 
-  return <>This is the Packages page for the Admins.</>
+  return (
+    <AdminLayout title="Admin Dashboard">
+      This is the Packages page for the Admins.
+    </AdminLayout>
+  )
 }
