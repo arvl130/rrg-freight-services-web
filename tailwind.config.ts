@@ -5,6 +5,7 @@ const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/layouts/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
@@ -21,7 +22,12 @@ const config: Config = {
           "400": "#777777",
         },
         "brand-red": "#ff9e9e",
-        "brand-cyan": "#acdee2",
+        "brand-cyan": {
+          "100": "#eff8f8",
+          "450": "#acdee2",
+          "500": "#79cfdc",
+        },
+        "brand-teal": "#a4d8d8",
       },
       fontFamily: {
         sans: ["var(--font-dm-sans)", ...fontFamily.sans],

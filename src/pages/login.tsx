@@ -106,14 +106,14 @@ export default function LoginPage() {
     return (
       <>
         <LoginPageHead />
-        <main className="min-h-screen bg-brand-cyan"></main>
+        <main className="min-h-screen bg-brand-cyan-450"></main>
       </>
     )
 
   return (
     <>
       <LoginPageHead />
-      <main className="min-h-screen bg-brand-cyan px-3 py-24 pb-3 relative">
+      <main className="min-h-screen bg-brand-cyan-450 px-3 py-24 pb-3 relative">
         <div className="absolute inset-0 h-full sm:grid grid-cols-2 hidden">
           <Image
             src="/assets/img/login/left-bg.png"
