@@ -34,19 +34,19 @@ type SessionRoleRedirect = {
 const sessionRoleRedirects: SessionRoleRedirect[] = [
   {
     role: "ADMIN",
-    redirect: "/admin",
+    redirect: "/admin/dashboard",
   },
   {
     role: "WAREHOUSE",
-    redirect: "/warehouse",
+    redirect: "/warehouse/dashboard",
   },
   {
     role: "SENDER",
-    redirect: "/sender",
+    redirect: "/sender/dashboard",
   },
   {
     role: "RECEIVER",
-    redirect: "/receiver",
+    redirect: "/receiver/dashboard",
   },
 ]
 

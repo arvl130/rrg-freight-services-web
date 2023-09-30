@@ -64,7 +64,7 @@ function SideBar() {
       <div className="flex flex-col gap-3 w-full">
         <SideBarLink
           name="Dashboard"
-          href="/admin"
+          href="/admin/dashboard"
           icon={<Gauge size={32} className="text-white " />}
         />
         <SideBarLink
