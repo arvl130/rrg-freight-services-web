@@ -1,17 +1,15 @@
 import { useSession } from "@/utils/auth"
-import {
-  Bell,
-  CaretDown,
-  Gauge,
-  Gear,
-  List,
-  MagnifyingGlass,
-  Package,
-  Scroll,
-  SignOut,
-  UserCircle,
-  UsersThree,
-} from "@phosphor-icons/react"
+import { Bell } from "@phosphor-icons/react/Bell"
+import { CaretDown } from "@phosphor-icons/react/CaretDown"
+import { Gauge } from "@phosphor-icons/react/Gauge"
+import { Gear } from "@phosphor-icons/react/Gear"
+import { List } from "@phosphor-icons/react/List"
+import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
+import { Package } from "@phosphor-icons/react/Package"
+import { Scroll } from "@phosphor-icons/react/Scroll"
+import { SignOut } from "@phosphor-icons/react/SignOut"
+import { UserCircle } from "@phosphor-icons/react/UserCircle"
+import { UsersThree } from "@phosphor-icons/react/UsersThree"
 import { getAuth, signOut } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
