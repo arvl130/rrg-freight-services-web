@@ -1,4 +1,4 @@
-import { AdminLayout } from "@/layouts/AdminLayout"
+import { AdminLayout } from "@/layouts/admin-layout"
 import { useSession } from "@/utils/auth"
 
 export default function PackagesPage() {
