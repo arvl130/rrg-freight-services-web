@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:push": "drizzle-kit push:mysql",
+    "db:push": "node ./scripts/db-init.mjs && drizzle-kit push:mysql",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
