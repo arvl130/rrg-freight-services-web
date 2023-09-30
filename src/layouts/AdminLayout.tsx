@@ -17,6 +17,98 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import { ReactNode, useState } from "react"
 
+function SideBarLink({
+  href,
+  name,
+  icon,
+}: {
+  href: string
+  name: string
+  icon: ReactNode
+}) {
+  const router = useRouter()
+
+  return (
+    <Link
+      href={href}
+      className={`
+flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200
+${
+  router.pathname === href
+    ? "border-x-2 border-l-white border-r-transparent"
+    : ""
+}
+`}
+    >
+      <span className="sr-only">{name}</span>
+      {icon}
+    </Link>
+  )
+}
+
+function SideBar() {
+  const router = useRouter()
+  const [isSigningOut, setIsSigningOut] = useState(false)
+
+  return (
+    <nav className="bg-brand-cyan-500 flex flex-col justify-between items-center py-3">
+      <div>
+        <Image
+          src="/assets/img/logos/logo-white-bg.png"
+          alt="RRG Freight Services circle logo with white background"
+          height={60}
+          width={60}
+          className="w-12 h-12 rounded-full"
+        />
+      </div>
+      <div className="flex flex-col gap-3 w-full">
+        <SideBarLink
+          name="Dashboard"
+          href="/admin"
+          icon={<Gauge size={32} className="text-white " />}
+        />
+        <SideBarLink
+          name="Packages"
+          href="/admin/packages"
+          icon={<Package size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Users"
+          href="/admin/users"
+          icon={<UsersThree size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Logs"
+          href="/admin/logs"
+          icon={<Scroll size={32} className="text-white" />}
+        />
+      </div>
+      <div className="w-full">
+        <button
+          type="button"
+          className="flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200"
+          disabled={isSigningOut}
+          onClick={async () => {
+            setIsSigningOut(true)
+            try {
+              const auth = getAuth()
+              await signOut(auth)
+            } finally {
+              setIsSigningOut(false)
+            }
+          }}
+        >
+          <span className="sr-only">Logout</span>
+          <SignOut
+            size={32}
+            className={isSigningOut ? "text-sky-200" : "text-white"}
+          />
+        </button>
+      </div>
+    </nav>
+  )
+}
+
 export function AdminLayout({
   title,
   children,
@@ -24,8 +116,6 @@ export function AdminLayout({
   title: string
   children: ReactNode
 }) {
-  const router = useRouter()
-  const [isSigningOut, setIsSigningOut] = useState(false)
   const { user } = useSession()
 
   return (
@@ -37,99 +127,9 @@ export function AdminLayout({
           content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
         />
       </Head>
-      <div className="grid grid-cols-[4rem_minmax(0,_1fr)] min-h-screen">
-        <div className="bg-brand-cyan-500 flex flex-col justify-between items-center py-3">
-          <div>
-            <Image
-              src="/assets/img/logos/logo-white-bg.png"
-              alt="RRG Freight Services circle logo with white background"
-              height={60}
-              width={60}
-              className="w-12 h-12 rounded-full"
-            />
-          </div>
-          <div className="flex flex-col gap-3 w-full">
-            <Link
-              href="/admin"
-              className={`
-                flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200
-                ${
-                  router.pathname === "/admin"
-                    ? "border-x-2 border-l-white border-r-transparent"
-                    : ""
-                }
-              `}
-            >
-              <span className="sr-only">Dashboard</span>
-              <Gauge size={32} className="text-white " />
-            </Link>
-            <Link
-              href="/admin/packages"
-              className={`
-                flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200
-                ${
-                  router.pathname === "/admin/packages"
-                    ? "border-x-2 border-l-white border-r-transparent"
-                    : ""
-                }
-              `}
-            >
-              <span className="sr-only">Packages</span>
-              <Package size={32} className="text-white" />
-            </Link>
-            <Link
-              href="/admin/users"
-              className={`
-                flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200
-                ${
-                  router.pathname === "/admin/users"
-                    ? "border-x-2 border-l-white border-r-transparent"
-                    : ""
-                }
-              `}
-            >
-              <span className="sr-only">Users</span>
-              <UsersThree size={32} className="text-white" />
-            </Link>
-            <Link
-              href="/admin/logs"
-              className={`
-                flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200
-                ${
-                  router.pathname === "/admin/logs"
-                    ? "border-x-2 border-l-white border-r-transparent"
-                    : ""
-                }
-              `}
-            >
-              <span className="sr-only">Logs</span>
-              <Scroll size={32} className="text-white" />
-            </Link>
-          </div>
-          <div className="w-full">
-            <button
-              type="button"
-              className="flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200"
-              disabled={isSigningOut}
-              onClick={async () => {
-                setIsSigningOut(true)
-                try {
-                  const auth = getAuth()
-                  await signOut(auth)
-                } finally {
-                  setIsSigningOut(false)
-                }
-              }}
-            >
-              <span className="sr-only">Logout</span>
-              <SignOut
-                size={32}
-                className={isSigningOut ? "text-sky-200" : "text-white"}
-              />
-            </button>
-          </div>
-        </div>
-        <div className="bg-brand-cyan-100 px-6 py-4">
+      <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+        <SideBar />
+        <div className="bg-brand-cyan-100 px-6 py-4 h-screen overflow-auto">
           <header className="flex justify-between bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-4">
             <div className="flex items-center gap-3 rounded-md">
               <div>
