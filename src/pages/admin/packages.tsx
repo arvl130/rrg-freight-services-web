@@ -11,7 +11,7 @@ export default function PackagesPage() {
   if (isLoading || role !== "ADMIN") return <>...</>
 
   return (
-    <AdminLayout title="Admin Dashboard">
+    <AdminLayout title="Packages">
       This is the Packages page for the Admins.
     </AdminLayout>
   )

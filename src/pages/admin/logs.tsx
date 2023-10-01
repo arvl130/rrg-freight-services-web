@@ -11,7 +11,7 @@ export default function ActivityLogsPage() {
   if (isLoading || role !== "ADMIN") return <>...</>
 
   return (
-    <AdminLayout title="Admin Dashboard">
+    <AdminLayout title="Activity Logs">
       This is the Activity Logs page for the Admins.
     </AdminLayout>
   )

@@ -11,7 +11,7 @@ export default function UsersPage() {
   if (isLoading || role !== "ADMIN") return <>...</>
 
   return (
-    <AdminLayout title="Admin Dashboard">
+    <AdminLayout title="Users">
       This is the Users page for the Admins.
     </AdminLayout>
   )
