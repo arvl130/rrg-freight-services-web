@@ -1,10 +1,10 @@
-import Head from "next/head"
-import React, { useState } from "react"
-import Navbar from "./navBar"
-import Image from "next/image"
-import Footer from "./footer"
-import {MapPin, Phone, EnvelopeSimple, InstagramLogo, FacebookLogo, TwitterLogo } from '@phosphor-icons/react'
-
+import Head from "next/head";
+import React, { useState } from "react";
+import Navbar from "./navBar";
+import Image from "next/image";
+import Footer from "./footer";
+import {FaMapMarkerAlt, FaPhone, FaEnvelope, FaInstagram, FaFacebook, FaTwitter} from 'react-icons/fa'
+import {MapPin} from '@phosphor-icons/react/MapPin'
 
 const HomePage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -70,8 +70,13 @@ const HomePage: React.FC = () => {
               >
                 <div className="w-full max-w-full">
                   <div className="relative">
-                    
-                    
+                    <Image
+                      src="/assets/img/homepage/carousel1.png"
+                      alt="Carousel 1"
+                      className="max-w-full h-full shadow-md"
+                      width={1923}
+                      height={832}
+                    />
                     <div className="absolute inset-0 flex items-center justify-center">
                       {/* Add content for your carousel slide here */}
                     </div>
@@ -178,11 +183,11 @@ const HomePage: React.FC = () => {
           <p>Blk 213 Lot 41 Yuan Street Phase 8 North Fairview</p>
         </div>
         <div className="flex items-center text-lg mb-3">
-        <Phone size={32} weight="fill" className="mr-2"/>
+          <FaPhone className="mr-2" />
           <p>(+02) 8461 6027</p>
         </div>
         <div className="flex items-center text-lg mb-3">
-        <EnvelopeSimple size={32} weight="fill" className="mr-2" />
+          <FaEnvelope className="mr-2" />
           <p>rrgfreight_imports@yahoo.com</p>
         </div>
       </div>
@@ -190,13 +195,13 @@ const HomePage: React.FC = () => {
         <div className="flex space-x-4">
           {/* Social media icons */}
           <a href="#" className="text-4xl text-white hover:text-gray-200">
-          <InstagramLogo size={32} color="#1e2324" />
+            <FaInstagram />
           </a>
           <a href="#" className="text-4xl text-white hover:text-gray-200">
-          <FacebookLogo size={32} color="#1e2324" />
+            <FaFacebook />
           </a>
           <a href="#" className="text-4xl text-white hover:text-gray-200">
-          <TwitterLogo size={32} color="#1e2324" />
+            <FaTwitter />
           </a>
         </div>
       </div>
