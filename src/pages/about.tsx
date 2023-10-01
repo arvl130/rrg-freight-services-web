@@ -4,7 +4,10 @@ export default function AboutUsPage() {
   return (
     <>
 <<<<<<< HEAD
+<<<<<<< HEAD
       <Navbar/>
+=======
+>>>>>>> parent of 9c9acdb (feat: added homepage w/ updated nav bar | added about us)
 =======
 >>>>>>> parent of 9c9acdb (feat: added homepage w/ updated nav bar | added about us)
       <Head>
