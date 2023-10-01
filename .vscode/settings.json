@@ -1,0 +1,5 @@
+{
+    "prettier.useTabs": true,
+    "prettier.singleQuote": true,
+    "prettier.singleAttributePerLine": true
+}

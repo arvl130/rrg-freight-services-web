@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { FiMenu, FiUser } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react'
+import { FiMenu, FiUser } from 'react-icons/fi'
 import Link from 'next/link';
-import Image from 'next/image'; 
+import Image from 'next/image'
 import { User } from "@phosphor-icons/react/User"
 import { CaretDown } from "@phosphor-icons/react/CaretDown" 
 
