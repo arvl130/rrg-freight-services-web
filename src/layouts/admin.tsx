@@ -10,6 +10,7 @@ import { Scroll } from "@phosphor-icons/react/Scroll"
 import { SignOut } from "@phosphor-icons/react/SignOut"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { UsersThree } from "@phosphor-icons/react/UsersThree"
+import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
 import { getAuth, signOut } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
@@ -47,7 +48,6 @@ ${
 }
 
 function SideBar() {
-  const router = useRouter()
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   return (
@@ -71,6 +71,11 @@ function SideBar() {
           name="Packages"
           href="/admin/packages"
           icon={<Package size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Packages"
+          href="/admin/manifests"
+          icon={<ClipboardText size={32} className="text-white" />}
         />
         <SideBarLink
           name="Users"
