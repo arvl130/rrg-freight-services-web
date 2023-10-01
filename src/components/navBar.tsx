@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react"
+import { useState, useEffect, FC } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { CaretDown } from "@phosphor-icons/react/CaretDown"
 import { List } from "@phosphor-icons/react/List"
 import { User } from "@phosphor-icons/react/User"
 
-const Navbar: React.FC = () => {
+const Navbar: FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
   const [isScrolled, setIsScrolled] = useState<boolean>(false)
   const [showAboutOptions, setShowAboutOptions] = useState<boolean>(false)

@@ -1,7 +1,7 @@
-import React from "react"
+import { FC } from "react"
 import Image from "next/image"
 
-const Footer: React.FC = () => {
+const Footer: FC = () => {
   return (
     <footer className="bg-[#acdee2]">
       <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-10">

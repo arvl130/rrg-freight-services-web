@@ -1,5 +1,5 @@
 import Head from "next/head"
-import React, { useState } from "react"
+import { useState, FC } from "react"
 import Navbar from "@/components/navBar"
 import Image from "next/image"
 import Footer from "@/components/footer"
@@ -10,7 +10,7 @@ import { InstagramLogo } from "@phosphor-icons/react/InstagramLogo"
 import { FacebookLogo } from "@phosphor-icons/react/FacebookLogo"
 import { TwitterLogo } from "@phosphor-icons/react/TwitterLogo"
 
-const HomePage: React.FC = () => {
+const HomePage: FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const nextSlide = () => {

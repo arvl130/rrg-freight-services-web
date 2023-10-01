@@ -1,4 +1,4 @@
-import React from "react"
+import { FC } from "react"
 import Image from "next/image"
 import Head from "next/head"
 import Footer from "@/components/footer"
@@ -22,7 +22,7 @@ function TrackingPageHead() {
   )
 }
 
-const Tracking: React.FC = () => {
+const Tracking: FC = () => {
   return (
     <>
       <TrackingPageHead />
