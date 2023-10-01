@@ -3,14 +3,12 @@ import React, { useState } from "react"
 import Navbar from "@/components/navBar"
 import Image from "next/image"
 import Footer from "@/components/footer"
-import {
-  MapPin,
-  Phone,
-  EnvelopeSimple,
-  InstagramLogo,
-  FacebookLogo,
-  TwitterLogo,
-} from "@phosphor-icons/react"
+import { MapPin } from "@phosphor-icons/react/MapPin"
+import { Phone } from "@phosphor-icons/react/Phone"
+import { EnvelopeSimple } from "@phosphor-icons/react/EnvelopeSimple"
+import { InstagramLogo } from "@phosphor-icons/react/InstagramLogo"
+import { FacebookLogo } from "@phosphor-icons/react/FacebookLogo"
+import { TwitterLogo } from "@phosphor-icons/react/TwitterLogo"
 
 const HomePage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0)

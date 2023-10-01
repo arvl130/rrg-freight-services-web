@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { User, CaretDown, List, } from "@phosphor-icons/react"
+import React, { useState, useEffect } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { CaretDown } from "@phosphor-icons/react/CaretDown"
+import { List } from "@phosphor-icons/react/List"
+import { User } from "@phosphor-icons/react/User"
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
@@ -18,38 +20,35 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      
       const scrollY = window.scrollY || document.documentElement.scrollTop
 
-     
       const scrollThreshold = 100
 
       setIsScrolled(scrollY > scrollThreshold)
     }
 
-
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener("scroll", handleScroll)
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener("scroll", handleScroll)
     }
   }, [])
 
   return (
     <div
       className={`fixed p-10 w-full transition-all duration-300 ${
-        isScrolled ? 'bg-[#A4D8D8] opacity-95' : 'bg-transparent'
+        isScrolled ? "bg-[#A4D8D8] opacity-95" : "bg-transparent"
       }`}
     >
       <div className="container mx-auto flex justify-between items-center text-white">
         {/* Hamburger Menu (Mobile View) */}
         <div className="md:hidden">
           <button
-            type='button'
+            type="button"
             onClick={toggleMobileMenu}
             className="text-3xl font-bold focus:outline-none "
           >
-            <List/>
+            <List />
           </button>
         </div>
 
@@ -75,7 +74,7 @@ const Navbar: React.FC = () => {
         {/* Desktop Navigation */}
         <ul
           className={`md:flex ${
-            isMobileMenuOpen ? 'block' : 'hidden'
+            isMobileMenuOpen ? "block" : "hidden"
           } md:space-x-6 md:space-y-0 space-y-2`}
         >
           <li>
@@ -88,16 +87,16 @@ const Navbar: React.FC = () => {
               onClick={toggleAboutOptions}
               className="text-white py-2 cursor-pointer flex items-center"
             >
-              About Us  <CaretDown size={18} />
+              About Us <CaretDown size={18} />
             </div>
             <ul
               className={`${
-                showAboutOptions ? 'block' : 'hidden'
+                showAboutOptions ? "block" : "hidden"
               } absolute left-0 space-y-2 bg-white text-black border rounded-md border-gray-300`}
             >
               <li>
                 <Link href="/about" passHref>
-                  <div className=" py-2">Company Profile</div>  
+                  <div className=" py-2">Company Profile</div>
                 </Link>
               </li>
               <li>
@@ -122,7 +121,10 @@ const Navbar: React.FC = () => {
         {/* Desktop Login Icon (Right) */}
         <div className="hidden md:flex items-center">
           <Link href="/login" className="flex items-center text-white">
-            <User size={30} className="text-xl font-bold focus:outline-none text-white" />
+            <User
+              size={30}
+              className="text-xl font-bold focus:outline-none text-white"
+            />
             <div className="ml-2">Log in</div>
           </Link>
         </div>

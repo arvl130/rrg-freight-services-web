@@ -4,13 +4,11 @@ import Head from "next/head"
 import Footer from "@/components/footer"
 import Navbar from "@/components/navBar"
 import VerticalTimeline from "../components/tracking/tracking_timeline"
-import {
-  Package,
-  Truck,
-  Path,
-  MapPin,
-  CheckCircle,
-} from "@phosphor-icons/react"
+import { Truck } from "@phosphor-icons/react/Truck"
+import { Path } from "@phosphor-icons/react/Path"
+import { MapPin } from "@phosphor-icons/react/MapPin"
+import { CheckCircle } from "@phosphor-icons/react/CheckCircle"
+import { Package } from "@phosphor-icons/react/Package"
 
 function TrackingPageHead() {
   return (
