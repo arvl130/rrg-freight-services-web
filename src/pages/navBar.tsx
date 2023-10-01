@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FiMenu, FiUser } from 'react-icons/fi';
 import Link from 'next/link';
-import Image from 'next/image';
-import { MdKeyboardArrowDown } from 'react-icons/md';
+import Image from 'next/image'; 
+import { User } from "@phosphor-icons/react/User"
+import { CaretDown } from "@phosphor-icons/react/CaretDown" 
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -37,7 +38,7 @@ const Navbar: React.FC = () => {
 
   return (
     <div
-      className={`fixed p-8 w-full transition-all duration-300 ${
+      className={`fixed p-10 w-full transition-all duration-300 ${
         isScrolled ? 'bg-[#A4D8D8] opacity-95' : 'bg-transparent'
       }`}
     >
@@ -45,6 +46,7 @@ const Navbar: React.FC = () => {
         {/* Hamburger Menu (Mobile View) */}
         <div className="md:hidden">
           <button
+            type='button'
             onClick={toggleMobileMenu}
             className="text-3xl font-bold focus:outline-none "
           >
@@ -58,8 +60,8 @@ const Navbar: React.FC = () => {
             <Image
               src="/assets/img/logos/logo-header.png"
               alt="Logo"
-              width={120}
-              height={40}
+              width={130}
+              height={50}
             />
           </Link>
         </div>
@@ -87,7 +89,7 @@ const Navbar: React.FC = () => {
               onClick={toggleAboutOptions}
               className="text-white py-2 cursor-pointer flex items-center"
             >
-              About Us  <MdKeyboardArrowDown className="ml-1" />
+              About Us  <CaretDown size={18} />
             </div>
             <ul
               className={`${
@@ -95,12 +97,12 @@ const Navbar: React.FC = () => {
               } absolute left-0 space-y-2 bg-white text-black border rounded-md border-gray-300`}
             >
               <li>
-                <Link href="/" passHref>
+                <Link href="/about" passHref>
                   <div className=" py-2">Company Profile</div>  
                 </Link>
               </li>
               <li>
-                <Link href="/" passHref>
+                <Link href="/about" passHref>
                   <div className=" py-2">Meet the Team</div>
                 </Link>
               </li>
@@ -112,7 +114,7 @@ const Navbar: React.FC = () => {
             </Link>
           </li>
           <li>
-            <Link href="/" passHref>
+            <Link href="/tracking" passHref>
               <div className="text-white py-2">Track Package</div>
             </Link>
           </li>
@@ -121,7 +123,7 @@ const Navbar: React.FC = () => {
         {/* Desktop Login Icon (Right) */}
         <div className="hidden md:flex items-center">
           <Link href="/login" className="flex items-center text-white">
-            <FiUser className="text-xl font-bold focus:outline-none text-white" />
+            <User size={30} className="text-xl font-bold focus:outline-none text-white" />
             <div className="ml-2">Log in</div>
           </Link>
         </div>

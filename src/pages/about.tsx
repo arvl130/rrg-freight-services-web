@@ -5,9 +5,7 @@ import Footer from "./footer"
 export default function AboutUsPage() {
   return (
     <>
-    <div>
       <Navbar/>
-    </div>
       <Head>
         <title>About Us &#x2013; RRG Freight Services</title>
         <meta
