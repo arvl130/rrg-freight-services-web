@@ -1,40 +1,39 @@
 import React, { useState, useEffect } from 'react'
-import { FiMenu, FiUser } from 'react-icons/fi'
-import Link from 'next/link';
+import Link from 'next/link'
 import Image from 'next/image'
-import { User } from "@phosphor-icons/react/User"
-import { CaretDown } from "@phosphor-icons/react/CaretDown" 
+import { User, CaretDown, List, } from "@phosphor-icons/react"
 
 const Navbar: React.FC = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [showAboutOptions, setShowAboutOptions] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
+  const [isScrolled, setIsScrolled] = useState<boolean>(false)
+  const [showAboutOptions, setShowAboutOptions] = useState<boolean>(false)
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
 
   const toggleAboutOptions = () => {
-    setShowAboutOptions(!showAboutOptions);
-  };
+    setShowAboutOptions(!showAboutOptions)
+  }
 
   useEffect(() => {
     const handleScroll = () => {
       
-      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const scrollY = window.scrollY || document.documentElement.scrollTop
 
      
-      const scrollThreshold = 100; 
+      const scrollThreshold = 100
 
-      setIsScrolled(scrollY > scrollThreshold);
-    };
+      setIsScrolled(scrollY > scrollThreshold)
+    }
 
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll)
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
 
   return (
     <div
@@ -50,7 +49,7 @@ const Navbar: React.FC = () => {
             onClick={toggleMobileMenu}
             className="text-3xl font-bold focus:outline-none "
           >
-            <FiMenu />
+            <List/>
           </button>
         </div>
 
@@ -69,7 +68,7 @@ const Navbar: React.FC = () => {
         {/* Login Icon (Right) */}
         <div className="md:hidden">
           <Link href="/login">
-            <FiUser className="text-3xl font-bold focus:outline-none" />
+            <User className="text-3xl font-bold focus:outline-none" />
           </Link>
         </div>
 
@@ -129,7 +128,7 @@ const Navbar: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

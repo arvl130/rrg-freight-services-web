@@ -1,6 +1,7 @@
 import Head from "next/head"
 import Navbar from "./navBar"
 import Footer from "./footer"
+import Image from 'next/image'
 
 export default function AboutUsPage() {
   return (
@@ -34,7 +35,7 @@ export default function AboutUsPage() {
                 RRG FREIGHT SERVICES is a Domestic and International Freight
                 Forwarder founded by its proprietor Mr. Rafael C. Fabia located
                 in Blk 213 Lot 41 Yuan Street Phase 8 North Fairview, Quezon
-                City, Philippines, inspired by the New Heroes the OFW's.
+                City, Philippines, inspired by the New Heroes the OFW&apos;s.
               </p>
             </div>
             {/* Mission */}
@@ -61,7 +62,13 @@ export default function AboutUsPage() {
         <div className="text-4xl font-bold text-center my-20">Meet the Team</div>
         <section className="bg-white h-96 grid grid-cols-4 flex-col mx-8 my-10 m">
           <div>
-           <img src="/assets/img/about/person-1.png" alt="..." className="w-11/12 items-center"/>
+           <Image 
+           src="/assets/img/about/person-1.png" 
+           alt="..." 
+           className="w-11/12 items-center"
+           width={600}
+           height={800}
+           />
             <div className="text-center">
                 Juan Dela Cruz
                   <div className="font-bold">
@@ -71,7 +78,13 @@ export default function AboutUsPage() {
           </div>
 
           <div>
-          <img src="/assets/img/about/person-2.png" alt="..." className="w-11/12 items-center"/>
+          <Image 
+          src="/assets/img/about/person-2.png" 
+          alt="..." 
+          className="w-11/12 items-center"
+          width={600}
+          height={800}
+          />
            <div className="text-center">
                 Juan Dela Cruz
                   <div className="font-bold">
@@ -81,7 +94,13 @@ export default function AboutUsPage() {
           </div>
 
           <div>
-          <img src="/assets/img/about/person-3.png" alt="..." className="w-11/12 items-center"/>
+          <Image 
+          src="/assets/img/about/person-3.png" 
+          alt="..." 
+          className="w-11/12 items-center"
+          width={600}
+          height={800}
+          />
           <div className="text-center">
                 Juan Dela Cruz
                   <div className="font-bold">
@@ -91,7 +110,13 @@ export default function AboutUsPage() {
           </div>
 
           <div>
-          <img src="/assets/img/about/person-4.png" alt="..." className="w-11/12 items-center"/>
+          <Image 
+          src="/assets/img/about/person-4.png" 
+          alt="..." 
+          className="w-11/12 items-center"
+          width={600}
+          height={800}
+          />
           <div className="text-center">
                 Juan Dela Cruz
                   <div className="font-bold">
@@ -100,7 +125,13 @@ export default function AboutUsPage() {
             </div>
           </div> 
         <div>
-           <img src="/assets/img/about/person-5.png" alt="..." className="w-11/12 items-center mt-20"/>
+           <Image 
+           src="/assets/img/about/person-5.png" 
+           alt="..." 
+           className="w-11/12 items-center mt-20"
+           width={600}
+           height={800}
+           />
             <div className="text-center">
                 Juan Dela Cruz
                   <div className="font-bold">
@@ -110,7 +141,13 @@ export default function AboutUsPage() {
           </div>
 
           <div>
-          <img src="/assets/img/about/person-6.png" alt="..." className="w-11/12 items-center mt-20"/>
+          <Image 
+          src="/assets/img/about/person-6.png" 
+          alt="..." 
+          className="w-11/12 items-center mt-20"
+          width={600}
+          height={800}
+          />
            <div className="text-center">
                 Juan Dela Cruz
                   <div className="font-bold">
@@ -120,7 +157,13 @@ export default function AboutUsPage() {
           </div>
 
           <div>
-          <img src="/assets/img/about/person-7.png" alt="..." className="w-11/12 items-center mt-20"/>
+          <Image 
+          src="/assets/img/about/person-7.png" 
+          alt="..." 
+          className="w-11/12 items-center mt-20"
+          width={600}
+          height={800}
+          />
           <div className="text-center">
                 Juan Dela Cruz
                   <div className="font-bold">
@@ -130,7 +173,13 @@ export default function AboutUsPage() {
           </div>
 
           <div>
-          <img src="/assets/img/about/person-8.png" alt="..." className="w-11/12 items-center mt-20"/>
+          <Image 
+          src="/assets/img/about/person-8.png" 
+          alt="..." 
+          className="w-11/12 items-center mt-20"
+          width={600}
+          height={800}
+          />
           <div className="text-center">
                 Juan Dela Cruz
                   <div className="font-bold">
@@ -145,7 +194,13 @@ export default function AboutUsPage() {
         </section>
         <section className="flex h-full mt-90 mb-50 ">
          <div className=" relative">
-         <img src="/assets/img/about/WantToTrackYourPackage.png" alt="..." className="" />
+         <Image 
+         src="/assets/img/about/WantToTrackYourPackage.png" 
+         alt="..." 
+         className="" 
+         width={600}
+         height={800}
+         />
           <h1 className="absolute text-5xl font-semibold text-white inset-x-0 top-0 text-center my-20">
             Want to track your Package?
           </h1>

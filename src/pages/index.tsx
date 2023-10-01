@@ -115,8 +115,8 @@ const HomePage: React.FC = () => {
                     <i className="fas fa-quote-left"></i> {/* Quotation Icon */}
                   </div>
                   <p className="text-lg text-gray-800 mb-4">
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel urna sit amet
-                    justo bibendum ultricies."
+                   &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel urna sit amet
+                    justo bibendum ultricies.&quot;
                   </p>
                   <div className="text-3xl text-gray-600 mb-4">
                     <i className="far fa-comment-dots"></i> {/* Comment Icon */}
@@ -132,8 +132,8 @@ const HomePage: React.FC = () => {
                     <i className="fas fa-quote-left"></i> {/* Quotation Icon */}
                   </div>
                   <p className="text-lg text-gray-800 mb-4">
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel urna sit amet
-                    justo bibendum ultricies."
+                    &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel urna sit amet
+                    justo bibendum ultricies.&quot;
                   </p>
                   <div className="text-3xl text-gray-600 mb-4">
                     <i className="far fa-comment-dots"></i> {/* Comment Icon */}
@@ -149,8 +149,8 @@ const HomePage: React.FC = () => {
                     <i className="fas fa-quote-left"></i> {/* Quotation Icon */}
                   </div>
                   <p className="text-lg text-gray-800 mb-4">
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel urna sit amet
-                    justo bibendum ultricies."
+                   &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel urna sit amet
+                    justo bibendum ultricies.&quot;
                   </p>
                   <div className="text-3xl text-gray-600 mb-4">
                     <i className="far fa-comment-dots"></i> {/* Comment Icon */}
@@ -237,7 +237,6 @@ const HomePage: React.FC = () => {
           <textarea
             id="messageContent"
             name="messageContent"
-            rows="4"
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
             required
           ></textarea>
