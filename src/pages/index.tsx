@@ -1,21 +1,27 @@
 import Head from "next/head"
 import React, { useState } from "react"
-import Navbar from "./navBar"
+import Navbar from "@/components/navBar"
 import Image from "next/image"
-import Footer from "./footer"
-import {MapPin, Phone, EnvelopeSimple, InstagramLogo, FacebookLogo, TwitterLogo } from '@phosphor-icons/react'
-
+import Footer from "@/components/footer"
+import {
+  MapPin,
+  Phone,
+  EnvelopeSimple,
+  InstagramLogo,
+  FacebookLogo,
+  TwitterLogo,
+} from "@phosphor-icons/react"
 
 const HomePage: React.FC = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0)
 
   const nextSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide + 1) % 2);
-  };
+    setCurrentSlide((prevSlide) => (prevSlide + 1) % 2)
+  }
 
   const prevSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide - 1 + 2) % 2);
-  };
+    setCurrentSlide((prevSlide) => (prevSlide - 1 + 2) % 2)
+  }
 
   return (
     <>
@@ -43,7 +49,9 @@ const HomePage: React.FC = () => {
             <div className="text-center my-5 md:my-10">
               <div className="font-sans font-bold text-2xl sm:text-2xl md:text-3xl lg:text-6xl my-5 sm:my-20 lg:my-20">
                 <p className="lg:p-4 sm:p-2">Track now your package and</p>
-                <p className="lg:p-4 sm:p-2">ensure your cargo arrives safely</p>
+                <p className="lg:p-4 sm:p-2">
+                  ensure your cargo arrives safely
+                </p>
                 <p className="lg:p-4 sm:p-2">and on schedule!</p>
               </div>
               <button className="bg-red-500 text-white px-6 py-3.5 rounded-full hover:bg-black hover:text-red-500 font-bold font-family my-5">
@@ -70,8 +78,6 @@ const HomePage: React.FC = () => {
               >
                 <div className="w-full max-w-full">
                   <div className="relative">
-                    
-                    
                     <div className="absolute inset-0 flex items-center justify-center">
                       {/* Add content for your carousel slide here */}
                     </div>
@@ -115,8 +121,8 @@ const HomePage: React.FC = () => {
                     <i className="fas fa-quote-left"></i> {/* Quotation Icon */}
                   </div>
                   <p className="text-lg text-gray-800 mb-4">
-                   &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel urna sit amet
-                    justo bibendum ultricies.&quot;
+                    &quot;Lorem ipsum dolor sit amet, consectetur adipiscing
+                    elit. Duis vel urna sit amet justo bibendum ultricies.&quot;
                   </p>
                   <div className="text-3xl text-gray-600 mb-4">
                     <i className="far fa-comment-dots"></i> {/* Comment Icon */}
@@ -132,8 +138,8 @@ const HomePage: React.FC = () => {
                     <i className="fas fa-quote-left"></i> {/* Quotation Icon */}
                   </div>
                   <p className="text-lg text-gray-800 mb-4">
-                    &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel urna sit amet
-                    justo bibendum ultricies.&quot;
+                    &quot;Lorem ipsum dolor sit amet, consectetur adipiscing
+                    elit. Duis vel urna sit amet justo bibendum ultricies.&quot;
                   </p>
                   <div className="text-3xl text-gray-600 mb-4">
                     <i className="far fa-comment-dots"></i> {/* Comment Icon */}
@@ -149,8 +155,8 @@ const HomePage: React.FC = () => {
                     <i className="fas fa-quote-left"></i> {/* Quotation Icon */}
                   </div>
                   <p className="text-lg text-gray-800 mb-4">
-                   &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vel urna sit amet
-                    justo bibendum ultricies.&quot;
+                    &quot;Lorem ipsum dolor sit amet, consectetur adipiscing
+                    elit. Duis vel urna sit amet justo bibendum ultricies.&quot;
                   </p>
                   <div className="text-3xl text-gray-600 mb-4">
                     <i className="far fa-comment-dots"></i> {/* Comment Icon */}
@@ -162,104 +168,126 @@ const HomePage: React.FC = () => {
           </div>
         </section>
 
-      {/* Contact Us Section */}
-<section key="section5" className="bg-gradient-to-r from-[#a4d8d8] via-[#91d4da] to-[#2bc0e4] w-1920 h-734 pb-16 py-10 md:py-20">
-  <div className="flex flex-col md:flex-row justify-center items-center">
-    {/* Left side with blue background */}
-    <div className="bg-gradient-to-r from-[#a4d8d8] via-[#91d4da] to-[#2bc0e4] w-1920 h-734 pb-16 w-full md:w-1/2 h-full text-white flex flex-col items-center py-10 md:py-0">
-      <h2 className="text-4xl font-semibold mb-6 transform">Contact Us</h2>
-      <div className="text-center">
-        <p className="text-xl mb-3">Get in touch!</p>
-        <p className="text-lg mb-3">
-          Contact us for assistance, testimonials, or career opportunities.
-        </p>
-        <div className="flex items-center text-lg mb-3">
-          <MapPin size={32} weight="fill" className="mr-2" />
-          <p>Blk 213 Lot 41 Yuan Street Phase 8 North Fairview</p>
-        </div>
-        <div className="flex items-center text-lg mb-3">
-        <Phone size={32} weight="fill" className="mr-2"/>
-          <p>(+02) 8461 6027</p>
-        </div>
-        <div className="flex items-center text-lg mb-3">
-        <EnvelopeSimple size={32} weight="fill" className="mr-2" />
-          <p>rrgfreight_imports@yahoo.com</p>
-        </div>
-      </div>
-      <div className="mt-6">
-        <div className="flex space-x-4">
-          {/* Social media icons */}
-          <a href="#" className="text-4xl text-white hover:text-gray-200">
-          <InstagramLogo size={32} color="#1e2324" />
-          </a>
-          <a href="#" className="text-4xl text-white hover:text-gray-200">
-          <FacebookLogo size={32} color="#1e2324" />
-          </a>
-          <a href="#" className="text-4xl text-white hover:text-gray-200">
-          <TwitterLogo size={32} color="#1e2324" />
-          </a>
-        </div>
-      </div>
-    </div>
+        {/* Contact Us Section */}
+        <section
+          key="section5"
+          className="bg-gradient-to-r from-[#a4d8d8] via-[#91d4da] to-[#2bc0e4] w-1920 h-734 pb-16 py-10 md:py-20"
+        >
+          <div className="flex flex-col md:flex-row justify-center items-center">
+            {/* Left side with blue background */}
+            <div className="bg-gradient-to-r from-[#a4d8d8] via-[#91d4da] to-[#2bc0e4] w-1920 h-734 pb-16 w-full md:w-1/2 h-full text-white flex flex-col items-center py-10 md:py-0">
+              <h2 className="text-4xl font-semibold mb-6 transform">
+                Contact Us
+              </h2>
+              <div className="text-center">
+                <p className="text-xl mb-3">Get in touch!</p>
+                <p className="text-lg mb-3">
+                  Contact us for assistance, testimonials, or career
+                  opportunities.
+                </p>
+                <div className="flex items-center text-lg mb-3">
+                  <MapPin size={32} weight="fill" className="mr-2" />
+                  <p>Blk 213 Lot 41 Yuan Street Phase 8 North Fairview</p>
+                </div>
+                <div className="flex items-center text-lg mb-3">
+                  <Phone size={32} weight="fill" className="mr-2" />
+                  <p>(+02) 8461 6027</p>
+                </div>
+                <div className="flex items-center text-lg mb-3">
+                  <EnvelopeSimple size={32} weight="fill" className="mr-2" />
+                  <p>rrgfreight_imports@yahoo.com</p>
+                </div>
+              </div>
+              <div className="mt-6">
+                <div className="flex space-x-4">
+                  {/* Social media icons */}
+                  <a
+                    href="#"
+                    className="text-4xl text-white hover:text-gray-200"
+                  >
+                    <InstagramLogo size={32} color="#1e2324" />
+                  </a>
+                  <a
+                    href="#"
+                    className="text-4xl text-white hover:text-gray-200"
+                  >
+                    <FacebookLogo size={32} color="#1e2324" />
+                  </a>
+                  <a
+                    href="#"
+                    className="text-4xl text-white hover:text-gray-200"
+                  >
+                    <TwitterLogo size={32} color="#1e2324" />
+                  </a>
+                </div>
+              </div>
+            </div>
 
-    {/* Right side with contact form */}
-    <div className="w-full md:w-1/2 py-10 px-4">
-      <h2 className="text-3xl font-semibold mb-6">Contact Form</h2>
-      <form>
-        <div className="mb-4">
-          <label className="block text-lg font-medium mb-2" htmlFor="fullName">
-            Full Name
-          </label>
-          <input
-            type="text"
-            id="fullName"
-            name="fullName"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-lg font-medium mb-2" htmlFor="emailAddress">
-            Email Address
-          </label>
-          <input
-            type="email"
-            id="emailAddress"
-            name="emailAddress"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-lg font-medium mb-2" htmlFor="messageContent">
-            Message
-          </label>
-          <textarea
-            id="messageContent"
-            name="messageContent"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
-            required
-          ></textarea>
-        </div>
-        <div className="text-center">
-          <button
-            type="submit"
-            className="bg-red-700 hover:bg-red-800 text-white font-medium rounded-lg text-lg px-6 py-3"
-          >
-            Send Message
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</section>
-
+            {/* Right side with contact form */}
+            <div className="w-full md:w-1/2 py-10 px-4">
+              <h2 className="text-3xl font-semibold mb-6">Contact Form</h2>
+              <form>
+                <div className="mb-4">
+                  <label
+                    className="block text-lg font-medium mb-2"
+                    htmlFor="fullName"
+                  >
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-lg font-medium mb-2"
+                    htmlFor="emailAddress"
+                  >
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="emailAddress"
+                    name="emailAddress"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-lg font-medium mb-2"
+                    htmlFor="messageContent"
+                  >
+                    Message
+                  </label>
+                  <textarea
+                    id="messageContent"
+                    name="messageContent"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
+                    required
+                  ></textarea>
+                </div>
+                <div className="text-center">
+                  <button
+                    type="submit"
+                    className="bg-red-700 hover:bg-red-800 text-white font-medium rounded-lg text-lg px-6 py-3"
+                  >
+                    Send Message
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
 
         <Footer />
       </main>
     </>
-  );
-};
+  )
+}
 
-export default HomePage;
-
+export default HomePage

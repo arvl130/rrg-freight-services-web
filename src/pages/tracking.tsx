@@ -1,10 +1,16 @@
-import React from 'react'
-import Image from 'next/image'
-import Head from 'next/head'
-import Footer from './footer'
-import Navbar from './navBar'
-import VerticalTimeline from './tracking_timeline'
-import { Package, Truck, Path, MapPin, CheckCircle } from '@phosphor-icons/react'
+import React from "react"
+import Image from "next/image"
+import Head from "next/head"
+import Footer from "@/components/footer"
+import Navbar from "@/components/navBar"
+import VerticalTimeline from "../components/tracking/tracking_timeline"
+import {
+  Package,
+  Truck,
+  Path,
+  MapPin,
+  CheckCircle,
+} from "@phosphor-icons/react"
 
 function TrackingPageHead() {
   return (
@@ -15,7 +21,7 @@ function TrackingPageHead() {
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
     </Head>
-  );
+  )
 }
 
 const Tracking: React.FC = () => {
@@ -127,9 +133,7 @@ const Tracking: React.FC = () => {
                 <div className="text-2xl lg:text-2xl text-center mb-6">
                   Recipient Name
                 </div>
-                <div className="text-2xl lg:text-2xl text-center">
-                  Location
-                </div>
+                <div className="text-2xl lg:text-2xl text-center">Location</div>
               </div>
               <div className="hidden lg:block bg-black h-24 w-2 lg:w-[3px] mx-4"></div>
               <div>
@@ -160,7 +164,7 @@ const Tracking: React.FC = () => {
       </div>
       <Footer />
     </>
-  );
-};
+  )
+}
 
-export default Tracking;
+export default Tracking
