@@ -106,14 +106,14 @@ export default function LoginPage() {
     return (
       <>
         <LoginPageHead />
-        <main className="min-h-screen bg-brand-cyan-450"></main>
+        <main className="min-h-screen bg-brand-cyan-100"></main>
       </>
     )
 
   return (
     <>
       <LoginPageHead />
-      <main className="min-h-screen bg-brand-cyan-450 px-3 py-24 pb-3 relative">
+      <main className="min-h-screen bg-brand-cyan-100 px-3 py-24 pb-3 relative">
         <div className="absolute inset-0 h-full sm:grid grid-cols-2 hidden">
           <Image
             src="/assets/img/login/left-bg.png"
@@ -122,7 +122,7 @@ export default function LoginPage() {
             width={600}
             height={800}
           />
-          <div className="grid grid-rows-[8rem_1fr]">
+          <div className="grid grid-rows-[8rem_1fr] bg-brand-cyan-450">
             <div className="flex justify-end pt-12 pr-12">
               <Image
                 src="/assets/img/logos/logo-with-name.png"
