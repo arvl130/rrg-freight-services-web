@@ -230,7 +230,7 @@ export default function DashboardPage() {
 
   return (
     <AdminLayout title="Dashboard">
-      <h1 className="text-2xl font-black [color:_#00203F] mb-4">Dashboard</h1>
+      <h1 className="text-3xl font-black [color:_#00203F] mb-4">Dashboard</h1>
       <section className="mb-6">
         <div className="mb-4 flex justify-end gap-3">
           <div className="flex text-sm">
