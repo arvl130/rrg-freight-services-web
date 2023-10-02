@@ -22,7 +22,20 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
 const auth = getAuth(app)
 
 const sessionRoles = ["ADMIN", "WAREHOUSE", "SENDER", "RECEIVER"] as const
-export type SessionRole = (typeof sessionRoles)[number]
+type SessionRole = (typeof sessionRoles)[number]
+
+const sessionRoleRedirectPaths: Record<SessionRole, string> = {
+  ADMIN: "/admin/dashboard",
+  WAREHOUSE: "/warehouse/dashboard",
+  SENDER: "/sender/dashboard",
+  RECEIVER: "/receiver/dashboard",
+}
+
+export function getSessionRoleRedirectPath(role: SessionRole | null) {
+  if (role === null) return "/something-went-wrong"
+
+  return sessionRoleRedirectPaths[role]
+}
 
 type AuthContextType =
   // Initial state
@@ -118,11 +131,19 @@ export function useSession(
     }
 
     if (typeof required === "object") {
-      for (const index in sessionRoles) {
-        const sessionRole = sessionRoles[index]
+      if (session.user === null) {
+        router.push("/login")
+
+        return
+      }
+
+      for (const key in sessionRoles) {
+        const sessionRole = sessionRoles[key]
 
         if (required.role === sessionRole && session.role !== sessionRole) {
-          router.push("/login")
+          const redirectPath = getSessionRoleRedirectPath(session.role)
+          router.push(redirectPath)
+
           return
         }
       }

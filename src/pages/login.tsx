@@ -7,7 +7,7 @@ import { z } from "zod"
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { FirebaseError } from "firebase/app"
-import { SessionRole, useSession } from "@/utils/auth"
+import { getSessionRoleRedirectPath, useSession } from "@/utils/auth"
 import { useRouter } from "next/router"
 import { Eye } from "@phosphor-icons/react/Eye"
 import { EyeSlash } from "@phosphor-icons/react/EyeSlash"
@@ -26,29 +26,6 @@ const formSchema = z.object({
 })
 
 type FormType = z.infer<typeof formSchema>
-type SessionRoleRedirect = {
-  role: SessionRole
-  redirect: string
-}
-
-const sessionRoleRedirects: SessionRoleRedirect[] = [
-  {
-    role: "ADMIN",
-    redirect: "/admin/dashboard",
-  },
-  {
-    role: "WAREHOUSE",
-    redirect: "/warehouse/dashboard",
-  },
-  {
-    role: "SENDER",
-    redirect: "/sender/dashboard",
-  },
-  {
-    role: "RECEIVER",
-    redirect: "/receiver/dashboard",
-  },
-]
 
 function LoginPageHead() {
   return (
@@ -71,18 +48,8 @@ export default function LoginPage() {
     if (isLoading) return
     if (user === null) return
 
-    for (const index in sessionRoleRedirects) {
-      const sessionRole = sessionRoleRedirects[index]
-
-      if (role === sessionRole.role) {
-        router.push(sessionRole.redirect)
-        return
-      }
-    }
-
-    // If a user is logged in, but none of our known
-    // session types matches, redirect to an error page.
-    router.push("/something-went-wrong")
+    const redirectPath = getSessionRoleRedirectPath(role)
+    router.push(redirectPath)
   }, [router, isLoading, user, role])
 
   const {
