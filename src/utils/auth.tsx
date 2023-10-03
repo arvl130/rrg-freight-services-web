@@ -21,14 +21,19 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
 const auth = getAuth(app)
 
-const sessionRoles = ["ADMIN", "WAREHOUSE", "SENDER", "RECEIVER"] as const
+const sessionRoles = [
+  "ADMIN",
+  "WAREHOUSE",
+  "OVERSEAS_AGENT",
+  "DOMESTIC_AGENT",
+] as const
 type SessionRole = (typeof sessionRoles)[number]
 
 const sessionRoleRedirectPaths: Record<SessionRole, string> = {
   ADMIN: "/admin/dashboard",
   WAREHOUSE: "/warehouse/dashboard",
-  SENDER: "/sender/dashboard",
-  RECEIVER: "/receiver/dashboard",
+  OVERSEAS_AGENT: "/overseas/dashboard",
+  DOMESTIC_AGENT: "/domestic/dashboard",
 }
 
 export function getSessionRoleRedirectPath(role: SessionRole | null) {

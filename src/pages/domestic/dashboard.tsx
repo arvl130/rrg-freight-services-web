@@ -4,15 +4,15 @@ import { getAuth, signOut } from "firebase/auth"
 export default function DashboardPage() {
   const { isLoading, role } = useSession({
     required: {
-      role: "SENDER",
+      role: "DOMESTIC_AGENT",
     },
   })
 
-  if (isLoading || role !== "SENDER") return <>...</>
+  if (isLoading || role !== "DOMESTIC_AGENT") return <>...</>
 
   return (
     <>
-      <p>This is the Dashboard page for Sending Agents.</p>
+      <p>This is the Dashboard page for Domestic Agents.</p>
       <button
         type="button"
         onClick={() => {
