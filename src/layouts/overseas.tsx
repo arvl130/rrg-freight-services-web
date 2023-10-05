@@ -71,8 +71,8 @@ function SideBar() {
           icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Cluster List"
-          href="/overseas/clusterlist"
+          name="Shipments"
+          href="/overseas/shipments"
           icon={<ClipboardText size={32} className="text-white" />}
         />
         <SideBarLink
