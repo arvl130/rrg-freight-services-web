@@ -2,12 +2,12 @@ import "dotenv/config"
 import mysql from "mysql2/promise"
 import { serverEnv } from "@/server/env"
 
-const connection = await mysql.createConnection({
+const poolConnection = mysql.createPool({
   uri: serverEnv.DATABASE_URL,
 })
 
-await connection.execute(`DROP TABLE IF EXISTS packages`)
-await connection.execute(`DROP TABLE IF EXISTS manifests`)
-await connection.execute(`DROP TABLE IF EXISTS activities`)
-await connection.execute(`DROP TABLE IF EXISTS users`)
-await connection.end()
+await poolConnection.execute(`DROP TABLE IF EXISTS packages`)
+await poolConnection.execute(`DROP TABLE IF EXISTS manifests`)
+await poolConnection.execute(`DROP TABLE IF EXISTS activities`)
+await poolConnection.execute(`DROP TABLE IF EXISTS users`)
+await poolConnection.end()
