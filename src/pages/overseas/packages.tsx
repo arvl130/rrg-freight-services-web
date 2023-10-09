@@ -298,6 +298,7 @@ export default function UsersPage() {
             <div className="uppercase px-4 py-2">Status</div>
           </div>
           {/* Body */}
+          {selectedTab === "ALL" ? (
           <div>
             {packages.map((_package) => (
               <div
@@ -305,6 +306,7 @@ export default function UsersPage() {
                 className="grid grid-cols-4 border-b border-gray-300 text-sm"
               >
                 <div className="px-4 py-2 flex items-center gap-1">
+               
                   <input type="checkbox" name="" id="" />
                   <span>{_package.id}</span>
                 </div>
@@ -348,8 +350,62 @@ export default function UsersPage() {
               </div>
             ))}
           </div>
+           ) : (
+            <><div>
+            {packages.map((_package) => (
+              <div
+                key={_package.id}
+                className="grid grid-cols-4 border-b border-gray-300 text-sm"
+              >
+                <div className="px-4 py-2 flex items-center gap-1">
+               
+                  <input type="checkbox" name="" id="" />
+                  <span>{_package.id}</span>
+                </div>
+                <div className="px-4 py-2">
+                  <div>{_package.sender.name}</div>
+                  <div className="text-gray-400">{_package.sender.address}</div>
+                </div>
+                <div className="px-4 py-2">
+                  <div>{_package.receiver.name}</div>
+                  <div className="text-gray-400">
+                    {_package.receiver.address}
+                  </div>
+                </div>
+                <div className="px-4 py-2 flex items-center gap-2">
+                  <div
+                    className={`
+                      w-36 py-0.5 text-white text-center rounded-md
+                      ${_package.status === "Preparing" ? "bg-gray-400" : ""}
+                      ${_package.status === "Shipped Out" ? "bg-blue-500" : ""}
+                      ${_package.status === "In Warehouse" ? "bg-pink-500" : ""}
+                      ${
+                        _package.status === "Prepared by Agent"
+                          ? "bg-pink-500"
+                          : ""
+                      }
+                      ${_package.status === "Delivered" ? "bg-green-500" : ""}
+                      ${
+                        _package.status === "Out for Delivery"
+                          ? "bg-orange-500"
+                          : ""
+                      }
+                  `}
+                  >
+                    {_package.status}
+                  </div>
+                  <button type="button">
+                    <span className="sr-only">Actions</span>
+                    <DotsThree size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div></>
+            )}
         </div>
       </div>
+     
     </OverseasLayout>
   )
 }
