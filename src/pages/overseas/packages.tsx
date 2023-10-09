@@ -9,15 +9,10 @@ import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
+import { Printer } from "@phosphor-icons/react/Printer"
+import { useState } from "react"
 
-function PageHeader() {
-  return (
-    <div className="flex justify-between mb-6">
-      <h1 className="text-3xl font-black [color:_#00203F]">Packages</h1>
-    </div>
-  )
-}
-
+ 
 const packages = [
   {
     id: 1000000,
@@ -124,11 +119,27 @@ export default function UsersPage() {
     },
   })
 
+ const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
+
   if (isLoading || role !== "OVERSEAS_AGENT") return <>...</>
 
   return (
     <OverseasLayout title="Packages">
-      <PageHeader />
+      <div className="flex justify-between mb-6">
+      {selectedTab === "ALL" ? (
+        <>
+      <h1 className="text-3xl font-black [color:_#00203F]">Packages</h1>
+      </>
+
+      ) : (
+
+        <>
+         <h1 className="text-3xl font-black [color:_#00203F]">Archive Packages</h1>
+        </>
+
+      )}
+
+    </div>
       <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
         <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
           <input
@@ -162,6 +173,8 @@ export default function UsersPage() {
           </button>
         </div>
         <div className="flex gap-3 text-sm">
+          {selectedTab === "ALL" ? (
+            <>
           <button
             type="button"
             className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
@@ -176,21 +189,66 @@ export default function UsersPage() {
             <Export size={16} />
             <span>Export</span>
           </button>
+
+          
+          </>
+          ) : (
+            <>
+          
+          <button
+            type="button"
+            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+          >
+            <Export size={16} />
+            <span>Export</span>
+          </button>
+          <button
+            type="button"
+            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+          >
+            <Printer size={16} />
+            <span>Print</span>
+          </button>
+      
+            </>
+
+            )}
         </div>
       </div>
       <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
         <div className="flex justify-between mb-3">
           <div className="flex gap-6">
-            <button className="text-2xl font-semibold  text-brand-cyan-500 pb-1 border-b-2  border-brand-cyan-500">
+          {selectedTab === "ALL" ? (
+            <>
+            <button 
+            className="text-2xl font-semibold  text-brand-cyan-500 pb-1 border-b-2  border-brand-cyan-500"
+            onClick={()=> setSelectedTab("ALL")}
+            >
               All Packages
             </button>
-            <a 
-            href="./archive"
+            <button
             className="text-2xl text-gray-400 pb-1"
             type="button"
+            onClick={()=> setSelectedTab("ARCHIVED")}
             >
               Archived Packages
-            </a>
+            </button>
+            </>
+
+          ) : (
+            <>
+             <button 
+            type="button"
+            className="text-2xl text-gray-400 pb-1"
+            onClick={()=> setSelectedTab("ALL")}
+            >
+              All Packages
+            </button>
+            <button className="text-2xl font-semibold border-b-2  text-brand-cyan-500 border-brand-cyan-500 pb-1">
+              Archived Packages
+            </button>
+            </>
+          )}
           </div>
           <div className="flex gap-8">
             <div>
