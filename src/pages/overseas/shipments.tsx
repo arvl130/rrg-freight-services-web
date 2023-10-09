@@ -1,5 +1,5 @@
 import { OverseasLayout } from "@/layouts/overseas"
-import { useSession } from "@/utils/auth" 
+import { useSession } from "@/utils/auth"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { Export } from "@phosphor-icons/react/Export"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
@@ -30,7 +30,6 @@ const shipments = [
     },
     date: "2023-10-01 10:15",
     shipped: "Ship Freight",
-     
   },
   {
     id: 1000001,
@@ -48,7 +47,7 @@ const shipments = [
       view: "View",
       edit: "Edit",
       archieve: "Archieve",
-      },
+    },
   },
   {
     id: 1000002,
@@ -66,7 +65,7 @@ const shipments = [
       view: "View",
       edit: "Edit",
       archieve: "Archieve",
-      },
+    },
   },
   {
     id: 1000003,
@@ -84,7 +83,7 @@ const shipments = [
       view: "View",
       edit: "Edit",
       archieve: "Archieve",
-      },
+    },
   },
   {
     id: 1000004,
@@ -102,7 +101,7 @@ const shipments = [
       view: "View",
       edit: "Edit",
       archieve: "Archieve",
-      },
+    },
   },
   {
     id: 1000005,
@@ -120,7 +119,7 @@ const shipments = [
       view: "View",
       edit: "Edit",
       archieve: "Archieve",
-      },
+    },
   },
   {
     id: 1000006,
@@ -138,7 +137,7 @@ const shipments = [
       view: "View",
       edit: "Edit",
       archieve: "Archieve",
-      },
+    },
   },
   {
     id: 1000007,
@@ -152,7 +151,6 @@ const shipments = [
     },
     date: "2023-10-01 10:15",
     shipped: "Ship Freight",
-     
   },
 ]
 
@@ -183,18 +181,18 @@ export default function UsersPage() {
             <MagnifyingGlass size={16} />
           </button>
         </div>
-       
+
         <div className="flex gap-3 text-sm">
           <button
             type="button"
             className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          > 
+          >
             <span>Create New</span>
           </button>
           <button
             type="button"
             className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          > 
+          >
             <span>Archived Cluster</span>
           </button>
         </div>
@@ -205,7 +203,6 @@ export default function UsersPage() {
             <h2 className="text-2xl font-semibold text-brand-cyan-500 pb-1 border-b-2 border-brand-cyan-500">
               All Clusters
             </h2>
-           
           </div>
           <div className="flex gap-8">
             <div>
@@ -269,7 +266,9 @@ export default function UsersPage() {
                 </div>
                 <div className="px-4 py-2">
                   <div>{_shipment.sender.name}</div>
-                  <div className="text-gray-400">{_shipment.sender.address}</div>
+                  <div className="text-gray-400">
+                    {_shipment.sender.address}
+                  </div>
                 </div>
                 <div className=" px-4 py-2">
                   <div>{_shipment.receiver.name}</div>
@@ -278,23 +277,28 @@ export default function UsersPage() {
                   </div>
                 </div>
                 <div className="px-4 py-2">
-                  <div>{_shipment.date}</div> 
+                  <div>{_shipment.date}</div>
                 </div>
                 <div className="px-4 py-2">
-                  <div>{_shipment.shipped}</div> 
+                  <div>{_shipment.shipped}</div>
                 </div>
                 <div className="flex gap-2">
-                <div className="  py-2">
-                  <button className="bg-[#4B61D7] text-white text-md rounded-md text-center p-2">View</button > 
+                  <div className="  py-2">
+                    <button className="bg-[#4B61D7] text-white text-md rounded-md text-center p-2">
+                      View
+                    </button>
+                  </div>
+                  <div className=" py-2">
+                    <button className="bg-[#65DB7F] text-white text-md rounded-md text-center p-2">
+                      Edit
+                    </button>
+                  </div>
+                  <div className="  py-2">
+                    <button className="bg-[#D64D4D] text-white text-md rounded-md text-center p-2">
+                      Archive
+                    </button>
+                  </div>
                 </div>
-                <div className=" py-2">
-                  <button className="bg-[#65DB7F] text-white text-md rounded-md text-center p-2">Edit</button > 
-                </div>
-                <div className="  py-2">
-                  <button className="bg-[#D64D4D] text-white text-md rounded-md text-center p-2">Archive</button > 
-                </div>
-                </div>
-                
               </div>
             ))}
           </div>

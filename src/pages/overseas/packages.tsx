@@ -1,5 +1,5 @@
 import { useSession } from "@/utils/auth"
-import { OverseasLayout } from "@/layouts/overseas" 
+import { OverseasLayout } from "@/layouts/overseas"
 import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { Export } from "@phosphor-icons/react/Export"
@@ -12,7 +12,6 @@ import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 import { Printer } from "@phosphor-icons/react/Printer"
 import { useState } from "react"
 
- 
 const packages = [
   {
     id: 1000000,
@@ -119,27 +118,25 @@ export default function UsersPage() {
     },
   })
 
- const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
+  const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
 
   if (isLoading || role !== "OVERSEAS_AGENT") return <>...</>
 
   return (
     <OverseasLayout title="Packages">
       <div className="flex justify-between mb-6">
-      {selectedTab === "ALL" ? (
-        <>
-      <h1 className="text-3xl font-black [color:_#00203F]">Packages</h1>
-      </>
-
-      ) : (
-
-        <>
-         <h1 className="text-3xl font-black [color:_#00203F]">Archive Packages</h1>
-        </>
-
-      )}
-
-    </div>
+        {selectedTab === "ALL" ? (
+          <>
+            <h1 className="text-3xl font-black [color:_#00203F]">Packages</h1>
+          </>
+        ) : (
+          <>
+            <h1 className="text-3xl font-black [color:_#00203F]">
+              Archive Packages
+            </h1>
+          </>
+        )}
+      </div>
       <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
         <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
           <input
@@ -175,80 +172,74 @@ export default function UsersPage() {
         <div className="flex gap-3 text-sm">
           {selectedTab === "ALL" ? (
             <>
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <DownloadSimple size={16} />
-            <span>Import</span>
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <Export size={16} />
-            <span>Export</span>
-          </button>
-
-          
-          </>
+              <button
+                type="button"
+                className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+              >
+                <DownloadSimple size={16} />
+                <span>Import</span>
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+              >
+                <Export size={16} />
+                <span>Export</span>
+              </button>
+            </>
           ) : (
             <>
-          
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <Export size={16} />
-            <span>Export</span>
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <Printer size={16} />
-            <span>Print</span>
-          </button>
-      
+              <button
+                type="button"
+                className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+              >
+                <Export size={16} />
+                <span>Export</span>
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+              >
+                <Printer size={16} />
+                <span>Print</span>
+              </button>
             </>
-
-            )}
+          )}
         </div>
       </div>
       <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
         <div className="flex justify-between mb-3">
           <div className="flex gap-6">
-          {selectedTab === "ALL" ? (
-            <>
-            <button 
-            className="text-2xl font-semibold  text-brand-cyan-500 pb-1 border-b-2  border-brand-cyan-500"
-            onClick={()=> setSelectedTab("ALL")}
-            >
-              All Packages
-            </button>
-            <button
-            className="text-2xl text-gray-400 pb-1"
-            type="button"
-            onClick={()=> setSelectedTab("ARCHIVED")}
-            >
-              Archived Packages
-            </button>
-            </>
-
-          ) : (
-            <>
-             <button 
-            type="button"
-            className="text-2xl text-gray-400 pb-1"
-            onClick={()=> setSelectedTab("ALL")}
-            >
-              All Packages
-            </button>
-            <button className="text-2xl font-semibold border-b-2  text-brand-cyan-500 border-brand-cyan-500 pb-1">
-              Archived Packages
-            </button>
-            </>
-          )}
+            {selectedTab === "ALL" ? (
+              <>
+                <button
+                  className="text-2xl font-semibold  text-brand-cyan-500 pb-1 border-b-2  border-brand-cyan-500"
+                  onClick={() => setSelectedTab("ALL")}
+                >
+                  All Packages
+                </button>
+                <button
+                  className="text-2xl text-gray-400 pb-1"
+                  type="button"
+                  onClick={() => setSelectedTab("ARCHIVED")}
+                >
+                  Archived Packages
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="text-2xl text-gray-400 pb-1"
+                  onClick={() => setSelectedTab("ALL")}
+                >
+                  All Packages
+                </button>
+                <button className="text-2xl font-semibold border-b-2  text-brand-cyan-500 border-brand-cyan-500 pb-1">
+                  Archived Packages
+                </button>
+              </>
+            )}
           </div>
           <div className="flex gap-8">
             <div>
@@ -299,30 +290,31 @@ export default function UsersPage() {
           </div>
           {/* Body */}
           {selectedTab === "ALL" ? (
-          <div>
-            {packages.map((_package) => (
-              <div
-                key={_package.id}
-                className="grid grid-cols-4 border-b border-gray-300 text-sm"
-              >
-                <div className="px-4 py-2 flex items-center gap-1">
-               
-                  <input type="checkbox" name="" id="" />
-                  <span>{_package.id}</span>
-                </div>
-                <div className="px-4 py-2">
-                  <div>{_package.sender.name}</div>
-                  <div className="text-gray-400">{_package.sender.address}</div>
-                </div>
-                <div className="px-4 py-2">
-                  <div>{_package.receiver.name}</div>
-                  <div className="text-gray-400">
-                    {_package.receiver.address}
+            <div>
+              {packages.map((_package) => (
+                <div
+                  key={_package.id}
+                  className="grid grid-cols-4 border-b border-gray-300 text-sm"
+                >
+                  <div className="px-4 py-2 flex items-center gap-1">
+                    <input type="checkbox" name="" id="" />
+                    <span>{_package.id}</span>
                   </div>
-                </div>
-                <div className="px-4 py-2 flex items-center gap-2">
-                  <div
-                    className={`
+                  <div className="px-4 py-2">
+                    <div>{_package.sender.name}</div>
+                    <div className="text-gray-400">
+                      {_package.sender.address}
+                    </div>
+                  </div>
+                  <div className="px-4 py-2">
+                    <div>{_package.receiver.name}</div>
+                    <div className="text-gray-400">
+                      {_package.receiver.address}
+                    </div>
+                  </div>
+                  <div className="px-4 py-2 flex items-center gap-2">
+                    <div
+                      className={`
                       w-36 py-0.5 text-white text-center rounded-md
                       ${_package.status === "Preparing" ? "bg-gray-400" : ""}
                       ${_package.status === "Shipped Out" ? "bg-blue-500" : ""}
@@ -339,42 +331,44 @@ export default function UsersPage() {
                           : ""
                       }
                   `}
-                  >
-                    {_package.status}
-                  </div>
-                  <button type="button">
-                    <span className="sr-only">Actions</span>
-                    <DotsThree size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-           ) : (
-            <><div>
-            {packages.map((_package) => (
-              <div
-                key={_package.id}
-                className="grid grid-cols-4 border-b border-gray-300 text-sm"
-              >
-                <div className="px-4 py-2 flex items-center gap-1">
-               
-                  <input type="checkbox" name="" id="" />
-                  <span>{_package.id}</span>
-                </div>
-                <div className="px-4 py-2">
-                  <div>{_package.sender.name}</div>
-                  <div className="text-gray-400">{_package.sender.address}</div>
-                </div>
-                <div className="px-4 py-2">
-                  <div>{_package.receiver.name}</div>
-                  <div className="text-gray-400">
-                    {_package.receiver.address}
+                    >
+                      {_package.status}
+                    </div>
+                    <button type="button">
+                      <span className="sr-only">Actions</span>
+                      <DotsThree size={16} />
+                    </button>
                   </div>
                 </div>
-                <div className="px-4 py-2 flex items-center gap-2">
+              ))}
+            </div>
+          ) : (
+            <>
+              <div>
+                {packages.map((_package) => (
                   <div
-                    className={`
+                    key={_package.id}
+                    className="grid grid-cols-4 border-b border-gray-300 text-sm"
+                  >
+                    <div className="px-4 py-2 flex items-center gap-1">
+                      <input type="checkbox" name="" id="" />
+                      <span>{_package.id}</span>
+                    </div>
+                    <div className="px-4 py-2">
+                      <div>{_package.sender.name}</div>
+                      <div className="text-gray-400">
+                        {_package.sender.address}
+                      </div>
+                    </div>
+                    <div className="px-4 py-2">
+                      <div>{_package.receiver.name}</div>
+                      <div className="text-gray-400">
+                        {_package.receiver.address}
+                      </div>
+                    </div>
+                    <div className="px-4 py-2 flex items-center gap-2">
+                      <div
+                        className={`
                       w-36 py-0.5 text-white text-center rounded-md
                       ${_package.status === "Preparing" ? "bg-gray-400" : ""}
                       ${_package.status === "Shipped Out" ? "bg-blue-500" : ""}
@@ -391,21 +385,21 @@ export default function UsersPage() {
                           : ""
                       }
                   `}
-                  >
-                    {_package.status}
+                      >
+                        {_package.status}
+                      </div>
+                      <button type="button">
+                        <span className="sr-only">Actions</span>
+                        <DotsThree size={16} />
+                      </button>
+                    </div>
                   </div>
-                  <button type="button">
-                    <span className="sr-only">Actions</span>
-                    <DotsThree size={16} />
-                  </button>
-                </div>
+                ))}
               </div>
-            ))}
-          </div></>
-            )}
+            </>
+          )}
         </div>
       </div>
-     
     </OverseasLayout>
   )
 }
