@@ -60,7 +60,7 @@ function CategoryTile() {
           </div>
         </div>
       </Link>
-      <Link href={"/profile/change_password"}>
+      <Link href={"/profile/change-password"}>
         <div
           style={{ backgroundColor: "#FFFFFF", borderRadius: "10px" }}
           className="flex p-4 drop-shadow-md"
@@ -110,7 +110,7 @@ function RightTile() {
   )
 }
 
-export default function notifications() {
+export default function Notifications() {
   const { isLoading, role } = useSession({
     required: {
       role: "WAREHOUSE",

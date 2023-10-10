@@ -146,7 +146,7 @@ function RightTile() {
   )
 }
 
-export default function change_password() {
+export default function Change_password() {
   const { isLoading, role } = useSession({
     required: {
       role: "WAREHOUSE",

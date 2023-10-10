@@ -56,7 +56,7 @@ function CategoryTile() {
           </div>
         </div>
       </Link>
-      <Link href={"/profile/change_password"}>
+      <Link href={"/profile/change-password"}>
         <div
           style={{ backgroundColor: "#FFFFFF", borderRadius: "10px" }}
           className="flex p-4 drop-shadow-md"
@@ -126,47 +126,15 @@ function RightTile() {
           </h1>
           <form>
             <div className="grid grid-rows-4 gap-5">
-              <div className="grid grid-cols-4">
-                <div>
-                  <label className="text-sm	text-gray-500">First Name</label>
-                  <input
-                    style={{
-                      border: "1px solid #78CFDC ",
-                      borderRadius: "8px",
-                    }}
-                    className="outline-none p-1"
-                  ></input>
-                </div>
-                <div>
-                  <label className="text-sm	text-gray-500">Middle Name</label>
-                  <input
-                    style={{
-                      border: "1px solid #78CFDC",
-                      borderRadius: "8px",
-                    }}
-                    className="outline-none p-1"
-                  ></input>
-                </div>
-                <div>
-                  <label className="text-sm	text-gray-500">Last Name</label>
-                  <input
-                    style={{
-                      border: "1px solid #78CFDC",
-                      borderRadius: "8px",
-                    }}
-                    className="outline-none p-1"
-                  ></input>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-500	">Suffix</label>
-                  <input
-                    style={{
-                      border: "1px solid #78CFDC",
-                      borderRadius: "8px",
-                    }}
-                    className="outline-none p-1"
-                  ></input>
-                </div>
+              <div className="grid grid-rows-1">
+                <label className="text-sm	text-gray-500">Full Name</label>
+                <input
+                  style={{
+                    border: "1px solid #78CFDC ",
+                    borderRadius: "8px",
+                  }}
+                  className="outline-none p-1"
+                ></input>
               </div>
               <div className="grid grid-rows-1">
                 <label className="text-sm	text-gray-500">Email Address</label>
@@ -231,7 +199,7 @@ function RightTile() {
   )
 }
 
-export default function settings() {
+export default function Settings() {
   const { isLoading, role } = useSession({
     required: {
       role: "WAREHOUSE",

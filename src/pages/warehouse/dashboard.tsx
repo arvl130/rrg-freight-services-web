@@ -152,32 +152,6 @@ function RecentActivityTile() {
   )
 }
 
-function ManifestSummaryTile() {
-  return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
-      <div className="mb-2">
-        <div className="flex justify-between">
-          <h2 className="font-semibold">Manifest Summary</h2>
-          <p className="flex items-center">
-            See more <CaretRight size={16} />
-          </p>
-        </div>
-      </div>
-      {/* Table */}
-      <div className="text-sm">
-        {/* Header */}
-        <div className="grid grid-cols-5 text-gray-400 mb-1">
-          <div>ID</div>
-          <div>Date Issued</div>
-          <div>Col 3</div>
-          <div>Col 4</div>
-          <div>Col 5</div>
-        </div>
-      </div>
-    </article>
-  )
-}
-
 function IncomingPackageSummaryTile() {
   return (
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
