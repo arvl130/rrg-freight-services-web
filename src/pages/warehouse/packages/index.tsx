@@ -265,7 +265,7 @@ function RecentActivityTile() {
   )
 }
 
-function packageList() {
+function PackageList() {
   return (
     <>
       <WarehouseLayout title="Dashboard">
@@ -286,4 +286,4 @@ function packageList() {
   )
 }
 
-export default packageList
+export default PackageList
