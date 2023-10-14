@@ -6,10 +6,10 @@ import { Gear } from "@phosphor-icons/react/Gear"
 import { List } from "@phosphor-icons/react/List"
 import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { Package } from "@phosphor-icons/react/Package"
-import { Scroll } from "@phosphor-icons/react/Scroll"
 import { SignOut } from "@phosphor-icons/react/SignOut"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
+import { QrCode } from "@phosphor-icons/react/QrCode"
 import { getAuth, signOut } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
@@ -68,18 +68,23 @@ function SideBar() {
         />
         <SideBarLink
           name="Packages"
-          href="/warehouse/package"
+          href="/warehouse/packages"
           icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
           name="Packages"
-          href="/warehouse/manifest"
+          href="/warehouse/shipments"
           icon={<ClipboardText size={32} className="text-white" />}
         />
         <SideBarLink
           name="Logs"
-          href="/admin/logs"
-          icon={<Scroll size={32} className="text-white" />}
+          href="/warehouse/packages/scan"
+          icon={<QrCode size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Logs"
+          href="/profile/settings"
+          icon={<UserCircle size={32} className="text-white" />}
         />
       </div>
       <div className="w-full">
