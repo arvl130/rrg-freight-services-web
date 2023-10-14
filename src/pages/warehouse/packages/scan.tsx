@@ -178,7 +178,7 @@ function PackageScanTile() {
   )
 }
 
-function packageList() {
+function Scan() {
   return (
     <>
       <WarehouseLayout title="Dashboard">
@@ -196,4 +196,4 @@ function packageList() {
   )
 }
 
-export default packageList
+export default Scan
