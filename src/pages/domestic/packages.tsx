@@ -9,5 +9,6 @@ export default function PackagesPage() {
 
   if (isLoading || role !== "DOMESTIC_AGENT") return <>...</>
 
-  return <>This is the Packages page for the Receiving Agents.</>
+  return <>This is the package page for the Domestic Agents.</>
 }
+ 
