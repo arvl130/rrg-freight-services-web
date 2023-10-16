@@ -52,7 +52,7 @@ function SideBar() {
 
   return (
     <nav className="bg-brand-cyan-500 flex flex-col justify-between items-center py-3 h-screen sticky top-0 bottom-0">
-      <div>
+      <div className="flex flex-col items-center gap-3 w-full">
         <Image
           src="/assets/img/logos/logo-white-bg.png"
           alt="RRG Freight Services circle logo with white background"
@@ -60,8 +60,6 @@ function SideBar() {
           width={60}
           className="w-12 h-12 rounded-full"
         />
-      </div>
-      <div className="flex flex-col gap-3 w-full">
         <SideBarLink
           name="Dashboard"
           href="/admin/dashboard"
