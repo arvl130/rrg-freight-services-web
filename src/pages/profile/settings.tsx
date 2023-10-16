@@ -200,10 +200,8 @@ function RightTile() {
 }
 
 export default function Settings() {
-  const { isLoading, role } = useSession({
-    required: {
-      role: "WAREHOUSE",
-    },
+  const { isLoading } = useSession({
+    required: true,
   })
 
   if (isLoading) return <>...</>
