@@ -87,6 +87,11 @@ function SideBar() {
           href="/admin/logs"
           icon={<Scroll size={32} className="text-white" />}
         />
+        <SideBarLink
+          name="Profile"
+          href="/profile/settings"
+          icon={<UserCircle size={32} className="text-white" />}
+        />
       </div>
       <div className="w-full">
         <button
