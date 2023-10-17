@@ -26,20 +26,22 @@ export const users = mysqlTable("users", {
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
-  manifests: many(manifests),
+  shipments: many(shipments),
   activities: many(activities),
 }))
 
-export const manifests = mysqlTable("manifests", {
+export const shipments = mysqlTable("shipments", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  // TODO: Instead of duplicating status enum from packages,
+  // perhaps we can split the state across these two entities?
   status: mysqlEnum("status", [
+    "PENDING",
     "PREPARED_BY_AGENT",
     "SHIPPED_BY_AGENT",
-    "IN_TRANSIT_TO_WAREHOUSE",
-    "RECEIVED_IN_WAREHOUSE",
+    "ARRIVED_IN_PH",
   ])
     .notNull()
-    .default("PREPARED_BY_AGENT"),
+    .default("PENDING"),
   createdAt: timestamp("created_at", {
     mode: "date",
   }).defaultNow(),
@@ -50,31 +52,31 @@ export const manifests = mysqlTable("manifests", {
   isArchived: tinyint("is_archived").default(0),
 })
 
-export const manifestsRelations = relations(manifests, ({ one, many }) => ({
+export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
   packages: many(packages),
   createdBy: one(users, {
-    fields: [manifests.createdById],
+    fields: [shipments.createdById],
     references: [users.id],
   }),
 }))
 
 export const packages = mysqlTable("packages", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  manifestId: bigint("manifest_id", { mode: "number" }).notNull(),
+  shipmentId: bigint("shipment_id", { mode: "number" }).notNull(),
   status: mysqlEnum("status", [
+    "PENDING",
     "PREPARED_BY_AGENT",
     "SHIPPED_BY_AGENT",
-    "IN_TRANSIT_TO_WAREHOUSE",
+    "ARRIVED_IN_PH",
     "IN_WAREHOUSE",
-    "FOR_DELIVERY_TO_CUSTOMER",
-    "FOR_DELIVERY_TO_THIRD_PARTY",
-    "FOR_PICKUP",
-    "DELIVERED_TO_CUSTOMER",
-    "DELIVERED_TO_THIRD_PARTY",
-    "PICKED_UP_BY_THIRD_PARTY",
+    "SORTING",
+    "IN_TRANSIT_TO_THIRD_PARTY",
+    "ARRIVED_AT_THIRD_PARTY",
+    "OUT_FOR_DELIVERY",
+    "DELIVERED",
   ])
     .notNull()
-    .default("PREPARED_BY_AGENT"),
+    .default("PENDING"),
   shipper: mysqlEnum("shipper", ["FIRST_PARTY", "THIRD_PARTY"])
     .notNull()
     .default("FIRST_PARTY"),
@@ -110,6 +112,17 @@ export const activities = mysqlTable("activities", {
   description: varchar("description", {
     length: 5000,
   }).notNull(),
+  tableName: varchar("table_name", {
+    length: 64,
+  }).notNull(),
+  fieldName: varchar("field_name", {
+    length: 64,
+  }).notNull(),
+  rowKey: bigint("row_key", {
+    mode: "number",
+  }).notNull(),
+  oldValue: text("old_value").notNull(),
+  newValue: text("new_value").notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
   })
