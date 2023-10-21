@@ -220,62 +220,60 @@ function UserStatusTile() {
 }
 
 export default function DashboardPage() {
-  const { isLoading, role } = useSession({
-    required: {
-      role: "ADMIN",
-    },
-  })
-
-  if (isLoading || role !== "ADMIN") return <>...</>
-
   return (
     <AdminLayout title="Dashboard">
-      <h1 className="text-3xl font-black [color:_#00203F] mb-4">Dashboard</h1>
-      <section className="mb-6">
-        <div className="mb-4 flex justify-end gap-3">
-          <div className="flex text-sm">
-            <input
-              type="date"
-              className="rounded-l-md border-y border-l border-gray-300 pl-2"
-            />
-            <span className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-r-md">
-              <CalendarBlank size={24} />
-            </span>
-          </div>
+      {() => (
+        <>
+          <h1 className="text-3xl font-black [color:_#00203F] mb-4">
+            Dashboard
+          </h1>
+          <section className="mb-6">
+            <div className="mb-4 flex justify-end gap-3">
+              <div className="flex text-sm">
+                <input
+                  type="date"
+                  className="rounded-l-md border-y border-l border-gray-300 pl-2"
+                />
+                <span className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-r-md">
+                  <CalendarBlank size={24} />
+                </span>
+              </div>
 
-          <button
-            type="button"
-            className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-md"
-          >
-            <span className="sr-only">Refresh</span>
-            <ArrowClockwise size={24} />
-          </button>
+              <button
+                type="button"
+                className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-md"
+              >
+                <span className="sr-only">Refresh</span>
+                <ArrowClockwise size={24} />
+              </button>
 
-          <button
-            type="button"
-            className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-md"
-          >
-            <span className="sr-only">Filter</span>
-            <FunnelSimple size={24} />
-          </button>
-        </div>
+              <button
+                type="button"
+                className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-md"
+              >
+                <span className="sr-only">Filter</span>
+                <FunnelSimple size={24} />
+              </button>
+            </div>
 
-        <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
-          <PackagesInWarehouseTile />
-          <ActiveUsersTile />
-          <ManifestsShippedTile />
-        </div>
-      </section>
+            <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
+              <PackagesInWarehouseTile />
+              <ActiveUsersTile />
+              <ManifestsShippedTile />
+            </div>
+          </section>
 
-      <section className="grid grid-cols-[24rem_1fr] gap-x-6 [color:_#404040] mb-6">
-        <RecentActivityTile />
-        <DeliverySummaryTile />
-      </section>
+          <section className="grid grid-cols-[24rem_1fr] gap-x-6 [color:_#404040] mb-6">
+            <RecentActivityTile />
+            <DeliverySummaryTile />
+          </section>
 
-      <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040]">
-        <ManifestSummaryTile />
-        <UserStatusTile />
-      </section>
+          <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040]">
+            <ManifestSummaryTile />
+            <UserStatusTile />
+          </section>
+        </>
+      )}
     </AdminLayout>
   )
 }

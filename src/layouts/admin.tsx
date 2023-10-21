@@ -11,12 +11,13 @@ import { SignOut } from "@phosphor-icons/react/SignOut"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { UsersThree } from "@phosphor-icons/react/UsersThree"
 import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
-import { getAuth, signOut } from "firebase/auth"
+import { User, getAuth, signOut } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { ReactNode, useState } from "react"
+import { Role } from "@/utils/constants"
 
 function SideBarLink({
   href,
@@ -131,9 +132,21 @@ export function AdminLayout({
   children,
 }: {
   title: string
-  children: ReactNode
+  children: ({ user, role }: { user: User; role: "ADMIN" }) => ReactNode
 }) {
-  const { user } = useSession()
+  const { isLoading, user, role } = useSession({
+    required: {
+      role: "ADMIN",
+    },
+  })
+
+  // FIXME: Show skeleton for the login page in here.
+  if (isLoading || user === null)
+    return <main className="min-h-screen bg-brand-cyan-100"></main>
+
+  // FIXME: Either use a unified skeleton component in here,
+  // or show a skeleton component based on the detected role.
+  if (role !== "ADMIN") return <SkeletonAdminLayout />
 
   return (
     <>
@@ -177,14 +190,19 @@ export function AdminLayout({
                 >
                   <UserCircle size={24} />
                   <div className="flex items-center gap-2">
-                    <span>{user?.displayName}</span>
+                    <span>{user.displayName}</span>
                     <CaretDown size={12} />
                   </div>
                 </button>
               </div>
             </div>
           </header>
-          <div>{children}</div>
+          <div>
+            {children({
+              user,
+              role,
+            })}
+          </div>
         </div>
       </div>
     </>
