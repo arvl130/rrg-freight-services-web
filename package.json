@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:push": "tsx ./scripts/drop-all-db-tables.ts && drizzle-kit push:mysql",
+    "db:push": "tsx ./scripts/drop-all-db-tables.ts && drizzle-kit push:mysql && tsx ./scripts/db-seed.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
