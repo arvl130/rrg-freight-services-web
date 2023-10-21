@@ -112,7 +112,9 @@ export const packages = mysqlTable("packages", {
   senderStateOrProvince: varchar("sender_state_province", {
     length: 100,
   }).notNull(),
-  senderCountry: varchar("sender_country", { length: 100 }).notNull(),
+  // Uses ISO 3166-1 alpha-3 format.
+  // See: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
+  senderCountryCode: varchar("sender_country_code", { length: 3 }).notNull(),
   senderPostalCode: int("sender_postal_code").notNull(),
   receiverFullName: varchar("receiver_full_name", { length: 100 }).notNull(),
   receiverContactNumber: varchar("receiver_contact_number", {
@@ -133,7 +135,11 @@ export const packages = mysqlTable("packages", {
   receiverStateOrProvince: varchar("receiver_state_province", {
     length: 100,
   }).notNull(),
-  receiverCountry: varchar("receiver_country", { length: 100 }).notNull(),
+  // Uses ISO 3166-1 alpha-3 format.
+  // See: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
+  receiverCountryCode: varchar("receiver_country_code", {
+    length: 3,
+  }).notNull(),
   receiverPostalCode: int("receiver_postal_code").notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
