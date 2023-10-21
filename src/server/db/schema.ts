@@ -73,9 +73,9 @@ export const shipmentPackagesRelations = relations(
       fields: [shipmentPackages.packageId],
       references: [packages.id],
     }),
-    shipment: one(packages, {
-      fields: [shipmentPackages.packageId],
-      references: [packages.id],
+    shipment: one(shipments, {
+      fields: [shipmentPackages.shipmentId],
+      references: [shipments.id],
     }),
   })
 )
