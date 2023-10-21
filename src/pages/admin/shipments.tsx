@@ -12,12 +12,12 @@ import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 function PageHeader() {
   return (
     <div className="flex justify-between mb-6">
-      <h1 className="text-3xl font-black [color:_#00203F]">Manifests</h1>
+      <h1 className="text-3xl font-black [color:_#00203F]">Shipments</h1>
     </div>
   )
 }
 
-const manifests = [
+const shipments = [
   {
     id: 1000000,
     sender: {
@@ -84,7 +84,7 @@ const manifests = [
   },
 ]
 
-export default function ManifestsPage() {
+export default function ShipmentsPage() {
   const { isLoading, role } = useSession({
     required: {
       role: "ADMIN",
@@ -94,7 +94,7 @@ export default function ManifestsPage() {
   if (isLoading || role !== "ADMIN") return <>...</>
 
   return (
-    <AdminLayout title="Manifests">
+    <AdminLayout title="Shipments">
       <PageHeader />
       <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
         <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
@@ -149,10 +149,10 @@ export default function ManifestsPage() {
         <div className="flex justify-between mb-3">
           <div className="flex gap-6">
             <h2 className="text-2xl font-semibold text-brand-cyan-500 pb-1 border-b-2 border-brand-cyan-500">
-              All Manifests
+              All Shipments
             </h2>
             <span className="text-2xl text-gray-400 pb-1">
-              Archived Manifests
+              Archived Shipments
             </span>
           </div>
           <div className="flex gap-8">
@@ -196,47 +196,47 @@ export default function ManifestsPage() {
           <div className="grid grid-cols-[1fr_3fr_1fr] border-y border-gray-300 font-medium">
             <div className="uppercase px-4 py-2 flex gap-1">
               <input type="checkbox" name="" id="" />
-              <span>Manifest ID</span>
+              <span>Shipment ID</span>
             </div>
             <div className="uppercase px-4 py-2">Sender</div>
             <div className="uppercase px-4 py-2">Status</div>
           </div>
           {/* Body */}
           <div>
-            {manifests.map((manifest) => (
+            {shipments.map((shipment) => (
               <div
-                key={manifest.id}
+                key={shipment.id}
                 className="grid grid-cols-[1fr_3fr_1fr] border-b border-gray-300 text-sm"
               >
                 <div className="px-4 py-2 flex items-center gap-1">
                   <input type="checkbox" name="" id="" />
-                  <span>{manifest.id}</span>
+                  <span>{shipment.id}</span>
                 </div>
                 <div className="px-4 py-2">
-                  <div>{manifest.sender.name}</div>
-                  <div className="text-gray-400">{manifest.sender.address}</div>
+                  <div>{shipment.sender.name}</div>
+                  <div className="text-gray-400">{shipment.sender.address}</div>
                 </div>
                 <div className="px-4 py-2 flex items-center gap-2">
                   <div
                     className={`
                       w-36 py-0.5 text-white text-center rounded-md
-                      ${manifest.status === "Preparing" ? "bg-gray-400" : ""}
-                      ${manifest.status === "Shipped Out" ? "bg-blue-500" : ""}
-                      ${manifest.status === "In Warehouse" ? "bg-pink-500" : ""}
+                      ${shipment.status === "Preparing" ? "bg-gray-400" : ""}
+                      ${shipment.status === "Shipped Out" ? "bg-blue-500" : ""}
+                      ${shipment.status === "In Warehouse" ? "bg-pink-500" : ""}
                       ${
-                        manifest.status === "Prepared by Agent"
+                        shipment.status === "Prepared by Agent"
                           ? "bg-pink-500"
                           : ""
                       }
-                      ${manifest.status === "Delivered" ? "bg-green-500" : ""}
+                      ${shipment.status === "Delivered" ? "bg-green-500" : ""}
                       ${
-                        manifest.status === "Out for Delivery"
+                        shipment.status === "Out for Delivery"
                           ? "bg-orange-500"
                           : ""
                       }
                   `}
                   >
-                    {manifest.status}
+                    {shipment.status}
                   </div>
                   <button type="button">
                     <span className="sr-only">Actions</span>
