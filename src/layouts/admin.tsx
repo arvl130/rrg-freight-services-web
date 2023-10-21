@@ -17,7 +17,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { ReactNode, useState } from "react"
-import { Role } from "@/utils/constants"
 
 function SideBarLink({
   href,
@@ -72,8 +71,8 @@ function SideBar() {
           icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Packages"
-          href="/admin/manifests"
+          name="Shipments"
+          href="/admin/shipments"
           icon={<ClipboardText size={32} className="text-white" />}
         />
         <SideBarLink
