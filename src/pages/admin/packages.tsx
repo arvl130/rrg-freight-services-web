@@ -3,12 +3,16 @@ import { useSession } from "@/utils/auth"
 import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { Export } from "@phosphor-icons/react/Export"
-import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
+import { Package } from "@/server/db/entities"
+import { getColorFromPackageStatus } from "@/utils/colors"
+import { api } from "@/utils/api"
+import { useState } from "react"
+import { LoadingSpinner } from "@/components/spinner"
 
 function PageHeader() {
   return (
@@ -18,116 +22,180 @@ function PageHeader() {
   )
 }
 
-const packages = [
-  {
-    id: 1000000,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    receiver: {
-      name: "John Dela Cruz",
-      address: "25 Brgy. Gulod Novaliches Quezon City",
-    },
-    status: "Preparing",
-  },
-  {
-    id: 1000001,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    receiver: {
-      name: "John Dela Cruz",
-      address: "25 Brgy. Gulod Novaliches Quezon City",
-    },
-    status: "Shipped Out",
-  },
-  {
-    id: 1000002,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    receiver: {
-      name: "John Dela Cruz",
-      address: "25 Brgy. Gulod Novaliches Quezon City",
-    },
-    status: "In Warehouse",
-  },
-  {
-    id: 1000003,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    receiver: {
-      name: "John Dela Cruz",
-      address: "25 Brgy. Gulod Novaliches Quezon City",
-    },
-    status: "Prepared by Agent",
-  },
-  {
-    id: 1000004,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    receiver: {
-      name: "John Dela Cruz",
-      address: "25 Brgy. Gulod Novaliches Quezon City",
-    },
-    status: "Delivered",
-  },
-  {
-    id: 1000005,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    receiver: {
-      name: "John Dela Cruz",
-      address: "25 Brgy. Gulod Novaliches Quezon City",
-    },
-    status: "Delivered",
-  },
-  {
-    id: 1000006,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    receiver: {
-      name: "John Dela Cruz",
-      address: "25 Brgy. Gulod Novaliches Quezon City",
-    },
-    status: "Out for Delivery",
-  },
-  {
-    id: 1000007,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    receiver: {
-      name: "John Dela Cruz",
-      address: "25 Brgy. Gulod Novaliches Quezon City",
-    },
-    status: "Delivered",
-  },
-]
+function PackageTableItem({ package: _package }: { package: Package }) {
+  return (
+    <>
+      <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
+        <div className="px-4 py-2 flex items-center gap-1">
+          <input type="checkbox" name="" id="" />
+          <span>{_package.id}</span>
+        </div>
+        <div className="px-4 py-2">
+          <div>{_package.senderFullName}</div>
+          <div className="text-gray-400">
+            <p>{_package.senderStreetAddress}</p>
+            <p>{_package.senderCity}</p>
+            <p>
+              {_package.senderStateOrProvince} {_package.senderPostalCode}{" "}
+              {_package.senderCountryCode}
+            </p>
+          </div>
+        </div>
+        <div className="px-4 py-2">
+          <div>{_package.receiverFullName}</div>
+          <div className="text-gray-400">
+            <p>{_package.receiverStreetAddress}</p>
+            <p>
+              Brgy. {_package.receiverBarangay}, {_package.receiverCity}
+            </p>
+            <p>
+              {_package.receiverStateOrProvince} {_package.receiverPostalCode}{" "}
+              {_package.receiverCountryCode}
+            </p>
+          </div>
+        </div>
+        <div className="px-4 py-2 flex items-center gap-2">
+          <div
+            className={`
+                w-36 py-0.5 text-white text-center rounded-md
+                ${getColorFromPackageStatus(_package.status)}
+            `}
+          >
+            {_package.status}
+          </div>
+          <button type="button">
+            <span className="sr-only">Actions</span>
+            <DotsThree size={16} />
+          </button>
+        </div>
+      </div>
+    </>
+  )
+}
 
-export default function UsersPage() {
-  const { isLoading, role } = useSession({
-    required: {
-      role: "ADMIN",
-    },
-  })
-
-  if (isLoading || role !== "ADMIN") return <>...</>
+function PackagesTable({ packages }: { packages: Package[] }) {
+  const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
+  const allPackages = packages.filter((_package) => _package.isArchived === 0)
+  const archivedPackages = packages.filter(
+    (_package) => _package.isArchived === 1
+  )
 
   return (
-    <AdminLayout title="Packages">
+    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
+      <div className="flex justify-between mb-3">
+        <div className="flex gap-6">
+          <button
+            type="button"
+            className={`
+              text-lg pb-1 font-semibold border-b-2
+              ${
+                selectedTab === "ALL"
+                  ? "text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+            onClick={() => setSelectedTab("ALL")}
+          >
+            All Packages
+          </button>
+          <button
+            type="button"
+            className={`
+              text-lg pb-1 font-semibold border-b-2
+              ${
+                selectedTab === "ARCHIVED"
+                  ? "text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+            onClick={() => setSelectedTab("ARCHIVED")}
+          >
+            Archived Packages
+          </button>
+        </div>
+        <div className="flex gap-8">
+          <div>
+            Showing{" "}
+            <select className="bg-white border border-gray-300 px-2 py-1 w-16">
+              <option>All</option>
+            </select>{" "}
+            entries
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <CaretLeft size={16} />
+            <CaretDoubleLeft size={16} />
+            <button
+              type="button"
+              className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
+            >
+              1
+            </button>
+            <button type="button" className="text-gray-400">
+              2
+            </button>
+            <button type="button" className="text-gray-400">
+              3
+            </button>
+            <button type="button" className="text-gray-400">
+              4
+            </button>
+            <span className="text-gray-400">...</span>
+            <button type="button" className="text-gray-400">
+              10
+            </button>
+            <CaretRight size={16} />
+            <CaretDoubleRight size={16} />
+          </div>
+        </div>
+      </div>
+      {/* Table */}
+      <div>
+        {/* Header */}
+        <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
+          <div className="uppercase px-4 py-2 flex gap-1">
+            <input type="checkbox" name="" id="" />
+            <span>Product ID</span>
+          </div>
+          <div className="uppercase px-4 py-2">Sender</div>
+          <div className="uppercase px-4 py-2">Receiver</div>
+          <div className="uppercase px-4 py-2">Status</div>
+        </div>
+        {/* Body */}
+        {selectedTab === "ALL" ? (
+          <>
+            {allPackages.length === 0 ? (
+              <div className="text-center pt-4">No packages found.</div>
+            ) : (
+              <div>
+                {allPackages.map((_package) => (
+                  <PackageTableItem key={_package.id} package={_package} />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {archivedPackages.length === 0 ? (
+              <div className="text-center pt-4">No packages found.</div>
+            ) : (
+              <div>
+                {archivedPackages.map((_package) => (
+                  <PackageTableItem key={_package.id} package={_package} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function MainView() {
+  const { isLoading, isError, data: packages } = api.package.getAll.useQuery()
+
+  return (
+    <>
       <PageHeader />
       <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
         <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
@@ -178,116 +246,37 @@ export default function UsersPage() {
           </button>
         </div>
       </div>
-      <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
-        <div className="flex justify-between mb-3">
-          <div className="flex gap-6">
-            <h2 className="text-2xl font-semibold text-brand-cyan-500 pb-1 border-b-2 border-brand-cyan-500">
-              All Packages
-            </h2>
-            <span className="text-2xl text-gray-400 pb-1">
-              Archived Packages
-            </span>
-          </div>
-          <div className="flex gap-8">
-            <div>
-              Showing{" "}
-              <select className="bg-white border border-gray-300 px-2 py-1 w-16">
-                <option>All</option>
-              </select>{" "}
-              entries
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <CaretLeft size={16} />
-              <CaretDoubleLeft size={16} />
-              <button
-                type="button"
-                className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
-              >
-                1
-              </button>
-              <button type="button" className="text-gray-400">
-                2
-              </button>
-              <button type="button" className="text-gray-400">
-                3
-              </button>
-              <button type="button" className="text-gray-400">
-                4
-              </button>
-              <span className="text-gray-400">...</span>
-              <button type="button" className="text-gray-400">
-                10
-              </button>
-              <CaretRight size={16} />
-              <CaretDoubleRight size={16} />
-            </div>
-          </div>
+      {isLoading ? (
+        <div className="flex justify-center pt-4">
+          <LoadingSpinner />
         </div>
-        {/* Table */}
-        <div>
-          {/* Header */}
-          <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
-            <div className="uppercase px-4 py-2 flex gap-1">
-              <input type="checkbox" name="" id="" />
-              <span>Product ID</span>
-            </div>
-            <div className="uppercase px-4 py-2">Sender</div>
-            <div className="uppercase px-4 py-2">Receiver</div>
-            <div className="uppercase px-4 py-2">Status</div>
-          </div>
-          {/* Body */}
-          <div>
-            {packages.map((_package) => (
-              <div
-                key={_package.id}
-                className="grid grid-cols-4 border-b border-gray-300 text-sm"
-              >
-                <div className="px-4 py-2 flex items-center gap-1">
-                  <input type="checkbox" name="" id="" />
-                  <span>{_package.id}</span>
-                </div>
-                <div className="px-4 py-2">
-                  <div>{_package.sender.name}</div>
-                  <div className="text-gray-400">{_package.sender.address}</div>
-                </div>
-                <div className="px-4 py-2">
-                  <div>{_package.receiver.name}</div>
-                  <div className="text-gray-400">
-                    {_package.receiver.address}
-                  </div>
-                </div>
-                <div className="px-4 py-2 flex items-center gap-2">
-                  <div
-                    className={`
-                      w-36 py-0.5 text-white text-center rounded-md
-                      ${_package.status === "Preparing" ? "bg-gray-400" : ""}
-                      ${_package.status === "Shipped Out" ? "bg-blue-500" : ""}
-                      ${_package.status === "In Warehouse" ? "bg-pink-500" : ""}
-                      ${
-                        _package.status === "Prepared by Agent"
-                          ? "bg-pink-500"
-                          : ""
-                      }
-                      ${_package.status === "Delivered" ? "bg-green-500" : ""}
-                      ${
-                        _package.status === "Out for Delivery"
-                          ? "bg-orange-500"
-                          : ""
-                      }
-                  `}
-                  >
-                    {_package.status}
-                  </div>
-                  <button type="button">
-                    <span className="sr-only">Actions</span>
-                    <DotsThree size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      ) : (
+        <>
+          {isError ? (
+            <>Error :{"("}</>
+          ) : (
+            <>
+              <PackagesTable packages={packages} />
+            </>
+          )}
+        </>
+      )}
+    </>
+  )
+}
+
+export default function UsersPage() {
+  const { isLoading, role } = useSession({
+    required: {
+      role: "ADMIN",
+    },
+  })
+
+  if (isLoading || role !== "ADMIN") return <>...</>
+
+  return (
+    <AdminLayout title="Packages">
+      <MainView />
     </AdminLayout>
   )
 }
