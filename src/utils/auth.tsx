@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from "react"
-import { SessionRole, supportedSessionRoles } from "./constants"
+import { Role, supportedRoles } from "./constants"
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -22,14 +22,14 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
 const auth = getAuth(app)
 
-const sessionRoleRedirectPaths: Record<SessionRole, string> = {
+const sessionRoleRedirectPaths: Record<Role, string> = {
   ADMIN: "/admin/dashboard",
   WAREHOUSE: "/warehouse/dashboard",
   OVERSEAS_AGENT: "/overseas/dashboard",
   DOMESTIC_AGENT: "/domestic/dashboard",
 }
 
-export function getSessionRoleRedirectPath(role: SessionRole | null) {
+export function getSessionRoleRedirectPath(role: Role | null) {
   if (role === null) return "/something-went-wrong"
 
   return sessionRoleRedirectPaths[role]
@@ -52,7 +52,7 @@ type AuthContextType =
   | {
       isLoading: false
       user: User
-      role: SessionRole | null
+      role: Role | null
     }
 
 const AuthContext = createContext<AuthContextType>({
@@ -84,7 +84,7 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
         setSession({
           isLoading: false,
           user,
-          role: (idTokenResult.claims.role as SessionRole) ?? null,
+          role: (idTokenResult.claims.role as Role) ?? null,
         })
       } catch {
         setSession({
@@ -108,7 +108,7 @@ export function useSession(
       | true // Session is required, but any user is allowed.
       // Session is required, with a particular type.
       | {
-          role: SessionRole
+          role: Role
         }
   } = {
     required: false,
@@ -135,7 +135,7 @@ export function useSession(
         return
       }
 
-      for (const sessionRole of supportedSessionRoles) {
+      for (const sessionRole of supportedRoles) {
         if (required.role === sessionRole && session.role !== sessionRole) {
           const redirectPath = getSessionRoleRedirectPath(session.role)
           router.push(redirectPath)

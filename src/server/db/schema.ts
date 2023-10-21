@@ -1,4 +1,4 @@
-import { supportedGenders, supportedPackageStatuses, supportedSessionRoles, supportedShipmentStatuses, supportedShippers } from "@/utils/constants"
+import { supportedGenders, supportedPackageStatuses, supportedRoles, supportedShipmentStatuses, supportedShippers } from "@/utils/constants"
 import { relations } from "drizzle-orm"
 import {
   bigint,
@@ -17,7 +17,7 @@ export const users = mysqlTable("users", {
   emailAddress: varchar("email_address", { length: 100 }).notNull(),
   contactNumber: varchar("contact_number", { length: 15 }).notNull(),
   gender: mysqlEnum("gender", supportedGenders),
-  role: mysqlEnum("role", supportedSessionRoles).notNull(),
+  role: mysqlEnum("role", supportedRoles).notNull(),
   isEnabled: tinyint("is_enabled").default(1),
 })
 

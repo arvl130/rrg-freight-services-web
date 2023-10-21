@@ -1,13 +1,13 @@
 export const supportedGenders = ["MALE", "FEMALE", "OTHER"] as const
 export type Gender = (typeof supportedGenders)[number]
 
-export const supportedSessionRoles = [
+export const supportedRoles = [
   "ADMIN",
   "WAREHOUSE",
   "OVERSEAS_AGENT",
   "DOMESTIC_AGENT",
 ] as const
-export type SessionRole = (typeof supportedSessionRoles)[number]
+export type Role = (typeof supportedRoles)[number]
 
 export const supportedPackageStatuses = [
   "PENDING",
