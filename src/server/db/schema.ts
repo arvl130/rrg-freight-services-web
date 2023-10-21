@@ -1,4 +1,10 @@
-import { supportedGenders, supportedPackageStatuses, supportedRoles, supportedShipmentStatuses, supportedShippers } from "@/utils/constants"
+import {
+  supportedGenders,
+  supportedPackageStatuses,
+  supportedRoles,
+  supportedShipmentStatuses,
+  supportedShippers,
+} from "../../utils/constants"
 import { relations } from "drizzle-orm"
 import {
   bigint,
@@ -42,12 +48,32 @@ export const shipments = mysqlTable("shipments", {
 })
 
 export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
-  packages: many(packages),
+  shipmentPackages: many(shipmentPackages),
   createdBy: one(users, {
     fields: [shipments.createdById],
     references: [users.id],
   }),
 }))
+
+export const shipmentPackages = mysqlTable("shipment_packages", {
+  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  shipmentId: bigint("shipment_id", { mode: "number" }).notNull(),
+  packageId: bigint("package_id", { mode: "number" }).notNull(),
+})
+
+export const shipmentPackagesRelations = relations(
+  shipmentPackages,
+  ({ one }) => ({
+    package: one(packages, {
+      fields: [shipmentPackages.packageId],
+      references: [packages.id],
+    }),
+    shipment: one(packages, {
+      fields: [shipmentPackages.packageId],
+      references: [packages.id],
+    }),
+  })
+)
 
 export const packages = mysqlTable("packages", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),

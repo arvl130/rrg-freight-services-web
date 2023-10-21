@@ -6,7 +6,13 @@ const poolConnection = mysql.createPool({
   uri: serverEnv.DATABASE_URL,
 })
 
-const tables = ["packages", "manifests", "activities", "users"]
+const tables = [
+  "packages",
+  "shipments",
+  "shipment_packages",
+  "activities",
+  "users",
+]
 
 await Promise.all(
   tables.map((table) => poolConnection.execute(`DROP TABLE IF EXISTS ${table}`))
