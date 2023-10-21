@@ -93,8 +93,8 @@ export const packages = mysqlTable("packages", {
   shippingType: mysqlEnum("shipping_type", supportedShippingType).notNull(),
   receptionMode: mysqlEnum("reception_mode", supportedReceptionMode).notNull(),
   weightInKg: decimal("weight_in_kg", {
-    precision: 2,
-    scale: 8,
+    precision: 8,
+    scale: 2,
   }),
   senderFullName: varchar("sender_full_name", { length: 100 }).notNull(),
   senderContactNumber: varchar("sender_contact_number", {
