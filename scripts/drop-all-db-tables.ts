@@ -9,6 +9,8 @@ const poolConnection = mysql.createPool({
 const tables = [
   "packages",
   "shipments",
+  "shipment_hubs",
+  "shipment_hub_agents",
   "shipment_packages",
   "activities",
   "users",

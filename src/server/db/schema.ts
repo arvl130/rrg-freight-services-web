@@ -40,6 +40,8 @@ export const usersRelations = relations(users, ({ many }) => ({
 
 export const shipments = mysqlTable("shipments", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  originId: bigint("origin_id", { mode: "number" }).notNull(),
+  destinationId: bigint("destination_id", { mode: "number" }).notNull(),
   status: mysqlEnum("status", supportedShipmentStatuses)
     .notNull()
     .default("PENDING"),
@@ -54,12 +56,69 @@ export const shipments = mysqlTable("shipments", {
 })
 
 export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
+  origin: one(shipmentHubs, {
+    fields: [shipments.originId],
+    references: [shipmentHubs.id],
+  }),
+  destination: one(shipmentHubs, {
+    fields: [shipments.destinationId],
+    references: [shipmentHubs.id],
+  }),
   shipmentPackages: many(shipmentPackages),
   createdBy: one(users, {
     fields: [shipments.createdById],
     references: [users.id],
   }),
 }))
+
+export const shipmentHubs = mysqlTable("shipment_hubs", {
+  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  displayName: varchar("display_name", {
+    length: 255,
+  }).notNull(),
+  streetAddress: varchar("street_address", {
+    length: 255,
+  }).notNull(),
+  barangay: varchar("barangay", {
+    length: 100,
+  }),
+  stateOrProvince: varchar("state_or_province", {
+    length: 100,
+  }).notNull(),
+  countryCode: varchar("display_name", {
+    length: 3,
+  }).notNull(),
+  postalCode: int("postal_code").notNull(),
+})
+
+export const shipmentHubsRelations = relations(shipmentHubs, ({ many }) => ({
+  shipmentHubAgents: many(shipmentHubAgents),
+}))
+
+export const shipmentHubAgents = mysqlTable(
+  "shipment_hub_agents",
+  {
+    shipmentHubId: bigint("shipment_hub_id", { mode: "number" }).notNull(),
+    userId: varchar("user_id", { length: 28 }).notNull(),
+  },
+  (table) => ({
+    pk: primaryKey(table.shipmentHubId, table.userId),
+  })
+)
+
+export const shipmentHubAgentsRelations = relations(
+  shipmentHubAgents,
+  ({ one }) => ({
+    shipmentHub: one(shipmentHubs, {
+      fields: [shipmentHubAgents.shipmentHubId],
+      references: [shipmentHubs.id],
+    }),
+    user: one(users, {
+      fields: [shipmentHubAgents.userId],
+      references: [users.id],
+    }),
+  })
+)
 
 export const shipmentPackages = mysqlTable(
   "shipment_packages",

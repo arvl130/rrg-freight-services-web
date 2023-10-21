@@ -1,6 +1,8 @@
 import {
   users,
   shipments,
+  shipmentHubs,
+  shipmentHubAgents,
   shipmentPackages,
   packages,
   activities,
@@ -11,6 +13,12 @@ export type NewUser = typeof users.$inferInsert
 
 export type Shipment = typeof shipments.$inferSelect
 export type NewShipment = typeof shipments.$inferInsert
+
+export type ShipmentHub = typeof shipmentHubs.$inferSelect
+export type NewShipmentHub = typeof shipmentHubs.$inferInsert
+
+export type ShipmentHubAgent = typeof shipmentHubAgents.$inferSelect
+export type NewShipmentHubAgent = typeof shipmentHubAgents.$inferInsert
 
 export type ShipmentPackage = typeof shipmentPackages.$inferSelect
 export type NewShipmentPackage = typeof shipmentPackages.$inferInsert
