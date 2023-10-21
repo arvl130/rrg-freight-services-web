@@ -1,9 +1,12 @@
 import {
   supportedGenders,
   supportedPackageStatuses,
+  supportedReceptionMode,
   supportedRoles,
   supportedShipmentStatuses,
-  supportedShippers,
+  supportedShippingMode,
+  supportedShippingParty,
+  supportedShippingType,
 } from "../../utils/constants"
 import { relations } from "drizzle-orm"
 import {
@@ -14,6 +17,8 @@ import {
   mysqlEnum,
   timestamp,
   tinyint,
+  int,
+  decimal,
 } from "drizzle-orm/mysql-core"
 
 export const users = mysqlTable("users", {
@@ -81,15 +86,49 @@ export const packages = mysqlTable("packages", {
   status: mysqlEnum("status", supportedPackageStatuses)
     .notNull()
     .default("PENDING"),
-  shipper: mysqlEnum("shipper", supportedShippers)
+  shippingParty: mysqlEnum("shipping_party", supportedShippingParty)
     .notNull()
     .default("FIRST_PARTY"),
-  customerName: varchar("customer_name", { length: 100 }).notNull(),
-  destinationAddress: varchar("destination_address", {
-    length: 1000,
+  shippingMode: mysqlEnum("shipping_mode", supportedShippingMode).notNull(),
+  shippingType: mysqlEnum("shipping_type", supportedShippingType).notNull(),
+  receptionMode: mysqlEnum("reception_mode", supportedReceptionMode).notNull(),
+  weightInKg: decimal("weight_in_kg", {
+    precision: 2,
+    scale: 8,
+  }),
+  senderFullName: varchar("sender_full_name", { length: 100 }).notNull(),
+  senderContactNumber: varchar("sender_contact_number", {
+    length: 15,
   }).notNull(),
-  emailAddress: varchar("email_address", { length: 100 }).notNull(),
-  contactNumber: varchar("contact_number", { length: 15 }).notNull(),
+  senderEmailAddress: varchar("sender_email_address", {
+    length: 100,
+  }).notNull(),
+  senderStreetAddress: varchar("sender_street_address", {
+    length: 255,
+  }).notNull(),
+  senderStateOrProvince: varchar("sender_state_province", {
+    length: 100,
+  }).notNull(),
+  senderCountry: varchar("sender_country", { length: 100 }).notNull(),
+  senderPostalCode: int("sender_postal_code").notNull(),
+  receiverFullName: varchar("receiver_full_name", { length: 100 }).notNull(),
+  receiverContactNumber: varchar("receiver_contact_number", {
+    length: 15,
+  }).notNull(),
+  receiverEmailAddress: varchar("receiver_email_address", {
+    length: 100,
+  }).notNull(),
+  receiverStreetAddress: varchar("receiver_street_address", {
+    length: 255,
+  }).notNull(),
+  receiverBarangay: varchar("receiver_barangay", {
+    length: 100,
+  }).notNull(),
+  receiverStateOrProvince: varchar("receiver_state_province", {
+    length: 100,
+  }).notNull(),
+  receiverCountry: varchar("receiver_country", { length: 100 }).notNull(),
+  receiverPostalCode: int("receiver_postal_code").notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
   })
