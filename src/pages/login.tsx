@@ -12,6 +12,7 @@ import { useRouter } from "next/router"
 import { Eye } from "@phosphor-icons/react/Eye"
 import { EyeSlash } from "@phosphor-icons/react/EyeSlash"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
+import { SkeletonAdminLayout } from "@/layouts/admin"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -69,11 +70,25 @@ export default function LoginPage() {
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
-  if (isLoading || user !== null)
+  if (isLoading)
     return (
       <>
         <LoginPageHead />
         <main className="min-h-screen bg-brand-cyan-100"></main>
+      </>
+    )
+
+  // FIXME: Either use a unified skeleton component for all users here,
+  // or show a skeleton based on the user's role, so we can show the
+  // correct skeleton.
+  //
+  // For now, let's just use the Admin user's skeleton component,
+  // since it matches all the other users' layout, anyways.
+  if (user !== null)
+    return (
+      <>
+        <LoginPageHead />
+        <SkeletonAdminLayout />
       </>
     )
 
