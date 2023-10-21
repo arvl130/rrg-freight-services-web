@@ -18,11 +18,11 @@ import {
   timestamp,
   tinyint,
   int,
-  decimal,
+  double,
 } from "drizzle-orm/mysql-core"
 
 export const users = mysqlTable("users", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  id: varchar("id", { length: 28 }).primaryKey(),
   displayName: varchar("display_name", { length: 100 }).notNull(),
   photoUrl: text("photo_url").notNull().default(""),
   emailAddress: varchar("email_address", { length: 100 }).notNull(),
@@ -45,7 +45,7 @@ export const shipments = mysqlTable("shipments", {
   createdAt: timestamp("created_at", {
     mode: "date",
   }).defaultNow(),
-  createdById: bigint("created_by_id", { mode: "number" }).notNull(),
+  createdById: varchar("created_by_id", { length: 28 }).notNull(),
   updatedAt: timestamp("updated_at", {
     mode: "date",
   }).defaultNow(),
@@ -92,7 +92,7 @@ export const packages = mysqlTable("packages", {
   shippingMode: mysqlEnum("shipping_mode", supportedShippingMode).notNull(),
   shippingType: mysqlEnum("shipping_type", supportedShippingType).notNull(),
   receptionMode: mysqlEnum("reception_mode", supportedReceptionMode).notNull(),
-  weightInKg: decimal("weight_in_kg", {
+  weightInKg: double("weight_in_kg", {
     precision: 8,
     scale: 2,
   }),
@@ -105,6 +105,9 @@ export const packages = mysqlTable("packages", {
   }).notNull(),
   senderStreetAddress: varchar("sender_street_address", {
     length: 255,
+  }).notNull(),
+  senderCity: varchar("sender_city", {
+    length: 100,
   }).notNull(),
   senderStateOrProvince: varchar("sender_state_province", {
     length: 100,
@@ -124,6 +127,9 @@ export const packages = mysqlTable("packages", {
   receiverBarangay: varchar("receiver_barangay", {
     length: 100,
   }).notNull(),
+  receiverCity: varchar("receiver_city", {
+    length: 100,
+  }).notNull(),
   receiverStateOrProvince: varchar("receiver_state_province", {
     length: 100,
   }).notNull(),
@@ -134,16 +140,21 @@ export const packages = mysqlTable("packages", {
   })
     .notNull()
     .defaultNow(),
+  createdById: varchar("created_by_id", { length: 28 }).notNull(),
   updatedAt: timestamp("updated_at", {
     mode: "date",
   })
     .notNull()
     .defaultNow(),
-  updatedById: bigint("updated_by_id", { mode: "number" }).notNull(),
+  updatedById: varchar("updated_by_id", { length: 28 }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
 export const packagesRelations = relations(packages, ({ one }) => ({
+  createdBy: one(users, {
+    fields: [packages.createdById],
+    references: [users.id],
+  }),
   updatedBy: one(users, {
     fields: [packages.updatedById],
     references: [users.id],
@@ -171,7 +182,7 @@ export const activities = mysqlTable("activities", {
   })
     .notNull()
     .defaultNow(),
-  createdById: bigint("created_by_id", { mode: "number" }).notNull(),
+  createdById: varchar("created_by_id", { length: 28 }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
