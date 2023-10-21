@@ -8,6 +8,7 @@ import {
   useEffect,
   useState,
 } from "react"
+import { SessionRole, supportedSessionRoles } from "./constants"
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -20,14 +21,6 @@ const firebaseConfig = {
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
 const auth = getAuth(app)
-
-const sessionRoles = [
-  "ADMIN",
-  "WAREHOUSE",
-  "OVERSEAS_AGENT",
-  "DOMESTIC_AGENT",
-] as const
-type SessionRole = (typeof sessionRoles)[number]
 
 const sessionRoleRedirectPaths: Record<SessionRole, string> = {
   ADMIN: "/admin/dashboard",
@@ -142,9 +135,7 @@ export function useSession(
         return
       }
 
-      for (const key in sessionRoles) {
-        const sessionRole = sessionRoles[key]
-
+      for (const sessionRole of supportedSessionRoles) {
         if (required.role === sessionRole && session.role !== sessionRole) {
           const redirectPath = getSessionRoleRedirectPath(session.role)
           router.push(redirectPath)

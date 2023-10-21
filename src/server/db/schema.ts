@@ -1,3 +1,4 @@
+import { supportedGenders, supportedPackageStatuses, supportedSessionRoles, supportedShipmentStatuses, supportedShippers } from "@/utils/constants"
 import { relations } from "drizzle-orm"
 import {
   bigint,
@@ -15,13 +16,8 @@ export const users = mysqlTable("users", {
   photoUrl: text("photo_url").notNull().default(""),
   emailAddress: varchar("email_address", { length: 100 }).notNull(),
   contactNumber: varchar("contact_number", { length: 15 }).notNull(),
-  gender: mysqlEnum("gender", ["MALE", "FEMALE", "OTHER"]),
-  role: mysqlEnum("role", [
-    "ADMIN",
-    "WAREHOUSE",
-    "SENDER",
-    "RECEIVER",
-  ]).notNull(),
+  gender: mysqlEnum("gender", supportedGenders),
+  role: mysqlEnum("role", supportedSessionRoles).notNull(),
   isEnabled: tinyint("is_enabled").default(1),
 })
 
@@ -32,14 +28,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 
 export const shipments = mysqlTable("shipments", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  // TODO: Instead of duplicating status enum from packages,
-  // perhaps we can split the state across these two entities?
-  status: mysqlEnum("status", [
-    "PENDING",
-    "PREPARED_BY_AGENT",
-    "SHIPPED_BY_AGENT",
-    "ARRIVED_IN_PH",
-  ])
+  status: mysqlEnum("status", supportedShipmentStatuses)
     .notNull()
     .default("PENDING"),
   createdAt: timestamp("created_at", {
@@ -63,21 +52,10 @@ export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
 export const packages = mysqlTable("packages", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
   shipmentId: bigint("shipment_id", { mode: "number" }).notNull(),
-  status: mysqlEnum("status", [
-    "PENDING",
-    "PREPARED_BY_AGENT",
-    "SHIPPED_BY_AGENT",
-    "ARRIVED_IN_PH",
-    "IN_WAREHOUSE",
-    "SORTING",
-    "IN_TRANSIT_TO_THIRD_PARTY",
-    "ARRIVED_AT_THIRD_PARTY",
-    "OUT_FOR_DELIVERY",
-    "DELIVERED",
-  ])
+  status: mysqlEnum("status", supportedPackageStatuses)
     .notNull()
     .default("PENDING"),
-  shipper: mysqlEnum("shipper", ["FIRST_PARTY", "THIRD_PARTY"])
+  shipper: mysqlEnum("shipper", supportedShippers)
     .notNull()
     .default("FIRST_PARTY"),
   customerName: varchar("customer_name", { length: 100 }).notNull(),
