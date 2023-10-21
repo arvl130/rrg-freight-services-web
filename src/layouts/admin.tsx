@@ -117,6 +117,15 @@ function SideBar() {
   )
 }
 
+export function SkeletonAdminLayout() {
+  return (
+    <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+      <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
+      <main className="bg-brand-cyan-100"></main>
+    </div>
+  )
+}
+
 export function AdminLayout({
   title,
   children,

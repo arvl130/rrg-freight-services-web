@@ -1,4 +1,4 @@
-import { AdminLayout } from "@/layouts/admin"
+import { AdminLayout, SkeletonAdminLayout } from "@/layouts/admin"
 import { useSession } from "@/utils/auth"
 import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
@@ -272,7 +272,10 @@ export default function UsersPage() {
     },
   })
 
-  if (isLoading || role !== "ADMIN") return <>...</>
+  if (isLoading || role === null)
+    return <main className="min-h-screen bg-brand-cyan-100"></main>
+
+  if (role !== "ADMIN") return <SkeletonAdminLayout />
 
   return (
     <AdminLayout title="Packages">
