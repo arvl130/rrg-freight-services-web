@@ -1,6 +1,6 @@
 import { httpBatchLink } from "@trpc/client"
 import { createTRPCNext } from "@trpc/next"
-import type { RootRouter } from "../server/trpc/routers"
+import type { RootRouter } from "../server/trpc/routers/_root"
 import { getIdToken } from "firebase/auth"
 import SuperJSON from "superjson"
 import { getBaseUrl } from "./base-url"
