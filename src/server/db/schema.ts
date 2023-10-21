@@ -19,6 +19,7 @@ import {
   tinyint,
   int,
   double,
+  primaryKey,
 } from "drizzle-orm/mysql-core"
 
 export const users = mysqlTable("users", {
@@ -60,11 +61,16 @@ export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
   }),
 }))
 
-export const shipmentPackages = mysqlTable("shipment_packages", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  shipmentId: bigint("shipment_id", { mode: "number" }).notNull(),
-  packageId: bigint("package_id", { mode: "number" }).notNull(),
-})
+export const shipmentPackages = mysqlTable(
+  "shipment_packages",
+  {
+    shipmentId: bigint("shipment_id", { mode: "number" }).notNull(),
+    packageId: bigint("package_id", { mode: "number" }).notNull(),
+  },
+  (table) => ({
+    pk: primaryKey(table.shipmentId, table.packageId),
+  })
+)
 
 export const shipmentPackagesRelations = relations(
   shipmentPackages,
