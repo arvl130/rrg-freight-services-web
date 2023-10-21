@@ -59,6 +59,9 @@ dependencies:
   firebase-admin:
     specifier: ^11.11.0
     version: 11.11.0
+  luxon:
+    specifier: ^3.4.3
+    version: 3.4.3
   mysql2:
     specifier: ^3.6.1
     version: 3.6.1
@@ -94,6 +97,9 @@ dependencies:
     version: 3.22.4
 
 devDependencies:
+  '@types/luxon':
+    specifier: ^3.3.3
+    version: 3.3.3
   dotenv:
     specifier: ^16.3.1
     version: 16.3.1
@@ -1419,6 +1425,10 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@types/luxon@3.3.3:
+    resolution: {integrity: sha512-/BJF3NT0pRMuxrenr42emRUF67sXwcZCd+S1ksG/Fcf9O7C3kKCY4uJSbKBE4KDUIYr3WMsvfmWD8hRjXExBJQ==}
+    dev: true
 
   /@types/markdown-it@12.2.3:
     resolution: {integrity: sha512-GKMHFfv3458yYy+v/N8gjufHO6MSZKCOXpZc5GXIWWy8uldwfmPn98vp81gZ5f9SVw8YYBctgfJ22a2d7AOMeQ==}
@@ -3866,6 +3876,11 @@ packages:
     dependencies:
       es5-ext: 0.10.62
     dev: true
+
+  /luxon@3.4.3:
+    resolution: {integrity: sha512-tFWBiv3h7z+T/tDaoxA8rqTxy1CHV6gHS//QdaH4pulbq/JuBSGgQspQQqcgnwdAx6pNI7cmvz5Sv/addzHmUg==}
+    engines: {node: '>=12'}
+    dev: false
 
   /markdown-it-anchor@8.6.7(@types/markdown-it@12.2.3)(markdown-it@12.3.2):
     resolution: {integrity: sha512-FlCHFwNnutLgVTflOYHPW2pPcl2AACqVzExlkGQNsi4CJgqOHN7YTgDd4LuhgN1BFO3TS0vLAruV1Td6dwWPJA==}

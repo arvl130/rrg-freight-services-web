@@ -1,12 +1,53 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
-import { shipments } from "@/server/db/schema"
+import { shipmentHubs, shipments, shipmentStatusLogs } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
+import { alias } from "drizzle-orm/mysql-core"
 
 export const shipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(shipments)
+  }),
+  getLatestStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(shipmentStatusLogs)
+        .where(eq(shipmentStatusLogs.shipmentId, input.id))
+
+      if (results.length === 0) return null
+
+      let latestStatus = results[0]
+      for (const result of results) {
+        if (result.createdAt.getTime() > latestStatus.createdAt.getTime())
+          latestStatus = result
+      }
+
+      return latestStatus
+    }),
+  getAllWithOriginAndDestination: protectedProcedure.query(async ({ ctx }) => {
+    const originHubs = alias(shipmentHubs, "origin_hubs")
+    const destinationHubs = alias(shipmentHubs, "destination_hubs")
+    const results = await ctx.db
+      .select()
+      .from(shipments)
+      .innerJoin(originHubs, eq(shipments.originHubId, originHubs.id))
+      .innerJoin(
+        destinationHubs,
+        eq(shipments.destinationHubId, destinationHubs.id)
+      )
+
+    return results.map(({ shipments, origin_hubs, destination_hubs }) => ({
+      ...shipments,
+      destinationHub: destination_hubs,
+      originHub: origin_hubs,
+    }))
   }),
   getById: protectedProcedure
     .input(
@@ -30,7 +71,5 @@ export const shipmentRouter = router({
           code: "INTERNAL_SERVER_ERROR",
           message: "Expected 1 result, but got multiple.",
         })
-
-      return results[0]
     }),
 })

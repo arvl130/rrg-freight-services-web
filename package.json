@@ -29,6 +29,7 @@
     "eslint-config-next": "13.5.4",
     "firebase": "^10.4.0",
     "firebase-admin": "^11.11.0",
+    "luxon": "^3.4.3",
     "mysql2": "^3.6.1",
     "next": "13.5.4",
     "postcss": "8.4.29",
@@ -42,6 +43,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/luxon": "^3.3.3",
     "dotenv": "^16.3.1",
     "drizzle-kit": "^0.19.13",
     "tsx": "^3.13.0"

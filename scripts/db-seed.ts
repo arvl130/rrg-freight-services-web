@@ -3,7 +3,8 @@ import { serverEnv } from "@/server/env"
 import * as schema from "@/server/db/schema"
 import mysql from "mysql2/promise"
 import { drizzle } from "drizzle-orm/mysql2"
-import { NewPackage } from "@/server/db/entities"
+import { NewPackage, PackageStatusLog } from "@/server/db/entities"
+import { DateTime } from "luxon"
 
 const pool = mysql.createPool({
   uri: serverEnv.DATABASE_URL,
@@ -18,7 +19,6 @@ const newPackages: NewPackage[] = [
   {
     id: 10_000,
     shipmentId: 20_000,
-    status: "PENDING",
     shippingParty: "FIRST_PARTY",
     shippingMode: "SEA",
     shippingType: "STANDARD",
@@ -46,7 +46,33 @@ const newPackages: NewPackage[] = [
   },
 ]
 
+const now = DateTime.now()
+const dateNow = now.toJSDate()
+const dateFiveMinsAgo = now
+  .minus({
+    minutes: 5,
+  })
+  .toJSDate()
+
+const newPackageStatusLogs: PackageStatusLog[] = [
+  {
+    id: 30_000,
+    packageId: 10_000,
+    status: "PENDING",
+    description: "Package created.",
+    createdAt: dateFiveMinsAgo,
+  },
+  {
+    id: 30_001,
+    packageId: 10_000,
+    status: "PREPARED_BY_AGENT",
+    description: "Package has been prepared by agent.",
+    createdAt: dateNow,
+  },
+]
+
 await db.insert(schema.packages).values(newPackages)
+await db.insert(schema.packageStatusLogs).values(newPackageStatusLogs)
 await pool
   .end()
   .then(() => console.log("[\x1b[32m%s\x1b[0m] Database seeded", "✓"))

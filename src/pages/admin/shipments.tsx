@@ -1,5 +1,4 @@
 import { AdminLayout } from "@/layouts/admin"
-import { useSession } from "@/utils/auth"
 import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { Export } from "@phosphor-icons/react/Export"
@@ -8,6 +7,11 @@ import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
+import { api } from "@/utils/api"
+import { LoadingSpinner } from "@/components/spinner"
+import { Shipment, ShipmentHub } from "@/server/db/entities"
+import { getColorFromPackageStatus } from "@/utils/colors"
+import { useState } from "react"
 
 function PageHeader() {
   return (
@@ -17,74 +21,210 @@ function PageHeader() {
   )
 }
 
-const shipments = [
-  {
-    id: 1000000,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    status: "Preparing",
-  },
-  {
-    id: 1000001,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    status: "Shipped Out",
-  },
-  {
-    id: 1000002,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    status: "In Warehouse",
-  },
-  {
-    id: 1000003,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    status: "Prepared by Agent",
-  },
-  {
-    id: 1000004,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    status: "Delivered",
-  },
-  {
-    id: 1000005,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    status: "Delivered",
-  },
-  {
-    id: 1000006,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    status: "Out for Delivery",
-  },
-  {
-    id: 1000007,
-    sender: {
-      name: "John Doe",
-      address: "48 Howard Dr. Ocoee, FL 34761",
-    },
-    status: "Delivered",
-  },
-]
+function ShipmentStatus({ shipmentId }: { shipmentId: number }) {
+  const {
+    isLoading,
+    isError,
+    data: shipmentStatusLog,
+  } = api.package.getLatestStatus.useQuery({
+    id: shipmentId,
+  })
+
+  if (isLoading)
+    return (
+      <div className="w-36 py-0.5 text-white text-center rounded-md">...</div>
+    )
+
+  if (isError)
+    return (
+      <div className="w-36 py-0.5 text-white text-center rounded-md">error</div>
+    )
+
+  if (shipmentStatusLog === null)
+    return (
+      <div className="w-36 py-0.5 text-white text-center rounded-md">n/a</div>
+    )
+
+  return (
+    <div
+      className={`
+        w-36 py-0.5 text-white text-center rounded-md
+        ${getColorFromPackageStatus(shipmentStatusLog.status)}
+      `}
+    >
+      {shipmentStatusLog.status.replaceAll("_", " ")}
+    </div>
+  )
+}
+
+function ShipmentTableItem({
+  shipment,
+}: {
+  shipment: Shipment & {
+    originHub: ShipmentHub
+    destinationHub: ShipmentHub
+  }
+}) {
+  return (
+    <div className="grid grid-cols-5 border-b border-gray-300 text-sm">
+      <div className="px-4 py-2 flex items-center gap-1">
+        <input type="checkbox" name="" id="" />
+        <span>{shipment.id}</span>
+      </div>
+      <div className="px-4 py-2">
+        <div>{shipment.originHub.displayName}</div>
+        <div className="text-gray-400">{shipment.originHub.streetAddress}</div>
+      </div>
+      <div className="px-4 py-2">
+        <div>{shipment.destinationHub.displayName}</div>
+        <div className="text-gray-400">
+          {shipment.destinationHub.streetAddress}
+        </div>
+      </div>
+      <div className="px-4 py-2 flex items-center gap-2">
+        <ShipmentStatus shipmentId={shipment.id} />
+        <button type="button">
+          <span className="sr-only">Actions</span>
+          <DotsThree size={16} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function ShipmentsTable({
+  shipments,
+}: {
+  shipments: (Shipment & {
+    originHub: ShipmentHub
+    destinationHub: ShipmentHub
+  })[]
+}) {
+  const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
+  const allShipments = shipments.filter((shipment) => shipment.isArchived === 0)
+  const archivedShipments = shipments.filter(
+    (shipment) => shipment.isArchived === 1
+  )
+
+  return (
+    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
+      <div className="flex justify-between mb-3">
+        <div className="flex gap-6">
+          <button
+            type="button"
+            className={`
+              text-lg pb-1 font-semibold border-b-2
+              ${
+                selectedTab === "ALL"
+                  ? "text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+            onClick={() => setSelectedTab("ALL")}
+          >
+            All Shipments
+          </button>
+          <button
+            type="button"
+            className={`
+              text-lg pb-1 font-semibold border-b-2
+              ${
+                selectedTab === "ARCHIVED"
+                  ? "text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+            onClick={() => setSelectedTab("ARCHIVED")}
+          >
+            Archived Shipments
+          </button>
+        </div>
+        <div className="flex gap-8">
+          <div>
+            Showing{" "}
+            <select className="bg-white border border-gray-300 px-2 py-1 w-16">
+              <option>All</option>
+            </select>{" "}
+            entries
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <CaretLeft size={16} />
+            <CaretDoubleLeft size={16} />
+            <button
+              type="button"
+              className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
+            >
+              1
+            </button>
+            <button type="button" className="text-gray-400">
+              2
+            </button>
+            <button type="button" className="text-gray-400">
+              3
+            </button>
+            <button type="button" className="text-gray-400">
+              4
+            </button>
+            <span className="text-gray-400">...</span>
+            <button type="button" className="text-gray-400">
+              10
+            </button>
+            <CaretRight size={16} />
+            <CaretDoubleRight size={16} />
+          </div>
+        </div>
+      </div>
+      {/* Table */}
+      <div>
+        {/* Header */}
+        <div className="grid grid-cols-5 border-y border-gray-300 font-medium">
+          <div className="uppercase px-4 py-2 flex gap-1">
+            <input type="checkbox" name="" id="" />
+            <span>Shipment ID</span>
+          </div>
+          <div className="uppercase px-4 py-2">Origin</div>
+          <div className="uppercase px-4 py-2">Destination</div>
+          <div className="uppercase px-4 py-2">Arrived Date</div>
+          <div className="uppercase px-4 py-2">Status</div>
+        </div>
+        {/* Body */}
+        {selectedTab === "ALL" ? (
+          <>
+            {allShipments.length === 0 ? (
+              <div className="text-center pt-4">No shipments found.</div>
+            ) : (
+              <div>
+                {allShipments.map((shipment) => (
+                  <ShipmentTableItem key={shipment.id} shipment={shipment} />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {archivedShipments.length === 0 ? (
+              <div className="text-center pt-4">No shipments found.</div>
+            ) : (
+              <div>
+                {archivedShipments.map((shipment) => (
+                  <ShipmentTableItem key={shipment.id} shipment={shipment} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export default function ShipmentsPage() {
+  const {
+    isLoading,
+    isError,
+    data: shipments,
+  } = api.shipment.getAllWithOriginAndDestination.useQuery()
+
   return (
     <AdminLayout title="Shipments">
       {() => (
@@ -139,111 +279,21 @@ export default function ShipmentsPage() {
               </button>
             </div>
           </div>
-          <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
-            <div className="flex justify-between mb-3">
-              <div className="flex gap-6">
-                <h2 className="text-2xl font-semibold text-brand-cyan-500 pb-1 border-b-2 border-brand-cyan-500">
-                  All Shipments
-                </h2>
-                <span className="text-2xl text-gray-400 pb-1">
-                  Archived Shipments
-                </span>
-              </div>
-              <div className="flex gap-8">
-                <div>
-                  Showing{" "}
-                  <select className="bg-white border border-gray-300 px-2 py-1 w-16">
-                    <option>All</option>
-                  </select>{" "}
-                  entries
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <CaretLeft size={16} />
-                  <CaretDoubleLeft size={16} />
-                  <button
-                    type="button"
-                    className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
-                  >
-                    1
-                  </button>
-                  <button type="button" className="text-gray-400">
-                    2
-                  </button>
-                  <button type="button" className="text-gray-400">
-                    3
-                  </button>
-                  <button type="button" className="text-gray-400">
-                    4
-                  </button>
-                  <span className="text-gray-400">...</span>
-                  <button type="button" className="text-gray-400">
-                    10
-                  </button>
-                  <CaretRight size={16} />
-                  <CaretDoubleRight size={16} />
-                </div>
-              </div>
+          {isLoading ? (
+            <div className="flex justify-center pt-4">
+              <LoadingSpinner />
             </div>
-            {/* Table */}
-            <div>
-              {/* Header */}
-              <div className="grid grid-cols-[1fr_3fr_1fr] border-y border-gray-300 font-medium">
-                <div className="uppercase px-4 py-2 flex gap-1">
-                  <input type="checkbox" name="" id="" />
-                  <span>Shipment ID</span>
-                </div>
-                <div className="uppercase px-4 py-2">Sender</div>
-                <div className="uppercase px-4 py-2">Status</div>
-              </div>
-              {/* Body */}
-              <div>
-                {shipments.map((shipment) => (
-                  <div
-                    key={shipment.id}
-                    className="grid grid-cols-[1fr_3fr_1fr] border-b border-gray-300 text-sm"
-                  >
-                    <div className="px-4 py-2 flex items-center gap-1">
-                      <input type="checkbox" name="" id="" />
-                      <span>{shipment.id}</span>
-                    </div>
-                    <div className="px-4 py-2">
-                      <div>{shipment.sender.name}</div>
-                      <div className="text-gray-400">
-                        {shipment.sender.address}
-                      </div>
-                    </div>
-                    <div className="px-4 py-2 flex items-center gap-2">
-                      <div
-                        className={`
-                      w-36 py-0.5 text-white text-center rounded-md
-                      ${shipment.status === "Preparing" ? "bg-gray-400" : ""}
-                      ${shipment.status === "Shipped Out" ? "bg-blue-500" : ""}
-                      ${shipment.status === "In Warehouse" ? "bg-pink-500" : ""}
-                      ${
-                        shipment.status === "Prepared by Agent"
-                          ? "bg-pink-500"
-                          : ""
-                      }
-                      ${shipment.status === "Delivered" ? "bg-green-500" : ""}
-                      ${
-                        shipment.status === "Out for Delivery"
-                          ? "bg-orange-500"
-                          : ""
-                      }
-                  `}
-                      >
-                        {shipment.status}
-                      </div>
-                      <button type="button">
-                        <span className="sr-only">Actions</span>
-                        <DotsThree size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          ) : (
+            <>
+              {isError ? (
+                <>Error :{"("}</>
+              ) : (
+                <>
+                  <ShipmentsTable shipments={shipments} />
+                </>
+              )}
+            </>
+          )}
         </>
       )}
     </AdminLayout>

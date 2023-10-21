@@ -22,6 +22,60 @@ function PageHeader() {
   )
 }
 
+function PackageStatus({ packageId }: { packageId: number }) {
+  const {
+    isLoading,
+    isError,
+    data: packageStatusLog,
+  } = api.package.getLatestStatus.useQuery({
+    id: packageId,
+  })
+
+  if (isLoading)
+    return (
+      <div
+        className="
+  w-36 py-0.5 text-white text-center rounded-md
+  "
+      >
+        ...
+      </div>
+    )
+
+  if (isError)
+    return (
+      <div
+        className="
+  w-36 py-0.5 text-white text-center rounded-md
+  "
+      >
+        error
+      </div>
+    )
+
+  if (packageStatusLog === null)
+    return (
+      <div
+        className="
+  w-36 py-0.5 text-white text-center rounded-md
+  "
+      >
+        n/a
+      </div>
+    )
+
+  return (
+    <div
+      className={`
+      w-36 py-0.5 text-white text-center rounded-md
+      ${getColorFromPackageStatus(packageStatusLog.status)}
+  `}
+    >
+      {packageStatusLog.status.replaceAll("_", " ")}
+    </div>
+  )
+}
+
 function PackageTableItem({ package: _package }: { package: Package }) {
   return (
     <>
@@ -55,14 +109,7 @@ function PackageTableItem({ package: _package }: { package: Package }) {
           </div>
         </div>
         <div className="px-4 py-2 flex items-center gap-2">
-          <div
-            className={`
-                w-36 py-0.5 text-white text-center rounded-md
-                ${getColorFromPackageStatus(_package.status)}
-            `}
-          >
-            {_package.status}
-          </div>
+          <PackageStatus packageId={_package.id} />
           <button type="button">
             <span className="sr-only">Actions</span>
             <DotsThree size={16} />
