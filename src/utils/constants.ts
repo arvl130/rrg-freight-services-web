@@ -33,14 +33,14 @@ export const supportedShipmentStatuses = [
 ] as const
 export type ShipmentStatus = (typeof supportedShipmentStatuses)[number]
 
-export const supportedShippingParty = ["FIRST_PARTY", "THIRD_PARTY"] as const
-export type ShippingParty = (typeof supportedShippingParty)[number]
+export const supportedShippingParties = ["FIRST_PARTY", "THIRD_PARTY"] as const
+export type ShippingParty = (typeof supportedShippingParties)[number]
 
-export const supportedShippingMode = ["AIR", "SEA"] as const
-export type ShippingMode = (typeof supportedShippingMode)[number]
+export const supportedShippingModes = ["AIR", "SEA"] as const
+export type ShippingMode = (typeof supportedShippingModes)[number]
 
-export const supportedShippingType = ["STANDARD", "EXPRESS"] as const
-export type ShippingType = (typeof supportedShippingType)[number]
+export const supportedShippingTypes = ["STANDARD", "EXPRESS"] as const
+export type ShippingType = (typeof supportedShippingTypes)[number]
 
-export const supportedReceptionMode = ["FOR_PICKUP", "DOOR_TO_DOOR"] as const
-export type ReceptionMode = (typeof supportedReceptionMode)[number]
+export const supportedReceptionModes = ["FOR_PICKUP", "DOOR_TO_DOOR"] as const
+export type ReceptionMode = (typeof supportedReceptionModes)[number]

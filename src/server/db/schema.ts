@@ -1,12 +1,12 @@
 import {
   supportedGenders,
   supportedPackageStatuses,
-  supportedReceptionMode,
+  supportedReceptionModes,
   supportedRoles,
   supportedShipmentStatuses,
-  supportedShippingMode,
-  supportedShippingParty,
-  supportedShippingType,
+  supportedShippingModes,
+  supportedShippingParties,
+  supportedShippingTypes,
 } from "../../utils/constants"
 import { relations } from "drizzle-orm"
 import {
@@ -86,12 +86,12 @@ export const packages = mysqlTable("packages", {
   status: mysqlEnum("status", supportedPackageStatuses)
     .notNull()
     .default("PENDING"),
-  shippingParty: mysqlEnum("shipping_party", supportedShippingParty)
+  shippingParty: mysqlEnum("shipping_party", supportedShippingParties)
     .notNull()
     .default("FIRST_PARTY"),
-  shippingMode: mysqlEnum("shipping_mode", supportedShippingMode).notNull(),
-  shippingType: mysqlEnum("shipping_type", supportedShippingType).notNull(),
-  receptionMode: mysqlEnum("reception_mode", supportedReceptionMode).notNull(),
+  shippingMode: mysqlEnum("shipping_mode", supportedShippingModes).notNull(),
+  shippingType: mysqlEnum("shipping_type", supportedShippingTypes).notNull(),
+  receptionMode: mysqlEnum("reception_mode", supportedReceptionModes).notNull(),
   weightInKg: double("weight_in_kg", {
     precision: 8,
     scale: 2,
