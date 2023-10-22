@@ -26,7 +26,7 @@ function ShipmentStatus({ shipmentId }: { shipmentId: number }) {
     isLoading,
     isError,
     data: shipmentStatusLog,
-  } = api.package.getLatestStatus.useQuery({
+  } = api.shipment.getLatestStatus.useQuery({
     id: shipmentId,
   })
 
