@@ -22,7 +22,7 @@ export const shipmentRouter = router({
         .where(
           and(
             eq(shipmentStatusLogs.shipmentId, input.id),
-            eq(shipmentStatusLogs.status, "ARRIVED_AT_DESTINATION")
+            eq(shipmentStatusLogs.status, "ARRIVED")
           )
         )
 
