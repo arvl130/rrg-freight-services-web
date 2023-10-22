@@ -44,14 +44,7 @@ export const shipments = mysqlTable("shipments", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
   originHubId: bigint("origin_hub_id", { mode: "number" }).notNull(),
   destinationHubId: bigint("destination_hub_id", { mode: "number" }).notNull(),
-  createdAt: timestamp("created_at", {
-    mode: "date",
-  }).defaultNow(),
-  createdById: varchar("created_by_id", { length: 28 }).notNull(),
-  updatedAt: timestamp("updated_at", {
-    mode: "date",
-  }).defaultNow(),
-  isArchived: tinyint("is_archived").default(0),
+  isArchived: tinyint("is_archived").notNull().default(0),
 })
 
 export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
@@ -65,10 +58,6 @@ export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
   }),
   shipmentPackages: many(shipmentPackages),
   shipmentStatusLogs: many(shipmentStatusLogs),
-  createdBy: one(users, {
-    fields: [shipments.createdById],
-    references: [users.id],
-  }),
 }))
 
 export const shipmentStatusLogs = mysqlTable("shipment_status_logs", {
@@ -89,6 +78,7 @@ export const shipmentStatusLogs = mysqlTable("shipment_status_logs", {
   createdAt: datetime("created_at", {
     mode: "date",
   }).notNull(),
+  createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
 
 export const shipmentStatusLogsRelations = relations(
@@ -97,6 +87,10 @@ export const shipmentStatusLogsRelations = relations(
     shipment: one(shipments, {
       fields: [shipmentStatusLogs.shipmentId],
       references: [shipments.id],
+    }),
+    createdBy: one(users, {
+      fields: [shipmentStatusLogs.createdById],
+      references: [users.id],
     }),
   })
 )
@@ -113,10 +107,13 @@ export const shipmentHubs = mysqlTable("shipment_hubs", {
   barangay: varchar("barangay", {
     length: 100,
   }),
+  city: varchar("city", {
+    length: 100,
+  }),
   stateOrProvince: varchar("state_or_province", {
     length: 100,
   }).notNull(),
-  countryCode: varchar("display_name", {
+  countryCode: varchar("country_code", {
     length: 3,
   }).notNull(),
   postalCode: int("postal_code").notNull(),
@@ -178,7 +175,6 @@ export const shipmentPackagesRelations = relations(
 
 export const packages = mysqlTable("packages", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  shipmentId: bigint("shipment_id", { mode: "number" }).notNull(),
   shippingParty: mysqlEnum("shipping_party", supportedShippingParties)
     .notNull()
     .default("FIRST_PARTY"),
@@ -279,6 +275,7 @@ export const packageStatusLogs = mysqlTable("package_status_logs", {
   createdAt: datetime("created_at", {
     mode: "date",
   }).notNull(),
+  createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
 
 export const packageStatusLogsRelations = relations(
@@ -287,6 +284,10 @@ export const packageStatusLogsRelations = relations(
     package: one(packages, {
       fields: [packageStatusLogs.packageId],
       references: [packages.id],
+    }),
+    createdBy: one(users, {
+      fields: [packageStatusLogs.createdById],
+      references: [users.id],
     }),
   })
 )
