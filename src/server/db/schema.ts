@@ -1,5 +1,6 @@
 import {
   supportedGenders,
+  supportedHubRoles,
   supportedPackageStatuses,
   supportedReceptionModes,
   supportedRoles,
@@ -105,6 +106,7 @@ export const shipmentHubs = mysqlTable("shipment_hubs", {
   displayName: varchar("display_name", {
     length: 255,
   }).notNull(),
+  role: mysqlEnum("role", supportedHubRoles).notNull(),
   streetAddress: varchar("street_address", {
     length: 255,
   }).notNull(),

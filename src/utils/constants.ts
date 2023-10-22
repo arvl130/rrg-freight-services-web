@@ -44,3 +44,10 @@ export type ShippingType = (typeof supportedShippingTypes)[number]
 
 export const supportedReceptionModes = ["FOR_PICKUP", "DOOR_TO_DOOR"] as const
 export type ReceptionMode = (typeof supportedReceptionModes)[number]
+
+export const supportedHubRoles = [
+  "SENDING",
+  "RECEIVING",
+  "SENDING_RECEIVING",
+] as const
+export type HubRole = (typeof supportedHubRoles)[number]
