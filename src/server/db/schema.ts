@@ -69,9 +69,7 @@ export const shipmentStatusLogs = mysqlTable("shipment_status_logs", {
   shipmentId: bigint("shipment_id", {
     mode: "number",
   }).notNull(),
-  status: mysqlEnum("status", supportedShipmentStatuses)
-    .notNull()
-    .default("PENDING"),
+  status: mysqlEnum("status", supportedShipmentStatuses).notNull(),
   description: varchar("description", {
     length: 255,
   }).notNull(),
@@ -266,9 +264,7 @@ export const packageStatusLogs = mysqlTable("package_status_logs", {
   packageId: bigint("package_id", {
     mode: "number",
   }).notNull(),
-  status: mysqlEnum("status", supportedPackageStatuses)
-    .notNull()
-    .default("PENDING"),
+  status: mysqlEnum("status", supportedPackageStatuses).notNull(),
   description: varchar("description", {
     length: 255,
   }).notNull(),

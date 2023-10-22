@@ -1,15 +1,10 @@
 import { PackageStatus, ShipmentStatus } from "./constants"
 
 const packageStatusColors: Record<PackageStatus, string> = {
-  PENDING: "bg-gray-400",
-  PREPARED_BY_AGENT: "bg-pink-500",
-  SHIPPED_BY_AGENT: "bg-blue-500",
-  ARRIVED_IN_PH: "bg-green-500",
   IN_WAREHOUSE: "bg-pink-500",
   SORTING: "bg-cyan-400",
-  IN_TRANSIT_TO_THIRD_PARTY: "bg-orange-500",
-  ARRIVED_AT_THIRD_PARTY: "bg-blue-500",
-  OUT_FOR_DELIVERY: "bg-orange-500",
+  SHIPPING: "bg-blue-500",
+  DELIVERING: "bg-orange-500",
   DELIVERED: "bg-green-500",
 }
 
@@ -18,10 +13,9 @@ export function getColorFromPackageStatus(status: PackageStatus) {
 }
 
 const shipmentStatusColors: Record<ShipmentStatus, string> = {
-  PENDING: "bg-gray-400",
-  PREPARED_BY_AGENT: "bg-pink-500",
-  SHIPPED_BY_AGENT: "bg-blue-500",
-  ARRIVED_AT_DESTINATION: "bg-green-500",
+  PREPARING: "bg-pink-500",
+  IN_TRANSIT: "bg-blue-500",
+  ARRIVED: "bg-green-500",
 }
 
 export function getColorFromShipmentStatus(status: ShipmentStatus) {

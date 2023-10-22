@@ -10,26 +10,28 @@ export const supportedRoles = [
 export type Role = (typeof supportedRoles)[number]
 
 export const supportedPackageStatuses = [
-  "PENDING",
-  "PREPARED_BY_AGENT",
-  "SHIPPED_BY_AGENT",
-  "ARRIVED_IN_PH",
   "IN_WAREHOUSE",
   "SORTING",
-  "IN_TRANSIT_TO_THIRD_PARTY",
-  "ARRIVED_AT_THIRD_PARTY",
-  "OUT_FOR_DELIVERY",
+  "SHIPPING",
+  // FIXME: The current structure makes it imperative that
+  // a package goes straight back to IN_WAREHOUSE, *before*
+  // the shipment it belongs to even transitions to ARRIVED
+  // state.
+  //
+  // Maybe add a status here called SHIPPED or SORTED.
+  // So that before a package reaches IN_WAREHOUSE or SHIPPING,
+  // there is an interstitial step, that prevents shipments
+  // and packages from being updated *not* at the same time
+  // in the UI.
+  "DELIVERING",
   "DELIVERED",
 ] as const
 export type PackageStatus = (typeof supportedPackageStatuses)[number]
 
-// TODO: Instead of duplicating status enum from packages,
-// perhaps we can split the state across these two entities?
 export const supportedShipmentStatuses = [
-  "PENDING",
-  "PREPARED_BY_AGENT",
-  "SHIPPED_BY_AGENT",
-  "ARRIVED_AT_DESTINATION",
+  "PREPARING",
+  "IN_TRANSIT",
+  "ARRIVED",
 ] as const
 export type ShipmentStatus = (typeof supportedShipmentStatuses)[number]
 
