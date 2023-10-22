@@ -108,6 +108,23 @@ const dateFifteenMinsAgo = now
     minutes: 15,
   })
   .toJSDate()
+const dateTwentyMinsAgo = now
+  .minus({
+    minutes: 20,
+  })
+  .toJSDate()
+
+const dateTwentyFiveMinsAgo = now
+  .minus({
+    minutes: 25,
+  })
+  .toJSDate()
+
+const dateThirtyMinsAgo = now
+  .minus({
+    minutes: 30,
+  })
+  .toJSDate()
 
 const newPackageStatusLogs: NewPackageStatusLog[] = [
   {
@@ -115,7 +132,7 @@ const newPackageStatusLogs: NewPackageStatusLog[] = [
     packageId: 10_000,
     status: "PENDING",
     description: "Package created.",
-    createdAt: dateFifteenMinsAgo,
+    createdAt: dateThirtyMinsAgo,
     createdById: serverEnv.TEST_OVERSEAS_USER_ID,
   },
   {
@@ -123,7 +140,23 @@ const newPackageStatusLogs: NewPackageStatusLog[] = [
     packageId: 10_000,
     status: "PREPARED_BY_AGENT",
     description: "Package has been prepared by agent.",
+    createdAt: dateTwentyMinsAgo,
+    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+  },
+  {
+    id: 30_003,
+    packageId: 10_000,
+    status: "SHIPPED_BY_AGENT",
+    description: "Package has been shipped by agent.",
     createdAt: dateTenMinsAgo,
+    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+  },
+  {
+    id: 30_004,
+    packageId: 10_000,
+    status: "ARRIVED_IN_PH",
+    description: "Package has arrived in a local hub.",
+    createdAt: dateNow,
     createdById: serverEnv.TEST_OVERSEAS_USER_ID,
   },
 ]
@@ -175,7 +208,7 @@ const newShipmentsStatusLogs: NewShipmentStatusLog[] = [
     shipmentId: 20_000,
     status: "PENDING",
     description: "Shipment created.",
-    createdAt: dateFiveMinsAgo,
+    createdAt: dateTwentyFiveMinsAgo,
     createdById: serverEnv.TEST_OVERSEAS_USER_ID,
   },
   {
@@ -183,6 +216,22 @@ const newShipmentsStatusLogs: NewShipmentStatusLog[] = [
     shipmentId: 20_000,
     status: "PREPARED_BY_AGENT",
     description: "Shipment has been prepared by agent.",
+    createdAt: dateFifteenMinsAgo,
+    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+  },
+  {
+    id: 30_002,
+    shipmentId: 20_000,
+    status: "SHIPPED_BY_AGENT",
+    description: "Shipment has been shipped by agent.",
+    createdAt: dateFiveMinsAgo,
+    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+  },
+  {
+    id: 30_003,
+    shipmentId: 20_000,
+    status: "ARRIVED_AT_DESTINATION",
+    description: "Shipment has arrived at the destination hub.",
     createdAt: dateNow,
     createdById: serverEnv.TEST_OVERSEAS_USER_ID,
   },
