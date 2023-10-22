@@ -2,13 +2,40 @@ import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
 import { shipmentHubs, shipments, shipmentStatusLogs } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
-import { eq } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 import { alias } from "drizzle-orm/mysql-core"
 
 export const shipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(shipments)
   }),
+  getLatestArrivedStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(shipmentStatusLogs)
+        .where(
+          and(
+            eq(shipmentStatusLogs.shipmentId, input.id),
+            eq(shipmentStatusLogs.status, "ARRIVED_IN_PH")
+          )
+        )
+
+      if (results.length === 0) return null
+
+      let latestStatus = results[0]
+      for (const result of results) {
+        if (result.createdAt.getTime() > latestStatus.createdAt.getTime())
+          latestStatus = result
+      }
+
+      return latestStatus
+    }),
   getLatestStatus: protectedProcedure
     .input(
       z.object({

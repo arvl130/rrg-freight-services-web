@@ -27,7 +27,7 @@ function ShipmentArrivedDate({ shipmentId }: { shipmentId: number }) {
     isLoading,
     isError,
     data: shipmentStatusLog,
-  } = api.shipment.getLatestStatus.useQuery({
+  } = api.shipment.getLatestArrivedStatus.useQuery({
     id: shipmentId,
   })
 
@@ -42,7 +42,7 @@ function ShipmentArrivedDate({ shipmentId }: { shipmentId: number }) {
     )
 
   if (shipmentStatusLog === null)
-    return <div className="w-36 py-0.5 text-white text-center rounded-md"></div>
+    return <div className="w-36 py-0.5 rounded-md">N/A</div>
 
   return (
     <div className="w-36 py-0.5 rounded-md">
