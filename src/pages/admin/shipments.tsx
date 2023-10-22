@@ -10,7 +10,7 @@ import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { Shipment, ShipmentHub } from "@/server/db/entities"
-import { getColorFromPackageStatus } from "@/utils/colors"
+import { getColorFromShipmentStatus } from "@/utils/colors"
 import { useState } from "react"
 import { DateTime } from "luxon"
 
@@ -81,7 +81,7 @@ function ShipmentStatus({ shipmentId }: { shipmentId: number }) {
     <div
       className={`
         w-36 py-0.5 text-white text-center rounded-md
-        ${getColorFromPackageStatus(shipmentStatusLog.status)}
+        ${getColorFromShipmentStatus(shipmentStatusLog.status)}
       `}
     >
       {shipmentStatusLog.status.replaceAll("_", " ")}

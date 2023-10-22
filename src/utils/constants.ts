@@ -29,7 +29,7 @@ export const supportedShipmentStatuses = [
   "PENDING",
   "PREPARED_BY_AGENT",
   "SHIPPED_BY_AGENT",
-  "ARRIVED_IN_PH",
+  "ARRIVED_AT_DESTINATION",
 ] as const
 export type ShipmentStatus = (typeof supportedShipmentStatuses)[number]
 

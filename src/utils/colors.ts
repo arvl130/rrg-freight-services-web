@@ -1,4 +1,4 @@
-import { PackageStatus } from "./constants"
+import { PackageStatus, ShipmentStatus } from "./constants"
 
 const packageStatusColors: Record<PackageStatus, string> = {
   PENDING: "bg-gray-400",
@@ -15,4 +15,15 @@ const packageStatusColors: Record<PackageStatus, string> = {
 
 export function getColorFromPackageStatus(status: PackageStatus) {
   return packageStatusColors[status] ?? ""
+}
+
+const shipmentStatusColors: Record<ShipmentStatus, string> = {
+  PENDING: "bg-gray-400",
+  PREPARED_BY_AGENT: "bg-pink-500",
+  SHIPPED_BY_AGENT: "bg-blue-500",
+  ARRIVED_AT_DESTINATION: "bg-green-500",
+}
+
+export function getColorFromShipmentStatus(status: ShipmentStatus) {
+  return shipmentStatusColors[status] ?? ""
 }
