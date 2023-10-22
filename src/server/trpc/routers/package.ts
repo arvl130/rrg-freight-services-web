@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
 import { packageStatusLogs, packages } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
@@ -8,6 +8,33 @@ export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(packages)
   }),
+  getLatestArrivedStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(packageStatusLogs)
+        .where(
+          and(
+            eq(packageStatusLogs.packageId, input.id),
+            eq(packageStatusLogs.status, "ARRIVED_IN_PH")
+          )
+        )
+
+      if (results.length === 0) return null
+
+      let latestStatus = results[0]
+      for (const result of results) {
+        if (result.createdAt.getTime() > latestStatus.createdAt.getTime())
+          latestStatus = result
+      }
+
+      return latestStatus
+    }),
   getLatestStatus: protectedProcedure
     .input(
       z.object({

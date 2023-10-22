@@ -12,11 +12,43 @@ import { LoadingSpinner } from "@/components/spinner"
 import { Shipment, ShipmentHub } from "@/server/db/entities"
 import { getColorFromPackageStatus } from "@/utils/colors"
 import { useState } from "react"
+import { DateTime } from "luxon"
 
 function PageHeader() {
   return (
     <div className="flex justify-between mb-6">
       <h1 className="text-3xl font-black [color:_#00203F]">Shipments</h1>
+    </div>
+  )
+}
+
+function ShipmentArrivedDate({ shipmentId }: { shipmentId: number }) {
+  const {
+    isLoading,
+    isError,
+    data: shipmentStatusLog,
+  } = api.shipment.getLatestStatus.useQuery({
+    id: shipmentId,
+  })
+
+  if (isLoading)
+    return (
+      <div className="w-36 py-0.5 text-white text-center rounded-md">...</div>
+    )
+
+  if (isError)
+    return (
+      <div className="w-36 py-0.5 text-white text-center rounded-md">error</div>
+    )
+
+  if (shipmentStatusLog === null)
+    return <div className="w-36 py-0.5 text-white text-center rounded-md"></div>
+
+  return (
+    <div className="w-36 py-0.5 rounded-md">
+      {DateTime.fromJSDate(shipmentStatusLog.createdAt).toLocaleString(
+        DateTime.DATETIME_FULL
+      )}
     </div>
   )
 }
@@ -73,13 +105,27 @@ function ShipmentTableItem({
       </div>
       <div className="px-4 py-2">
         <div>{shipment.originHub.displayName}</div>
-        <div className="text-gray-400">{shipment.originHub.streetAddress}</div>
+        <div className="text-gray-400">
+          <p>{shipment.originHub.city}</p>
+          <p>{shipment.originHub.stateOrProvince}</p>
+          <p>
+            {shipment.originHub.countryCode} {shipment.originHub.postalCode}
+          </p>
+        </div>
       </div>
       <div className="px-4 py-2">
         <div>{shipment.destinationHub.displayName}</div>
         <div className="text-gray-400">
-          {shipment.destinationHub.streetAddress}
+          <p>{shipment.destinationHub.city}</p>
+          <p>{shipment.destinationHub.stateOrProvince}</p>
+          <p>
+            {shipment.destinationHub.countryCode}{" "}
+            {shipment.destinationHub.postalCode}
+          </p>
         </div>
+      </div>
+      <div className="px-4 py-2 flex items-center gap-2">
+        <ShipmentArrivedDate shipmentId={shipment.id} />
       </div>
       <div className="px-4 py-2 flex items-center gap-2">
         <ShipmentStatus shipmentId={shipment.id} />
