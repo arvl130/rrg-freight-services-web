@@ -3,7 +3,7 @@ import { serverEnv } from "@/server/env"
 import * as schema from "@/server/db/schema"
 import mysql from "mysql2/promise"
 import { drizzle } from "drizzle-orm/mysql2"
-import { NewPackage, PackageStatusLog } from "@/server/db/entities"
+import { NewPackage, NewPackageStatusLog } from "@/server/db/entities"
 import { DateTime } from "luxon"
 
 const pool = mysql.createPool({
@@ -54,7 +54,7 @@ const dateFiveMinsAgo = now
   })
   .toJSDate()
 
-const newPackageStatusLogs: PackageStatusLog[] = [
+const newPackageStatusLogs: NewPackageStatusLog[] = [
   {
     id: 30_000,
     packageId: 10_000,
