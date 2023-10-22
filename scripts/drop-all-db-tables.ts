@@ -1,24 +1,21 @@
 import "dotenv/config"
 import mysql from "mysql2/promise"
 import { serverEnv } from "@/server/env"
+import * as schema from "@/server/db/schema"
 
-const poolConnection = mysql.createPool({
+const pool = mysql.createPool({
   uri: serverEnv.DATABASE_URL,
 })
 
-const tables = [
-  "packages",
-  "package_status_logs",
-  "shipments",
-  "shipment_status_logs",
-  "shipment_hubs",
-  "shipment_hub_agents",
-  "shipment_packages",
-  "activities",
-  "users",
-]
+const tableNames = Object.keys(schema)
+  // Filter out relations.
+  .filter((key) => !key.endsWith("Relations"))
+  // Convert camel case to snake case.
+  .map((key) => key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`))
 
 await Promise.all(
-  tables.map((table) => poolConnection.execute(`DROP TABLE IF EXISTS ${table}`))
+  tableNames.map((tableName) =>
+    pool.execute(`DROP TABLE IF EXISTS ${tableName}`)
+  )
 )
-await poolConnection.end()
+await pool.end()
