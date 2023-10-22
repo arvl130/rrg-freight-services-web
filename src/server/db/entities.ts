@@ -17,7 +17,7 @@ export type Shipment = typeof shipments.$inferSelect
 export type NewShipment = typeof shipments.$inferInsert
 
 export type ShipmentStatusLog = typeof shipmentStatusLogs.$inferSelect
-export type NewShipmentStatusLog = typeof shipments.$inferInsert
+export type NewShipmentStatusLog = typeof shipmentStatusLogs.$inferInsert
 
 export type ShipmentHub = typeof shipmentHubs.$inferSelect
 export type NewShipmentHub = typeof shipmentHubs.$inferInsert
