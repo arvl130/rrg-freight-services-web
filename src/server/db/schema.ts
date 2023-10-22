@@ -32,7 +32,7 @@ export const users = mysqlTable("users", {
   contactNumber: varchar("contact_number", { length: 15 }).notNull(),
   gender: mysqlEnum("gender", supportedGenders),
   role: mysqlEnum("role", supportedRoles).notNull(),
-  isEnabled: tinyint("is_enabled").default(1),
+  isEnabled: tinyint("is_enabled").notNull().default(1),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
