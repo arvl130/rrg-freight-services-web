@@ -10,6 +10,9 @@ import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
+import { api } from "@/utils/api"
+import { User } from "@/server/db/entities"
+import { LoadingSpinner } from "@/components/spinner"
 
 function PageHeader() {
   return (
@@ -28,52 +31,103 @@ function PageHeader() {
   )
 }
 
-const users = [
-  {
-    id: 1,
-    displayName: "John Doe",
-    emailAddress: "johndoe@gmail.com",
-    role: "ADMIN",
-    isEnabled: true,
-  },
-  {
-    id: 2,
-    displayName: "John Doe",
-    emailAddress: "johndoe@gmail.com",
-    role: "SENDER",
-    isEnabled: true,
-  },
-  {
-    id: 3,
-    displayName: "John Doe",
-    emailAddress: "johndoe@gmail.com",
-    role: "RECEIVER",
-    isEnabled: true,
-  },
-  {
-    id: 4,
-    displayName: "John Doe",
-    emailAddress: "johndoe@gmail.com",
-    role: "WAREHOUSE",
-    isEnabled: true,
-  },
-  {
-    id: 5,
-    displayName: "John Doe",
-    emailAddress: "johndoe@gmail.com",
-    role: "WAREHOUSE",
-    isEnabled: false,
-  },
-  {
-    id: 6,
-    displayName: "John Doe",
-    emailAddress: "johndoe@gmail.com",
-    role: "SENDER",
-    isEnabled: true,
-  },
-]
+function UsersTableItem({ user }: { user: User }) {
+  return (
+    <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
+      <div className="px-4 py-2 flex items-center gap-1">
+        <UserCircle size={24} />
+        <span>{user.displayName}</span>
+      </div>
+      <div className="px-4 py-2 flex items-center">{user.emailAddress}</div>
+      <div className="px-4 py-2 flex items-center">{user.role}</div>
+      <div className="px-4 py-2 flex items-center gap-2">
+        <div
+          className={`
+          text-white rounded-md px-4 py-1 w-24 text-center
+            ${user.isEnabled ? "bg-green-500" : "bg-red-500"}
+          `}
+        >
+          {user.isEnabled ? "ACTIVE" : "INACTIVE"}
+        </div>
+        <button type="button">
+          <span className="sr-only">Actions</span>
+          <DotsThree size={16} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function UsersTable({ users }: { users: User[] }) {
+  return (
+    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
+      <div className="flex justify-between mb-3">
+        <h2 className="text-2xl font-semibold">User Summary</h2>
+        <div className="flex gap-8">
+          <div>
+            Showing{" "}
+            <select className="bg-white border border-gray-300 px-2 py-1 w-16">
+              <option>All</option>
+            </select>{" "}
+            entries
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <CaretLeft size={16} />
+            <CaretDoubleLeft size={16} />
+            <button
+              type="button"
+              className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
+            >
+              1
+            </button>
+            <button type="button" className="text-gray-400">
+              2
+            </button>
+            <button type="button" className="text-gray-400">
+              3
+            </button>
+            <button type="button" className="text-gray-400">
+              4
+            </button>
+            <span className="text-gray-400">...</span>
+            <button type="button" className="text-gray-400">
+              10
+            </button>
+            <CaretRight size={16} />
+            <CaretDoubleRight size={16} />
+          </div>
+        </div>
+      </div>
+      {/* Table */}
+      <div>
+        {/* Header */}
+        <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
+          <div className="uppercase px-4 py-2">Name</div>
+          <div className="uppercase px-4 py-2">Email</div>
+          <div className="uppercase px-4 py-2">Role</div>
+          <div className="uppercase px-4 py-2">Status</div>
+        </div>
+        {/* Body */}
+        <div>
+          {users.map((user) => (
+            <UsersTableItem key={user.id} user={user} />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function UsersPage() {
+  const { user, role } = useSession()
+  const {
+    isLoading,
+    isError,
+    data: users,
+  } = api.user.getAll.useQuery(undefined, {
+    enabled: user !== null && role === "ADMIN",
+  })
+
   return (
     <AdminLayout title="Users">
       {() => (
@@ -128,89 +182,13 @@ export default function UsersPage() {
               </button>
             </div>
           </div>
-          <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
-            <div className="flex justify-between mb-3">
-              <h2 className="text-2xl font-semibold">User Summary</h2>
-              <div className="flex gap-8">
-                <div>
-                  Showing{" "}
-                  <select className="bg-white border border-gray-300 px-2 py-1 w-16">
-                    <option>All</option>
-                  </select>{" "}
-                  entries
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <CaretLeft size={16} />
-                  <CaretDoubleLeft size={16} />
-                  <button
-                    type="button"
-                    className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
-                  >
-                    1
-                  </button>
-                  <button type="button" className="text-gray-400">
-                    2
-                  </button>
-                  <button type="button" className="text-gray-400">
-                    3
-                  </button>
-                  <button type="button" className="text-gray-400">
-                    4
-                  </button>
-                  <span className="text-gray-400">...</span>
-                  <button type="button" className="text-gray-400">
-                    10
-                  </button>
-                  <CaretRight size={16} />
-                  <CaretDoubleRight size={16} />
-                </div>
-              </div>
+          {isLoading ? (
+            <div className="flex justify-center pt-4">
+              <LoadingSpinner />
             </div>
-            {/* Table */}
-            <div>
-              {/* Header */}
-              <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
-                <div className="uppercase px-4 py-2">Name</div>
-                <div className="uppercase px-4 py-2">Email</div>
-                <div className="uppercase px-4 py-2">Role</div>
-                <div className="uppercase px-4 py-2">Status</div>
-              </div>
-              {/* Body */}
-              <div>
-                {users.map((user) => (
-                  <div
-                    key={user.id}
-                    className="grid grid-cols-4 border-b border-gray-300 text-sm"
-                  >
-                    <div className="px-4 py-2 flex items-center gap-1">
-                      <UserCircle size={24} />
-                      <span>{user.displayName}</span>
-                    </div>
-                    <div className="px-4 py-2 flex items-center">
-                      {user.emailAddress}
-                    </div>
-                    <div className="px-4 py-2 flex items-center">
-                      {user.role}
-                    </div>
-                    <div className="px-4 py-2 flex items-center gap-2">
-                      <div
-                        className={`
-                      text-white rounded-md px-4 py-1 w-24 text-center
-                      ${user.isEnabled ? "bg-green-500" : "bg-red-500"}
-                    `}
-                      >
-                        {user.isEnabled ? "ACTIVE" : "INACTIVE"}
-                      </div>
-                      <button type="button">
-                        <span className="sr-only">Actions</span>
-                        <DotsThree size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          ) : (
+            <>{isError ? <>Error :{"("}</> : <UsersTable users={users} />}</>
+          )}
         </>
       )}
     </AdminLayout>
