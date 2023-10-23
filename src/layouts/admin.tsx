@@ -47,7 +47,7 @@ ${
   )
 }
 
-function SideBar() {
+export function AdminSideBar() {
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   return (
@@ -157,7 +157,7 @@ export function AdminLayout({
         />
       </Head>
       <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
-        <SideBar />
+        <AdminSideBar />
         <div className="bg-brand-cyan-100 px-6 py-4">
           <header className="flex justify-between bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-4">
             <div className="flex items-center gap-3 rounded-md">

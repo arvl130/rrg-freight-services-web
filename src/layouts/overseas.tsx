@@ -5,9 +5,9 @@ import { Gauge } from "@phosphor-icons/react/Gauge"
 import { Gear } from "@phosphor-icons/react/Gear"
 import { List } from "@phosphor-icons/react/List"
 import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
-import { Package } from "@phosphor-icons/react/Package" 
+import { Package } from "@phosphor-icons/react/Package"
 import { SignOut } from "@phosphor-icons/react/SignOut"
-import { UserCircle } from "@phosphor-icons/react/UserCircle" 
+import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
 import { getAuth, signOut } from "firebase/auth"
 import Head from "next/head"
@@ -45,7 +45,7 @@ ${
   )
 }
 
-function SideBar() {
+export function OverseasSideBar() {
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   return (
@@ -80,7 +80,7 @@ function SideBar() {
           href="/overseas/profile "
           icon={<UserCircle size={32} className="text-white" />}
         />
-       </div>
+      </div>
       <div className="w-full">
         <button
           type="button"
@@ -126,7 +126,7 @@ export function OverseasLayout({
         />
       </Head>
       <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
-        <SideBar />
+        <OverseasSideBar />
         <div className="bg-brand-cyan-100 px-6 py-4">
           <header className="flex justify-between bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-4">
             <div className="flex items-center gap-3 rounded-md">
