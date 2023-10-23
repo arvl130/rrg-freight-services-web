@@ -36,7 +36,6 @@ export const users = mysqlTable("users", {
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
-  shipments: many(shipments),
   activities: many(activities),
 }))
 
