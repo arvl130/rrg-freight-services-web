@@ -13,6 +13,7 @@ import { Shipment, ShipmentHub } from "@/server/db/entities"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import { useState } from "react"
 import { DateTime } from "luxon"
+import { useSession } from "@/utils/auth"
 
 function PageHeader() {
   return (
@@ -265,11 +266,14 @@ function ShipmentsTable({
 }
 
 export default function ShipmentsPage() {
+  const { user, role } = useSession()
   const {
     isLoading,
     isError,
     data: shipments,
-  } = api.shipment.getAllWithOriginAndDestination.useQuery()
+  } = api.shipment.getAllWithOriginAndDestination.useQuery(undefined, {
+    enabled: user !== null && role === "ADMIN",
+  })
 
   return (
     <AdminLayout title="Shipments">

@@ -1,4 +1,4 @@
-import { AdminLayout, SkeletonAdminLayout } from "@/layouts/admin"
+import { AdminLayout } from "@/layouts/admin"
 import { useSession } from "@/utils/auth"
 import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
@@ -239,7 +239,14 @@ function PackagesTable({ packages }: { packages: Package[] }) {
 }
 
 export default function PackagesPage() {
-  const { isLoading, isError, data: packages } = api.package.getAll.useQuery()
+  const { user, role } = useSession()
+  const {
+    isLoading,
+    isError,
+    data: packages,
+  } = api.package.getAll.useQuery(undefined, {
+    enabled: user !== null && role === "ADMIN",
+  })
 
   return (
     <AdminLayout title="Packages">
