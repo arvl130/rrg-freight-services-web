@@ -35,9 +35,11 @@ export function getSessionRoleRedirectPath(role: Role | null) {
   return sessionRoleRedirectPaths[role]
 }
 
-type AuthContextType =
-  // Initial state
+type AuthContextType = {
+  reload: () => Promise<void>
+} & (
   | {
+      // Initial state
       isLoading: true
       user: null
       role: null
@@ -54,11 +56,13 @@ type AuthContextType =
       user: User
       role: Role | null
     }
+)
 
 const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   user: null,
   role: null,
+  reload: Promise.resolve,
 })
 
 export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
@@ -66,7 +70,21 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
     isLoading: true,
     user: null,
     role: null,
+    reload: Promise.resolve,
   })
+
+  async function reload() {
+    const { currentUser } = getAuth()
+    if (currentUser) await currentUser.reload()
+
+    setSession(
+      (currSession) =>
+        ({
+          ...currSession,
+          user: currentUser,
+        } as AuthContextType)
+    )
+  }
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (user) => {
@@ -75,6 +93,7 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
           isLoading: false,
           user: null,
           role: null,
+          reload,
         })
         return
       }
@@ -85,12 +104,14 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
           isLoading: false,
           user,
           role: (idTokenResult.claims.role as Role) ?? null,
+          reload,
         })
       } catch {
         setSession({
           isLoading: false,
           user: null,
           role: null,
+          reload,
         })
       }
     })
