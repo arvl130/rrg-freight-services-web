@@ -1,6 +1,6 @@
 import "dotenv/config"
 import mysql from "mysql2/promise"
-import { serverEnv } from "@/server/env"
+import { serverEnv } from "@/server/env.mjs"
 import * as schema from "@/server/db/schema"
 
 const pool = mysql.createPool({
