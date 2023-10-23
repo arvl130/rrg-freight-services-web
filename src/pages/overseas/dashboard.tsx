@@ -374,7 +374,9 @@ export default function DashboardPage() {
 
   return (
     <OverseasLayout title="Dashboard">
-      <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
+{() => (
+<>
+<h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
       <section className="mb-6">
         <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
           <ClusterTile />
@@ -394,6 +396,8 @@ export default function DashboardPage() {
         <RecentNotificationTile />
         <ManifestHistoryTile />
       </section>
+      </>
+)}
     </OverseasLayout>
   )
 }
