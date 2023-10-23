@@ -77,7 +77,7 @@ export function OverseasSideBar() {
         />
         <SideBarLink
           name="Profile"
-          href="/overseas/profile "
+          href="/profile/settings"
           icon={<UserCircle size={32} className="text-white" />}
         />
       </div>
