@@ -253,7 +253,7 @@ function MainView({ user }: { user: User }) {
   )
 }
 
-export default function ProfileSettings() {
+export default function ProfileSettingsPage() {
   return (
     <GenericLayout title="Dashboard">
       {({ user }) => <MainView user={user} />}
