@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise"
-import { serverEnv } from "../env"
+import { serverEnv } from "../env.mjs"
 import { MySql2Database, drizzle } from "drizzle-orm/mysql2"
 import * as schema from "./schema"
 

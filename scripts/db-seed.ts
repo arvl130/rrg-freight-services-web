@@ -1,5 +1,5 @@
 import "dotenv/config"
-import { serverEnv } from "@/server/env"
+import { serverEnv } from "@/server/env.mjs"
 import * as schema from "@/server/db/schema"
 import mysql from "mysql2/promise"
 import { drizzle } from "drizzle-orm/mysql2"
