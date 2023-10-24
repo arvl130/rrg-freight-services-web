@@ -9,7 +9,7 @@ import { Package } from "@phosphor-icons/react/Package"
 import { SignOut } from "@phosphor-icons/react/SignOut"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
-import { getAuth, signOut } from "firebase/auth"
+import { getAuth, signOut, User } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
@@ -107,15 +107,35 @@ export function DomesticSideBar() {
   )
 }
 
+export function SkeletonDomesticLayout() {
+  return (
+    <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+      <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
+      <main className="bg-brand-cyan-100"></main>
+    </div>
+  )
+}
+
 export function DomesticLayout({
   title,
   children,
 }: {
   title: string
-  children: ReactNode
+  children: ({ user, role }: { user: User; role: "DOMESTIC_AGENT" }) => ReactNode
 }) {
-  const { user } = useSession()
+  const { isLoading, user, role } = useSession({
+    required: {
+      role: "DOMESTIC_AGENT",
+    },
+  })
 
+  // FIXME: Show skeleton for the login page in here.
+  if (isLoading || user === null)
+    return <main className="min-h-screen bg-brand-cyan-100"></main>
+
+  // FIXME: Either use a unified skeleton component in here,
+  // or show a skeleton component based on the detected role.
+  if (role !== "DOMESTIC_AGENT") return <SkeletonDomesticLayout />
   return (
     <>
       <Head>
@@ -165,7 +185,12 @@ export function DomesticLayout({
               </div>
             </div>
           </header>
-          <div>{children}</div>
+          <div>
+            {children({
+            user,
+            role,
+          })}
+          </div>
         </div>
       </div>
     </>
