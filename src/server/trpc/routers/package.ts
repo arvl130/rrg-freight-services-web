@@ -12,7 +12,7 @@ export const packageRouter = router({
     .input(
       z.object({
         id: z.number(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
@@ -34,7 +34,7 @@ export const packageRouter = router({
     .input(
       z.object({
         id: z.number(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const results = await ctx.db

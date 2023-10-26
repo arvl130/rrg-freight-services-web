@@ -82,7 +82,7 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
         ({
           ...currSession,
           user: currentUser,
-        } as AuthContextType)
+        }) as AuthContextType,
     )
   }
 
@@ -133,7 +133,7 @@ export function useSession(
         }
   } = {
     required: false,
-  }
+  },
 ) {
   const session = useContext(AuthContext)
   const router = useRouter()

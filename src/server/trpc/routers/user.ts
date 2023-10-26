@@ -12,7 +12,7 @@ export const userRouter = router({
     .input(
       z.object({
         id: z.string().length(28),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const results = await ctx.db

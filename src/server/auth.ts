@@ -30,7 +30,7 @@ export async function updateProfile(
   }: {
     displayName?: string | null
     photoURL?: string | null
-  }
+  },
 ) {
   await auth.updateUser(user.uid, {
     displayName,

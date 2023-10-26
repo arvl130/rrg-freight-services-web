@@ -89,7 +89,7 @@ export const shipmentStatusLogsRelations = relations(
       fields: [shipmentStatusLogs.createdById],
       references: [users.id],
     }),
-  })
+  }),
 )
 
 export const shipmentHubs = mysqlTable("shipment_hubs", {
@@ -128,7 +128,7 @@ export const shipmentHubAgents = mysqlTable(
   },
   (table) => ({
     pk: primaryKey(table.shipmentHubId, table.userId),
-  })
+  }),
 )
 
 export const shipmentHubAgentsRelations = relations(
@@ -142,7 +142,7 @@ export const shipmentHubAgentsRelations = relations(
       fields: [shipmentHubAgents.userId],
       references: [users.id],
     }),
-  })
+  }),
 )
 
 export const shipmentPackages = mysqlTable(
@@ -153,7 +153,7 @@ export const shipmentPackages = mysqlTable(
   },
   (table) => ({
     pk: primaryKey(table.shipmentId, table.packageId),
-  })
+  }),
 )
 
 export const shipmentPackagesRelations = relations(
@@ -167,7 +167,7 @@ export const shipmentPackagesRelations = relations(
       fields: [shipmentPackages.shipmentId],
       references: [shipments.id],
     }),
-  })
+  }),
 )
 
 export const packages = mysqlTable("packages", {
@@ -284,7 +284,7 @@ export const packageStatusLogsRelations = relations(
       fields: [packageStatusLogs.createdById],
       references: [users.id],
     }),
-  })
+  }),
 )
 
 export const activities = mysqlTable("activities", {

@@ -47,7 +47,7 @@ function ShipmentArrivedDate({ shipmentId }: { shipmentId: number }) {
   return (
     <div className="w-36 py-0.5 rounded-md">
       {DateTime.fromJSDate(shipmentStatusLog.createdAt).toLocaleString(
-        DateTime.DATETIME_FULL
+        DateTime.DATETIME_FULL,
       )}
     </div>
   )
@@ -149,7 +149,7 @@ function ShipmentsTable({
   const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
   const allShipments = shipments.filter((shipment) => shipment.isArchived === 0)
   const archivedShipments = shipments.filter(
-    (shipment) => shipment.isArchived === 1
+    (shipment) => shipment.isArchived === 1,
   )
 
   return (

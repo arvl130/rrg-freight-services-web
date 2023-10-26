@@ -121,7 +121,13 @@ export function DomesticLayout({
   children,
 }: {
   title: string
-  children: ({ user, role }: { user: User; role: "DOMESTIC_AGENT" }) => ReactNode
+  children: ({
+    user,
+    role,
+  }: {
+    user: User
+    role: "DOMESTIC_AGENT"
+  }) => ReactNode
 }) {
   const { isLoading, user, role } = useSession({
     required: {
@@ -187,9 +193,9 @@ export function DomesticLayout({
           </header>
           <div>
             {children({
-            user,
-            role,
-          })}
+              user,
+              role,
+            })}
           </div>
         </div>
       </div>

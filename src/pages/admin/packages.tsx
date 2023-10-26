@@ -124,7 +124,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
   const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
   const allPackages = packages.filter((_package) => _package.isArchived === 0)
   const archivedPackages = packages.filter(
-    (_package) => _package.isArchived === 1
+    (_package) => _package.isArchived === 1,
   )
 
   return (

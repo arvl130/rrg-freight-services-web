@@ -150,7 +150,7 @@ export default function LoginPage() {
                   await signInWithEmailAndPassword(
                     auth,
                     formData.email,
-                    formData.password
+                    formData.password,
                   )
                 } catch (e) {
                   if (e instanceof FirebaseError) {
@@ -246,7 +246,7 @@ export default function LoginPage() {
                     className="absolute right-3 top-2.5"
                     onClick={() =>
                       setIsPasswordVisible(
-                        (currentIsPasswordVisible) => !currentIsPasswordVisible
+                        (currentIsPasswordVisible) => !currentIsPasswordVisible,
                       )
                     }
                   >

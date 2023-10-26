@@ -27,7 +27,7 @@ ChartJS.register(
   ArcElement,
   CategoryScale,
   LinearScale,
-  BarElement
+  BarElement,
 )
 
 export default api.withTRPC(({ Component, pageProps }: AppProps) => {

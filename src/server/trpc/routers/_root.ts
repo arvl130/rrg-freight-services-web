@@ -9,7 +9,7 @@ export const rootRouter = router({
     .input(
       z.object({
         text: z.string(),
-      })
+      }),
     )
     .query((opts) => {
       return {

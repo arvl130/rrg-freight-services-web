@@ -121,7 +121,13 @@ export function OverseasLayout({
   children,
 }: {
   title: string
-  children: ({ user, role }: { user: User; role: "OVERSEAS_AGENT" }) => ReactNode
+  children: ({
+    user,
+    role,
+  }: {
+    user: User
+    role: "OVERSEAS_AGENT"
+  }) => ReactNode
 }) {
   const { isLoading, user, role } = useSession({
     required: {

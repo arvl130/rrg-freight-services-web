@@ -13,7 +13,7 @@ export const shipmentRouter = router({
     .input(
       z.object({
         id: z.number(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
@@ -22,8 +22,8 @@ export const shipmentRouter = router({
         .where(
           and(
             eq(shipmentStatusLogs.shipmentId, input.id),
-            eq(shipmentStatusLogs.status, "ARRIVED")
-          )
+            eq(shipmentStatusLogs.status, "ARRIVED"),
+          ),
         )
 
       if (results.length === 0) return null
@@ -40,7 +40,7 @@ export const shipmentRouter = router({
     .input(
       z.object({
         id: z.number(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
@@ -67,7 +67,7 @@ export const shipmentRouter = router({
       .innerJoin(originHubs, eq(shipments.originHubId, originHubs.id))
       .innerJoin(
         destinationHubs,
-        eq(shipments.destinationHubId, destinationHubs.id)
+        eq(shipments.destinationHubId, destinationHubs.id),
       )
 
     return results.map(({ shipments, origin_hubs, destination_hubs }) => ({
@@ -80,7 +80,7 @@ export const shipmentRouter = router({
     .input(
       z.object({
         id: z.number(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
