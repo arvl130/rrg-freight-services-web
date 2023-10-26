@@ -77,7 +77,7 @@ export function DomesticSideBar() {
         />
         <SideBarLink
           name="Profile"
-          href="/domestic/profile/settings"
+          href="/profile/settings"
           icon={<UserCircle size={32} className="text-white" />}
         />
       </div>
