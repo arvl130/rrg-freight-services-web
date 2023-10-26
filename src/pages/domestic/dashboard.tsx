@@ -190,8 +190,9 @@ export default function DashboardPage() {
   if (isLoading || role !== "DOMESTIC_AGENT") return <>...</>
 
   return (
-  
     <DomesticLayout title="Dashboard">
+    {() => (
+      <>  
       <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
       <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
         <ManifestSummaryTile />
@@ -201,6 +202,8 @@ export default function DashboardPage() {
         <ManifestHistoryTile />
         <RecentNotificationTile />
       </section>
+      </>
+    )}
     </DomesticLayout>  
   )
 }
