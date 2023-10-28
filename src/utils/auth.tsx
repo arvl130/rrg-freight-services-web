@@ -75,15 +75,10 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
 
   async function reload() {
     const { currentUser } = getAuth()
-    if (currentUser) await currentUser.reload()
-
-    setSession(
-      (currSession) =>
-        ({
-          ...currSession,
-          user: currentUser,
-        }) as AuthContextType,
-    )
+    await currentUser?.reload()
+    setSession((currSession) => ({
+      ...currSession,
+    }))
   }
 
   useEffect(() => {
