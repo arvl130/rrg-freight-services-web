@@ -87,11 +87,14 @@ type WithNodeChildren = {
 }
 
 type LayoutProps = {
-  title: string
+  title: string | string[]
 } & (WithFunctionChildren | WithNodeChildren)
 
 export function GenericLayout({ title, children }: LayoutProps) {
-  const titleContent = `${title} \u2013 RRG Freight Services`
+  const titleContent = Array.isArray(title)
+    ? `${title.toReversed().join(" \u2013 ")} \u2013 RRG Freight Services`
+    : `${title} \u2013 RRG Freight Services`
+
   const { isLoading, user, role, reload } = useSession({
     required: true,
   })
