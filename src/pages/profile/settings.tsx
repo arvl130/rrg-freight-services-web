@@ -1,4 +1,4 @@
-import { UserCircleGear } from "@phosphor-icons/react/UserCircleGear"
+import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { GenericLayout } from "@/layouts/generic"
 import { User as FirebaseUser } from "firebase/auth"
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
@@ -100,7 +100,7 @@ function UpdatePictureForm({ user }: { user: User }) {
                 className="rounded-full"
               />
             ) : (
-              <UserCircleGear size={80} />
+              <UserCircle size={80} />
             )}
           </div>
           <div>
