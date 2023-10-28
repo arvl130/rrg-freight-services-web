@@ -6,8 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 
 const updateInformationFormSchema = z.object({
-  displayName: z.string().min(1),
-  emailAddress: z.string().min(1).email(),
+  displayName: z.string().min(1).max(100),
+  emailAddress: z.string().min(1).max(100).email(),
   contactNumber: z.string().min(1).max(15),
   gender: z.union([
     z.literal("MALE"),

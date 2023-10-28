@@ -11,9 +11,9 @@ import { useState } from "react"
 
 const updatePasswordFormSchema = z
   .object({
-    oldPassword: z.string().min(1),
-    newPassword: z.string().min(1),
-    newPasswordAgain: z.string().min(1),
+    oldPassword: z.string().min(8).max(4096),
+    newPassword: z.string().min(8).max(4096),
+    newPasswordAgain: z.string().min(8).max(4096),
   })
   .refine(
     ({ newPassword, newPasswordAgain }) => newPassword === newPasswordAgain,

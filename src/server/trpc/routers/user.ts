@@ -7,6 +7,9 @@ import { updateProfile } from "@/server/auth"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
 
+// Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
+const TEXT_COLUMN_DEFAULT_LIMIT = 65_535
+
 export const userRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(users)
@@ -41,7 +44,7 @@ export const userRouter = router({
       z.object({
         displayName: z.string().min(1).max(100),
         contactNumber: z.string().min(1).max(15),
-        emailAddress: z.string().min(1).email(),
+        emailAddress: z.string().min(1).max(100).email(),
         gender: z
           .union([z.literal("MALE"), z.literal("FEMALE"), z.literal("OTHER")])
           .nullable(),
@@ -65,7 +68,7 @@ export const userRouter = router({
   updatePhotoUrl: protectedProcedure
     .input(
       z.object({
-        photoUrl: z.string().min(1).url(),
+        photoUrl: z.string().min(1).url().max(TEXT_COLUMN_DEFAULT_LIMIT),
       }),
     )
     .mutation(async ({ ctx, input }) => {
