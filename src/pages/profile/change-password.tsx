@@ -11,11 +11,18 @@ import {
 } from "firebase/auth"
 import { useState } from "react"
 
-const updatePasswordFormSchema = z.object({
-  oldPassword: z.string().min(1),
-  newPassword: z.string().min(1),
-  newPasswordAgain: z.string().min(1),
-})
+const updatePasswordFormSchema = z
+  .object({
+    oldPassword: z.string().min(1),
+    newPassword: z.string().min(1),
+    newPasswordAgain: z.string().min(1),
+  })
+  .refine(
+    ({ newPassword, newPasswordAgain }) => newPassword === newPasswordAgain,
+    {
+      message: "Passwords did not match.",
+    },
+  )
 
 type UpdatePasswordFormType = z.infer<typeof updatePasswordFormSchema>
 
