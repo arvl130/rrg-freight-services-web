@@ -86,7 +86,7 @@ function RightColumn({ user }: { user: User }) {
 
 export default function ProfileSettingsPage() {
   return (
-    <GenericLayout title="Dashboard">
+    <GenericLayout title="Dashboard" hasSession>
       {({ user }) => (
         <main className="pt-2 pb-6">
           <section className="grid grid-cols-[22rem_1fr] gap-6 max-w-4xl mx-auto">
