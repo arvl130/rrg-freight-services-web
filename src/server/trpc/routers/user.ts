@@ -72,16 +72,16 @@ export const userRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      await updateProfile(ctx.user, {
+        photoURL: input.photoUrl,
+      })
+
       await ctx.db
         .update(users)
         .set({
           photoUrl: input.photoUrl,
         })
         .where(eq(users.id, ctx.user.uid))
-
-      await updateProfile(ctx.user, {
-        photoURL: input.photoUrl,
-      })
     }),
   removePhotoUrl: protectedProcedure.mutation(async ({ ctx }) => {
     const storage = getStorage()
@@ -90,15 +90,15 @@ export const userRouter = router({
       .file(`profile-photos/${ctx.user.uid}`)
       .delete()
 
+    await updateProfile(ctx.user, {
+      photoURL: null,
+    })
+
     await ctx.db
       .update(users)
       .set({
         photoUrl: null,
       })
       .where(eq(users.id, ctx.user.uid))
-
-    await updateProfile(ctx.user, {
-      photoURL: null,
-    })
   }),
 })
