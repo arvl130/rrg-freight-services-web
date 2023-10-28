@@ -62,7 +62,7 @@ function UsersTable({ users }: { users: User[] }) {
   return (
     <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
       <div className="flex justify-between mb-3">
-        <h2 className="text-2xl font-semibold">User Summary</h2>
+        <h2 className="text-lg font-semibold">User Summary</h2>
         <div className="flex gap-8">
           <div>
             Showing{" "}
