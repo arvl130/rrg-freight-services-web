@@ -64,7 +64,7 @@ function UpdatePasswordForm({ user }: { user: User }) {
           </label>
           <input
             type="password"
-            placeholder="Enter current password"
+            placeholder="Enter your current password"
             className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
             {...register("oldPassword")}
           />
@@ -75,7 +75,7 @@ function UpdatePasswordForm({ user }: { user: User }) {
           </label>
           <input
             type="password"
-            placeholder="Enter current password"
+            placeholder="Enter your new password"
             className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
             {...register("newPassword")}
           />
@@ -86,7 +86,7 @@ function UpdatePasswordForm({ user }: { user: User }) {
           </label>
           <input
             type="password"
-            placeholder="Enter current password again"
+            placeholder="Enter your new password again"
             className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
             {...register("newPasswordAgain")}
           />
@@ -105,7 +105,7 @@ function UpdatePasswordForm({ user }: { user: User }) {
 
 export default function ProfilePasswordPage() {
   return (
-    <GenericLayout title="Dashboard" hasSession>
+    <GenericLayout title={["Profile", "Password & Security"]} hasSession>
       {({ user }) => (
         <main className="mt-6">
           <section className="grid grid-cols-[22rem_1fr] gap-6 max-w-4xl mx-auto">
