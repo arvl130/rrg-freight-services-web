@@ -22,24 +22,29 @@ function SideBarLink({
   href,
   name,
   icon,
+  otherRouteNames,
 }: {
   href: string
+  otherRouteNames?: string[]
   name: string
   icon: ReactNode
 }) {
   const router = useRouter()
+  const matchingRouteNames = Array.isArray(otherRouteNames)
+    ? [...new Set([href, ...otherRouteNames])]
+    : [href]
 
   return (
     <Link
       href={href}
       className={`
-flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200
-${
-  router.pathname === href
-    ? "border-x-2 border-l-white border-r-transparent"
-    : ""
-}
-`}
+        flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200
+        ${
+          matchingRouteNames.includes(router.pathname)
+            ? "border-x-2 border-l-white border-r-transparent"
+            : ""
+        }
+      `}
     >
       <span className="sr-only">{name}</span>
       {icon}
@@ -88,6 +93,10 @@ export function AdminSideBar() {
         <SideBarLink
           name="Profile"
           href="/profile/settings"
+          otherRouteNames={[
+            "/profile/notifications",
+            "/profile/change-password",
+          ]}
           icon={<UserCircle size={32} className="text-white" />}
         />
       </div>
