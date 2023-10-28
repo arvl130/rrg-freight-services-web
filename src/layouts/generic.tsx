@@ -13,6 +13,7 @@ import { Bell } from "@phosphor-icons/react/Bell"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { CaretDown } from "@phosphor-icons/react/CaretDown"
 import { Role } from "@/utils/constants"
+import Image from "next/image"
 
 function GenericSidebar() {
   const { role } = useSession()
@@ -57,7 +58,17 @@ function GenericHeader({ user }: { user: User }) {
             type="button"
             className="px-2 py-2 whitespace-nowrap flex gap-2 items-center text-sm w-46 text-gray-700"
           >
-            <UserCircle size={24} />
+            {user.photoURL === null ? (
+              <UserCircle size={24} />
+            ) : (
+              <Image
+                height={24}
+                width={24}
+                alt="Profile picture"
+                src={user.photoURL}
+                className="rounded-full"
+              />
+            )}
             <div className="flex items-center gap-2">
               <span>{user.displayName}</span>
               <CaretDown size={12} />
