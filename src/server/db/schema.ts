@@ -27,7 +27,7 @@ import {
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 28 }).primaryKey(),
   displayName: varchar("display_name", { length: 100 }).notNull(),
-  photoUrl: text("photo_url").notNull().default(""),
+  photoUrl: text("photo_url"),
   emailAddress: varchar("email_address", { length: 100 }).notNull(),
   contactNumber: varchar("contact_number", { length: 15 }).notNull(),
   gender: mysqlEnum("gender", supportedGenders),

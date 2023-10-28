@@ -4,6 +4,8 @@ import { users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
 import { updateProfile } from "@/server/auth"
+import { getStorage } from "firebase-admin/storage"
+import { clientEnv } from "@/utils/env.mjs"
 
 export const userRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -60,4 +62,40 @@ export const userRouter = router({
         displayName: input.displayName,
       })
     }),
+  updatePhotoUrl: protectedProcedure
+    .input(
+      z.object({
+        photoUrl: z.string().min(1).url(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(users)
+        .set({
+          photoUrl: input.photoUrl,
+        })
+        .where(eq(users.id, ctx.user.uid))
+
+      await updateProfile(ctx.user, {
+        photoURL: input.photoUrl,
+      })
+    }),
+  removePhotoUrl: protectedProcedure.mutation(async ({ ctx }) => {
+    const storage = getStorage()
+    await storage
+      .bucket(clientEnv.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET)
+      .file(`profile-photos/${ctx.user.uid}`)
+      .delete()
+
+    await ctx.db
+      .update(users)
+      .set({
+        photoUrl: null,
+      })
+      .where(eq(users.id, ctx.user.uid))
+
+    await updateProfile(ctx.user, {
+      photoURL: null,
+    })
+  }),
 })
