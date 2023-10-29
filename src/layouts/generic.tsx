@@ -14,6 +14,7 @@ import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { CaretDown } from "@phosphor-icons/react/CaretDown"
 import { Role } from "@/utils/constants"
 import Image from "next/image"
+import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
 
 function GenericSidebar() {
   const { role } = useSession()
@@ -113,8 +114,14 @@ export function GenericLayout({ title, children }: LayoutProps) {
     required: true,
   })
 
-  if (isLoading || user === null)
-    return <main className="min-h-screen bg-brand-cyan-100"></main>
+  if (isLoading) return <main className="min-h-screen bg-brand-cyan-100"></main>
+  if (user === null)
+    return (
+      <>
+        <LoginPageHead />
+        <SkeletonLoginPage />
+      </>
+    )
 
   return (
     <>

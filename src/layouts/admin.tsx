@@ -17,6 +17,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { ReactNode, useState } from "react"
+import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
 
 function SideBarLink({
   href,
@@ -222,13 +223,30 @@ export function AdminLayout({ title, children }: LayoutProps) {
     },
   })
 
-  // FIXME: Show skeleton for the login page in here.
-  if (isLoading || user === null)
-    return <main className="min-h-screen bg-brand-cyan-100"></main>
+  if (isLoading) return <main className="min-h-screen bg-brand-cyan-100"></main>
+  if (user === null)
+    return (
+      <>
+        <LoginPageHead />
+        <SkeletonLoginPage />
+      </>
+    )
 
   // FIXME: Either use a unified skeleton component in here,
   // or show a skeleton component based on the detected role.
-  if (role !== "ADMIN") return <SkeletonAdminLayout />
+  if (role !== "ADMIN")
+    return (
+      <>
+        <Head>
+          <title>Dashboard &#x2013; RRG Freight Services</title>
+          <meta
+            name="description"
+            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+          />
+        </Head>
+        <SkeletonAdminLayout />
+      </>
+    )
 
   return (
     <>

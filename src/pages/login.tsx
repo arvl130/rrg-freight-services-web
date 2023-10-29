@@ -28,7 +28,7 @@ const formSchema = z.object({
 
 type FormType = z.infer<typeof formSchema>
 
-function LoginPageHead() {
+export function LoginPageHead() {
   return (
     <Head>
       <title>Login &#x2013; RRG Freight Services</title>
@@ -37,6 +37,15 @@ function LoginPageHead() {
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
     </Head>
+  )
+}
+
+export function SkeletonLoginPage() {
+  return (
+    <main className="min-h-screen grid grid-cols-2">
+      <div className="bg-cyan-600"></div>
+      <div className="bg-brand-cyan-450"></div>
+    </main>
   )
 }
 
@@ -97,13 +106,15 @@ export default function LoginPage() {
       <LoginPageHead />
       <main className="min-h-screen bg-brand-cyan-100 px-3 py-24 pb-3 relative">
         <div className="absolute inset-0 h-full sm:grid grid-cols-2 hidden">
-          <Image
-            src="/assets/img/login/left-bg.png"
-            alt="Shipping port"
-            className="h-full w-full object-cover"
-            width={600}
-            height={800}
-          />
+          <div className="bg-cyan-600">
+            <Image
+              src="/assets/img/login/left-bg.png"
+              alt="Shipping port"
+              className="h-full w-full object-cover"
+              width={600}
+              height={800}
+            />
+          </div>
           <div className="grid grid-rows-[8rem_1fr] bg-brand-cyan-450">
             <div className="flex justify-end pt-12 pr-12">
               <Image
