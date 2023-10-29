@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { User } from "@/server/db/entities"
@@ -12,7 +12,7 @@ import { UsersTableItemOverviewScreen } from "@/components/users/table-item/over
 import { supportedRoleToHumanized } from "@/utils/humanize"
 
 export function UsersTableItem({ user }: { user: User }) {
-  const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false)
+  const detailsModal = useRef<null | HTMLDialogElement>(null)
   const [selectedScreen, setSelectedScreen] =
     useState<UsersTableItemScreen>("MENU")
 
@@ -45,67 +45,55 @@ export function UsersTableItem({ user }: { user: User }) {
         >
           {user.isEnabled ? "ACTIVE" : "INACTIVE"}
         </div>
-        <button type="button" onClick={() => setIsDetailsModalVisible(true)}>
+        <button type="button" onClick={() => detailsModal.current?.showModal()}>
           <span className="sr-only">Actions</span>
           <DotsThree size={16} />
         </button>
       </div>
-      {isDetailsModalVisible && (
-        <div className="absolute inset-0 bg-black/30">
-          <div className="bg-white w-[min(calc(100%),_28rem)] mx-auto px-6 pt-7 pb-7 rounded-2xl mt-24">
-            {selectedScreen === "MENU" && (
-              <UsersTableItemMenuScreen
-                user={user}
-                setSelectedScreen={(selectedScreen) =>
-                  setSelectedScreen(selectedScreen)
-                }
-                close={() => setIsDetailsModalVisible(false)}
-              />
-            )}
-            {selectedScreen === "OVERVIEW" && (
-              <UsersTableItemOverviewScreen
-                user={user}
-                goBack={() => setSelectedScreen("MENU")}
-                goToUpdateInfo={() => setSelectedScreen("UPDATE_INFO")}
-                close={() => {
-                  setIsDetailsModalVisible(false)
-                  setSelectedScreen("MENU")
-                }}
-              />
-            )}
-            {selectedScreen === "UPDATE_INFO" && (
-              <UsersTableItemUpdateInformationScreen
-                user={user}
-                goBack={() => setSelectedScreen("OVERVIEW")}
-                close={() => {
-                  setIsDetailsModalVisible(false)
-                  setSelectedScreen("MENU")
-                }}
-              />
-            )}
-            {selectedScreen === "UPDATE_ROLE" && (
-              <UsersTableItemUpdateRoleScreen
-                user={user}
-                goBack={() => setSelectedScreen("MENU")}
-                close={() => {
-                  setIsDetailsModalVisible(false)
-                  setSelectedScreen("MENU")
-                }}
-              />
-            )}
-            {selectedScreen === "UPDATE_PHOTO" && (
-              <UsersTableItemUpdatePhotoScreen
-                user={user}
-                goBack={() => setSelectedScreen("MENU")}
-                close={() => {
-                  setIsDetailsModalVisible(false)
-                  setSelectedScreen("MENU")
-                }}
-              />
-            )}
-          </div>
-        </div>
-      )}
+      <dialog
+        ref={detailsModal}
+        onClose={() => setSelectedScreen("MENU")}
+        className="bg-white w-[min(calc(100%),_28rem)] mx-auto px-6 pt-7 pb-7 rounded-2xl mt-24"
+      >
+        {selectedScreen === "MENU" && (
+          <UsersTableItemMenuScreen
+            user={user}
+            setSelectedScreen={(selectedScreen) =>
+              setSelectedScreen(selectedScreen)
+            }
+            close={() => detailsModal.current?.close()}
+          />
+        )}
+        {selectedScreen === "OVERVIEW" && (
+          <UsersTableItemOverviewScreen
+            user={user}
+            goBack={() => setSelectedScreen("MENU")}
+            goToUpdateInfo={() => setSelectedScreen("UPDATE_INFO")}
+            close={() => detailsModal.current?.close()}
+          />
+        )}
+        {selectedScreen === "UPDATE_INFO" && (
+          <UsersTableItemUpdateInformationScreen
+            user={user}
+            goBack={() => setSelectedScreen("OVERVIEW")}
+            close={() => detailsModal.current?.close()}
+          />
+        )}
+        {selectedScreen === "UPDATE_ROLE" && (
+          <UsersTableItemUpdateRoleScreen
+            user={user}
+            goBack={() => setSelectedScreen("MENU")}
+            close={() => detailsModal.current?.close()}
+          />
+        )}
+        {selectedScreen === "UPDATE_PHOTO" && (
+          <UsersTableItemUpdatePhotoScreen
+            user={user}
+            goBack={() => setSelectedScreen("MENU")}
+            close={() => detailsModal.current?.close()}
+          />
+        )}
+      </dialog>
     </div>
   )
 }
