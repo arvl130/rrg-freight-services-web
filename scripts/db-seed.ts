@@ -1,5 +1,6 @@
 import "dotenv/config"
 import { serverEnv } from "@/server/env.mjs"
+import { seedEnv } from "./env.mjs"
 import * as schema from "@/server/db/schema"
 import mysql from "mysql2/promise"
 import { drizzle } from "drizzle-orm/mysql2"
@@ -24,37 +25,37 @@ const db = drizzle(pool, {
 
 const newUsers: NewUser[] = [
   {
-    id: serverEnv.TEST_ADMIN_USER_ID,
+    id: seedEnv.TEST_ADMIN_USER_ID,
     displayName: "Administrator",
     contactNumber: "+639123456789",
-    emailAddress: serverEnv.TEST_ADMIN_EMAIL,
+    emailAddress: seedEnv.TEST_ADMIN_EMAIL,
     role: "ADMIN",
     gender: "MALE",
     isEnabled: 1,
   },
   {
-    id: serverEnv.TEST_WAREHOUSE_USER_ID,
+    id: seedEnv.TEST_WAREHOUSE_USER_ID,
     displayName: "Warehouse Staff",
     contactNumber: "+639987654321",
-    emailAddress: serverEnv.TEST_WAREHOUSE_EMAIL,
+    emailAddress: seedEnv.TEST_WAREHOUSE_EMAIL,
     role: "WAREHOUSE",
     gender: "MALE",
     isEnabled: 1,
   },
   {
-    id: serverEnv.TEST_DOMESTIC_USER_ID,
+    id: seedEnv.TEST_DOMESTIC_USER_ID,
     displayName: "Domestic Agent",
     contactNumber: "+639112223333",
-    emailAddress: serverEnv.TEST_DOMESTIC_EMAIL,
+    emailAddress: seedEnv.TEST_DOMESTIC_EMAIL,
     role: "DOMESTIC_AGENT",
     gender: "MALE",
     isEnabled: 1,
   },
   {
-    id: serverEnv.TEST_OVERSEAS_USER_ID,
+    id: seedEnv.TEST_OVERSEAS_USER_ID,
     displayName: "Overseas Agent",
     contactNumber: "+1112223333",
-    emailAddress: serverEnv.TEST_OVERSEAS_EMAIL,
+    emailAddress: seedEnv.TEST_OVERSEAS_EMAIL,
     role: "OVERSEAS_AGENT",
     gender: "FEMALE",
     isEnabled: 1,
@@ -86,8 +87,8 @@ const newPackages: NewPackage[] = [
     receiverStateOrProvince: "National Capital Region",
     receiverCountryCode: "PHL",
     receiverPostalCode: 2222,
-    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
-    updatedById: serverEnv.TEST_OVERSEAS_USER_ID,
+    createdById: seedEnv.TEST_OVERSEAS_USER_ID,
+    updatedById: seedEnv.TEST_OVERSEAS_USER_ID,
   },
 ]
 
@@ -132,7 +133,7 @@ const newPackageStatusLogs: NewPackageStatusLog[] = [
     status: "IN_WAREHOUSE",
     description: "Package has been received in an overseas hub.",
     createdAt: dateThirtyMinsAgo,
-    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+    createdById: seedEnv.TEST_OVERSEAS_USER_ID,
   },
   {
     id: 30_001,
@@ -141,7 +142,7 @@ const newPackageStatusLogs: NewPackageStatusLog[] = [
     description:
       "Package has been added to a shipment and is being prepared by the agent.",
     createdAt: dateTwentyFiveMinsAgo,
-    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+    createdById: seedEnv.TEST_OVERSEAS_USER_ID,
   },
   {
     id: 30_003,
@@ -150,7 +151,7 @@ const newPackageStatusLogs: NewPackageStatusLog[] = [
     description:
       "Package has been prepared and is being currently being shipped.",
     createdAt: dateTwentyMinsAgo,
-    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+    createdById: seedEnv.TEST_OVERSEAS_USER_ID,
   },
   {
     id: 30_004,
@@ -158,7 +159,7 @@ const newPackageStatusLogs: NewPackageStatusLog[] = [
     status: "IN_WAREHOUSE",
     description: "Package has been received in a local hub.",
     createdAt: dateTenMinsAgo,
-    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+    createdById: seedEnv.TEST_OVERSEAS_USER_ID,
   },
 ]
 
@@ -210,7 +211,7 @@ const newShipmentsStatusLogs: NewShipmentStatusLog[] = [
     status: "PREPARING",
     description: "Shipment has been created and is waiting to be shipped.",
     createdAt: dateTwentyFiveMinsAgo,
-    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+    createdById: seedEnv.TEST_OVERSEAS_USER_ID,
   },
   {
     id: 30_001,
@@ -218,7 +219,7 @@ const newShipmentsStatusLogs: NewShipmentStatusLog[] = [
     status: "IN_TRANSIT",
     description: "Shipment is being shipped to another hub.",
     createdAt: dateFifteenMinsAgo,
-    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+    createdById: seedEnv.TEST_OVERSEAS_USER_ID,
   },
   {
     id: 30_002,
@@ -226,7 +227,7 @@ const newShipmentsStatusLogs: NewShipmentStatusLog[] = [
     status: "ARRIVED",
     description: "Shipment has arrived to its destination hub.",
     createdAt: dateFiveMinsAgo,
-    createdById: serverEnv.TEST_OVERSEAS_USER_ID,
+    createdById: seedEnv.TEST_OVERSEAS_USER_ID,
   },
 ]
 
