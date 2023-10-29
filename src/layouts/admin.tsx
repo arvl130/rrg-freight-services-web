@@ -223,7 +223,20 @@ export function AdminLayout({ title, children }: LayoutProps) {
     },
   })
 
-  if (isLoading) return <main className="min-h-screen bg-brand-cyan-100"></main>
+  if (isLoading)
+    return (
+      <>
+        <Head>
+          <title>RRG Freight Services</title>
+          <meta
+            name="description"
+            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+          />
+        </Head>
+        <main className="min-h-screen bg-brand-cyan-100"></main>
+      </>
+    )
+
   if (user === null)
     return (
       <>
