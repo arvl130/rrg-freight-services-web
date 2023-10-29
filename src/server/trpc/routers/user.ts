@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm"
 import { updateProfile } from "@/server/auth"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
+import { Role, supportedRoles } from "@/utils/constants"
 
 // Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
 const TEXT_COLUMN_DEFAULT_LIMIT = 65_535
@@ -101,4 +102,23 @@ export const userRouter = router({
       })
       .where(eq(users.id, ctx.user.uid))
   }),
+  updateRoleAndEnabledById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().length(28),
+        role: z.custom<Role>((val) => {
+          return supportedRoles.includes(val as Role)
+        }),
+        isEnabled: z.boolean(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(users)
+        .set({
+          role: input.role,
+          isEnabled: input.isEnabled ? 1 : 0,
+        })
+        .where(eq(users.id, input.id))
+    }),
 })

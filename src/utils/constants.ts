@@ -53,3 +53,10 @@ export const supportedHubRoles = [
   "SENDING_RECEIVING",
 ] as const
 export type HubRole = (typeof supportedHubRoles)[number]
+
+export type UsersTableItemScreen =
+  | "OVERVIEW"
+  | "MENU"
+  | "UPDATE_INFO"
+  | "UPDATE_ROLE"
+  | "UPDATE_PHOTO"
