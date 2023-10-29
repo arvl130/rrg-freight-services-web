@@ -363,19 +363,9 @@ function RecentNotificationTile() {
   )
 }
 
-export default function DashboardPage() {
-  const { isLoading, role } = useSession({
-    required: {
-      role: "OVERSEAS_AGENT",
-    },
-  })
-
-  if (isLoading || role !== "OVERSEAS_AGENT") return <>...</>
-
+export default function DashboardPage() { 
   return (
-    <OverseasLayout title="Dashboard">
-      {() => (
-        <>
+    <OverseasLayout title="Dashboard"> 
           <h1 className="text-3xl font-black [color:_#00203F] mb-8">
             Dashboard
           </h1>
@@ -397,9 +387,7 @@ export default function DashboardPage() {
           <section className="grid grid-cols-[1fr_55rem] gap-x-6 [color:_#404040]">
             <RecentNotificationTile />
             <ManifestHistoryTile />
-          </section>
-        </>
-      )}
+          </section> 
     </OverseasLayout>
   )
 }

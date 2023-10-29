@@ -260,7 +260,7 @@ export default function PackagesPage() {
 
   return (
     <OverseasLayout title="Packages">
-      {() => (
+      
         <>
           <PageHeader />
           <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
@@ -327,8 +327,7 @@ export default function PackagesPage() {
               )}
             </>
           )}
-        </>
-      )}
+        </> 
     </OverseasLayout>
   )
 }
