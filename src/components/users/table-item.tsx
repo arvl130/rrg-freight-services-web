@@ -9,6 +9,7 @@ import { UsersTableItemScreen } from "@/utils/constants"
 import { UsersTableItemUpdateRoleScreen } from "@/components/users/table-item/update-role-screen"
 import { UsersTableItemUpdatePhotoScreen } from "@/components/users/table-item/update-photo-screen"
 import { UsersTableItemOverviewScreen } from "@/components/users/table-item/overview-screen"
+import { supportedRoleToHumanized } from "@/utils/humanize"
 
 export function UsersTableItem({ user }: { user: User }) {
   const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false)
@@ -32,7 +33,9 @@ export function UsersTableItem({ user }: { user: User }) {
         <span>{user.displayName}</span>
       </div>
       <div className="px-4 py-2 flex items-center">{user.emailAddress}</div>
-      <div className="px-4 py-2 flex items-center">{user.role}</div>
+      <div className="px-4 py-2 flex items-center">
+        {supportedRoleToHumanized(user.role)}
+      </div>
       <div className="px-4 py-2 flex items-center gap-2">
         <div
           className={`
