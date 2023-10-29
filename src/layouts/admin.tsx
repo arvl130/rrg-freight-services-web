@@ -156,7 +156,17 @@ export function AdminHeader({ user }: { user: User }) {
             type="button"
             className="px-2 py-2 whitespace-nowrap flex gap-2 items-center text-sm w-40 text-gray-700"
           >
-            <UserCircle size={24} />
+            {user.photoURL === null ? (
+              <UserCircle size={24} />
+            ) : (
+              <Image
+                height={24}
+                width={24}
+                alt="Profile picture"
+                src={user.photoURL}
+                className="rounded-full"
+              />
+            )}
             <div className="flex items-center gap-2">
               <span>{user.displayName}</span>
               <CaretDown size={12} />
