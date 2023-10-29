@@ -112,7 +112,7 @@ export function UsersTableItemUpdatePhotoScreen({
             />
           )}
         </div>
-        <input type="file" {...register("imageFiles")} />
+        <input type="file" accept="image/*" {...register("imageFiles")} />
       </div>
       <div>
         {typeof user.photoUrl === "string" && (

@@ -106,7 +106,7 @@ export function ProfileUpdatePictureForm({ user }: { user: User }) {
           </div>
         </div>
         <div className="text-sm pl-2 mt-3">
-          <input type="file" {...register("imageFiles")} />
+          <input type="file" accept="image/*" {...register("imageFiles")} />
         </div>
       </div>
       <div className="flex flex-col gap-2 justify-center items-center">
