@@ -82,7 +82,13 @@ export default function LoginPage() {
   if (isLoading)
     return (
       <>
-        <LoginPageHead />
+        <Head>
+          <title>RRG Freight Services</title>
+          <meta
+            name="description"
+            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+          />
+        </Head>
         <main className="min-h-screen bg-brand-cyan-100"></main>
       </>
     )
@@ -96,7 +102,13 @@ export default function LoginPage() {
   if (user !== null)
     return (
       <>
-        <LoginPageHead />
+        <Head>
+          <title>Dashboard &#x2013; RRG Freight Services</title>
+          <meta
+            name="description"
+            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+          />
+        </Head>
         <SkeletonAdminLayout />
       </>
     )
