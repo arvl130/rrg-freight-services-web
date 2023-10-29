@@ -3,14 +3,14 @@ import { z } from "zod"
 
 export const seedEnv = createEnv({
   server: {
-    TEST_ADMIN_USER_ID: z.string().min(1),
-    TEST_ADMIN_EMAIL: z.string().email(),
-    TEST_WAREHOUSE_USER_ID: z.string().min(1),
-    TEST_WAREHOUSE_EMAIL: z.string().email(),
-    TEST_OVERSEAS_USER_ID: z.string().min(1),
-    TEST_OVERSEAS_EMAIL: z.string().email(),
-    TEST_DOMESTIC_USER_ID: z.string().min(1),
-    TEST_DOMESTIC_EMAIL: z.string().email(),
+    TEST_ADMIN_USER_ID: z.string().length(28),
+    TEST_ADMIN_EMAIL: z.string().min(1).max(100).email(),
+    TEST_WAREHOUSE_USER_ID: z.string().length(28),
+    TEST_WAREHOUSE_EMAIL: z.string().min(1).max(100).email(),
+    TEST_OVERSEAS_USER_ID: z.string().length(28),
+    TEST_OVERSEAS_EMAIL: z.string().min(1).max(100).email(),
+    TEST_DOMESTIC_USER_ID: z.string().length(28),
+    TEST_DOMESTIC_EMAIL: z.string().min(1).max(100).email(),
   },
   runtimeEnv: {
     TEST_ADMIN_USER_ID: process.env.TEST_ADMIN_USER_ID,
