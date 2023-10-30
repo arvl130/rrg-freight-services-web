@@ -14,11 +14,21 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { useState } from "react"
 import { DateTime } from "luxon"
 import { useSession } from "@/utils/auth"
+import { Plus } from "@phosphor-icons/react/Plus"
 
 function PageHeader() {
   return (
-    <div className="flex justify-between mb-6">
-      <h1 className="text-3xl font-black [color:_#00203F]">Shipments</h1>
+    <div className="flex justify-between mb-4">
+      <h1 className="text-3xl font-black [color:_#00203F] mb-2">Shipments</h1>
+      <div>
+        <button
+          type="button"
+          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+        >
+          <Plus size={16} />
+          <span>Create Shipment</span>
+        </button>
+      </div>
     </div>
   )
 }
