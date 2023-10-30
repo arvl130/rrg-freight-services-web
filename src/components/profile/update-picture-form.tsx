@@ -94,7 +94,7 @@ export function ProfileUpdatePictureForm({ user }: { user: User }) {
                 width={80}
                 alt="Profile picture"
                 src={user.photoUrl}
-                className="rounded-full"
+                className="rounded-full h-full"
               />
             ) : (
               <UserCircle size={80} />

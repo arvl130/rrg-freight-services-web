@@ -165,7 +165,7 @@ export function AdminHeader({ user }: { user: User }) {
                 width={24}
                 alt="Profile picture"
                 src={user.photoURL}
-                className="rounded-full"
+                className="rounded-full h-6"
               />
             )}
             <div className="flex items-center gap-2">
