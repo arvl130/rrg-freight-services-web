@@ -3,11 +3,28 @@ import { protectedProcedure, router } from "../trpc"
 import { packageStatusLogs, packages } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
+import { inArray } from "drizzle-orm"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(packages)
   }),
+  getByIds: protectedProcedure
+    .input(
+      z.object({
+        list: z.array(z.number()),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      if (input.list.length === 0) {
+        return []
+      } else {
+        return await ctx.db
+          .select()
+          .from(packages)
+          .where(inArray(packages.id, input.list))
+      }
+    }),
   getLatestStatus: protectedProcedure
     .input(
       z.object({

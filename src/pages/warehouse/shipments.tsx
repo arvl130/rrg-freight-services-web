@@ -11,188 +11,12 @@ import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { ArrowsDownUp } from "@phosphor-icons/react/ArrowsDownUp"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
-
-function RecentActivityTile() {
-  return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem] col-span-2 ">
-      <div className="mb-5">
-        <div
-          style={{ borderBottom: "1px solid #C9C1C1" }}
-          className="flex justify-between pt-1 "
-        >
-          <div style={{ fontSize: "19px" }}>
-            <button
-              style={{
-                color: "#79CFDC",
-                fontWeight: "700",
-                borderBottom: "3px solid #78CFDC",
-              }}
-              className="mr-7"
-            >
-              All Manifest
-            </button>
-            <button className="font-light text-gray-400	">
-              Archive Manifest
-            </button>
-          </div>
-          <div className="flex">
-            <div className="flex items-center	">
-              <p>Showing</p>
-              <select
-                placeholder="All"
-                style={{
-                  border: "1px solid gray",
-                  width: "60px",
-                  outline: "none",
-                  borderRadius: "5px",
-                }}
-                className="ml-2 mr-2"
-              >
-                <option>All</option>
-              </select>
-              <p>Entries</p>
-            </div>
-            <div className="flex items-center ml-5">
-              <button>
-                <CaretDoubleLeft size={15} />
-              </button>
-              <button>
-                <CaretLeft size={15} />
-              </button>
-              {/* Pager */}
-              <div>
-                <p style={{ fontSize: "13px" }} className="text-slate-400	">
-                  1 2 3 4 5 ... 10
-                </p>
-              </div>
-              <button>
-                <CaretRight size={15} />
-              </button>
-              <button>
-                <CaretDoubleRight size={15} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="text-sm">
-        <table className="min-w-full	text-left">
-          <thead
-            className="uppercase"
-            style={{ fontSize: "15px", borderBottom: "1px solid #C9C1C1" }}
-          >
-            <tr>
-              <th className="flex items-center	">
-                <input type="checkbox"></input> &nbsp; Manifest
-                <button>
-                  <ArrowsDownUp size={15} />
-                </button>
-              </th>
-              <th>Sender</th>
-              <th>Reciever</th>
-              <th>Origin Country</th>
-              <th>Arrived Date</th>
-              <th className="flex items-center	">
-                Status
-                <button>
-                  <ArrowsDownUp size={15} />
-                </button>
-              </th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              className=""
-              style={{ height: "50px", borderBottom: "1px solid #C9C1C1" }}
-            >
-              <td className="	">
-                <p>
-                  <input type="checkbox"></input> &nbsp; <span>1234095</span>
-                </p>
-              </td>
-              <td>
-                <h2 className="font-bold	">John Doe</h2>
-                <p style={{ fontSize: "11px" }} className="">
-                  48 Howard Dr. Ocoee, FL 34761
-                </p>
-              </td>
-              <td>
-                <h2 className="font-bold	">John Dela Cruz</h2>
-                <p style={{ fontSize: "11px" }} className="">
-                  25 Brgy. Gulod Novaliches Quezon City
-                </p>
-              </td>
-              <td>
-                <h2 className="font-bold	">DUBAI</h2>
-              </td>
-              <td>
-                <h2 className="font-bold	">October 1, 2023 19:01</h2>
-              </td>
-              <td>
-                <div
-                  style={{ backgroundColor: "#A19D97", borderRadius: "10px" }}
-                  className="px-2 py-0.5 text-center text-white		"
-                >
-                  <p>Preparing</p>
-                </div>
-              </td>
-              <td>
-                <button>
-                  <DotsThree size={32} />
-                </button>
-              </td>
-            </tr>
-            <tr
-              className=""
-              style={{ height: "50px", borderBottom: "1px solid #C9C1C1" }}
-            >
-              <td className="	">
-                <p>
-                  <input type="checkbox"></input> &nbsp; <span>1234095</span>
-                </p>
-              </td>
-              <td>
-                <h2 className="font-bold	">John Doe</h2>
-                <p style={{ fontSize: "11px" }} className="">
-                  48 Howard Dr. Ocoee, FL 34761
-                </p>
-              </td>
-              <td>
-                <h2 className="font-bold	">John Dela Cruz</h2>
-                <p style={{ fontSize: "11px" }} className="">
-                  25 Brgy. Gulod Novaliches Quezon City
-                </p>
-              </td>
-              <td>
-                <h2 className="font-bold	">JAPAN</h2>
-              </td>
-              <td>
-                <h2 className="font-bold	">October 1, 2023 19:01</h2>
-              </td>
-              <td>
-                <div
-                  style={{ backgroundColor: "#F17834", borderRadius: "10px" }}
-                  className="px-2 py-0.5 text-center text-white		"
-                >
-                  <p>Our for Delivery</p>
-                </div>
-              </td>
-              <td>
-                <button>
-                  <DotsThree size={32} />
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </article>
-  )
-}
-
+import { Shipment, ShipmentHub } from "@/server/db/entities"
+import { getColorFromShipmentStatus } from "@/utils/colors"
+import { useState } from "react"
+import { DateTime } from "luxon"
+import { api } from "@/utils/api"
+import { LoadingSpinner } from "@/components/spinner"
 function SearchBar() {
   return (
     <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
@@ -247,20 +71,290 @@ function SearchBar() {
   )
 }
 
-export default function DashboardPage() {
-  const { isLoading, role } = useSession({
-    required: {
-      role: "WAREHOUSE",
-    },
+function ShipmentStatus({ shipmentId }: { shipmentId: number }) {
+  const {
+    isLoading,
+    isError,
+    data: shipmentStatusLog,
+  } = api.shipment.getLatestStatus.useQuery({
+    id: shipmentId,
   })
 
-  if (isLoading || role !== "WAREHOUSE") return <>...</>
+  if (isLoading)
+    return (
+      <div className="w-36 py-0.5 text-white text-center rounded-md">...</div>
+    )
+
+  if (isError)
+    return (
+      <div className="w-36 py-0.5 text-white text-center rounded-md">error</div>
+    )
+
+  if (shipmentStatusLog === null)
+    return (
+      <div className="w-36 py-0.5 text-white text-center rounded-md">n/a</div>
+    )
+
+  return (
+    <div
+      className={`
+        w-36 py-0.5 text-white text-center rounded-md
+        ${getColorFromShipmentStatus(shipmentStatusLog.status)}
+      `}
+    >
+      {shipmentStatusLog.status.replaceAll("_", " ")}
+    </div>
+  )
+}
+function ShipmentArrivedDate({ shipmentId }: { shipmentId: number }) {
+  const {
+    isLoading,
+    isError,
+    data: shipmentStatusLog,
+  } = api.shipment.getLatestArrivedStatus.useQuery({
+    id: shipmentId,
+  })
+
+  if (isLoading)
+    return (
+      <div className="w-36 py-0.5 text-white text-center rounded-md">...</div>
+    )
+
+  if (isError)
+    return (
+      <div className="w-36 py-0.5 text-white text-center rounded-md">error</div>
+    )
+
+  if (shipmentStatusLog === null)
+    return <div className="w-36 py-0.5 rounded-md">N/A</div>
+
+  return (
+    <div className="w-36 py-0.5 rounded-md">
+      {DateTime.fromJSDate(shipmentStatusLog.createdAt).toLocaleString(
+        DateTime.DATETIME_FULL,
+      )}
+    </div>
+  )
+}
+function ShipmentTableItem({
+  shipment,
+}: {
+  shipment: Shipment & {
+    originHub: ShipmentHub
+    destinationHub: ShipmentHub
+  }
+}) {
+  return (
+    <tbody>
+      <tr
+        className=""
+        style={{ height: "50px", borderBottom: "1px solid #C9C1C1" }}
+      >
+        <td className="	">
+          <p>
+            <input type="checkbox"></input> &nbsp; <span>{shipment.id}</span>
+          </p>
+        </td>
+        <td>
+          <h2 className="font-bold	">{shipment.originHub.displayName}</h2>
+          <div style={{ fontSize: "11px" }} className="">
+            <p>{shipment.originHub.city}</p>
+            <p>{shipment.originHub.stateOrProvince}</p>
+            <p>
+              {shipment.originHub.countryCode} {shipment.originHub.postalCode}
+            </p>
+          </div>
+        </td>
+        <td>
+          <h2 className="font-bold	">{shipment.destinationHub.displayName}</h2>
+          <div style={{ fontSize: "11px" }} className="">
+            <p>{shipment.destinationHub.city}</p>
+            <p>{shipment.destinationHub.stateOrProvince}</p>
+            <p>
+              {shipment.destinationHub.countryCode}{" "}
+              {shipment.destinationHub.postalCode}
+            </p>
+          </div>
+        </td>
+        <td>
+          <h2 className="font-bold	">
+            <ShipmentArrivedDate shipmentId={shipment.id} />
+          </h2>
+        </td>
+
+        <td>
+          <ShipmentStatus shipmentId={shipment.id} />
+        </td>
+        <td>
+          <button>
+            <DotsThree size={32} />
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  )
+}
+
+function RecentActivityTile({
+  shipments,
+}: {
+  shipments: (Shipment & {
+    originHub: ShipmentHub
+    destinationHub: ShipmentHub
+  })[]
+}) {
+  const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
+  const allShipments = shipments.filter((shipment) => shipment.isArchived === 0)
+  const archivedShipments = shipments.filter(
+    (shipment) => shipment.isArchived === 1,
+  )
+  return (
+    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
+      <div className="flex justify-between mb-3">
+        <div className="flex gap-6">
+          <button
+            type="button"
+            className={`
+              text-lg pb-1 font-semibold border-b-2
+              ${
+                selectedTab === "ALL"
+                  ? "text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+            onClick={() => setSelectedTab("ALL")}
+          >
+            All Shipments
+          </button>
+          <button
+            type="button"
+            className={`
+              text-lg pb-1 font-semibold border-b-2
+              ${
+                selectedTab === "ARCHIVED"
+                  ? "text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+            onClick={() => setSelectedTab("ARCHIVED")}
+          >
+            Archived Shipments
+          </button>
+        </div>
+        <div className="flex gap-8">
+          <div>
+            Showing{" "}
+            <select className="bg-white border border-gray-300 px-2 py-1 w-16">
+              <option>All</option>
+            </select>{" "}
+            entries
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <CaretLeft size={16} />
+            <CaretDoubleLeft size={16} />
+            <button
+              type="button"
+              className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
+            >
+              1
+            </button>
+            <button type="button" className="text-gray-400">
+              2
+            </button>
+            <button type="button" className="text-gray-400">
+              3
+            </button>
+            <button type="button" className="text-gray-400">
+              4
+            </button>
+            <span className="text-gray-400">...</span>
+            <button type="button" className="text-gray-400">
+              10
+            </button>
+            <CaretRight size={16} />
+            <CaretDoubleRight size={16} />
+          </div>
+        </div>
+      </div>
+      {/* Table */}
+      <table className="min-w-full	text-left">
+        {/* Header */}
+        <thead
+          className="uppercase"
+          style={{ fontSize: "15px", borderBottom: "1px solid #C9C1C1" }}
+        >
+          <tr>
+            <th>
+              <input type="checkbox"></input>&nbsp; Shipment Id{" "}
+              <button>
+                <ArrowsDownUp size={15} />
+              </button>
+            </th>
+            <th>Origin</th>
+            <th>Destination</th>
+            <th>
+              Arrived Date{" "}
+              <button>
+                <ArrowsDownUp size={15} />
+              </button>
+            </th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        {/* Body */}
+        {selectedTab === "ALL" ? (
+          <>
+            {allShipments.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="text-center py-3">
+                  No Package Found
+                </td>
+              </tr>
+            ) : (
+              <>
+                {allShipments.map((shipment) => (
+                  <ShipmentTableItem key={shipment.id} shipment={shipment} />
+                ))}
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            {archivedShipments.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="text-center py-3">
+                  No Package Found
+                </td>
+              </tr>
+            ) : (
+              <>
+                {archivedShipments.map((shipment) => (
+                  <ShipmentTableItem key={shipment.id} shipment={shipment} />
+                ))}
+              </>
+            )}
+          </>
+        )}
+      </table>
+    </div>
+  )
+}
+
+export default function DashboardPage() {
+  const { user, role } = useSession()
+  const {
+    isLoading,
+    isError,
+    data: shipments,
+  } = api.shipment.getAllWithOriginAndDestination.useQuery(undefined, {
+    enabled: user !== null && role === "WAREHOUSE",
+  })
 
   return (
     <WarehouseLayout title="Dashboard">
       <div className="flex	justify-between	my-4">
         <h1 className="text-3xl font-black [color:_#00203F] mb-4">
-          Manifest List
+          Shipment List
         </h1>
         <button
           style={{ backgroundColor: "#79CFDC", borderRadius: "5px" }}
@@ -276,7 +370,21 @@ export default function DashboardPage() {
       <section className="mb-6"></section>
 
       <section className="grid grid-cols-1 gap-x-11 [color:_#404040] mb-6">
-        <RecentActivityTile />
+        {isLoading ? (
+          <div className="flex justify-center pt-4">
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <>
+            {isError ? (
+              <>Error :{"("}</>
+            ) : (
+              <>
+                <RecentActivityTile shipments={shipments} />
+              </>
+            )}
+          </>
+        )}
       </section>
     </WarehouseLayout>
   )
