@@ -323,7 +323,7 @@ export default function ShipmentsPage() {
         <div className="flex gap-3 text-sm">
           <button
             type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium invisible"
           >
             <DownloadSimple size={16} />
             <span>Import</span>
