@@ -131,7 +131,7 @@ function ShipmentArrivedDate({ shipmentId }: { shipmentId: number }) {
   return (
     <div className="w-36 py-0.5 rounded-md">
       {DateTime.fromJSDate(shipmentStatusLog.createdAt).toLocaleString(
-        DateTime.DATETIME_FULL
+        DateTime.DATETIME_FULL,
       )}
     </div>
   )
@@ -206,7 +206,7 @@ function RecentActivityTile({
   const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
   const allShipments = shipments.filter((shipment) => shipment.isArchived === 0)
   const archivedShipments = shipments.filter(
-    (shipment) => shipment.isArchived === 1
+    (shipment) => shipment.isArchived === 1,
   )
   return (
     <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
