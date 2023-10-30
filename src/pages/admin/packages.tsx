@@ -33,43 +33,25 @@ function PackageStatus({ packageId }: { packageId: number }) {
 
   if (isLoading)
     return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        ...
-      </div>
+      <div className="w-36 py-0.5 text-white text-center rounded-md">...</div>
     )
 
   if (isError)
     return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        error
-      </div>
+      <div className="w-36 py-0.5 text-white text-center rounded-md">error</div>
     )
 
   if (packageStatusLog === null)
     return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        n/a
-      </div>
+      <div className="w-36 py-0.5 text-white text-center rounded-md">n/a</div>
     )
 
   return (
     <div
       className={`
-      w-36 py-0.5 text-white text-center rounded-md
-      ${getColorFromPackageStatus(packageStatusLog.status)}
-  `}
+        w-36 py-0.5 text-white text-center rounded-md
+        ${getColorFromPackageStatus(packageStatusLog.status)}
+      `}
     >
       {packageStatusLog.status.replaceAll("_", " ")}
     </div>
