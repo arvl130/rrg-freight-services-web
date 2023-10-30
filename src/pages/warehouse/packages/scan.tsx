@@ -51,12 +51,12 @@ function PackageScanTile() {
         </div>
       </div>
 
-      <Tablescan></Tablescan>
+      <ScanTable></ScanTable>
     </article>
   )
 }
 
-function Tablescan() {
+function ScanTable() {
   const { user, role } = useSession()
   const [packageIds, setPackageIds] = useState<number[]>([])
 

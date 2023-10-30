@@ -136,7 +136,7 @@ function ShipmentArrivedDate({ shipmentId }: { shipmentId: number }) {
     </div>
   )
 }
-function ShipmentTableitem({
+function ShipmentTableItem({
   shipment,
 }: {
   shipment: Shipment & {
@@ -313,7 +313,7 @@ function RecentActivityTile({
             ) : (
               <>
                 {allShipments.map((shipment) => (
-                  <ShipmentTableitem key={shipment.id} shipment={shipment} />
+                  <ShipmentTableItem key={shipment.id} shipment={shipment} />
                 ))}
               </>
             )}
@@ -329,7 +329,7 @@ function RecentActivityTile({
             ) : (
               <>
                 {archivedShipments.map((shipment) => (
-                  <ShipmentTableitem key={shipment.id} shipment={shipment} />
+                  <ShipmentTableItem key={shipment.id} shipment={shipment} />
                 ))}
               </>
             )}

@@ -237,7 +237,7 @@ function RecentActivityTile({ packages }: { packages: Package[] }) {
             ) : (
               <>
                 {allPackages.map((_package) => (
-                  <Tableitem key={_package.id} package={_package} />
+                  <TableItem key={_package.id} package={_package} />
                 ))}
               </>
             )}
@@ -253,7 +253,7 @@ function RecentActivityTile({ packages }: { packages: Package[] }) {
             ) : (
               <>
                 {archivedPackages.map((_package) => (
-                  <Tableitem key={_package.id} package={_package} />
+                  <TableItem key={_package.id} package={_package} />
                 ))}
               </>
             )}
@@ -263,7 +263,7 @@ function RecentActivityTile({ packages }: { packages: Package[] }) {
     </div>
   )
 }
-function Tableitem({ package: _package }: { package: Package }) {
+function TableItem({ package: _package }: { package: Package }) {
   return (
     <tbody>
       <tr
