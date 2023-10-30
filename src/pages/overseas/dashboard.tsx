@@ -364,42 +364,28 @@ function RecentNotificationTile() {
 }
 
 export default function DashboardPage() {
-  const { isLoading, role } = useSession({
-    required: {
-      role: "OVERSEAS_AGENT",
-    },
-  })
-
-  if (isLoading || role !== "OVERSEAS_AGENT") return <>...</>
-
   return (
     <OverseasLayout title="Dashboard">
-      {() => (
-        <>
-          <h1 className="text-3xl font-black [color:_#00203F] mb-8">
-            Dashboard
-          </h1>
-          <section className="mb-6">
-            <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
-              <ClusterTile />
-              <PackagesTile />
-              <ManifestsTile />
-            </div>
-          </section>
-          <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
-            <ManifestSummaryTile />
-            <CalendarWidgetTile year={2023} month="October" />
-          </section>
-          <section className="grid grid-cols-[1fr_38rem] gap-x-6 [color:_#404040] mb-6">
-            <RecentClusterTile />
-            <RecentAddedManifestTile />
-          </section>
-          <section className="grid grid-cols-[1fr_55rem] gap-x-6 [color:_#404040]">
-            <RecentNotificationTile />
-            <ManifestHistoryTile />
-          </section>
-        </>
-      )}
+      <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
+      <section className="mb-6">
+        <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
+          <ClusterTile />
+          <PackagesTile />
+          <ManifestsTile />
+        </div>
+      </section>
+      <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
+        <ManifestSummaryTile />
+        <CalendarWidgetTile year={2023} month="October" />
+      </section>
+      <section className="grid grid-cols-[1fr_38rem] gap-x-6 [color:_#404040] mb-6">
+        <RecentClusterTile />
+        <RecentAddedManifestTile />
+      </section>
+      <section className="grid grid-cols-[1fr_55rem] gap-x-6 [color:_#404040]">
+        <RecentNotificationTile />
+        <ManifestHistoryTile />
+      </section>
     </OverseasLayout>
   )
 }
