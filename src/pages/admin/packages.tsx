@@ -14,6 +14,7 @@ import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
 import { Plus } from "@phosphor-icons/react/Plus"
+import { PackagesImportWizard } from "@/components/packages/import-wizard"
 
 function PageHeader() {
   return (
@@ -239,6 +240,7 @@ export default function PackagesPage() {
   } = api.package.getAll.useQuery(undefined, {
     enabled: user !== null && role === "ADMIN",
   })
+  const [isOpenImportWizard, setIsOpenImportWizard] = useState(false)
 
   return (
     <AdminLayout title="Packages">
@@ -279,6 +281,7 @@ export default function PackagesPage() {
           <button
             type="button"
             className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+            onClick={() => setIsOpenImportWizard(true)}
           >
             <DownloadSimple size={16} />
             <span>Import</span>
@@ -301,6 +304,10 @@ export default function PackagesPage() {
           {isError ? <>Error :{"("}</> : <PackagesTable packages={packages} />}
         </>
       )}
+      <PackagesImportWizard
+        isOpen={isOpenImportWizard}
+        close={() => setIsOpenImportWizard(false)}
+      />
     </AdminLayout>
   )
 }

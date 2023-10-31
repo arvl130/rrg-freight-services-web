@@ -1,14 +1,90 @@
-import { and, eq } from "drizzle-orm"
+import { and, eq, sql } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
 import { packageStatusLogs, packages } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { inArray } from "drizzle-orm"
+import {
+  ReceptionMode,
+  ShippingMode,
+  ShippingType,
+  supportedReceptionModes,
+  supportedShippingModes,
+  supportedShippingTypes,
+} from "@/utils/constants"
+import { ResultSetHeader } from "mysql2"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(packages)
   }),
+  createMany: protectedProcedure
+    .input(
+      z.object({
+        newPackages: z
+          .object({
+            shippingMode: z.custom<ShippingMode>((val) =>
+              supportedShippingModes.includes(val as ShippingMode),
+            ),
+            shippingType: z.custom<ShippingType>((val) =>
+              supportedShippingTypes.includes(val as ShippingType),
+            ),
+            receptionMode: z.custom<ReceptionMode>((val) =>
+              supportedReceptionModes.includes(val as ReceptionMode),
+            ),
+            weightInKg: z.number(),
+            senderFullName: z.string().min(1).max(100),
+            senderContactNumber: z.string().min(1).max(15),
+            senderEmailAddress: z.string().min(1).max(100),
+            senderStreetAddress: z.string().min(1).max(255),
+            senderCity: z.string().min(1).max(100),
+            senderStateOrProvince: z.string().min(1).max(100),
+            senderCountryCode: z.string().min(1).max(3),
+            senderPostalCode: z.number(),
+            receiverFullName: z.string().min(1).max(100),
+            receiverContactNumber: z.string().min(1).max(15),
+            receiverEmailAddress: z.string().min(1).max(100),
+            receiverStreetAddress: z.string().min(1).max(255),
+            receiverBarangay: z.string().min(1).max(100),
+            receiverCity: z.string().min(1).max(100),
+            receiverStateOrProvince: z.string().min(1).max(100),
+            receiverCountryCode: z.string().min(1).max(3),
+            receiverPostalCode: z.number(),
+          })
+          .array(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const insertIds = await ctx.db.transaction(async (tx) => {
+        const insertIds: number[] = []
+
+        for (const newPackage of input.newPackages) {
+          const [result] = (await tx.insert(packages).values({
+            ...newPackage,
+            createdById: ctx.user.uid,
+            updatedById: ctx.user.uid,
+          })) as unknown as [ResultSetHeader]
+
+          insertIds.push(result.insertId)
+          await tx.insert(packageStatusLogs).values({
+            packageId: result.insertId,
+            status: "IN_WAREHOUSE",
+            description: "Package registered.",
+            createdAt: new Date(),
+            createdById: ctx.user.uid,
+          })
+        }
+
+        return insertIds
+      })
+
+      if (insertIds.length === 0) return []
+      else
+        return await ctx.db
+          .select()
+          .from(packages)
+          .where(inArray(packages.id, insertIds))
+    }),
   getByIds: protectedProcedure
     .input(
       z.object({
