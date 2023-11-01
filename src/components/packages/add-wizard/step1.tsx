@@ -266,13 +266,13 @@ type SelectFileFormType = z.infer<typeof selectFileFormSchema>
 export function PackagesAddWizardInformation({
   isOpenModal,
 }: {
-  isOpenModal: boolean 
+  isOpenModal: boolean
 }) {
-  const { reset } = useForm() 
+  const { reset } = useForm()
 
   useEffect(() => {
-    if (!isOpenModal) reset() 
-  }, [isOpenModal, reset]) 
+    if (!isOpenModal) reset()
+  }, [isOpenModal, reset])
   return (
     <div className="h-full grid grid-rows-[auto_1fr] grid-cols-[100%]">
       <div className="text-white font-bold text-center items-center py-4 [background-color:_#78CFDC] text-3xl">

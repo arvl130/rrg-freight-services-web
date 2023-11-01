@@ -11,12 +11,11 @@ export function PackagesAddWizard({
   close: () => void
 }) {
   const modalRef = useRef<null | HTMLDialogElement>(null)
-  
+
   useEffect(() => {
     if (isOpen) modalRef.current?.showModal()
     else {
       modalRef.current?.close()
-      
     }
   }, [isOpen])
 
@@ -30,11 +29,7 @@ export function PackagesAddWizard({
       `}
     >
       <div className="h-full grid">
-       
-          <PackagesAddWizardInformation
-            isOpenModal={isOpen}
-          />
-
+        <PackagesAddWizardInformation isOpenModal={isOpen} />
       </div>
     </dialog>
   )
