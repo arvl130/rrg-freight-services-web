@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import { Package } from "@/server/db/entities"
+import { Check } from "@phosphor-icons/react/Check"
 
 const newPackageSchema = z.object({
   shippingMode: z.custom<ShippingMode>((val) =>
@@ -146,8 +147,8 @@ export function PackagesImportWizardCreatePackages({
       <ul className="grid grid-cols-[auto_1fr_auto_1fr_auto_1fr_auto_1fr_auto] gap-1 items-center px-12 py-6 [background-color:_#78CFDC] text-sm">
         <li className="grid grid-cols-[auto_1fr] gap-1 items-center">
           <div className="flex items-center gap-2">
-            <p className="flex justify-center items-center h-8 w-8 bg-white rounded-full">
-              1
+            <p className="flex justify-center items-center h-8 w-8 bg-green-600 text-white rounded-full">
+              <Check size={20} />
             </p>
             <p>Upload file</p>
           </div>
@@ -156,25 +157,27 @@ export function PackagesImportWizardCreatePackages({
         <li className="grid grid-cols-[auto_1fr] gap-1 items-center">
           <div className="flex items-center gap-2">
             <p className="flex justify-center items-center h-8 w-8 bg-white rounded-full">
-              2
+              <p className="flex justify-center items-center h-8 w-8 bg-green-600 text-white rounded-full">
+                <Check size={20} />
+              </p>
             </p>
-            <p>Select header row</p>
+            <p>Select header</p>
           </div>
         </li>
         <li className="h-[2px] bg-white"></li>
         <li className="grid grid-cols-[auto_1fr] gap-1 items-center">
           <div className="flex items-center gap-2">
-            <p className="flex justify-center items-center h-8 w-8 bg-white rounded-full">
-              2
+            <p className="flex justify-center items-center h-8 w-8 bg-green-600 text-white rounded-full">
+              <Check size={20} />
             </p>
-            <p>Match columns</p>
+            <p>Select columns</p>
           </div>
         </li>
         <li className="h-[2px] bg-white"></li>
         <li className="grid grid-cols-[auto_1fr] gap-1 items-center">
           <div className="flex items-center gap-2">
-            <p className="flex justify-center items-center h-8 w-8 bg-white rounded-full">
-              3
+            <p className="flex justify-center items-center h-8 w-8 bg-white rounded-full border-2 border-green-600">
+              4
             </p>
             <p>Validate data</p>
           </div>

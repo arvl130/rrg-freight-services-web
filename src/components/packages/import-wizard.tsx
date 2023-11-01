@@ -91,13 +91,17 @@ export function PackagesImportWizard({
       onClose={close}
       onCancel={(e) => {
         e.preventDefault()
-        if (selectedItems.createdPackages === null)
-          if (
-            confirm(
-              "Are you sure you want to quit? All unsaved changes will be lost.",
-            )
+        if (selectedItems.createdPackages !== null) {
+          e.currentTarget.close()
+          return
+        }
+
+        if (
+          confirm(
+            "Are you sure you want to quit? All unsaved changes will be lost.",
           )
-            e.currentTarget.close()
+        )
+          e.currentTarget.close()
       }}
       className={`
         bg-white w-[min(100%,_64rem)] rounded-2xl h-[calc(100vh_-_6rem)]
