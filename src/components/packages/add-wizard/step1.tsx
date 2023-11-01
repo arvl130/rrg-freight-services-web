@@ -265,24 +265,14 @@ type SelectFileFormType = z.infer<typeof selectFileFormSchema>
 
 export function PackagesAddWizardInformation({
   isOpenModal,
-  setSelectedWorkBook,
 }: {
-  isOpenModal: boolean
-  setSelectedWorkBook: (wb: WorkBook) => void
+  isOpenModal: boolean 
 }) {
-  const {
-    reset,
-    register,
-    formState: { isValid },
-    handleSubmit,
-  } = useForm<SelectFileFormType>({
-    resolver: zodResolver(selectFileFormSchema),
-  })
+  const { reset } = useForm() 
 
   useEffect(() => {
-    if (!isOpenModal) reset()
-  }, [isOpenModal, reset])
-
+    if (!isOpenModal) reset() 
+  }, [isOpenModal, reset]) 
   return (
     <div className="h-full grid grid-rows-[auto_1fr] grid-cols-[100%]">
       <div className="text-white font-bold text-center items-center py-4 [background-color:_#78CFDC] text-3xl">
