@@ -150,7 +150,7 @@ export function PackagesImportWizardCreatePackages({
             <p className="flex justify-center items-center h-8 w-8 bg-green-600 text-white rounded-full">
               <Check size={20} />
             </p>
-            <p>Upload file</p>
+            <p>Choose file</p>
           </div>
         </li>
         <li className="h-[2px] bg-white"></li>
