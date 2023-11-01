@@ -7,22 +7,23 @@ import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { Plus } from "@phosphor-icons/react/Plus"
 import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 import { Package } from "@/server/db/entities"
 import { getColorFromPackageStatus } from "@/utils/colors"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
+import { Plus } from "@phosphor-icons/react/Plus"
+import { PackagesImportWizard } from "@/components/packages/import-wizard"
 
 function PageHeader() {
   return (
-    <div className="flex justify-between mb-6">
-      <h1 className="text-3xl font-black [color:_#00203F]">Packages</h1>
-      <div className="grid">
+    <div className="flex justify-between mb-4">
+      <h1 className="text-3xl font-black [color:_#00203F] mb-2">Packages</h1>
+      <div>
         <button
           type="button"
-          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
+          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
         >
           <Plus size={16} />
           <span>Add Package</span>
@@ -43,43 +44,25 @@ function PackageStatus({ packageId }: { packageId: number }) {
 
   if (isLoading)
     return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        ...
-      </div>
+      <div className="w-36 py-0.5 text-white text-center rounded-md">...</div>
     )
 
   if (isError)
     return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        error
-      </div>
+      <div className="w-36 py-0.5 text-white text-center rounded-md">error</div>
     )
 
   if (packageStatusLog === null)
     return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        n/a
-      </div>
+      <div className="w-36 py-0.5 text-white text-center rounded-md">n/a</div>
     )
 
   return (
     <div
       className={`
-      w-36 py-0.5 text-white text-center rounded-md
-      ${getColorFromPackageStatus(packageStatusLog.status)}
-  `}
+        w-36 py-0.5 text-white text-center rounded-md
+        ${getColorFromPackageStatus(packageStatusLog.status)}
+      `}
     >
       {packageStatusLog.status.replaceAll("_", " ")}
     </div>
@@ -257,76 +240,74 @@ export default function PackagesPage() {
   } = api.package.getAll.useQuery(undefined, {
     enabled: user !== null && role === "OVERSEAS_AGENT",
   })
+  const [isOpenImportWizard, setIsOpenImportWizard] = useState(false)
 
   return (
     <OverseasLayout title="Packages">
-      <>
-        <PageHeader />
-        <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
-          <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
-            <input
-              type="text"
-              className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
-              placeholder="Quick search"
-            />
-            <button
-              type="button"
-              className="text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
-            >
-              <span className="sr-only">Search</span>
-              <MagnifyingGlass size={16} />
-            </button>
-          </div>
-          <div className="flex gap-3 text-sm">
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-              <option value="">Status</option>
-            </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-              <option value="">Warehouse</option>
-            </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-              <option value="">City</option>
-            </select>
-            <button
-              type="button"
-              className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
-            >
-              Clear Filter
-            </button>
-          </div>
-          <div className="flex gap-3 text-sm">
-            <button
-              type="button"
-              className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-            >
-              <DownloadSimple size={16} />
-              <span>Import</span>
-            </button>
-            <button
-              type="button"
-              className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-            >
-              <Export size={16} />
-              <span>Export</span>
-            </button>
-          </div>
+      <PageHeader />
+      <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
+        <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
+          <input
+            type="text"
+            className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
+            placeholder="Quick search"
+          />
+          <button
+            type="button"
+            className="text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
+          >
+            <span className="sr-only">Search</span>
+            <MagnifyingGlass size={16} />
+          </button>
         </div>
-        {isLoading ? (
-          <div className="flex justify-center pt-4">
-            <LoadingSpinner />
-          </div>
-        ) : (
-          <>
-            {isError ? (
-              <>Error :{"("}</>
-            ) : (
-              <>
-                <PackagesTable packages={packages} />
-              </>
-            )}
-          </>
-        )}
-      </>
+        <div className="flex gap-3 text-sm">
+          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+            <option value="">Status</option>
+          </select>
+          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+            <option value="">Warehouse</option>
+          </select>
+          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+            <option value="">City</option>
+          </select>
+          <button
+            type="button"
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
+          >
+            Clear Filter
+          </button>
+        </div>
+        <div className="flex gap-3 text-sm">
+          <button
+            type="button"
+            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+            onClick={() => setIsOpenImportWizard(true)}
+          >
+            <DownloadSimple size={16} />
+            <span>Import</span>
+          </button>
+          <button
+            type="button"
+            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+          >
+            <Export size={16} />
+            <span>Export</span>
+          </button>
+        </div>
+      </div>
+      {isLoading ? (
+        <div className="flex justify-center pt-4">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        <>
+          {isError ? <>Error :{"("}</> : <PackagesTable packages={packages} />}
+        </>
+      )}
+      <PackagesImportWizard
+        isOpen={isOpenImportWizard}
+        close={() => setIsOpenImportWizard(false)}
+      />
     </OverseasLayout>
   )
 }
