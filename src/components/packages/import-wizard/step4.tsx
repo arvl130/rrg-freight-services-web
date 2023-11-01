@@ -122,8 +122,11 @@ export function PackagesImportWizardSelectColumnNames({
       <div className="px-12 py-6 overflow-auto">
         <p className="font-medium">Match columns</p>
         <div className="grid grid-cols-2 gap-y-3 max-w-md mx-auto">
-          <label>Shipping Mode</label>
-          <select {...register("shippingMode")}>
+          <label className="flex items-center">Shipping Mode</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("shippingMode")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -135,8 +138,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Shipping Type</label>
-          <select {...register("shippingType")}>
+          <label className="flex items-center">Shipping Type</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("shippingType")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -148,8 +154,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Reception Mode</label>
-          <select {...register("receptionMode")}>
+          <label className="flex items-center">Reception Mode</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("receptionMode")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -161,8 +170,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Weight In Kg</label>
-          <select {...register("weightInKg")}>
+          <label className="flex items-center">Weight In Kg</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("weightInKg")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -174,8 +186,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Sender Full Name</label>
-          <select {...register("senderFullName")}>
+          <label className="flex items-center">Sender Full Name</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("senderFullName")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -187,8 +202,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Sender Contact Number</label>
-          <select {...register("senderContactNumber")}>
+          <label className="flex items-center">Sender Contact Number</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("senderContactNumber")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -200,8 +218,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Sender Email Address</label>
-          <select {...register("senderEmailAddress")}>
+          <label className="flex items-center">Sender Email Address</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("senderEmailAddress")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -213,8 +234,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Sender Street Address</label>
-          <select {...register("senderStreetAddress")}>
+          <label className="flex items-center">Sender Street Address</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("senderStreetAddress")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -226,8 +250,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Sender City</label>
-          <select {...register("senderCity")}>
+          <label className="flex items-center">Sender City</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("senderCity")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -239,8 +266,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Sender State/Province</label>
-          <select {...register("senderStateOrProvince")}>
+          <label className="flex items-center">Sender State/Province</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("senderStateOrProvince")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -252,8 +282,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Sender Country Code</label>
-          <select {...register("senderCountryCode")}>
+          <label className="flex items-center">Sender Country Code</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("senderCountryCode")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -265,8 +298,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Sender Postal Code</label>
-          <select {...register("senderPostalCode")}>
+          <label className="flex items-center">Sender Postal Code</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("senderPostalCode")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -278,8 +314,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Receiver Full Name</label>
-          <select {...register("receiverFullName")}>
+          <label className="flex items-center">Receiver Full Name</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("receiverFullName")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -291,8 +330,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Receiver Contact Number</label>
-          <select {...register("receiverContactNumber")}>
+          <label className="flex items-center">Receiver Contact Number</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("receiverContactNumber")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -304,8 +346,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Receiver Email Address</label>
-          <select {...register("receiverEmailAddress")}>
+          <label className="flex items-center">Receiver Email Address</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("receiverEmailAddress")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -317,8 +362,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Receiver Street Address</label>
-          <select {...register("receiverStreetAddress")}>
+          <label className="flex items-center">Receiver Street Address</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("receiverStreetAddress")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -330,8 +378,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Receiver Barangay</label>
-          <select {...register("receiverBarangay")}>
+          <label className="flex items-center">Receiver Barangay</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("receiverBarangay")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -343,8 +394,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Receiver City</label>
-          <select {...register("receiverCity")}>
+          <label className="flex items-center">Receiver City</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("receiverCity")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -356,8 +410,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Receiver State/Province</label>
-          <select {...register("receiverStateOrProvince")}>
+          <label className="flex items-center">Receiver State/Province</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("receiverStateOrProvince")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -369,8 +426,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Receiver Country Code</label>
-          <select {...register("receiverCountryCode")}>
+          <label className="flex items-center">Receiver Country Code</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("receiverCountryCode")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
@@ -382,8 +442,11 @@ export function PackagesImportWizardSelectColumnNames({
               </option>
             ))}
           </select>
-          <label>Receiver Postal Code</label>
-          <select {...register("receiverPostalCode")}>
+          <label className="flex items-center">Receiver Postal Code</label>
+          <select
+            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md"
+            {...register("receiverPostalCode")}
+          >
             <option value="">Select ...</option>
             {sheetColumnNames.map((columnName) => (
               <option
