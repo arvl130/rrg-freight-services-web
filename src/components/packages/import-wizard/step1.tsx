@@ -211,13 +211,9 @@ export function PackagesImportWizardSelectFile({
         </li>
       </ul>
       <div className="px-12 py-6 grid grid-rows-[auto_auto_1fr]">
-        <div className="mb-4">
+        <div className="mb-3">
           <h3 className="font-semibold mb-2">Upload file</h3>
           <p>Data that we expect:</p>
-          <p className="text-gray-500 text-sm">
-            In the upcoming steps, you&apos;ll be provided with the opportunity
-            to change the names of columns or delete them if needed.
-          </p>
         </div>
         <ExampleTable />
         <form
