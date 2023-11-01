@@ -10,12 +10,97 @@ import {
 import { ArrowLeft } from "@phosphor-icons/react/ArrowLeft"
 import { WorkBook, utils } from "xlsx"
 import { MatchColumnsFormType } from "./step4"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import { Package } from "@/server/db/entities"
 import { Check } from "@phosphor-icons/react/Check"
+
+function SheetRowItem({
+  index,
+  row,
+  isValid,
+  isChecked,
+  fieldsWithErrors,
+  selectedColumnNames,
+  onCheckboxChange,
+}: {
+  index: number
+  row: Record<string, string>
+  isValid: boolean
+  isChecked: boolean
+  fieldsWithErrors: string[]
+  selectedColumnNames: MatchColumnsFormType
+  onCheckboxChange: ({
+    isChecked,
+    index,
+  }: {
+    isChecked: boolean
+    index: number
+  }) => void
+}) {
+  return (
+    <div
+      className="px-2 py-1"
+      style={{
+        display: "grid",
+        gridTemplateColumns: `2rem repeat(${
+          Object.values(row as object).length
+        }, 12rem)`,
+      }}
+    >
+      <div className="text-center">
+        {isValid && (
+          <input
+            type="checkbox"
+            checked={isChecked}
+            onChange={(e) =>
+              onCheckboxChange({
+                isChecked: e.currentTarget.checked,
+                index,
+              })
+            }
+          />
+        )}
+      </div>
+      <>
+        {Object.keys(selectedColumnNames).map((key) => {
+          const columnName = key as keyof MatchColumnsFormType
+          if (isValid)
+            return (
+              <div
+                key={`${index}-${key}`}
+                className="px-1 py-0.5 overflow-hidden text-ellipsis"
+              >
+                {row[selectedColumnNames[columnName]]}
+              </div>
+            )
+
+          return (
+            <>
+              {fieldsWithErrors.includes(columnName) ? (
+                <div
+                  key={`${index}-${key}`}
+                  className="px-1 py-0.5 bg-red-200 overflow-hidden text-ellipsis"
+                >
+                  {row[selectedColumnNames[columnName]]}
+                </div>
+              ) : (
+                <div
+                  key={`${index}-${key}`}
+                  className="px-1 py-0.5 overflow-hidden text-ellipsis"
+                >
+                  {row[selectedColumnNames[columnName]]}
+                </div>
+              )}
+            </>
+          )
+        })}
+      </>
+    </div>
+  )
+}
 
 const newPackageSchema = z.object({
   shippingMode: z.custom<ShippingMode>((val) =>
@@ -84,6 +169,54 @@ export function PackagesImportWizardCreatePackages({
     return newSheetRows
   }, [originalSheetRows, selectedHeaderRow])
 
+  function getValidRows() {
+    const rowsWithValidity = sheetRows.map((row, index) => {
+      const fieldsWithErrors: string[] = []
+      try {
+        newPackageSchema.parse({
+          shippingMode: row[selectedColumnNames.shippingMode],
+          shippingType: row[selectedColumnNames.shippingType],
+          receptionMode: row[selectedColumnNames.receptionMode],
+          weightInKg: row[selectedColumnNames.weightInKg],
+          senderFullName: row[selectedColumnNames.senderFullName],
+          senderContactNumber: row[selectedColumnNames.senderContactNumber],
+          senderEmailAddress: row[selectedColumnNames.senderEmailAddress],
+          senderStreetAddress: row[selectedColumnNames.senderStreetAddress],
+          senderCity: row[selectedColumnNames.senderCity],
+          senderStateOrProvince: row[selectedColumnNames.senderStateOrProvince],
+          senderCountryCode: row[selectedColumnNames.senderCountryCode],
+          senderPostalCode: row[selectedColumnNames.senderPostalCode],
+          receiverFullName: row[selectedColumnNames.receiverFullName],
+          receiverContactNumber: row[selectedColumnNames.receiverContactNumber],
+          receiverEmailAddress: row[selectedColumnNames.receiverEmailAddress],
+          receiverStreetAddress: row[selectedColumnNames.receiverStreetAddress],
+          receiverBarangay: row[selectedColumnNames.receiverBarangay],
+          receiverCity: row[selectedColumnNames.receiverCity],
+          receiverStateOrProvince:
+            row[selectedColumnNames.receiverStateOrProvince],
+          receiverCountryCode: row[selectedColumnNames.receiverCountryCode],
+          receiverPostalCode: row[selectedColumnNames.receiverPostalCode],
+        })
+      } catch (e) {
+        if (e instanceof ZodError)
+          for (const key of Object.keys(e.flatten().fieldErrors))
+            fieldsWithErrors.push(key)
+      }
+
+      const isValid = fieldsWithErrors.length === 0
+      return {
+        ...row,
+        isValid,
+        index,
+      }
+    })
+
+    const validRows = rowsWithValidity
+      .filter((row) => row.isValid)
+      .map((row) => row.index)
+    return validRows
+  }
+
   const [selectedRows, setSelectedRows] = useState<number[]>([])
   const {
     setValue,
@@ -138,6 +271,8 @@ export function PackagesImportWizardCreatePackages({
       setCreatedPackages(createdPackages)
     },
   })
+
+  const selectAllRef = useRef<null | HTMLInputElement>(null)
 
   return (
     <form
@@ -203,7 +338,18 @@ export function PackagesImportWizardCreatePackages({
         <div className="overflow-auto border border-gray-300">
           <div className="grid grid-cols-[2rem_repeat(22,_12rem)] font-semibold px-2 py-1">
             <div className="text-center">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                ref={selectAllRef}
+                onChange={(e) => {
+                  if (e.currentTarget.checked) {
+                    const validRows = getValidRows()
+                    setSelectedRows(validRows)
+                  } else {
+                    setSelectedRows([])
+                  }
+                }}
+              />
             </div>
             <div className="px-1 py-0.5">Shipping Mode</div>
             <div className="px-1 py-0.5">Shipping Type</div>
@@ -269,69 +415,32 @@ export function PackagesImportWizardCreatePackages({
 
             const isValid = fieldsWithErrors.length === 0
             return (
-              <div
+              <SheetRowItem
                 key={index}
-                className="px-2 py-1"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: `2rem repeat(${
-                    Object.values(row as object).length
-                  }, 12rem)`,
-                }}
-              >
-                <div className="text-center">
-                  {isValid && (
-                    <input
-                      type="checkbox"
-                      onChange={(e) => {
-                        if (e.currentTarget.checked)
-                          setSelectedRows((currSelectedRows) => [
-                            ...currSelectedRows,
-                            index,
-                          ])
-                        else
-                          setSelectedRows((currSelectedRows) =>
-                            currSelectedRows.filter((row) => row != index),
-                          )
-                      }}
-                    />
-                  )}
-                </div>
-                <>
-                  {Object.keys(selectedColumnNames).map((key) => {
-                    const columnName = key as keyof MatchColumnsFormType
-                    if (isValid)
-                      return (
-                        <div
-                          key={`${index}-${key}`}
-                          className="px-1 py-0.5 overflow-hidden text-ellipsis"
-                        >
-                          {row[selectedColumnNames[columnName]]}
-                        </div>
-                      )
-
-                    return (
-                      <>
-                        {fieldsWithErrors.includes(columnName) ? (
-                          <div
-                            key={`${index}-${key}`}
-                            className="px-1 py-0.5 bg-red-200 overflow-hidden text-ellipsis"
-                          >
-                            {row[selectedColumnNames[columnName]]}
-                          </div>
-                        ) : (
-                          <div
-                            key={`${index}-${key}`}
-                            className="px-1 py-0.5 overflow-hidden text-ellipsis"
-                          >
-                            {row[selectedColumnNames[columnName]]}
-                          </div>
-                        )}
-                      </>
+                row={row}
+                index={index}
+                isValid={isValid}
+                isChecked={selectedRows.includes(index)}
+                selectedColumnNames={selectedColumnNames}
+                fieldsWithErrors={fieldsWithErrors}
+                onCheckboxChange={({ isChecked, index }) => {
+                  if (isChecked) {
+                    setSelectedRows((currSelectedRows) => [
+                      ...currSelectedRows,
+                      index,
+                    ])
+                  } else {
+                    setSelectedRows((currSelectedRows) =>
+                      currSelectedRows.filter((rowIndex) => rowIndex !== index),
                     )
-                  })}
-                </>
-              </div>
+
+                    const validRows = getValidRows()
+                    if (validRows.includes(index) && selectAllRef.current) {
+                      selectAllRef.current.checked = false
+                    }
+                  }
+                }}
+              />
             )
           })}
         </div>
