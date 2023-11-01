@@ -1,61 +1,7 @@
-import { useEffect, useRef, useState } from "react"
-import { PackagesImportWizardSelectFile } from "./add-wizard/step1"
-import { PackagesImportWizardSelectHeader } from "./add-wizard/step3"
-import {
-  MatchColumnsFormType,
-  PackagesImportWizardSelectColumnNames,
-} from "./add-wizard/step4"
-import { PackagesImportWizardCreatePackages } from "./add-wizard/step5"
-import { PackagesImportWizardSummary } from "./add-wizard/step6"
-import { WorkBook } from "xlsx"
-import { Package } from "@/server/db/entities"
-import { PackagesImportWizardSelectSheetName } from "./add-wizard/step2"
+import { useEffect, useRef } from "react"
+import { PackagesAddWizardInformation } from "./add-wizard/step1"
 
-type Selection =
-  | {
-      workBook: null
-      sheetName: null
-      headerRow: null
-      columnNames: null
-      createdPackages: null
-    }
-  | {
-      workBook: WorkBook
-      sheetName: null
-      headerRow: null
-      columnNames: null
-      createdPackages: null
-    }
-  | {
-      workBook: WorkBook
-      sheetName: string
-      headerRow: null
-      columnNames: null
-      createdPackages: null
-    }
-  | {
-      workBook: WorkBook
-      sheetName: string
-      headerRow: number
-      columnNames: null
-      createdPackages: null
-    }
-  | {
-      workBook: WorkBook
-      sheetName: string
-      headerRow: number
-      columnNames: MatchColumnsFormType
-      createdPackages: null
-    }
-  | {
-      workBook: WorkBook
-      sheetName: string
-      headerRow: number
-      columnNames: MatchColumnsFormType
-      createdPackages: Package[]
-    }
-
-export function PackagesImportWizard({
+export function PackagesAddWizard({
   isOpen,
   close,
 }: {
@@ -63,25 +9,11 @@ export function PackagesImportWizard({
   close: () => void
 }) {
   const modalRef = useRef<null | HTMLDialogElement>(null)
-  const [selectedItems, setSelectedItems] = useState<Selection>({
-    workBook: null,
-    sheetName: null,
-    headerRow: null,
-    columnNames: null,
-    createdPackages: null,
-  })
 
   useEffect(() => {
     if (isOpen) modalRef.current?.showModal()
     else {
       modalRef.current?.close()
-      setSelectedItems({
-        workBook: null,
-        sheetName: null,
-        headerRow: null,
-        columnNames: null,
-        createdPackages: null,
-      })
     }
   }, [isOpen])
 
@@ -90,137 +22,12 @@ export function PackagesImportWizard({
       ref={modalRef}
       onClose={close}
       className={`
-        bg-white w-[min(100%,_64rem)] rounded-2xl h-[calc(100vh_-_6rem)]
+        bg-white w-[min(100%,_64rem)] rounded-2xl h-[calc(100vh-_6rem)]
         ${isOpen ? "grid" : ""}
       `}
     >
       <div className="h-full grid">
-        {selectedItems.workBook === null ? (
-          <PackagesImportWizardSelectFile
-            isOpenModal={isOpen}
-            setSelectedWorkBook={(wb) => {
-              setSelectedItems((currSelectedItems) => ({
-                ...currSelectedItems,
-                workBook: wb,
-              }))
-            }}
-          />
-        ) : (
-          <>
-            {selectedItems.sheetName === null ? (
-              <PackagesImportWizardSelectSheetName
-                selectedWorkBook={selectedItems.workBook}
-                setSelectedSheetName={(sheetName) => {
-                  setSelectedItems({
-                    workBook: selectedItems.workBook!,
-                    sheetName,
-                    headerRow: selectedItems.headerRow,
-                    columnNames: selectedItems.columnNames,
-                    createdPackages: selectedItems.createdPackages,
-                  })
-                }}
-                goBack={() => {
-                  setSelectedItems({
-                    workBook: null,
-                    sheetName: null,
-                    headerRow: null,
-                    columnNames: null,
-                    createdPackages: null,
-                  })
-                }}
-              />
-            ) : (
-              <>
-                {selectedItems.headerRow === null ? (
-                  <PackagesImportWizardSelectHeader
-                    selectedWorkBook={selectedItems.workBook}
-                    selectedSheetName={selectedItems.sheetName}
-                    setSelectedHeaderRow={(headerRow) => {
-                      setSelectedItems({
-                        workBook: selectedItems.workBook,
-                        sheetName: selectedItems.sheetName,
-                        headerRow,
-                        columnNames: selectedItems.columnNames,
-                        createdPackages: selectedItems.createdPackages,
-                      })
-                    }}
-                    goBack={() => {
-                      setSelectedItems({
-                        workBook: selectedItems.workBook,
-                        sheetName: null,
-                        headerRow: null,
-                        columnNames: null,
-                        createdPackages: null,
-                      })
-                    }}
-                  />
-                ) : (
-                  <>
-                    {selectedItems.columnNames === null ? (
-                      <PackagesImportWizardSelectColumnNames
-                        selectedWorkBook={selectedItems.workBook}
-                        selectedSheetName={selectedItems.sheetName}
-                        selectedHeaderRow={selectedItems.headerRow}
-                        setColumnNames={(columnNames) => {
-                          setSelectedItems({
-                            workBook: selectedItems.workBook,
-                            sheetName: selectedItems.sheetName,
-                            headerRow: selectedItems.headerRow,
-                            columnNames,
-                            createdPackages: selectedItems.createdPackages,
-                          })
-                        }}
-                        goBack={() => {
-                          setSelectedItems({
-                            workBook: selectedItems.workBook,
-                            sheetName: selectedItems.sheetName,
-                            headerRow: null,
-                            columnNames: null,
-                            createdPackages: null,
-                          })
-                        }}
-                      />
-                    ) : (
-                      <>
-                        {selectedItems.createdPackages === null ? (
-                          <PackagesImportWizardCreatePackages
-                            selectedWorkBook={selectedItems.workBook}
-                            selectedSheetName={selectedItems.sheetName}
-                            selectedHeaderRow={selectedItems.headerRow}
-                            selectedColumnNames={selectedItems.columnNames}
-                            setCreatedPackages={(createdPackages) => {
-                              setSelectedItems({
-                                workBook: selectedItems.workBook,
-                                sheetName: selectedItems.sheetName,
-                                headerRow: selectedItems.headerRow,
-                                columnNames: selectedItems.columnNames,
-                                createdPackages,
-                              })
-                            }}
-                            goBack={() => {
-                              setSelectedItems({
-                                workBook: selectedItems.workBook,
-                                sheetName: selectedItems.sheetName,
-                                headerRow: selectedItems.headerRow,
-                                columnNames: null,
-                                createdPackages: null,
-                              })
-                            }}
-                          />
-                        ) : (
-                          <PackagesImportWizardSummary
-                            createdPackages={selectedItems.createdPackages}
-                            close={close}
-                          />
-                        )}
-                      </>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-          </>
-        )}
+        <PackagesAddWizardInformation isOpenModal={isOpen} />
       </div>
     </dialog>
   )

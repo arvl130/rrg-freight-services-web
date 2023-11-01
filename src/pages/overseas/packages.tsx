@@ -15,8 +15,10 @@ import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
 import { Plus } from "@phosphor-icons/react/Plus"
 import { PackagesImportWizard } from "@/components/packages/import-wizard"
-
+import { PackagesAddWizard } from "@/components/packages/add-wizard"
 function PageHeader() {
+  const [isOpenAddWizard, setIsOpenAddWizard] = useState(false)
+
   return (
     <div className="flex justify-between mb-4">
       <h1 className="text-3xl font-black [color:_#00203F] mb-2">Packages</h1>
@@ -24,11 +26,16 @@ function PageHeader() {
         <button
           type="button"
           className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+          onClick={() => setIsOpenAddWizard(true)}
         >
           <Plus size={16} />
           <span>Add Package</span>
         </button>
       </div>
+      <PackagesAddWizard
+        isOpen={isOpenAddWizard}
+        close={() => setIsOpenAddWizard(false)}
+      />
     </div>
   )
 }
