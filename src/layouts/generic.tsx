@@ -57,7 +57,7 @@ function GenericHeader({ user }: { user: User }) {
           </button>
           <button
             type="button"
-            className="px-2 py-2 whitespace-nowrap flex gap-2 items-center text-sm w-46 text-gray-700"
+            className="px-2 py-2 whitespace-nowrap flex gap-2 items-center text-sm w-40 text-gray-700"
           >
             {user.photoURL === null ? (
               <UserCircle size={24} />
