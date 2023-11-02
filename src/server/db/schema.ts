@@ -239,6 +239,7 @@ export const packages = mysqlTable("packages", {
     .notNull()
     .defaultNow(),
   updatedById: varchar("updated_by_id", { length: 28 }).notNull(),
+  createdInHubId: bigint("created_in_hub_id", { mode: "number" }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
