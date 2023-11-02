@@ -105,9 +105,14 @@ function DataTable() {
     data: packages,
     refetch,
   } = api.package.getCanBeAddedToShipment.useQuery()
+
+  const utils = api.useUtils()
   const { isLoading: isLoadingCreateShipment, mutate } =
     api.shipment.create.useMutation({
-      onSuccess: () => refetch(),
+      onSuccess: () => {
+        refetch()
+        utils.shipment.getAllWithOriginAndDestination.invalidate()
+      },
     })
 
   const [selectedPackageIds, setSelectedPackageIds] = useState<number[]>([])
