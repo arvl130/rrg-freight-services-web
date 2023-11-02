@@ -13,6 +13,7 @@ import {
   supportedShippingTypes,
 } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
+import { getShipmentHubIdOfUser } from "@/server/db/helpers/shipment-hub"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -55,6 +56,7 @@ export const packageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const shipmentHubId = await getShipmentHubIdOfUser(ctx.db, ctx.user)
       const insertIds = await ctx.db.transaction(async (tx) => {
         const insertIds: number[] = []
 
@@ -63,6 +65,7 @@ export const packageRouter = router({
             ...newPackage,
             createdById: ctx.user.uid,
             updatedById: ctx.user.uid,
+            createdInHubId: shipmentHubId,
           })) as unknown as [ResultSetHeader]
 
           insertIds.push(result.insertId)
