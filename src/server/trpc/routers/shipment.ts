@@ -1,9 +1,18 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
-import { shipmentHubs, shipments, shipmentStatusLogs } from "@/server/db/schema"
+import {
+  packageStatusLogs,
+  shipmentHubs,
+  shipmentPackages,
+  shipments,
+  shipmentStatusLogs,
+} from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { and, eq } from "drizzle-orm"
 import { alias } from "drizzle-orm/mysql-core"
+import { getShipmentHubIdOfUser } from "@/server/db/helpers/shipment-hub"
+import { ResultSetHeader } from "mysql2"
+import { PackageStatus } from "@/utils/constants"
 
 export const shipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -98,5 +107,51 @@ export const shipmentRouter = router({
           code: "INTERNAL_SERVER_ERROR",
           message: "Expected 1 result, but got multiple.",
         })
+    }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        packageIds: z.number().array().nonempty(),
+        destinationHubId: z.number().nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const originHubId = await getShipmentHubIdOfUser(ctx.db, ctx.user)
+
+      await ctx.db.transaction(async (tx) => {
+        const [result] = (await tx.insert(shipments).values({
+          originHubId,
+          destinationHubId: input.destinationHubId,
+        })) as unknown as [ResultSetHeader]
+
+        const shipmentId = result.insertId
+        await tx.insert(shipmentPackages).values(
+          input.packageIds.map((packageId) => ({
+            shipmentId,
+            packageId,
+          })),
+        )
+
+        const createdAt = new Date()
+        await tx.insert(packageStatusLogs).values(
+          input.packageIds.map((packageId) => ({
+            status: "SORTING" as PackageStatus,
+            packageId,
+            createdAt,
+            createdById: ctx.user.uid,
+            description:
+              "Package has been added to a shipment and is being prepared by the agent.",
+          })),
+        )
+
+        await tx.insert(shipmentStatusLogs).values({
+          status: "PREPARING",
+          shipmentId,
+          createdAt,
+          createdById: ctx.user.uid,
+          description:
+            "Shipment has been created and is waiting to be shipped.",
+        })
+      })
     }),
 })

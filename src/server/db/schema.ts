@@ -42,7 +42,11 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const shipments = mysqlTable("shipments", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
   originHubId: bigint("origin_hub_id", { mode: "number" }).notNull(),
-  destinationHubId: bigint("destination_hub_id", { mode: "number" }).notNull(),
+  // FIXME: Use a better design to signify that a shipment is headed
+  // for customer receivers.
+  //
+  // For now, we will use a NULL destinationHub to signify that.
+  destinationHubId: bigint("destination_hub_id", { mode: "number" }),
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 

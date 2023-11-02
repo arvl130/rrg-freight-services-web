@@ -1,6 +1,11 @@
-import { and, eq, sql } from "drizzle-orm"
+import { eq, isNull } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { packageStatusLogs, packages } from "@/server/db/schema"
+import {
+  packageStatusLogs,
+  packages,
+  shipmentHubs,
+  shipmentPackages,
+} from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { inArray } from "drizzle-orm"
@@ -151,4 +156,49 @@ export const packageRouter = router({
 
       return results[0]
     }),
+  getCanBeAddedToShipment: protectedProcedure.query(async ({ ctx, input }) => {
+    const shipmentHubId = await getShipmentHubIdOfUser(ctx.db, ctx.user)
+    const shipmentHubResults = await ctx.db
+      .select()
+      .from(shipmentHubs)
+      .where(eq(shipmentHubs.id, shipmentHubId))
+
+    if (shipmentHubResults.length === 0) {
+      throw new TRPCError({
+        code: "PRECONDITION_FAILED",
+        message: "Expected 1 shipment hub for this user, but got none",
+      })
+    }
+
+    if (shipmentHubResults.length > 1) {
+      throw new TRPCError({
+        code: "PRECONDITION_FAILED",
+        message: "Expected 1 shipment hub for this user, but got more",
+      })
+    }
+
+    const [{ role: hubRole }] = shipmentHubResults
+
+    if (hubRole === "SENDING") {
+      // Get packages that has a NULL shipment_package and the created_in_hub_id is the same as the user's hub id.
+      //
+      // SQL Equivalent:
+      // SELECT p.* FROM packages p
+      // LEFT JOIN shipment_packages sp
+      // ON p.id = sp.package_id
+      // WHERE sp.package_id IS NULL
+
+      const results = await ctx.db
+        .select()
+        .from(packages)
+        .leftJoin(shipmentPackages, eq(packages.id, shipmentPackages.packageId))
+        .where(isNull(shipmentPackages.packageId))
+
+      return results.map(({ packages }) => packages)
+    }
+    // TODO: Handle other types of shipment hubs.
+    else if (hubRole === "SENDING_RECEIVING") {
+      return []
+    } else return []
+  }),
 })
