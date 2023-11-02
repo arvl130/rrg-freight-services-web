@@ -11,6 +11,8 @@ import {
   NewShipment,
   NewShipmentHub,
   NewShipmentStatusLog,
+  NewShipmentHubAgent,
+  NewShipmentPackage,
 } from "@/server/db/entities"
 import { DateTime } from "luxon"
 
@@ -89,6 +91,7 @@ const newPackages: NewPackage[] = [
     receiverPostalCode: 2222,
     createdById: seedEnv.TEST_OVERSEAS_USER_ID,
     updatedById: seedEnv.TEST_OVERSEAS_USER_ID,
+    createdInHubId: 1,
   },
 ]
 
@@ -196,11 +199,37 @@ const newShipmentHubs: NewShipmentHub[] = [
   },
 ]
 
+const newShipmentHubAgents: NewShipmentHubAgent[] = [
+  {
+    shipmentHubId: 1,
+    userId: seedEnv.TEST_OVERSEAS_USER_ID,
+  },
+  {
+    shipmentHubId: 2,
+    userId: seedEnv.TEST_ADMIN_USER_ID,
+  },
+  {
+    shipmentHubId: 2,
+    userId: seedEnv.TEST_WAREHOUSE_USER_ID,
+  },
+  {
+    shipmentHubId: 3,
+    userId: seedEnv.TEST_DOMESTIC_USER_ID,
+  },
+]
+
 const newShipments: NewShipment[] = [
   {
     id: 20_000,
     originHubId: 1,
     destinationHubId: 2,
+  },
+]
+
+const newShipmentPackages: NewShipmentPackage[] = [
+  {
+    shipmentId: 20_000,
+    packageId: 10_000,
   },
 ]
 
@@ -232,10 +261,12 @@ const newShipmentsStatusLogs: NewShipmentStatusLog[] = [
 ]
 
 await db.insert(schema.users).values(newUsers)
+await db.insert(schema.shipmentHubs).values(newShipmentHubs)
+await db.insert(schema.shipmentHubAgents).values(newShipmentHubAgents)
 await db.insert(schema.packages).values(newPackages)
 await db.insert(schema.packageStatusLogs).values(newPackageStatusLogs)
-await db.insert(schema.shipmentHubs).values(newShipmentHubs)
 await db.insert(schema.shipments).values(newShipments)
+await db.insert(schema.shipmentPackages).values(newShipmentPackages)
 await db.insert(schema.shipmentStatusLogs).values(newShipmentsStatusLogs)
 
 await pool
