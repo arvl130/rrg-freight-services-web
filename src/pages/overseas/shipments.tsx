@@ -15,8 +15,11 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { useState } from "react"
 import { DateTime } from "luxon"
 import { useSession } from "@/utils/auth"
+import { ShipmentsCreateManifest } from "@/components/shipments/create-manifest"
 
 function PageHeader() {
+  const [isOpenCreateManifest, setIsOpenCreateManifest] = useState(false)
+
   return (
     <div className="flex justify-between mb-6">
       <h1 className="text-3xl font-black [color:_#00203F]">Shipments</h1>
@@ -24,11 +27,16 @@ function PageHeader() {
         <button
           type="button"
           className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
+          onClick={() => setIsOpenCreateManifest(true)}
         >
           <Plus size={16} />
           <span>Create Manifest</span>
         </button>
       </div>
+      <ShipmentsCreateManifest
+        isOpen={isOpenCreateManifest}
+        close={() => setIsOpenCreateManifest(false)}
+      />
     </div>
   )
 }
