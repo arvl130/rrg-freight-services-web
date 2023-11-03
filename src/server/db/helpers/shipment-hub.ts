@@ -30,3 +30,30 @@ export async function getShipmentHubIdOfUser(
   const [{ shipmentHubId }] = shipmentHubsOfThisUser
   return shipmentHubId
 }
+
+export async function getShipmentHubIdOfUserId(
+  db: MySql2Database<typeof schema>,
+  userId: string,
+) {
+  const shipmentHubsOfThisUser = await db
+    .select()
+    .from(schema.shipmentHubAgents)
+    .where(eq(schema.shipmentHubAgents.userId, userId))
+
+  if (shipmentHubsOfThisUser.length === 0) {
+    throw new TRPCError({
+      code: "PRECONDITION_FAILED",
+      message: "Expected 1 shipment hub for this user, but got none",
+    })
+  }
+
+  if (shipmentHubsOfThisUser.length > 1) {
+    throw new TRPCError({
+      code: "PRECONDITION_FAILED",
+      message: "Expected 1 shipment hub for this user, but got more",
+    })
+  }
+
+  const [{ shipmentHubId }] = shipmentHubsOfThisUser
+  return shipmentHubId
+}
