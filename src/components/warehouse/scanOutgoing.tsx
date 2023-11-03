@@ -431,7 +431,7 @@ function Outgoing({ switchTab }: { switchTab: () => void }) {
     isLoading: isLoadingShipments,
     isError: isErrorShipments,
     data: shipmentList,
-  } = api.shipment.getAllById.useQuery(
+  } = api.shipment.getWithShipmentPackagesById.useQuery(
     {
       id: valueId,
     },

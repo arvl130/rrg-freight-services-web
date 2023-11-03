@@ -18,7 +18,7 @@ import { PackageStatus } from "@/utils/constants"
 import { getShipmentHubIdOfUser } from "@/server/db/helpers/shipment-hub"
 
 export const shipmentRouter = router({
-  getAllById: protectedProcedure
+  getWithShipmentPackagesById: protectedProcedure
     .input(
       z.object({
         id: z.number(),
@@ -84,7 +84,7 @@ export const shipmentRouter = router({
           }),
         }
       })
-      console.log("ItemWithPackages", shipmentItemsWithPackages)
+
       const items: any[] = []
       for (const _package of shipmentItemsWithPackages[0].packages) {
         items.push({ ..._package, status: await getLatestStatus(_package.id) })
