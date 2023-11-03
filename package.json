@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint --max-warnings 0",
     "format": "prettier src --write",
     "format:check": "prettier src --check",
     "db:push": "tsx ./scripts/drop-all-db-tables.ts && drizzle-kit push:mysql && tsx ./scripts/db-seed.ts",
