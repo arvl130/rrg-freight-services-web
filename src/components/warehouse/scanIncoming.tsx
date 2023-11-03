@@ -146,7 +146,6 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
                     new Set(selectedShipmentResultIds),
                   )
                   if (input.length === 0) {
-                    console.log("empty")
                   } else {
                     const packageId = parseInt(input)
 
@@ -266,12 +265,12 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
                           isAllChecked={isCheckedClearBtn}
                           setCheckedId={({ id, isChecked }) => {
                             if (isChecked === true) {
-                              setCheckedIds((CurrentCheckedIds) => {
-                                return [...CurrentCheckedIds, id]
+                              setCheckedIds((currentCheckedIds) => {
+                                return [...currentCheckedIds, id]
                               })
                             } else {
-                              setCheckedIds((CurrentCheckedIds) => {
-                                return CurrentCheckedIds.filter((CheckedId) => {
+                              setCheckedIds((currentCheckedIds) => {
+                                return currentCheckedIds.filter((CheckedId) => {
                                   return id !== CheckedId
                                 })
                               })
@@ -301,8 +300,8 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
               })
 
               setCheckedIds((currCheckedIds) => {
-                return currCheckedIds.filter((CheckedId) => {
-                  return !checkedIds.includes(CheckedId)
+                return currCheckedIds.filter((checkedId) => {
+                  return !checkedIds.includes(checkedId)
                 })
               })
               if (isCheckedClearBtn) {
@@ -489,9 +488,9 @@ function ShipmentItem({
       <td>
         <p>
           {scannedPackageIds.includes(_package.id) ? (
-            <Checks style={{ color: "#79CFDC" }} size={27} weight="bold" />
+            <Checks style={{ color: "green" }} size={27} weight="bold" />
           ) : (
-            <X style={{ color: "#79CFDC" }} size={27} weight="bold" />
+            <X style={{ color: "red" }} size={27} weight="bold" />
           )}
         </p>
       </td>

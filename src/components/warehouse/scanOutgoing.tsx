@@ -83,7 +83,6 @@ function ScanTable() {
       setIsCheckedClearBtn(true)
     } else {
       setIsCheckedClearBtn(false)
-      console.log("UNCHECKED")
     }
   }
   const DisableScannerCont = useContext(DisableScanner) === "false"
@@ -101,11 +100,9 @@ function ScanTable() {
                 onSubmit={(e) => {
                   e.preventDefault()
                   const formData = new FormData(e.currentTarget)
-                  console.log(formData.get("trackingNo"))
                   const input = formData.get("trackingNo") as string
 
                   if (input.length === 0) {
-                    console.log("empty")
                   } else {
                     const packageId = parseInt(input)
                     setPackageIds((currPackageIds) => {
@@ -470,7 +467,6 @@ function Outgoing({ switchTab }: { switchTab: () => void }) {
                     setSelectedShipment("true")
                     setValueId(value)
                   }
-                  console.log(value)
                 }}
                 style={{
                   border: "1px solid #A99C9C",
