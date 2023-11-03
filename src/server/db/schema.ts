@@ -117,6 +117,7 @@ export const shipmentHubs = mysqlTable("shipment_hubs", {
   countryCode: varchar("country_code", {
     length: 3,
   }).notNull(),
+  isMainHub: tinyint("is_main_hub").notNull(),
   postalCode: int("postal_code").notNull(),
 })
 

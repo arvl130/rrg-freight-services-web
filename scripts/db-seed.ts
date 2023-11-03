@@ -176,6 +176,7 @@ const newShipmentHubs: NewShipmentHub[] = [
     countryCode: "ARE",
     postalCode: 5555,
     role: "SENDING",
+    isMainHub: 0,
   },
   {
     id: 2,
@@ -186,6 +187,7 @@ const newShipmentHubs: NewShipmentHub[] = [
     countryCode: "PHL",
     postalCode: 6666,
     role: "SENDING_RECEIVING",
+    isMainHub: 1,
   },
   {
     id: 3,
@@ -196,6 +198,7 @@ const newShipmentHubs: NewShipmentHub[] = [
     countryCode: "PHL",
     postalCode: 7777,
     role: "RECEIVING",
+    isMainHub: 0,
   },
 ]
 
