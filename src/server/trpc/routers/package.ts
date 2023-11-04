@@ -1,10 +1,12 @@
-import { eq, isNull } from "drizzle-orm"
+import { and, eq, getTableColumns, isNull, lt, sql } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
 import {
   packageStatusLogs,
   packages,
   shipmentHubs,
   shipmentPackages,
+  shipmentStatusLogs,
+  shipments,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -18,7 +20,11 @@ import {
   supportedShippingTypes,
 } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
-import { getShipmentHubIdOfUser } from "@/server/db/helpers/shipment-hub"
+import {
+  getShipmentHubIdOfUser,
+  getShipmentHubOfUserId,
+} from "@/server/db/helpers/shipment-hub"
+import { alias } from "drizzle-orm/mysql-core"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -156,49 +162,108 @@ export const packageRouter = router({
 
       return results[0]
     }),
-  getCanBeAddedToShipment: protectedProcedure.query(async ({ ctx, input }) => {
-    const shipmentHubId = await getShipmentHubIdOfUser(ctx.db, ctx.user)
-    const shipmentHubResults = await ctx.db
+  getCanBeAddedToShipment: protectedProcedure.query(async ({ ctx }) => {
+    const shipmentHub = await getShipmentHubOfUserId(ctx.db, ctx.user.uid)
+    const psl1 = alias(packageStatusLogs, "psl1")
+    const psl2 = alias(packageStatusLogs, "psl2")
+    const p = alias(packages, "p")
+
+    const packagesWithLatestStatusInWarehouse = ctx.db
+      .select({
+        latestStatus: sql<string>`${psl1.status}`.as("latest_status"),
+        // We already have another createdAt field inside this subquery
+        // (p.created_at, psl1.created_at). To avoid duplicate columns in
+        // the generated query, we need to explicitly define an alias
+        // that the query generator will use under the hood.
+        //
+        // Source: https://orm.drizzle.team/docs/select#basic-and-partial-select
+        latestStatusCreatedAt: sql<string>`${psl1.createdAt}`.as(
+          "latest_status_created_at",
+        ),
+        ...getTableColumns(p),
+      })
+      .from(psl1)
+      .innerJoin(p, eq(psl1.packageId, p.id))
+      .leftJoin(
+        psl2,
+        and(
+          eq(psl1.packageId, psl2.packageId),
+          lt(psl1.createdAt, psl2.createdAt),
+        ),
+      )
+      .where(and(isNull(psl2.id), eq(psl1.status, "IN_WAREHOUSE")))
+      .as("packages_with_latest_status_in_warehouse")
+
+    const ssl1 = alias(shipmentStatusLogs, "ssl1")
+    const ssl2 = alias(shipmentStatusLogs, "ssl2")
+    const s = alias(shipments, "s")
+
+    const shipmentsWithLatestStatusArrived = ctx.db
+      .select({
+        latestStatus: ssl1.status,
+        latestStatusCreatedAt: ssl1.createdAt,
+        ...getTableColumns(s),
+      })
+      .from(ssl1)
+      .innerJoin(s, eq(ssl1.shipmentId, s.id))
+      .leftJoin(
+        ssl2,
+        and(
+          eq(ssl1.shipmentId, ssl2.shipmentId),
+          lt(ssl1.createdAt, ssl2.createdAt),
+        ),
+      )
+      .where(and(isNull(ssl2.id), eq(ssl1.status, "ARRIVED")))
+      .as("shipments_with_latest_status_arrived")
+
+    // For packages that has at least 1 shipment,
+    // get the latest shipment hub that they have arrived at.
+    const sp = alias(shipmentPackages, "sp")
+    const resultsWithShipment = await ctx.db
       .select()
-      .from(shipmentHubs)
-      .where(eq(shipmentHubs.id, shipmentHubId))
+      .from(packagesWithLatestStatusInWarehouse)
+      .innerJoin(sp, eq(packagesWithLatestStatusInWarehouse.id, sp.packageId))
+      .innerJoin(
+        shipmentsWithLatestStatusArrived,
+        eq(sp.shipmentId, shipmentsWithLatestStatusArrived.id),
+      )
+      .where(
+        eq(shipmentsWithLatestStatusArrived.destinationHubId, shipmentHub.id),
+      )
 
-    if (shipmentHubResults.length === 0) {
-      throw new TRPCError({
-        code: "PRECONDITION_FAILED",
-        message: "Expected 1 shipment hub for this user, but got none",
-      })
-    }
+    const packagesWithShipment = resultsWithShipment.map(
+      ({
+        packages_with_latest_status_in_warehouse,
+        shipments_with_latest_status_arrived,
+      }) => ({
+        ...packages_with_latest_status_in_warehouse,
+        currentHubId: shipments_with_latest_status_arrived.destinationHubId!,
+      }),
+    )
 
-    if (shipmentHubResults.length > 1) {
-      throw new TRPCError({
-        code: "PRECONDITION_FAILED",
-        message: "Expected 1 shipment hub for this user, but got more",
-      })
-    }
+    // For packages that has no shipments, treat their created in hub as
+    // the current hub.
+    const resultsWithoutShipment = await ctx.db
+      .select()
+      .from(packagesWithLatestStatusInWarehouse)
+      .leftJoin(sp, eq(packagesWithLatestStatusInWarehouse.id, sp.packageId))
+      .where(
+        and(
+          isNull(sp.packageId),
+          eq(
+            packagesWithLatestStatusInWarehouse.createdInHubId,
+            shipmentHub.id,
+          ),
+        ),
+      )
 
-    const [{ role: hubRole }] = shipmentHubResults
+    const packagesWithoutShipment = resultsWithoutShipment.map(
+      ({ packages_with_latest_status_in_warehouse }) => ({
+        ...packages_with_latest_status_in_warehouse,
+        currentHubId: packages_with_latest_status_in_warehouse.createdInHubId,
+      }),
+    )
 
-    if (hubRole === "SENDING") {
-      // Get packages that has a NULL shipment_package and the created_in_hub_id is the same as the user's hub id.
-      //
-      // SQL Equivalent:
-      // SELECT p.* FROM packages p
-      // LEFT JOIN shipment_packages sp
-      // ON p.id = sp.package_id
-      // WHERE sp.package_id IS NULL
-
-      const results = await ctx.db
-        .select()
-        .from(packages)
-        .leftJoin(shipmentPackages, eq(packages.id, shipmentPackages.packageId))
-        .where(isNull(shipmentPackages.packageId))
-
-      return results.map(({ packages }) => packages)
-    }
-    // TODO: Handle other types of shipment hubs.
-    else if (hubRole === "SENDING_RECEIVING") {
-      return []
-    } else return []
+    return [...packagesWithShipment, ...packagesWithoutShipment]
   }),
 })
