@@ -162,7 +162,7 @@ export const packageRouter = router({
 
       return results[0]
     }),
-  getCanBeAddedToShipment: protectedProcedure.query(async ({ ctx }) => {
+  getShippable: protectedProcedure.query(async ({ ctx }) => {
     const shipmentHub = await getShipmentHubOfUserId(ctx.db, ctx.user.uid)
     const psl1 = alias(packageStatusLogs, "psl1")
     const psl2 = alias(packageStatusLogs, "psl2")

@@ -149,7 +149,7 @@ function ChoosePackageTable({
     refetch,
     status,
     data: packages,
-  } = api.package.getCanBeAddedToShipment.useQuery()
+  } = api.package.getShippable.useQuery()
 
   return (
     <div>
@@ -262,7 +262,7 @@ export function ShipmentsCreateModal({
   const { isLoading: isLoadingCreateShipment, mutate } =
     api.shipment.create.useMutation({
       onSuccess: () => {
-        utils.package.getCanBeAddedToShipment.invalidate()
+        utils.package.getShippable.invalidate()
         utils.shipment.getAllWithOriginAndDestination.invalidate()
         close()
       },
