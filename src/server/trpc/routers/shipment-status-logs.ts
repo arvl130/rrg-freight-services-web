@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm"
+import { and, eq, isNull, lt, sql } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
 import { shipmentStatusLogs } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
@@ -34,40 +34,34 @@ export const shipmentStatusLogRouter = router({
 
       return results[0]
     }),
-  getLatestOrderedByShipmentId: protectedProcedure.query(async ({ ctx }) => {
+  getLatest: protectedProcedure.query(async ({ ctx }) => {
     // Obtain the latest status using the group-wise maximum of a column.
     //
     // SQL equivalent:
-    //   SELECT * FROM
-    //     shipment_status_logs ssl1
-    //   WHERE ssl1.created_at =
-    //     (
-    //       SELECT MAX(ssl2.created_at)
-    //       FROM shipment_status_logs ssl2
-    //       WHERE ssl1.shipment_id = ssl2.shipment_id
-    //     )
-    //   ORDER BY ssl1.shipment_id;
+    //  SELECT
+    //    ssl1.*
+    //  FROM shipment_status_logs ssl1
+    //  LEFT JOIN shipment_status_logs ssl2
+    //  ON ssl1.shipment_id = ssl2.shipment_id
+    //  AND ssl1.created_at < ssl2.created_at
+    //  WHERE ssl2.id IS NULL
     //
     // Source: https://dev.mysql.com/doc/refman/8.0/en/example-maximum-column-group-row.html
 
     const ssl1 = alias(shipmentStatusLogs, "ssl1")
     const ssl2 = alias(shipmentStatusLogs, "ssl2")
 
-    const subQuery = ctx.db
-      .select({
-        maxCreatedAt: sql`max(${ssl2.createdAt})`,
-      })
-      .from(ssl2)
-      .where(eq(ssl1.shipmentId, ssl2.shipmentId))
-
-    const mainQuery = ctx.db
+    return await ctx.db
       .select()
       .from(ssl1)
-      .where(eq(ssl1.createdAt, subQuery))
-      .orderBy(ssl1.shipmentId)
-
-    const results = await mainQuery
-    return results
+      .leftJoin(
+        ssl2,
+        and(
+          eq(ssl1.shipmentId, ssl2.shipmentId),
+          lt(ssl1.createdAt, ssl2.createdAt),
+        ),
+      )
+      .where(isNull(ssl2.id))
   }),
   getLatestByShipmentId: protectedProcedure
     .input(
@@ -79,39 +73,30 @@ export const shipmentStatusLogRouter = router({
       // Obtain the latest status of a shipment id using the group-wise maximum of a column.
       //
       // SQL equivalent:
-      //   SELECT * FROM
-      //     shipment_status_logs ssl1
-      //   WHERE ssl1.created_at =
-      //     (
-      //       SELECT MAX(ssl2.created_at)
-      //       FROM shipment_status_logs ssl2
-      //       WHERE ssl1.shipment_id = ssl2.shipment_id
-      //     )
-      //   AND ssl1.shipment_id = ?;
+      //  SELECT
+      //    ssl1.*
+      //  FROM shipment_status_logs ssl1
+      //  LEFT JOIN shipment_status_logs ssl2
+      //  ON ssl1.shipment_id = ssl2.shipment_id
+      //  AND ssl1.created_at < ssl2.created_at
+      //  WHERE ssl2.id IS NULL
+      //  AND ssl1.shipment_id = ?
       //
       // Source: https://dev.mysql.com/doc/refman/8.0/en/example-maximum-column-group-row.html
 
       const ssl1 = alias(shipmentStatusLogs, "ssl1")
       const ssl2 = alias(shipmentStatusLogs, "ssl2")
-
-      const subQuery = ctx.db
-        .select({
-          maxCreatedAt: sql`max(${ssl2.createdAt})`,
-        })
-        .from(ssl2)
-        .where(eq(ssl1.shipmentId, ssl2.shipmentId))
-
-      const mainQuery = ctx.db
+      const results = await ctx.db
         .select()
         .from(ssl1)
-        .where(
+        .leftJoin(
+          ssl2,
           and(
-            eq(ssl1.createdAt, subQuery),
-            eq(ssl1.shipmentId, input.shipmentId),
+            eq(ssl1.shipmentId, ssl2.shipmentId),
+            lt(ssl1.createdAt, ssl2.createdAt),
           ),
         )
-
-      const results = await mainQuery
+        .where(and(isNull(ssl2.id), eq(ssl1.shipmentId, input.shipmentId)))
 
       if (results.length === 0)
         throw new TRPCError({

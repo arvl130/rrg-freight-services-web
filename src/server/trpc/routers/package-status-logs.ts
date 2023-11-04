@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm"
+import { and, eq, isNull, lt, sql } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
 import { packageStatusLogs } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
@@ -34,40 +34,34 @@ export const packageStatusLogRouter = router({
 
       return results[0]
     }),
-  getLatestOrderedByPackageId: protectedProcedure.query(async ({ ctx }) => {
+  getLatest: protectedProcedure.query(async ({ ctx }) => {
     // Obtain the latest status using the group-wise maximum of a column.
     //
     // SQL equivalent:
-    //   SELECT * FROM
-    //     package_status_logs psl1
-    //   WHERE psl1.created_at =
-    //     (
-    //       SELECT MAX(psl2.created_at)
-    //       FROM package_status_logs psl2
-    //       WHERE psl1.package_id = psl2.package_id
-    //     )
-    //   ORDER BY psl1.package_id;
+    //  SELECT
+    //    psl1.*
+    //  FROM package_status_logs psl1
+    //  LEFT JOIN package_status_logs psl2
+    //  ON psl1.package_id = psl2.package_id
+    //  AND psl1.created_at < psl2.created_at
+    //  WHERE psl2.id IS NULL
     //
     // Source: https://dev.mysql.com/doc/refman/8.0/en/example-maximum-column-group-row.html
 
     const psl1 = alias(packageStatusLogs, "psl1")
     const psl2 = alias(packageStatusLogs, "psl2")
 
-    const subQuery = ctx.db
-      .select({
-        maxCreatedAt: sql`max(${psl2.createdAt})`,
-      })
-      .from(psl2)
-      .where(eq(psl1.packageId, psl2.packageId))
-
-    const mainQuery = ctx.db
+    return await ctx.db
       .select()
       .from(psl1)
-      .where(eq(psl1.createdAt, subQuery))
-      .orderBy(psl1.packageId)
-
-    const results = await mainQuery
-    return results
+      .leftJoin(
+        psl2,
+        and(
+          eq(psl1.packageId, psl2.packageId),
+          lt(psl1.createdAt, psl2.createdAt),
+        ),
+      )
+      .where(isNull(psl2.id))
   }),
   getLatestByPackageId: protectedProcedure
     .input(
@@ -79,39 +73,30 @@ export const packageStatusLogRouter = router({
       // Obtain the latest status of a package id using the group-wise maximum of a column.
       //
       // SQL equivalent:
-      //   SELECT * FROM
-      //     package_status_logs psl1
-      //   WHERE psl1.created_at =
-      //     (
-      //       SELECT MAX(psl2.created_at)
-      //       FROM package_status_logs psl2
-      //       WHERE psl1.package_id = psl2.package_id
-      //     )
-      //   AND psl1.package_id = ?;
+      //  SELECT
+      //    psl1.*
+      //  FROM package_status_logs psl1
+      //  LEFT JOIN package_status_logs psl2
+      //  ON psl1.package_id = psl2.package_id
+      //  AND psl1.created_at < psl2.created_at
+      //  WHERE psl2.id IS NULL
+      //  AND psl1.package_id = ?
       //
       // Source: https://dev.mysql.com/doc/refman/8.0/en/example-maximum-column-group-row.html
 
       const psl1 = alias(packageStatusLogs, "psl1")
       const psl2 = alias(packageStatusLogs, "psl2")
-
-      const subQuery = ctx.db
-        .select({
-          maxCreatedAt: sql`max(${psl2.createdAt})`,
-        })
-        .from(psl2)
-        .where(eq(psl1.packageId, psl2.packageId))
-
-      const mainQuery = ctx.db
+      const results = await ctx.db
         .select()
         .from(psl1)
-        .where(
+        .leftJoin(
+          psl2,
           and(
-            eq(psl1.createdAt, subQuery),
-            eq(psl1.packageId, input.packageId),
+            eq(psl1.packageId, psl2.packageId),
+            lt(psl1.createdAt, psl2.createdAt),
           ),
         )
-
-      const results = await mainQuery
+        .where(and(isNull(psl2.id), eq(psl1.packageId, input.packageId)))
 
       if (results.length === 0)
         throw new TRPCError({
@@ -124,6 +109,6 @@ export const packageStatusLogRouter = router({
           message: "Expected 1 result, but got multiple.",
         })
 
-      return results[0]
+      return results[0].psl1
     }),
 })
