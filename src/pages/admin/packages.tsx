@@ -15,6 +15,8 @@ import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
 import { Plus } from "@phosphor-icons/react/Plus"
 import { PackagesImportWizard } from "@/components/packages/import-wizard"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { PackagesViewWaybillModal } from "@/components/packages/waybill/view-waybill-modal"
 
 function PageHeader() {
   return (
@@ -70,6 +72,8 @@ function PackageStatus({ packageId }: { packageId: number }) {
 }
 
 function PackageTableItem({ package: _package }: { package: Package }) {
+  const [isOpenViewWaybillModal, setIsOpenViewWaybillModal] = useState(false)
+
   return (
     <>
       <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
@@ -103,10 +107,34 @@ function PackageTableItem({ package: _package }: { package: Package }) {
         </div>
         <div className="px-4 py-2 flex items-center gap-2">
           <PackageStatus packageId={_package.id} />
-          <button type="button">
-            <span className="sr-only">Actions</span>
-            <DotsThree size={16} />
-          </button>
+
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button type="button">
+                <span className="sr-only">Actions</span>
+                <DotsThree size={16} />
+              </button>
+            </DropdownMenu.Trigger>
+
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm">
+                <DropdownMenu.Item
+                  className="transition-colors hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setIsOpenViewWaybillModal(true)}
+                >
+                  View Waybill
+                </DropdownMenu.Item>
+
+                <DropdownMenu.Arrow className="fill-white" />
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+
+          <PackagesViewWaybillModal
+            package={_package}
+            isOpen={isOpenViewWaybillModal}
+            close={() => setIsOpenViewWaybillModal(false)}
+          />
         </div>
       </div>
     </>
