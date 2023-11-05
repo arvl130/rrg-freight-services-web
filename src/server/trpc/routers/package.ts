@@ -3,7 +3,6 @@ import { protectedProcedure, router } from "../trpc"
 import {
   packageStatusLogs,
   packages,
-  shipmentHubs,
   shipmentPackages,
   shipmentStatusLogs,
   shipments,
@@ -12,7 +11,6 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { inArray } from "drizzle-orm"
 import {
-  PackageStatus,
   ReceptionMode,
   ShippingMode,
   ShippingType,
@@ -27,8 +25,6 @@ import {
 } from "@/server/db/helpers/shipment-hub"
 import { alias } from "drizzle-orm/mysql-core"
 
-import { list } from "firebase/storage"
-
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(packages)
@@ -37,14 +33,14 @@ export const packageRouter = router({
   updatePackageStatusByIds: protectedProcedure
     .input(
       z.object({
-        IDs: z.array(z.number()),
+        ids: z.array(z.number()),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const createBy = ctx.user.uid
       const createdDate = new Date()
 
-      const results = input.IDs.map((scannedPackageId) => {
+      const results = input.ids.map((scannedPackageId) => {
         return {
           packageId: scannedPackageId,
           status: "IN_WAREHOUSE" as const,
@@ -130,17 +126,17 @@ export const packageRouter = router({
   getByIds: protectedProcedure
     .input(
       z.object({
-        list: z.array(z.number()),
+        ids: z.array(z.number()),
       }),
     )
     .query(async ({ ctx, input }) => {
-      if (input.list.length === 0) {
+      if (input.ids.length === 0) {
         return []
       } else {
         return await ctx.db
           .select()
           .from(packages)
-          .where(inArray(packages.id, input.list))
+          .where(inArray(packages.id, input.ids))
       }
     }),
   getLatestStatus: protectedProcedure

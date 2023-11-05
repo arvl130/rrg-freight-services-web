@@ -110,7 +110,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
     data: packages,
   } = api.package.getByIds.useQuery(
     {
-      list: packageIds,
+      ids: packageIds,
     },
     {
       enabled: user !== null && role === "WAREHOUSE",
@@ -334,7 +334,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
           </button>
           <button
             onClick={(e) => {
-              mutation.mutate({ IDs: packageIds })
+              mutation.mutate({ ids: packageIds })
             }}
             style={{
               border: "2px solid transparent",

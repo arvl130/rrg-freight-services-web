@@ -70,7 +70,7 @@ function ScanTable() {
     data: packages,
   } = api.package.getByIds.useQuery(
     {
-      list: packageIds,
+      ids: packageIds,
     },
     {
       enabled: user !== null && role === "WAREHOUSE",
