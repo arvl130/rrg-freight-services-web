@@ -14,6 +14,9 @@ import { Shipment } from "@/server/db/entities"
 import { useSession } from "@/utils/auth"
 import { Checks } from "@phosphor-icons/react/Checks"
 import { X } from "@phosphor-icons/react/X"
+import { useMutation } from "@tanstack/react-query"
+import { ZodNull } from "zod"
+import { Familjen_Grotesk } from "next/font/google"
 
 type ExtendedShipment = Shipment & {
   packages: (Package & {
@@ -92,8 +95,15 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
     "true",
     "0",
   ])
-  const disableScannerCont = useContext(DisableScanner) === "false"
-
+  const [userHub, setUserHub] = useState<string>("")
+  const disbaleBtnContext = useContext(DisableScanner)
+  const disbaleBtnChecker = disbaleBtnContext.disbaleBtn === "false"
+  const selectedShipmentId = disbaleBtnContext.shipmentBtn
+  const mutation = api.package.updatePackageStatusByIds.useMutation({
+    onSuccess: async () => {
+      setPackageIds([])
+    },
+  })
   const {
     isLoading,
     isError,
@@ -106,6 +116,9 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
       enabled: user !== null && role === "WAREHOUSE",
     },
   )
+  const { data: currentUser } = api.user.getCurrent.useQuery(undefined, {
+    enabled: user !== null && role === "WAREHOUSE",
+  })
 
   function handleChange() {
     if (isCheckedClearBtn === false) {
@@ -118,7 +131,10 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
   useEffect(() => {
     setPackageIds([])
     setSelectedChangeStatus(["true", "0"])
-  }, [disableScannerCont])
+    currentUser?.map((userInfo) => {
+      setUserHub(userInfo.shipment_hubs.displayName)
+    })
+  }, [disbaleBtnChecker, selectedShipmentId, currentUser])
 
   useEffect(() => {
     const sendDataToParent = () => {
@@ -180,7 +196,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
                 Change Status
               </label>
               <select
-                disabled={disableScannerCont || packageIds.length !== 0}
+                disabled={disbaleBtnChecker || packageIds.length !== 0}
                 value={selectedChangeStatus[1]}
                 onChange={(e) => {
                   const value = e.currentTarget.value
@@ -216,6 +232,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
                 className="px-3 w-full mt-2"
                 placeholder="Location"
                 disabled={true}
+                value={userHub}
               ></input>
             </td>
           </tr>
@@ -316,6 +333,9 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
             Clear
           </button>
           <button
+            onClick={(e) => {
+              mutation.mutate({ IDs: packageIds })
+            }}
             style={{
               border: "2px solid transparent",
               borderRadius: "10px",
@@ -324,6 +344,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
           >
             Save
           </button>
+          {mutation.isLoading ? <LoadingSpinner></LoadingSpinner> : null}
         </div>
       </div>
     </div>
@@ -371,11 +392,11 @@ function TableItem({
           type="checkbox"
         ></input>
       </td>
-      <td>{_package.id}</td>
+      <td className="font-bold">{_package.id}</td>
       <td>
         <div className="font-bold">
-          <p>{_package.senderFullName}</p>
-          <p>{_package.receiverFullName}</p>
+          <p>S: {_package.senderFullName}</p>
+          <p>R: {_package.receiverFullName}</p>
         </div>
 
         <div style={{ fontSize: "11px" }} className="break-words">
@@ -421,12 +442,35 @@ function ShipmentTile({
   shipmentList,
   children,
   scannedPackageIds,
+  shipmentRefetch,
 }: {
   shipmentList: ExtendedShipment[]
   children: any
   scannedPackageIds: number[]
+  shipmentRefetch: (data: boolean) => void
 }) {
-  const [PackageIds, setPackageIds] = useState<number[]>([])
+  const disableBtnContext = useContext(DisableScanner)
+  const selectedShipmentId = disableBtnContext.shipmentBtn
+  const mutation = api.shipment.updateStatusToArrived.useMutation({
+    onSuccess: () => {
+      if (shipmentRefetcher) {
+        setShipmentRefetcher(false)
+      } else {
+        setShipmentRefetcher(true)
+      }
+    },
+  })
+  const checkAllStatus = [] as string[]
+  const [shipmentRefetcher, setShipmentRefetcher] = useState<boolean>(false)
+
+  useEffect(() => {
+    const refetchShipmentId = () => {
+      shipmentRefetch(shipmentRefetcher)
+    }
+
+    refetchShipmentId()
+  }, [shipmentRefetcher, shipmentRefetch])
+
   return (
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem]  ">
       <div className="mt-4 text-sm">
@@ -456,8 +500,11 @@ function ShipmentTile({
               <></>
             ) : (
               shipmentList[0]?.packages?.map((_package) => {
-                selectedShipmentResultIds.push(_package.id)
+                checkAllStatus.push(_package.status.status)
 
+                if (_package.status.status === "SHIPPING") {
+                  selectedShipmentResultIds.push(_package.id)
+                }
                 return (
                   <ShipmentItem
                     scannedPackageIds={scannedPackageIds}
@@ -469,6 +516,33 @@ function ShipmentTile({
             )}
           </tbody>
         </table>
+
+        <div
+          style={
+            checkAllStatus.length === 0
+              ? { display: "none" }
+              : { display: "flex" }
+          }
+          className="flex justify-end mt-6"
+        >
+          {mutation.isLoading ? <LoadingSpinner></LoadingSpinner> : <></>}
+          <button
+            onClick={() => {
+              if (!checkAllStatus.includes("SHIPPING")) {
+                mutation.mutate({ id: selectedShipmentId })
+              }
+            }}
+            disabled={checkAllStatus.includes("SHIPPING")}
+            style={
+              checkAllStatus.includes("SHIPPING")
+                ? { borderRadius: "10px", opacity: "0.7" }
+                : { borderRadius: "10px", opacity: "1" }
+            }
+            className="bg-[#4B61D7] text-white px-4 py-1 text-sm hover:opacity-75"
+          >
+            Mark as Arrived
+          </button>
+        </div>
       </div>
     </article>
   )
@@ -481,13 +555,12 @@ function ShipmentItem({
   package: any
   scannedPackageIds: number[]
 }) {
-  const [Checker, setChecker] = useState(false)
-
   return (
     <tr>
       <td>
         <p>
-          {scannedPackageIds.includes(_package.id) ? (
+          {scannedPackageIds.includes(_package.id) ||
+          _package.status.status !== "SHIPPING" ? (
             <Checks style={{ color: "green" }} size={27} weight="bold" />
           ) : (
             <X style={{ color: "red" }} size={27} weight="bold" />
@@ -515,24 +588,32 @@ function ShipmentItem({
       </td>
       <td>
         <div
-          style={{ borderRadius: "10px" }}
+          style={
+            _package.status.status !== "SHIPPING"
+              ? { backgroundColor: "#C73DCA", borderRadius: "10px" }
+              : { backgroundColor: "#F17834", borderRadius: "10px" }
+          }
           className="text-center text-white bg-[#F17834] p-1"
         >
-          <p>{_package.status.status}</p>
+          <p>{_package.status.status.replaceAll("_", " ")}</p>
         </div>
       </td>
     </tr>
   )
 }
 
-const DisableScanner = createContext("false")
+const DisableScanner = createContext({ disbaleBtn: "false", shipmentBtn: 0 })
 
 function Incoming({ switchTab }: { switchTab: () => void }) {
   const { user, role } = useSession()
   const [selectedShipment, setSelectedShipment] = useState("false")
   const [valueId, setValueId] = useState<number>(0)
-
+  const [scannedPackageIds, setScannedPackageIds] = useState<number[]>([])
+  const [disableShipmentSelection, setDisableShipmentSelection] =
+    useState(false)
+  const [refetchShipmentId, setRefetchShipmentId] = useState<boolean>(false)
   const {
+    refetch: refetchShipmentSelection,
     isLoading,
     isError,
     data: shipment,
@@ -541,6 +622,7 @@ function Incoming({ switchTab }: { switchTab: () => void }) {
   })
 
   const {
+    refetch,
     isLoading: isLoadingShipments,
     isError: isErrorShipments,
     data: shipmentList,
@@ -552,14 +634,34 @@ function Incoming({ switchTab }: { switchTab: () => void }) {
       enabled: user !== null && role === "WAREHOUSE",
     },
   )
-  const [scannedPackageIds, setScannedPackageIds] = useState<number[]>([])
+
   const handleDataFromChild = (data: number[]) => {
     setScannedPackageIds(data)
   }
+  const shipmentRefetcher = (data: boolean) => {
+    setRefetchShipmentId(data)
+  }
+
+  useEffect(() => {
+    setValueId(0)
+    refetchShipmentSelection()
+  }, [refetchShipmentId, refetchShipmentSelection])
+
+  useEffect(() => {
+    if (scannedPackageIds.length === 0) {
+      setDisableShipmentSelection(false)
+      refetch()
+    } else {
+      setDisableShipmentSelection(true)
+    }
+  }, [scannedPackageIds, refetch])
+
   return (
     <>
       <WarehouseLayout title="Dashboard">
-        <DisableScanner.Provider value={selectedShipment}>
+        <DisableScanner.Provider
+          value={{ disbaleBtn: selectedShipment, shipmentBtn: valueId }}
+        >
           <div className="flex	justify-between	my-4">
             <h1 className="text-3xl font-black [color:_#00203F] mb-4 mt-6">
               Package Scan
@@ -571,15 +673,21 @@ function Incoming({ switchTab }: { switchTab: () => void }) {
               switchTab={switchTab}
             />
             <ShipmentTile
+              shipmentRefetch={shipmentRefetcher}
               shipmentList={shipmentList as unknown as ExtendedShipment[]}
               scannedPackageIds={scannedPackageIds}
             >
               <select
+                value={valueId}
+                disabled={disableShipmentSelection}
                 onChange={(e) => {
                   const value = parseInt(e.currentTarget.value)
+
                   if (value == 0) {
                     setValueId(0)
+
                     setSelectedShipment("false")
+                    selectedShipmentResultIds.length = 0
                   } else {
                     setSelectedShipment("true")
                     setValueId(value)
@@ -604,9 +712,9 @@ function Incoming({ switchTab }: { switchTab: () => void }) {
                       <option>Error</option>
                     ) : (
                       <>
-                        {shipment.map((_shipment) => (
+                        {shipment.map((_shipment, index) => (
                           <ShipmentSelection
-                            key={_shipment.id}
+                            key={index}
                             shipment={_shipment}
                           ></ShipmentSelection>
                         ))}
