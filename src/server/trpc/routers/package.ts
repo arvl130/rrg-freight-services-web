@@ -34,17 +34,17 @@ export const packageRouter = router({
     return await ctx.db.select().from(packages)
   }),
 
-  updatePackageStatusByList: protectedProcedure
+  updatePackageStatusByIds: protectedProcedure
     .input(
       z.object({
-        list: z.array(z.number()),
+        IDs: z.array(z.number()),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const createBy = ctx.user.uid
       const createdDate = new Date()
 
-      const results = input.list.map((scannedPackageId) => {
+      const results = input.IDs.map((scannedPackageId) => {
         return {
           packageId: scannedPackageId,
           status: "IN_WAREHOUSE" as const,

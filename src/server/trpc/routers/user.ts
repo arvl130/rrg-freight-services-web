@@ -15,7 +15,7 @@ export const userRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(users)
   }),
-  getCurrentUser: protectedProcedure.query(({ ctx }) => {
+  getCurrent: protectedProcedure.query(({ ctx }) => {
     const userId = ctx.user.uid
     return ctx.db
       .select()

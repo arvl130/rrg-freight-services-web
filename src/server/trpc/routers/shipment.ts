@@ -132,7 +132,7 @@ export const shipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(shipments)
   }),
-  changeShipmentStatToArrived: protectedProcedure
+  updateStatusToArrived: protectedProcedure
     .input(
       z.object({
         id: z.number(),

@@ -99,7 +99,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
   const disbaleBtnContext = useContext(DisableScanner)
   const disbaleBtnChecker = disbaleBtnContext.disbaleBtn === "false"
   const selectedShipmentId = disbaleBtnContext.shipmentBtn
-  const mutation = api.package.updatePackageStatusByList.useMutation({
+  const mutation = api.package.updatePackageStatusByIds.useMutation({
     onSuccess: async () => {
       setPackageIds([])
     },
@@ -116,7 +116,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
       enabled: user !== null && role === "WAREHOUSE",
     },
   )
-  const { data: currentUser } = api.user.getCurrentUser.useQuery(undefined, {
+  const { data: currentUser } = api.user.getCurrent.useQuery(undefined, {
     enabled: user !== null && role === "WAREHOUSE",
   })
 
@@ -334,7 +334,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
           </button>
           <button
             onClick={(e) => {
-              mutation.mutate({ list: packageIds })
+              mutation.mutate({ IDs: packageIds })
             }}
             style={{
               border: "2px solid transparent",
@@ -449,9 +449,9 @@ function ShipmentTile({
   scannedPackageIds: number[]
   shipmentRefetch: (data: boolean) => void
 }) {
-  const disbaleBtnContext = useContext(DisableScanner)
-  const selectedShipmentId = disbaleBtnContext.shipmentBtn
-  const mutation = api.shipment.changeShipmentStatToArrived.useMutation({
+  const disableBtnContext = useContext(DisableScanner)
+  const selectedShipmentId = disableBtnContext.shipmentBtn
+  const mutation = api.shipment.updateStatusToArrived.useMutation({
     onSuccess: () => {
       if (shipmentRefetcher) {
         setShipmentRefetcher(false)
