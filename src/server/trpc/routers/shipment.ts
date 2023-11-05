@@ -132,6 +132,28 @@ export const shipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(shipments)
   }),
+  changeShipmentStatToArrived: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const createBy = ctx.user.uid
+      const createdDate = new Date()
+
+      const values = {
+        shipmentId: input.id,
+        status: "ARRIVED" as const,
+        description: "Shipment has arrived to its destination hub.",
+        createdAt: createdDate,
+        createdById: createBy,
+      }
+
+      await ctx.db.insert(shipmentStatusLogs).values(values)
+
+      return createBy
+    }),
   getLatestArrivedStatus: protectedProcedure
     .input(
       z.object({

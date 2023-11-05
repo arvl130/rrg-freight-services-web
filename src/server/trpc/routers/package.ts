@@ -12,6 +12,7 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { inArray } from "drizzle-orm"
 import {
+  PackageStatus,
   ReceptionMode,
   ShippingMode,
   ShippingType,
@@ -26,10 +27,37 @@ import {
 } from "@/server/db/helpers/shipment-hub"
 import { alias } from "drizzle-orm/mysql-core"
 
+import { list } from "firebase/storage"
+
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(packages)
   }),
+
+  updatePackageStatusByList: protectedProcedure
+    .input(
+      z.object({
+        list: z.array(z.number()),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const createBy = ctx.user.uid
+      const createdDate = new Date()
+
+      const results = input.list.map((scannedPackageId) => {
+        return {
+          packageId: scannedPackageId,
+          status: "IN_WAREHOUSE" as const,
+          description: "Package has been received in a Main hub.",
+          createdAt: createdDate,
+          createdById: createBy,
+        }
+      })
+
+      await ctx.db.insert(packageStatusLogs).values(results)
+
+      return "Success!"
+    }),
   createMany: protectedProcedure
     .input(
       z.object({
