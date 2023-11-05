@@ -34,6 +34,13 @@ ChartJS.register(
 export default api.withTRPC(({ Component, pageProps }: AppProps) => {
   return (
     <AuthProvider>
+      <style jsx global>
+        {`
+          :root {
+            --font-dm-sans: ${dmSans.style.fontFamily};
+          }
+        `}
+      </style>
       <div className={`${dmSans.variable} font-sans text-brand-black`}>
         <Toaster position="top-center" />
         <Component {...pageProps} />
