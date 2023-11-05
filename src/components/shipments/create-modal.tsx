@@ -291,8 +291,17 @@ export function ShipmentsCreateModal({
         className="h-full grid grid-rows-[auto_1fr_auto] overflow-auto"
         onSubmit={(e) => {
           e.preventDefault()
-          if (selectedDestinationHubId === null) return
-          if (selectedPackageIds.length === 0) return
+          if (role === "OVERSEAS_AGENT") {
+            if (
+              selectedPackageIds.length === 0 ||
+              selectedDestinationHubId === null ||
+              isLoadingCreateShipment
+            )
+              return
+          } else {
+            if (selectedPackageIds.length === 0 || isLoadingCreateShipment)
+              return
+          }
 
           const [first, ...others] = selectedPackageIds
           mutate({
