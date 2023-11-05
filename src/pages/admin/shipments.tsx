@@ -105,7 +105,7 @@ function ShipmentTableItem({
 }: {
   shipment: Shipment & {
     originHub: ShipmentHub
-    destinationHub: ShipmentHub
+    destinationHub: ShipmentHub | null
   }
 }) {
   return (
@@ -124,17 +124,21 @@ function ShipmentTableItem({
           </p>
         </div>
       </div>
-      <div className="px-4 py-2">
-        <div>{shipment.destinationHub.displayName}</div>
-        <div className="text-gray-400">
-          <p>{shipment.destinationHub.city}</p>
-          <p>{shipment.destinationHub.stateOrProvince}</p>
-          <p>
-            {shipment.destinationHub.countryCode}{" "}
-            {shipment.destinationHub.postalCode}
-          </p>
+      {shipment.destinationHub ? (
+        <div className="px-4 py-2">
+          <div>{shipment.destinationHub.displayName}</div>
+          <div className="text-gray-400">
+            <p>{shipment.destinationHub.city}</p>
+            <p>{shipment.destinationHub.stateOrProvince}</p>
+            <p>
+              {shipment.destinationHub.countryCode}{" "}
+              {shipment.destinationHub.postalCode}
+            </p>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="px-4 py-2">Receiver Address</div>
+      )}
       <div className="px-4 py-2 flex items-center gap-2">
         <ShipmentArrivedDate shipmentId={shipment.id} />
       </div>
@@ -154,7 +158,7 @@ function ShipmentsTable({
 }: {
   shipments: (Shipment & {
     originHub: ShipmentHub
-    destinationHub: ShipmentHub
+    destinationHub: ShipmentHub | null
   })[]
 }) {
   const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")

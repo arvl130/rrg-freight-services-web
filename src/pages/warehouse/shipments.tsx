@@ -141,7 +141,7 @@ function ShipmentTableItem({
 }: {
   shipment: Shipment & {
     originHub: ShipmentHub
-    destinationHub: ShipmentHub
+    destinationHub: ShipmentHub | null
   }
 }) {
   return (
@@ -165,17 +165,22 @@ function ShipmentTableItem({
             </p>
           </div>
         </td>
-        <td>
-          <h2 className="font-bold	">{shipment.destinationHub.displayName}</h2>
-          <div style={{ fontSize: "11px" }} className="">
-            <p>{shipment.destinationHub.city}</p>
-            <p>{shipment.destinationHub.stateOrProvince}</p>
-            <p>
-              {shipment.destinationHub.countryCode}{" "}
-              {shipment.destinationHub.postalCode}
-            </p>
-          </div>
-        </td>
+
+        {shipment.destinationHub ? (
+          <td>
+            <h2 className="font-bold	">{shipment.destinationHub.displayName}</h2>
+            <div style={{ fontSize: "11px" }} className="">
+              <p>{shipment.destinationHub.city}</p>
+              <p>{shipment.destinationHub.stateOrProvince}</p>
+              <p>
+                {shipment.destinationHub.countryCode}{" "}
+                {shipment.destinationHub.postalCode}
+              </p>
+            </div>
+          </td>
+        ) : (
+          <td>Receiver Address</td>
+        )}
         <td>
           <h2 className="font-bold	">
             <ShipmentArrivedDate shipmentId={shipment.id} />
@@ -200,7 +205,7 @@ function RecentActivityTile({
 }: {
   shipments: (Shipment & {
     originHub: ShipmentHub
-    destinationHub: ShipmentHub
+    destinationHub: ShipmentHub | null
   })[]
 }) {
   const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")

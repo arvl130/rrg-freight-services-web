@@ -188,7 +188,7 @@ export const shipmentRouter = router({
       .select()
       .from(shipments)
       .innerJoin(originHubs, eq(shipments.originHubId, originHubs.id))
-      .innerJoin(
+      .leftJoin(
         destinationHubs,
         eq(shipments.destinationHubId, destinationHubs.id),
       )
