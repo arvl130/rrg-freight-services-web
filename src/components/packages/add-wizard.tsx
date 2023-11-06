@@ -11,10 +11,14 @@ export function PackagesAddWizard({
   close: () => void
 }) {
   const modalRef = useRef<null | HTMLDialogElement>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
-    if (isOpen) modalRef.current?.showModal()
-    else {
+    if (isOpen) {
+      setIsModalOpen(true)
+      modalRef.current?.showModal()
+    } else {
+      setIsModalOpen(false)
       modalRef.current?.close()
     }
   }, [isOpen])
@@ -24,12 +28,15 @@ export function PackagesAddWizard({
       ref={modalRef}
       onClose={close}
       className={`
-        bg-white w-[min(100%,_64rem)] rounded-2xl h-[calc(100vh_-_6rem)]
-        ${isOpen ? "grid" : ""}
+        bg-white w-[min(100%,_64rem)] rounded-2xl h-[calc(100vh-_6rem)]
+        ${isModalOpen ? "grid" : ""}
       `}
     >
       <div className="h-full grid">
-        <PackagesAddWizardInformation isOpenModal={isOpen} />
+        <PackagesAddWizardInformation
+          isOpenModal={isModalOpen}
+          setIsOpenModal={setIsModalOpen}
+        />
       </div>
     </dialog>
   )
