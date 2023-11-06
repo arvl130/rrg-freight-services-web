@@ -33,6 +33,8 @@ export function PackagesAddWizardInformation({
   setIsOpenModal: (isOpen: boolean) => void
 }) {
   const [isConfirmationVisible, setIsConfirmationVisible] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
   const {
     reset,
     register,
@@ -41,16 +43,48 @@ export function PackagesAddWizardInformation({
   } = useForm<Inputs>()
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+    setIsLoading(true)
     setIsConfirmationVisible(true)
   }
 
-  const handleSaveConfirmed = () => {
-    // Save the information to the database here
-    setIsConfirmationVisible(false) // Close the confirmation dialog
+  const handleSaveConfirmed = (data: Inputs) => {
+    const packageData = {
+      sender_full_name: data.sender_full_name,
+      sender_contact_number: data.sender_contact_number,
+      sender_email_address: data.sender_email_address,
+      sender_street_address: data.sender_street_address,
+      sender_state_province: data.sender_state_province,
+      sender_country_code: data.sender_country_code,
+      sender_postal_code: data.sender_postal_code,
+      shipping_mode: data.shipping_mode,
+      shipping_type: data.shipping_type,
+      weight_in_kg: data.weight_in_kg,
+      receiver_full_name: data.receiver_full_name,
+      receiver_contact_number: data.receiver_contact_number,
+      receiver_email_address: data.receiver_email_address,
+      receiver_street_address: data.receiver_street_address,
+      receiver_barangay: data.receiver_barangay,
+      receiver_state_province: data.receiver_state_province,
+      receiver_country_code: data.receiver_country_code,
+      receiver_postal_code: data.receiver_postal_code,
+    }
+    api
+      .savePackage(packageData)
+      .then((response) => {
+        setIsConfirmationVisible(false)
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error saving package data: ", error)
+        setIsLoading(false)
+      })
   }
 
+  const close = () => {
+    setIsConfirmationVisible(false)
+  }
   const handleCancelSave = () => {
-    setIsConfirmationVisible(false) // Close the confirmation dialog
+    close()
   }
 
   const utils = api.useUtils()
@@ -238,8 +272,6 @@ export function PackagesAddWizardInformation({
                   <option value="AF">Air Freight</option>
                   <option value="TV">TV/Monitors</option>
                   <option value="PC">PC</option>
-                  <option value="GA">Gaming/Console</option>
-                  <option value="PH">Phones</option>
                 </select>
               </div>
               <div className="flex flex-col">
@@ -254,8 +286,6 @@ export function PackagesAddWizardInformation({
                   <option value="SD">Standard Delivery</option>
                   <option value="TV">TV/Monitors</option>
                   <option value="PC">PC</option>
-                  <option value="GA">Gaming/Console</option>
-                  <option value="PH">Phones</option>
                 </select>
               </div>
               <div className="flex flex-col">
@@ -473,9 +503,7 @@ export function PackagesAddWizardInformation({
               <button
                 type="button"
                 className="w-20 h-10 text-white bg-red-400 rounded-lg ml-2"
-                onClick={() => {
-                  setIsOpenModal(false)
-                }}
+                onClick={() => close()}
               >
                 Cancel
               </button>
