@@ -54,15 +54,7 @@ export function PackagesAddWizardInformation({
   }
 
   const utils = api.useUtils()
-  const { isLoading } = api.user.updateDetails.useMutation({
-    onSuccess: async () => {
-      reset()
-      utils.user.getById.invalidate({
-        id: user.id,
-      })
-      reload()
-    },
-  })
+  
 
   useEffect(() => {
     if (!isOpenModal) reset()
@@ -477,7 +469,7 @@ export function PackagesAddWizardInformation({
                 type="submit"
                 className="w-20 h-10 text-white bg-green-400 rounded-lg"
               >
-                {isLoading ? "Saving ..." : "Save"}
+                Save
               </button>
               <button
                 type="button"
