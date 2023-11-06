@@ -68,16 +68,6 @@ export function PackagesAddWizardInformation({
       receiver_country_code: data.receiver_country_code,
       receiver_postal_code: data.receiver_postal_code,
     }
-    api
-      .savePackage(packageData)
-      .then((response) => {
-        setIsConfirmationVisible(false)
-        setIsLoading(false)
-      })
-      .catch((error) => {
-        console.error("Error saving package data: ", error)
-        setIsLoading(false)
-      })
   }
 
   const close = () => {
@@ -202,6 +192,7 @@ export function PackagesAddWizardInformation({
                   } p-2`}
                   placeholder="State/Province"
                 >
+                  <option></option>
                   <option value="HK">Hong Kong</option>
                   <option value="TV">TV/Monitors</option>
                   <option value="PC">PC</option>
@@ -227,6 +218,7 @@ export function PackagesAddWizardInformation({
                   } p-2`}
                   placeholder="Country Code"
                 >
+                  <option></option>
                   <option value="HK">Hong Kong</option>
                   <option value="TV">TV/Monitors</option>
                   <option value="PC">PC</option>
@@ -265,28 +257,50 @@ export function PackagesAddWizardInformation({
                   Mode
                 </label>
                 <select
-                  {...register("shipping_mode")}
+                  {...register("shipping_mode", {
+                    required: "Mode is required",
+                  })}
                   id="shipping_mode"
-                  className="w-full h-10 bg-white rounded border border-stone-300 p-2"
+                  className={`w-full h-10 bg-white rounded border ${
+                    errors.shipping_mode ? "border-red-500" : "border-stone-300"
+                  } p-2`}
+                  placeholder="Country Code"
                 >
+                  <option></option>
                   <option value="AF">Air Freight</option>
                   <option value="TV">TV/Monitors</option>
                   <option value="PC">PC</option>
                 </select>
+                {errors.shipping_mode && (
+                  <span className="text-red-500 text-sm">
+                    {errors.shipping_mode.message}
+                  </span>
+                )}
               </div>
               <div className="flex flex-col">
                 <label htmlFor="shipping_type" className="text-sm font-bold">
                   Delivery Type
                 </label>
                 <select
-                  {...register("shipping_type")}
+                  {...register("shipping_type", {
+                    required: "Delivery Type is required",
+                  })}
                   id="shipping_type"
-                  className="w-full h-10 bg-white rounded border border-stone-300 p-2"
+                  className={`w-full h-10 bg-white rounded border ${
+                    errors.shipping_type ? "border-red-500" : "border-stone-300"
+                  } p-2`}
+                  placeholder="Country Code"
                 >
+                  <option></option>
                   <option value="SD">Standard Delivery</option>
                   <option value="TV">TV/Monitors</option>
                   <option value="PC">PC</option>
                 </select>
+                {errors.shipping_type && (
+                  <span className="text-red-500 text-sm">
+                    {errors.shipping_type.message}
+                  </span>
+                )}
               </div>
               <div className="flex flex-col">
                 <label htmlFor="weight_in_kg" className="text-sm font-bold">
@@ -413,7 +427,7 @@ export function PackagesAddWizardInformation({
               </div>
               <div className="flex flex-col">
                 <label className="text-sm font-bold">Barangay</label>
-                <input
+                <select
                   {...register("receiver_barangay", {
                     required: "Barangay is required",
                   })}
@@ -424,7 +438,11 @@ export function PackagesAddWizardInformation({
                       : "border-stone-300"
                   } p-2`}
                   placeholder="Receiver Barangay"
-                />
+                >
+                  <option></option>
+                  <option value="AF">Air Freight</option>
+                  <option value="TV">TV/Monitors</option>
+                </select>
                 {errors.receiver_barangay && (
                   <span className="text-red-500 text-sm">
                     {errors.receiver_barangay.message}
@@ -433,7 +451,7 @@ export function PackagesAddWizardInformation({
               </div>
               <div className="flex flex-col">
                 <label className="text-sm font-bold">Province</label>
-                <input
+                <select
                   {...register("receiver_state_province", {
                     required: "Province is required",
                   })}
@@ -444,7 +462,11 @@ export function PackagesAddWizardInformation({
                       : "border-stone-300"
                   } p-2`}
                   placeholder="Province"
-                />
+                >
+                  <option></option>
+                  <option value="AF">Air Freight</option>
+                  <option value="TV">TV/Monitors</option>
+                </select>
                 {errors.receiver_state_province && (
                   <span className="text-red-500 text-sm">
                     {errors.receiver_state_province.message}
