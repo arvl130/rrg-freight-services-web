@@ -48,26 +48,7 @@ export function PackagesAddWizardInformation({
   }
 
   const handleSaveConfirmed = (data: Inputs) => {
-    const packageData = {
-      sender_full_name: data.sender_full_name,
-      sender_contact_number: data.sender_contact_number,
-      sender_email_address: data.sender_email_address,
-      sender_street_address: data.sender_street_address,
-      sender_state_province: data.sender_state_province,
-      sender_country_code: data.sender_country_code,
-      sender_postal_code: data.sender_postal_code,
-      shipping_mode: data.shipping_mode,
-      shipping_type: data.shipping_type,
-      weight_in_kg: data.weight_in_kg,
-      receiver_full_name: data.receiver_full_name,
-      receiver_contact_number: data.receiver_contact_number,
-      receiver_email_address: data.receiver_email_address,
-      receiver_street_address: data.receiver_street_address,
-      receiver_barangay: data.receiver_barangay,
-      receiver_state_province: data.receiver_state_province,
-      receiver_country_code: data.receiver_country_code,
-      receiver_postal_code: data.receiver_postal_code,
-    }
+    setIsConfirmationVisible(false)
   }
 
   const close = () => {
