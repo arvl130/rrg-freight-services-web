@@ -54,7 +54,6 @@ export function PackagesAddWizardInformation({
   }
 
   const utils = api.useUtils()
-  
 
   useEffect(() => {
     if (!isOpenModal) reset()
