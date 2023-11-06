@@ -34,19 +34,40 @@ export const packageRouter = router({
     .input(
       z.object({
         ids: z.array(z.number()),
+        status: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const createBy = ctx.user.uid
       const createdDate = new Date()
+      const newStatus = input.status.replaceAll(" ", "_").toUpperCase()
 
       const results = input.ids.map((scannedPackageId) => {
-        return {
-          packageId: scannedPackageId,
-          status: "IN_WAREHOUSE" as const,
-          description: "Package has been received in a Main hub.",
-          createdAt: createdDate,
-          createdById: createBy,
+        if (newStatus === "IN_WAREHOUSE") {
+          return {
+            packageId: scannedPackageId,
+            status: newStatus as any,
+            description: "Your package has been received in a Main hub.",
+            createdAt: createdDate,
+            createdById: createBy,
+          }
+        } else if (newStatus === "SHIPPING") {
+          return {
+            packageId: scannedPackageId,
+            status: newStatus as any,
+            description:
+              "Your package has been prepared and is currently being shipped out.",
+            createdAt: createdDate,
+            createdById: createBy,
+          }
+        } else {
+          return {
+            packageId: scannedPackageId,
+            status: newStatus as any,
+            description: "Your package is currently out for delivery",
+            createdAt: createdDate,
+            createdById: createBy,
+          }
         }
       })
 

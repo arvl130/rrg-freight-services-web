@@ -95,6 +95,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
     "true",
     "0",
   ])
+  const [newStatus, setNewStatus] = useState<string>("")
   const [userHub, setUserHub] = useState<string>("")
   const disbaleBtnContext = useContext(DisableScanner)
   const disbaleBtnChecker = disbaleBtnContext.disbaleBtn === "false"
@@ -203,8 +204,10 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
 
                   if (value === "0") {
                     setSelectedChangeStatus(["true", "0"])
+                    setNewStatus("0")
                   } else {
                     setSelectedChangeStatus(["false", value])
+                    setNewStatus(value)
                   }
                 }}
                 style={{
@@ -334,7 +337,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
           </button>
           <button
             onClick={(e) => {
-              mutation.mutate({ ids: packageIds })
+              mutation.mutate({ ids: packageIds, status: newStatus })
             }}
             style={{
               border: "2px solid transparent",
@@ -428,11 +431,28 @@ function TableItem({
 }
 
 function ShipmentSelection({ shipment: _shipment }: { shipment: any }) {
+  const { user, role } = useSession()
+  let destionationHub = ""
+  const {
+    isLoading,
+    isError,
+    data: destionationName,
+  } = api.shipment.getDestinationNameById.useQuery(
+    {
+      id: _shipment.destination_hub_id,
+    },
+    {
+      enabled: user !== null && role === "WAREHOUSE",
+    },
+  )
+  if (destionationName !== undefined) {
+    destionationHub = destionationName[0].displayName
+  }
   return (
     <option value={_shipment.shipment_id}>
       &nbsp;
       {_shipment.shipment_id}&nbsp;
-      {_shipment.display_name} &nbsp;{_shipment.country_code}
+      {_shipment.display_name} To {destionationHub}
       &nbsp;
     </option>
   )
