@@ -49,7 +49,7 @@ export function PackagesViewWaybillModal({
                 </div>
                 <div className="w-full flex flex-col items-center">
                   <QRCode
-                    value="hey"
+                    value={_package.id.toString()}
                     size={256}
                     style={{ height: "80px", width: "80px" }}
                   />
