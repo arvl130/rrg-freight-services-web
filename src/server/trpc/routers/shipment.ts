@@ -16,7 +16,7 @@ import { Package, Shipment } from "@/server/db/entities"
 import { ResultSetHeader } from "mysql2"
 import { PackageStatus } from "@/utils/constants"
 import { getShipmentHubIdOfUser } from "@/server/db/helpers/shipment-hub"
-
+import { getShipmentHubIdOfUserId } from "@/server/db/helpers/shipment-hub"
 export const shipmentRouter = router({
   getWithShipmentPackagesById: protectedProcedure
     .input(
@@ -92,21 +92,17 @@ export const shipmentRouter = router({
 
       return [{ ...shipmentItemsWithPackages[0], packages: items }]
     }),
-  getAllInTransitStatus: protectedProcedure.query(async ({ ctx }) => {
+  getIncoming: protectedProcedure.query(async ({ ctx }) => {
     const shipmentStatus = alias(shipmentStatusLogs, "shipment_inTransit")
+    const shipmentHubId = await getShipmentHubIdOfUserId(ctx.db, ctx.user.uid)
 
-    const test = await sql.raw(`SELECT *
-      FROM shipments
-      JOIN (
-        SELECT shipment_id, MAX(shipment_status_logs.created_at) AS latest_log_timestamp
-        FROM shipment_status_logs 
-        GROUP BY shipment_id
-      ) AS latest_logs
-      ON shipments.id = latest_logs.shipment_id
-      JOIN shipment_status_logs
-      ON latest_logs.shipment_id = shipment_status_logs.shipment_id AND latest_logs.latest_log_timestamp = shipment_status_logs.created_at JOIN shipment_hubs ON shipments.origin_hub_id=shipment_hubs.id WHERE shipment_status_logs.status="IN_TRANSIT" AND origin_hub_id!=2`)
-
-    const [results, properties] = await ctx.db.execute(test)
+    const [results, properties] = await ctx.db.execute(sql` SELECT
+    ssl1.*,ssl1.created_at AS latest_log_timestamp,shipment_hubs.*,shipments.*
+  FROM shipment_status_logs ssl1
+  LEFT JOIN shipment_status_logs ssl2
+  ON ssl1.shipment_id = ssl2.shipment_id
+  AND ssl1.created_at < ssl2.created_at
+  JOIN shipments ON ssl1.shipment_id=shipments.id JOIN shipment_hubs ON shipments.destination_hub_id=shipment_hubs.id WHERE ssl2.id IS NULL AND shipments.destination_hub_id=${shipmentHubId} AND ssl1.status="IN_TRANSIT"`)
 
     return results as unknown as {
       id: number
@@ -129,21 +125,17 @@ export const shipmentRouter = router({
       postal_code: number
     }[]
   }),
-  getAllLocalShipment: protectedProcedure.query(async ({ ctx }) => {
+  getOutgoing: protectedProcedure.query(async ({ ctx }) => {
     const shipmentStatus = alias(shipmentStatusLogs, "shipment_inTransit")
+    const shipmentHubId = await getShipmentHubIdOfUserId(ctx.db, ctx.user.uid)
 
-    const test = await sql.raw(`SELECT *
-      FROM shipments
-      JOIN (
-        SELECT shipment_id, MAX(shipment_status_logs.created_at) AS latest_log_timestamp
-        FROM shipment_status_logs 
-        GROUP BY shipment_id
-      ) AS latest_logs
-      ON shipments.id = latest_logs.shipment_id
-      JOIN shipment_status_logs
-      ON latest_logs.shipment_id = shipment_status_logs.shipment_id AND latest_logs.latest_log_timestamp = shipment_status_logs.created_at JOIN shipment_hubs ON shipments.origin_hub_id=shipment_hubs.id WHERE shipment_status_logs.status="PREPARING" AND origin_hub_id!=1`)
-
-    const [results, properties] = await ctx.db.execute(test)
+    const [results, properties] = await ctx.db.execute(sql` SELECT
+    ssl1.*,ssl1.created_at AS latest_log_timestamp,shipment_hubs.*,shipments.*
+  FROM shipment_status_logs ssl1
+  LEFT JOIN shipment_status_logs ssl2
+  ON ssl1.shipment_id = ssl2.shipment_id
+  AND ssl1.created_at < ssl2.created_at
+  JOIN shipments ON ssl1.shipment_id=shipments.id JOIN shipment_hubs ON shipments.destination_hub_id=shipment_hubs.id WHERE ssl2.id IS NULL AND shipments.origin_hub_id=${shipmentHubId} AND ssl1.status="PREPARING"`)
 
     return results as unknown as {
       id: number

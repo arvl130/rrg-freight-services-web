@@ -432,27 +432,27 @@ function TableItem({
 
 function ShipmentSelection({ shipment: _shipment }: { shipment: any }) {
   const { user, role } = useSession()
-  let destionationHub = ""
+  let originHub = ""
   const {
     isLoading,
     isError,
     data: destionationName,
   } = api.shipment.getDestinationNameById.useQuery(
     {
-      id: _shipment.destination_hub_id,
+      id: _shipment.origin_hub_id,
     },
     {
       enabled: user !== null && role === "WAREHOUSE",
     },
   )
   if (destionationName !== undefined) {
-    destionationHub = destionationName[0].displayName
+    originHub = destionationName[0].displayName
   }
   return (
     <option value={_shipment.shipment_id}>
       &nbsp;
       {_shipment.shipment_id}&nbsp;
-      {_shipment.display_name} To {destionationHub}
+      {originHub} To {_shipment.display_name}
       &nbsp;
     </option>
   )
@@ -495,7 +495,7 @@ function ShipmentTile({
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem]  ">
       <div className="mt-4 text-sm">
         <h2 style={{ fontSize: "14px" }} className="font-bold">
-          Shipments
+          Shipments {}
         </h2>
         {children}
       </div>
@@ -637,7 +637,7 @@ function Incoming({ switchTab }: { switchTab: () => void }) {
     isLoading,
     isError,
     data: shipment,
-  } = api.shipment.getAllInTransitStatus.useQuery(undefined, {
+  } = api.shipment.getIncoming.useQuery(undefined, {
     enabled: user !== null && role === "WAREHOUSE",
   })
 

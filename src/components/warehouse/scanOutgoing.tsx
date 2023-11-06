@@ -373,16 +373,16 @@ function TableItem({
   checkedIds: number[]
   SelectedStatus: string
 }) {
-  const [isChecked, setisChecked] = useState(false)
+  const [isChecked, setIsChecked] = useState(false)
 
   useEffect(() => {
     if (isAllChecked) {
-      setisChecked(true)
+      setIsChecked(true)
     } else {
       if (checkedIds.includes(_package.id)) {
-        setisChecked(true)
+        setIsChecked(true)
       } else {
-        setisChecked(false)
+        setIsChecked(false)
       }
     }
   }, [isAllChecked, _package.id, checkedIds])
@@ -445,7 +445,7 @@ function ShipmentSelection({ shipment: _shipment }: { shipment: any }) {
     data: destionationName,
   } = api.shipment.getDestinationNameById.useQuery(
     {
-      id: _shipment.destination_hub_id,
+      id: _shipment.origin_hub_id,
     },
     {
       enabled: user !== null && role === "WAREHOUSE",
@@ -458,7 +458,7 @@ function ShipmentSelection({ shipment: _shipment }: { shipment: any }) {
     <option value={_shipment.shipment_id}>
       &nbsp;
       {_shipment.shipment_id}&nbsp;
-      {_shipment.display_name} To {destionationHub}
+      {destionationHub} To {_shipment.display_name}
     </option>
   )
 }
@@ -645,7 +645,7 @@ function Outgoing({ switchTab }: { switchTab: () => void }) {
     isLoading,
     isError,
     data: shipment,
-  } = api.shipment.getAllLocalShipment.useQuery(undefined, {
+  } = api.shipment.getOutgoing.useQuery(undefined, {
     enabled: user !== null && role === "WAREHOUSE",
   })
 
