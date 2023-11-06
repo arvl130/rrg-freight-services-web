@@ -16,7 +16,7 @@ import { Package, Shipment } from "@/server/db/entities"
 import { ResultSetHeader } from "mysql2"
 import { PackageStatus } from "@/utils/constants"
 import { getShipmentHubIdOfUser } from "@/server/db/helpers/shipment-hub"
-
+import { getShipmentHubIdOfUserId } from "@/server/db/helpers/shipment-hub"
 export const shipmentRouter = router({
   getWithShipmentPackagesById: protectedProcedure
     .input(
@@ -92,21 +92,17 @@ export const shipmentRouter = router({
 
       return [{ ...shipmentItemsWithPackages[0], packages: items }]
     }),
-  getAllInTransitStatus: protectedProcedure.query(async ({ ctx }) => {
+  getIncoming: protectedProcedure.query(async ({ ctx }) => {
     const shipmentStatus = alias(shipmentStatusLogs, "shipment_inTransit")
+    const shipmentHubId = await getShipmentHubIdOfUserId(ctx.db, ctx.user.uid)
 
-    const test = await sql.raw(`SELECT *
-      FROM shipments
-      JOIN (
-        SELECT shipment_id, MAX(shipment_status_logs.created_at) AS latest_log_timestamp
-        FROM shipment_status_logs 
-        GROUP BY shipment_id
-      ) AS latest_logs
-      ON shipments.id = latest_logs.shipment_id
-      JOIN shipment_status_logs
-      ON latest_logs.shipment_id = shipment_status_logs.shipment_id AND latest_logs.latest_log_timestamp = shipment_status_logs.created_at JOIN shipment_hubs ON shipments.origin_hub_id=shipment_hubs.id WHERE shipment_status_logs.status="IN_TRANSIT"`)
-
-    const [results, properties] = await ctx.db.execute(test)
+    const [results, properties] = await ctx.db.execute(sql` SELECT
+    ssl1.*,ssl1.created_at AS latest_log_timestamp,shipment_hubs.*,shipments.*
+  FROM shipment_status_logs ssl1
+  LEFT JOIN shipment_status_logs ssl2
+  ON ssl1.shipment_id = ssl2.shipment_id
+  AND ssl1.created_at < ssl2.created_at
+  JOIN shipments ON ssl1.shipment_id=shipments.id JOIN shipment_hubs ON shipments.destination_hub_id=shipment_hubs.id WHERE ssl2.id IS NULL AND shipments.destination_hub_id=${shipmentHubId} AND ssl1.status="IN_TRANSIT"`)
 
     return results as unknown as {
       id: number
@@ -129,6 +125,56 @@ export const shipmentRouter = router({
       postal_code: number
     }[]
   }),
+  getOutgoing: protectedProcedure.query(async ({ ctx }) => {
+    const shipmentStatus = alias(shipmentStatusLogs, "shipment_inTransit")
+    const shipmentHubId = await getShipmentHubIdOfUserId(ctx.db, ctx.user.uid)
+
+    const [results, properties] = await ctx.db.execute(sql` SELECT
+    ssl1.*,ssl1.created_at AS latest_log_timestamp,shipment_hubs.*,shipments.*
+  FROM shipment_status_logs ssl1
+  LEFT JOIN shipment_status_logs ssl2
+  ON ssl1.shipment_id = ssl2.shipment_id
+  AND ssl1.created_at < ssl2.created_at
+  JOIN shipments ON ssl1.shipment_id=shipments.id JOIN shipment_hubs ON shipments.destination_hub_id=shipment_hubs.id WHERE ssl2.id IS NULL AND shipments.origin_hub_id=${shipmentHubId} AND ssl1.status="PREPARING"`)
+
+    return results as unknown as {
+      id: number
+      origin_hub_id: number
+      destination_hub_id: number
+      is_archived: number
+      shipment_id: number
+      latest_log_timestamp: string
+      status: string
+      description: string
+      created_at: string
+      created_by_id: string
+      display_name: string
+      role: string
+      street_address: string
+      barangay: string | null
+      city: string
+      state_or_province: string
+      country_code: string
+      postal_code: number
+    }[]
+  }),
+  getDestinationNameById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      const results = ctx.db
+        .select()
+        .from(shipmentHubs)
+        .where(eq(shipmentHubs.id, input.id))
+      if (input.id === null) {
+        return []
+      } else {
+        return results
+      }
+    }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(shipments)
   }),
@@ -146,6 +192,28 @@ export const shipmentRouter = router({
         shipmentId: input.id,
         status: "ARRIVED" as const,
         description: "Shipment has arrived to its destination hub.",
+        createdAt: createdDate,
+        createdById: createBy,
+      }
+
+      await ctx.db.insert(shipmentStatusLogs).values(values)
+
+      return createBy
+    }),
+  updateStatusToInTransit: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const createBy = ctx.user.uid
+      const createdDate = new Date()
+
+      const values = {
+        shipmentId: input.id,
+        status: "IN_TRANSIT" as const,
+        description: "Shipment is being shipped to another hub.",
         createdAt: createdDate,
         createdById: createBy,
       }
