@@ -526,10 +526,7 @@ export function PackagesAddWizardInformation({
                     >
                       Cancel
                     </button>
-                    <button
-                      onClick={handleSaveConfirmed}
-                      className="px-4 py-2 bg-green-400 text-white rounded-lg"
-                    >
+                    <button className="px-4 py-2 bg-green-400 text-white rounded-lg">
                       Submit
                     </button>
                   </div>
