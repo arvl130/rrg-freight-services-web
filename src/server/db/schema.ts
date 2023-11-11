@@ -50,6 +50,31 @@ export const shipments = mysqlTable("shipments", {
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
+export const shipmentLocations = mysqlTable("shipment_locations", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  shipmentId: bigint("shipment_id", {
+    mode: "number",
+  }).notNull(),
+  long: double("long", {
+    precision: 12,
+    scale: 9,
+  }).notNull(),
+  lat: double("lat", {
+    precision: 12,
+    scale: 9,
+  }).notNull(),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+  })
+    .notNull()
+    .defaultNow(),
+  createdById: varchar("created_by_id", { length: 28 }).notNull(),
+})
+
 export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
   originHub: one(shipmentHubs, {
     fields: [shipments.originHubId],
