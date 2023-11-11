@@ -697,52 +697,62 @@ function Incoming({ switchTab }: { switchTab: () => void }) {
               shipmentList={shipmentList as unknown as ExtendedShipment[]}
               scannedPackageIds={scannedPackageIds}
             >
-              <select
-                value={valueId}
-                disabled={disableShipmentSelection}
-                onChange={(e) => {
-                  const value = parseInt(e.currentTarget.value)
+              <div className="flex items-center">
+                <select
+                  value={valueId}
+                  disabled={disableShipmentSelection}
+                  onChange={(e) => {
+                    const value = parseInt(e.currentTarget.value)
 
-                  if (value == 0) {
-                    setValueId(0)
+                    if (value == 0) {
+                      setValueId(0)
+                      setSelectedShipment("false")
+                      selectedShipmentResultIds.length = 0
+                    } else {
+                      setSelectedShipment("true")
+                      setValueId(value)
+                      selectedShipmentResultIds.length = 0
+                    }
+                  }}
+                  style={{
+                    border: "1px solid #A99C9C",
+                    borderRadius: "10px",
+                    height: "30px",
+                    minWidth: "200px",
+                    maxWidth: "100%",
+                  }}
+                  className="px-3 mr-5"
+                  placeholder="Location Set"
+                >
+                  <option value={0}>--Select Shipment--</option>
+                  {isLoading ? (
+                    <option>...</option>
+                  ) : (
+                    <>
+                      {isError ? (
+                        <option>Error</option>
+                      ) : (
+                        <>
+                          {shipment.map((_shipment, index) => (
+                            <ShipmentSelection
+                              key={index}
+                              shipment={_shipment}
+                            ></ShipmentSelection>
+                          ))}
+                        </>
+                      )}
+                    </>
+                  )}
+                </select>
 
-                    setSelectedShipment("false")
-                    selectedShipmentResultIds.length = 0
-                  } else {
-                    setSelectedShipment("true")
-                    setValueId(value)
-                  }
-                }}
-                style={{
-                  border: "1px solid #A99C9C",
-                  borderRadius: "10px",
-                  height: "30px",
-                  minWidth: "200px",
-                  maxWidth: "100%",
-                }}
-                className="px-3 mt-2"
-                placeholder="Location Set"
-              >
-                <option value={0}>--Select Shipment--</option>
-                {isLoading ? (
-                  <option>...</option>
+                {valueId == 0 ? (
+                  <></>
+                ) : isLoadingShipments ? (
+                  <LoadingSpinner></LoadingSpinner>
                 ) : (
-                  <>
-                    {isError ? (
-                      <option>Error</option>
-                    ) : (
-                      <>
-                        {shipment.map((_shipment, index) => (
-                          <ShipmentSelection
-                            key={index}
-                            shipment={_shipment}
-                          ></ShipmentSelection>
-                        ))}
-                      </>
-                    )}
-                  </>
+                  <></>
                 )}
-              </select>
+              </div>
             </ShipmentTile>
           </section>
         </DisableScanner.Provider>

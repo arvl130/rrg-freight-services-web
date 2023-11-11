@@ -18,6 +18,7 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import { ReactNode, useState } from "react"
 import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
+import { QrCode } from "@phosphor-icons/react/QrCode"
 
 function SideBarLink({
   href,
@@ -73,13 +74,18 @@ export function OverseasSideBar() {
         />
         <SideBarLink
           name="Packages"
-          href="/overseas/packages"
+          href="/overseas/packages/"
           icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
           name="Shipments"
           href="/overseas/shipments"
           icon={<ClipboardText size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Scan"
+          href="/overseas/packages/scan"
+          icon={<QrCode size={32} className="text-white" />}
         />
         <SideBarLink
           name="Profile"

@@ -6,7 +6,7 @@ import React, {
   useRef,
   Children,
 } from "react"
-import { WarehouseLayout } from "@/layouts/warehouse"
+import { OverseasLayout } from "@/layouts/overseas"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { Package } from "@/server/db/entities"
@@ -35,10 +35,8 @@ type ExtendedShipment = Shipment & {
 let selectedShipmentResultIds = [] as number[]
 
 function PackageScanTile({
-  switchTab,
   packageList,
 }: {
-  switchTab: () => void
   packageList: (data: number[]) => void
 }) {
   const [scannedPackageIds, setScannedPackageIds] = useState<number[]>([])
@@ -59,14 +57,6 @@ function PackageScanTile({
       <div className="mb-5">
         <div className="flex justify-between pt-1 ">
           <div style={{ fontSize: "19px" }}>
-            <button
-              onClick={() => {
-                switchTab()
-              }}
-              className="mr-7 font-light text-gray-400"
-            >
-              Incoming
-            </button>
             <button
               style={{
                 color: "#79CFDC",
@@ -115,11 +105,11 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
       ids: packageIds,
     },
     {
-      enabled: user !== null && role === "WAREHOUSE",
+      enabled: user !== null && role === "OVERSEAS_AGENT",
     },
   )
   const { data: currentUser } = api.user.getCurrent.useQuery(undefined, {
-    enabled: user !== null && role === "WAREHOUSE",
+    enabled: user !== null && role === "OVERSEAS_AGENT",
   })
 
   function handleChange() {
@@ -224,7 +214,7 @@ function ScanTable(props: { packageList: (data: number[]) => void }) {
                 placeholder="Location Set"
               >
                 <option value={0}>--Select Location--</option>
-                <option>Delivering</option>
+
                 <option>Shipping</option>
               </select>
             </td>
@@ -448,7 +438,7 @@ function ShipmentSelection({ shipment: _shipment }: { shipment: any }) {
       id: _shipment.origin_hub_id,
     },
     {
-      enabled: user !== null && role === "WAREHOUSE",
+      enabled: user !== null && role === "OVERSEAS_AGENT",
     },
   )
   if (destionationName !== undefined) {
@@ -632,7 +622,7 @@ const DisableScanner = createContext({
   shipmentBtn: 0,
 })
 
-function Outgoing({ switchTab }: { switchTab: () => void }) {
+function OutgoingOverseas() {
   const { user, role } = useSession()
   const [selectedShipment, setSelectedShipment] = useState("false")
   const [valueId, setValueId] = useState<number>(0)
@@ -646,7 +636,7 @@ function Outgoing({ switchTab }: { switchTab: () => void }) {
     isError,
     data: shipment,
   } = api.shipment.getOutgoing.useQuery(undefined, {
-    enabled: user !== null && role === "WAREHOUSE",
+    enabled: user !== null && role === "OVERSEAS_AGENT",
   })
 
   const {
@@ -659,7 +649,7 @@ function Outgoing({ switchTab }: { switchTab: () => void }) {
       id: valueId,
     },
     {
-      enabled: user !== null && role === "WAREHOUSE",
+      enabled: user !== null && role === "OVERSEAS_AGENT",
     },
   )
 
@@ -686,7 +676,7 @@ function Outgoing({ switchTab }: { switchTab: () => void }) {
 
   return (
     <>
-      <WarehouseLayout title="Dashboard">
+      <OverseasLayout title="Dashboard">
         <DisableScanner.Provider
           value={{
             disbaleBtn: selectedShipment,
@@ -699,10 +689,7 @@ function Outgoing({ switchTab }: { switchTab: () => void }) {
             </h1>
           </div>
           <section className="grid grid-cols-2 gap-11 [color:_#404040] mb-6">
-            <PackageScanTile
-              packageList={handleDataFromChild}
-              switchTab={switchTab}
-            />
+            <PackageScanTile packageList={handleDataFromChild} />
             <ShipmentTile
               shipmentRefetch={shipmentRefetcher}
               shipmentList={shipmentList as unknown as ExtendedShipment[]}
@@ -767,9 +754,9 @@ function Outgoing({ switchTab }: { switchTab: () => void }) {
             </ShipmentTile>
           </section>
         </DisableScanner.Provider>
-      </WarehouseLayout>
+      </OverseasLayout>
     </>
   )
 }
 
-export default Outgoing
+export default OutgoingOverseas
