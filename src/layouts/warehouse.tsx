@@ -21,10 +21,12 @@ function SideBarLink({
   href,
   name,
   icon,
+  otherRouteNames,
 }: {
   href: string
   name: string
   icon: ReactNode
+  otherRouteNames?: string[]
 }) {
   const router = useRouter()
 
@@ -51,7 +53,7 @@ export function WarehouseSideBar() {
 
   return (
     <nav className="bg-brand-cyan-500 flex flex-col justify-between items-center py-3 h-screen sticky top-0 bottom-0">
-      <div>
+      <div className="flex flex-col items-center gap-3 w-full">
         <Image
           src="/assets/img/logos/logo-white-bg.png"
           alt="RRG Freight Services circle logo with white background"
@@ -59,8 +61,6 @@ export function WarehouseSideBar() {
           width={60}
           className="w-12 h-12 rounded-full"
         />
-      </div>
-      <div className="flex flex-col gap-3 w-full">
         <SideBarLink
           name="Dashboard"
           href="/warehouse/dashboard"
@@ -72,18 +72,22 @@ export function WarehouseSideBar() {
           icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Packages"
+          name="Shipments"
           href="/warehouse/shipments"
           icon={<ClipboardText size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Logs"
+          name="Scan"
           href="/warehouse/packages/scan"
           icon={<QrCode size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Logs"
+          name="Profile"
           href="/profile/settings"
+          otherRouteNames={[
+            "/profile/notifications",
+            "/profile/change-password",
+          ]}
           icon={<UserCircle size={32} className="text-white" />}
         />
       </div>
