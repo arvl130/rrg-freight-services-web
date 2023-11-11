@@ -558,7 +558,7 @@ function ShipmentTile({
                 ? { borderRadius: "10px", opacity: "0.7" }
                 : { borderRadius: "10px", opacity: "1" }
             }
-            className="bg-[#4B61D7] text-white px-4 py-1 text-sm hover:opacity-75"
+            className="bg-[#65DB7F] text-white px-4 py-1 text-sm hover:opacity-75"
           >
             Mark as Arrived
           </button>

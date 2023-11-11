@@ -527,7 +527,7 @@ function ShipmentTile({
               shipmentList[0]?.packages?.map((_package) => {
                 checkAllStatus.push(_package.status.status)
 
-                if (_package.status.status === "IN_WAREHOUSE") {
+                if (_package.status.status === "SORTING") {
                   selectedShipmentResultIds.push(_package.id)
                 }
                 return (
@@ -553,17 +553,17 @@ function ShipmentTile({
           {mutation.isLoading ? <LoadingSpinner></LoadingSpinner> : <></>}
           <button
             onClick={() => {
-              if (!checkAllStatus.includes("IN_WAREHOUSE")) {
+              if (!checkAllStatus.includes("SORTING")) {
                 mutation.mutate({ id: selectedShipmentId })
               }
             }}
-            disabled={checkAllStatus.includes("IN_WAREHOUSE")}
+            disabled={checkAllStatus.includes("SORTING")}
             style={
-              checkAllStatus.includes("IN_WAREHOUSE")
+              checkAllStatus.includes("SORTING")
                 ? { borderRadius: "10px", opacity: "0.7" }
                 : { borderRadius: "10px", opacity: "1" }
             }
-            className="bg-[#79CFDC] text-white px-4 py-1 text-sm hover:opacity-75"
+            className="bg-[#65DB7F] text-white px-4 py-1 text-sm hover:opacity-75"
           >
             Mark as Shipped
           </button>
@@ -585,7 +585,7 @@ function ShipmentItem({
       <td>
         <p>
           {scannedPackageIds.includes(_package.id) ||
-          _package.status.status !== "IN_WAREHOUSE" ? (
+          _package.status.status !== "SORTING" ? (
             <Checks style={{ color: "green" }} size={27} weight="bold" />
           ) : (
             <X style={{ color: "red" }} size={27} weight="bold" />
@@ -614,9 +614,9 @@ function ShipmentItem({
       <td>
         <div
           style={
-            _package.status.status !== "SHIPPING"
+            _package.status.status !== "SORTING"
               ? { backgroundColor: "#C73DCA", borderRadius: "10px" }
-              : { backgroundColor: "#F17834", borderRadius: "10px" }
+              : { backgroundColor: "#79CFDC", borderRadius: "10px" }
           }
           className="text-center text-white bg-[#F17834] p-1"
         >
