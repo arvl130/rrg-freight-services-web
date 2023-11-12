@@ -1,540 +1,330 @@
-import { useForm, SubmitHandler } from "react-hook-form"
-import { useEffect, useState } from "react"
+import React, { useRef } from "react"
+import { useForm } from "react-hook-form"
+import { useEffect } from "react"
 import { api } from "@/utils/api"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+import {
+  ShippingMode,
+  ShippingType,
+  supportedShippingModes,
+  supportedShippingTypes,
+  supportedReceptionModes,
+  ReceptionMode,
+} from "@/utils/constants"
+import { countryCodeToName, supportedCountryCodes } from "@/utils/country-code"
+import toast from "react-hot-toast"
 
-type Inputs = {
-  sender_full_name: string
-  sender_contact_number: string
-  sender_email_address: string
-  sender_street_address: string
-  sender_state_province: string
-  sender_country_code: string
-  sender_postal_code: string
-  shipping_mode: string
-  shipping_type: string
-  weight_in_kg: string
-  receiver_full_name: string
-  receiver_contact_number: string
-  receiver_email_address: string
-  receiver_street_address: string
-  receiver_barangay: string
-  receiver_state_province: string
-  receiver_country_code: string
-  receiver_postal_code: string
+export default function Forms() {
+  const formRef = useRef<null | HTMLFormElement>(null)
+  const { status, data: packages, refetch } = api.package.getAll.useQuery()
+  const { isLoading, mutate: addPackage } = api.package.create.useMutation({
+    onSuccess: () => {
+      toast.success("Submit successful!")
+      refetch()
+      formRef.current?.reset()
+    },
+  })
+
+  return (
+    <form
+      ref={formRef}
+      className="bg-white px-12 py-6 rounded-2xl"
+      onSubmit={(e) => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget)
+        addPackage({
+          shippingMode: formData.get("shippingMode") as ShippingMode,
+          shippingType: formData.get("shippingType") as ShippingType,
+          receptionMode: formData.get("receptionMode") as ReceptionMode,
+          weightInKg: parseInt(formData.get("weightInKg") as string),
+          senderFullName: formData.get("senderFullName") as string,
+          senderContactNumber: formData.get("senderContactNumber") as string,
+          senderEmailAddress: formData.get("senderEmailAddress") as string,
+          senderStreetAddress: formData.get("senderStreetAddress") as string,
+          senderCity: formData.get("senderCity") as string,
+          senderStateOrProvince: formData.get(
+            "senderStateOrProvince",
+          ) as string,
+          senderCountryCode: formData.get("senderCountryCode") as string,
+          senderPostalCode: parseInt(
+            formData.get("senderPostalCode") as string,
+          ),
+          receiverFullName: formData.get("receiverFullName") as string,
+          receiverContactNumber: formData.get(
+            "receiverContactNumber",
+          ) as string,
+          receiverEmailAddress: formData.get("receiverEmailAddress") as string,
+          receiverStreetAddress: formData.get(
+            "receiverStreetAddress",
+          ) as string,
+          receiverBarangay: formData.get("receiverBarangay") as string,
+          receiverCity: formData.get("receiverCity") as string,
+          receiverStateOrProvince: formData.get(
+            "receiverStateOrProvince",
+          ) as string,
+          receiverCountryCode: formData.get("receiverCountryCode") as string,
+          receiverPostalCode: parseInt(
+            formData.get("receiverPostalCode") as string,
+          ),
+        })
+      }}
+    >
+      <h1 className="font-semibold text-lg mb-2">Sender Info:</h1>
+      <div className="grid grid-cols-3 gap-x-4 mb-4">
+        <div className="mb-2">
+          <label className="block mb-1">Full Name</label>
+          <input
+            required
+            name="senderFullName"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Contact Number</label>
+          <input
+            required
+            name="senderContactNumber"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Email Address</label>
+          <input
+            required
+            name="senderEmailAddress"
+            type="email"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">City</label>
+          <input
+            required
+            name="senderCity"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Street Address</label>
+          <input
+            required
+            name="senderStreetAddress"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">State/Province</label>
+          <input
+            required
+            name="senderStateOrProvince"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Country Code</label>
+          <select
+            name="senderCountryCode"
+            className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          >
+            {supportedCountryCodes.map((countryCode) => (
+              <option key={countryCode} value={countryCode}>
+                {countryCodeToName(countryCode)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Postal Code</label>
+          <input
+            required
+            name="senderPostalCode"
+            type="number"
+            placeholder="1111"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Shipping Mode</label>
+          <select
+            name="shippingMode"
+            className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          >
+            {supportedShippingModes.map((shippingMode) => (
+              <option key={shippingMode} value={shippingMode}>
+                {shippingMode}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-2">
+          <label className="block mb-1">Shipping Type</label>
+          <select
+            name="shippingType"
+            className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          >
+            {supportedShippingTypes.map((shippingType) => (
+              <option key={shippingType} value={shippingType}>
+                {shippingType}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Weight in KG</label>
+          <input
+            required
+            name="weightInKg"
+            type="number"
+            placeholder="50"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Reception Mode</label>
+          <select
+            name="receptionMode"
+            className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          >
+            {supportedReceptionModes.map((receptionMode) => (
+              <option key={receptionMode} value={receptionMode}>
+                {receptionMode}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <hr className="my-4 border-t border-gray-200" />
+
+      <h1 className="font-semibold text-lg mb-2">Receiver Info:</h1>
+      <div className="grid grid-cols-3 gap-x-4 mb-4">
+        <div className="mb-2">
+          <label className="block mb-1">Full Name</label>
+          <input
+            required
+            name="receiverFullName"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Contact Number</label>
+          <input
+            required
+            name="receiverContactNumber"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+
+        <div className="mb-2">
+          <label className="block mb-1">Email Address</label>
+          <input
+            required
+            name="receiverEmailAddress"
+            type="email"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+
+        <div className="mb-2">
+          <label className="block mb-1">Street Address</label>
+          <input
+            required
+            name="receiverStreetAddress"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Barangay</label>
+          <input
+            required
+            name="receiverBarangay"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">City</label>
+          <input
+            required
+            name="receiverCity"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">State/Province</label>
+          <input
+            required
+            name="receiverStateOrProvince"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Country Code</label>
+          <select
+            name="receiverCountryCode"
+            className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          >
+            {supportedCountryCodes.map((countryCode) => (
+              <option key={countryCode} value={countryCode}>
+                {countryCodeToName(countryCode)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Postal Code</label>
+          <input
+            required
+            name="receiverPostalCode"
+            type="number"
+            placeholder="1111"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+      </div>
+      <div className="flex justify-end">
+        <button className="bg-red-400 hover:bg-blue-400 disabled:bg-blue-300 transition-colors px-4 py-2 rounded-md font-medium mr-2 text-white">
+          {" "}
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="bg-green-400 hover:bg-blue-400 disabled:bg-blue-300 transition-colors px-4 py-2 rounded-md font-medium text-white"
+        >
+          {isLoading ? "Saving ..." : "Save"}
+        </button>
+      </div>
+    </form>
+  )
 }
 
 export function PackagesAddWizardInformation({
   isOpenModal,
-  setIsOpenModal,
 }: {
   isOpenModal: boolean
-  setIsOpenModal: (isOpen: boolean) => void
 }) {
-  const [isConfirmationVisible, setIsConfirmationVisible] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-
-  const {
-    reset,
-    register,
-    handleSubmit,
-    formState: { errors, isDirty, isValid },
-  } = useForm<Inputs>()
-
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    setIsLoading(true)
-    setIsConfirmationVisible(true)
-  }
-
-  const handleSaveConfirmed = (data: Inputs) => {
-    setIsConfirmationVisible(false)
-  }
-
-  const close = () => {
-    setIsConfirmationVisible(false)
-  }
-  const handleCancelSave = () => {
-    close()
-  }
-
-  const utils = api.useUtils()
+  const { reset } = useForm()
 
   useEffect(() => {
     if (!isOpenModal) reset()
   }, [isOpenModal, reset])
-
   return (
     <div className="h-full grid grid-rows-[auto_1fr] grid-cols-[100%]">
-      <div className="text-white font-bold text-center items-center py-4 bg-cyan-400 text-3xl">
+      <div className="text-white font-bold text-center items-center py-4 [background-color:_#78CFDC] text-3xl">
         ADD PACKAGE
       </div>
       <div className="px-12 py-4 grid grid-rows-[auto_auto_1fr]">
-        <div className="overflow-auto p-4">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <h1 className="font-semibold text-lg mb-2">Sender Info:</h1>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Full Name</label>
-                <input
-                  {...register("sender_full_name", {
-                    required: "Full Name is required",
-                  })}
-                  id="sender_full_name"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.sender_full_name
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Fernando Jabili"
-                />
-                {errors.sender_full_name && (
-                  <span className="text-red-500 text-sm">
-                    {errors.sender_full_name.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Contact Number</label>
-                <input
-                  {...register("sender_contact_number", {
-                    required: "Contact Number is required",
-                  })}
-                  id="sender_contact_number"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.sender_contact_number
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="+852 | 2838 8961"
-                />
-                {errors.sender_contact_number && (
-                  <span className="text-red-500 text-sm">
-                    {errors.sender_contact_number.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Email Address</label>
-                <input
-                  {...register("sender_email_address", {
-                    required: "Email Address is required",
-                  })}
-                  id="sender_email_address"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.sender_email_address
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="e-mail@example.com"
-                />
-                {errors.sender_email_address && (
-                  <span className="text-red-500 text-sm">
-                    {errors.sender_email_address.message}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="mt-4 grid grid-cols-4 gap-4">
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">
-                  Street Name, Building
-                </label>
-                <input
-                  {...register("sender_street_address", {
-                    required: "Street Address is required",
-                  })}
-                  id="sender_street_address"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.sender_street_address
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Cambridge House 19 Cameron Road Tsimshatsui Kow..."
-                />
-                {errors.sender_street_address && (
-                  <span className="text-red-500 text-sm">
-                    {errors.sender_street_address.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Province</label>
-                <select
-                  {...register("sender_state_province", {
-                    required: "Province is required",
-                  })}
-                  id="sender_state_province"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.sender_state_province
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="State/Province"
-                >
-                  <option></option>
-                  <option value="HK">Hong Kong</option>
-                  <option value="TV">TV/Monitors</option>
-                  <option value="PC">PC</option>
-                </select>
-
-                {errors.sender_state_province && (
-                  <span className="text-red-500 text-sm">
-                    {errors.sender_state_province.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Country</label>
-                <select
-                  {...register("sender_country_code", {
-                    required: "Country is required",
-                  })}
-                  id="sender_country_code"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.sender_country_code
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Country Code"
-                >
-                  <option></option>
-                  <option value="HK">Hong Kong</option>
-                  <option value="TV">TV/Monitors</option>
-                  <option value="PC">PC</option>
-                </select>
-
-                {errors.sender_country_code && (
-                  <span className="text-red-500 text-sm">
-                    {errors.sender_country_code.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Postal Code</label>
-                <input
-                  {...register("sender_postal_code", {
-                    required: "Postal Code is required",
-                  })}
-                  id="sender_postal_code"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.sender_postal_code
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Postal Code"
-                />
-                {errors.sender_postal_code && (
-                  <span className="text-red-500 text-sm">
-                    {errors.sender_postal_code.message}
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className=" mt-4 grid grid-cols-5 gap-5 pb-4">
-              <div className="flex flex-col">
-                <label htmlFor="shipping_mode" className="text-sm font-bold">
-                  Mode
-                </label>
-                <select
-                  {...register("shipping_mode", {
-                    required: "Mode is required",
-                  })}
-                  id="shipping_mode"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.shipping_mode ? "border-red-500" : "border-stone-300"
-                  } p-2`}
-                  placeholder="Country Code"
-                >
-                  <option></option>
-                  <option value="AF">Air Freight</option>
-                  <option value="TV">TV/Monitors</option>
-                  <option value="PC">PC</option>
-                </select>
-                {errors.shipping_mode && (
-                  <span className="text-red-500 text-sm">
-                    {errors.shipping_mode.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="shipping_type" className="text-sm font-bold">
-                  Delivery Type
-                </label>
-                <select
-                  {...register("shipping_type", {
-                    required: "Delivery Type is required",
-                  })}
-                  id="shipping_type"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.shipping_type ? "border-red-500" : "border-stone-300"
-                  } p-2`}
-                  placeholder="Country Code"
-                >
-                  <option></option>
-                  <option value="SD">Standard Delivery</option>
-                  <option value="TV">TV/Monitors</option>
-                  <option value="PC">PC</option>
-                </select>
-                {errors.shipping_type && (
-                  <span className="text-red-500 text-sm">
-                    {errors.shipping_type.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="weight_in_kg" className="text-sm font-bold">
-                  Weight
-                </label>
-                <input
-                  {...register("weight_in_kg", {
-                    required: "Weight is required",
-                  })}
-                  id="weight_in_kg"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.weight_in_kg ? "border-red-500" : "border-stone-300"
-                  } p-2`}
-                  placeholder="KG | 50"
-                />
-                {errors.weight_in_kg && (
-                  <span className="text-red-500 text-sm">
-                    {errors.weight_in_kg.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center mb-2 ml-10 space-x-10">
-                <div className="flex items-center space-x-2">
-                  <input type="radio" id="pickup" className="w-5 h-5" />
-                  <label htmlFor="pickup" className="text-sm font-bold">
-                    For Pick-Up
-                  </label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input type="radio" id="d2d" className="w-5 h-5" />
-                  <label htmlFor="d2d" className="text-sm font-bold">
-                    Door-to-Door Delivery
-                  </label>
-                </div>
-              </div>
-            </div>
-            <hr className="my-4 border-t border-gray-200" />
-            <h1 className="font-semibold text-lg mt-4 mb-2">Receiver Info:</h1>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Full Name</label>
-                <input
-                  {...register("receiver_full_name", {
-                    required: "Full Name is required",
-                  })}
-                  id="receiver_full_name"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.receiver_full_name
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Receiver Full Name"
-                />
-                {errors.receiver_full_name && (
-                  <span className="text-red-500 text-sm">
-                    {errors.receiver_full_name.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Contact Number</label>
-                <input
-                  {...register("receiver_contact_number", {
-                    required: "Contact Number is required",
-                  })}
-                  id="receiver_contact_number"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.receiver_contact_number
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Receiver Contact Number"
-                />
-                {errors.receiver_contact_number && (
-                  <span className="text-red-500 text-sm">
-                    {errors.receiver_contact_number.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Email Address</label>
-                <input
-                  {...register("receiver_email_address", {
-                    required: "Email Address is required",
-                  })}
-                  id="receiver_email_address"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.receiver_email_address
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Receiver Email Address"
-                />
-                {errors.receiver_email_address && (
-                  <span className="text-red-500 text-sm">
-                    {errors.receiver_email_address.message}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="mt-4 grid grid-cols-4 gap-4">
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">
-                  Street Name, Building
-                </label>
-                <input
-                  {...register("receiver_street_address", {
-                    required: "Street Address is required",
-                  })}
-                  id="receiver_street_address"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.receiver_street_address
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Receiver Street Address"
-                />
-                {errors.receiver_street_address && (
-                  <span className="text-red-500 text-sm">
-                    {errors.receiver_street_address.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Barangay</label>
-                <select
-                  {...register("receiver_barangay", {
-                    required: "Barangay is required",
-                  })}
-                  id="receiver_barangay"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.receiver_barangay
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Receiver Barangay"
-                >
-                  <option></option>
-                  <option value="AF">Air Freight</option>
-                  <option value="TV">TV/Monitors</option>
-                </select>
-                {errors.receiver_barangay && (
-                  <span className="text-red-500 text-sm">
-                    {errors.receiver_barangay.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Province</label>
-                <select
-                  {...register("receiver_state_province", {
-                    required: "Province is required",
-                  })}
-                  id="receiver_state_province"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.receiver_state_province
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Province"
-                >
-                  <option></option>
-                  <option value="AF">Air Freight</option>
-                  <option value="TV">TV/Monitors</option>
-                </select>
-                {errors.receiver_state_province && (
-                  <span className="text-red-500 text-sm">
-                    {errors.receiver_state_province.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Country</label>
-                <input
-                  {...register("receiver_country_code", {
-                    required: "Country Code is required",
-                  })}
-                  id="receiver_country_code"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.receiver_country_code
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Receiver Country Code"
-                />
-                {errors.receiver_country_code && (
-                  <span className="text-red-500 text-sm">
-                    {errors.receiver_country_code.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-bold">Postal Code</label>
-                <input
-                  {...register("receiver_postal_code", {
-                    required: "Postal Code is required",
-                  })}
-                  id="receiver_postal_code"
-                  className={`w-full h-10 bg-white rounded border ${
-                    errors.receiver_postal_code
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } p-2`}
-                  placeholder="Receiver Postal Code"
-                />
-                {errors.receiver_postal_code && (
-                  <span className="text-red-500 text-sm">
-                    {errors.receiver_postal_code.message}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="flex justify-end mt-4">
-              <button
-                type="submit"
-                className="w-20 h-10 text-white bg-green-400 rounded-lg"
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                className="w-20 h-10 text-white bg-red-400 rounded-lg ml-2"
-                onClick={() => close()}
-              >
-                Cancel
-              </button>
-            </div>
-            {isConfirmationVisible && (
-              <div className="fixed inset-0 flex items-center justify-center z-10 bg-black bg-opacity-50">
-                <div className="bg-white p-4 rounded-lg shadow-md w-[448px]">
-                  <p className="text-lg font-bold mb-4">Confirm the Package?</p>
-                  <p>
-                    Are you sure you want to save any changes on the package
-                    information?
-                  </p>
-                  <div className="mt-4 flex justify-end">
-                    <button
-                      onClick={handleCancelSave}
-                      className="px-4 py-2 bg-gray-200 rounded-lg mr-2"
-                    >
-                      Cancel
-                    </button>
-                    <button className="px-4 py-2 bg-green-400 text-white rounded-lg">
-                      Submit
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </form>
-        </div>
+        <Forms />
       </div>
     </div>
   )
