@@ -17,6 +17,7 @@ import { Plus } from "@phosphor-icons/react/Plus"
 import { PackagesImportWizard } from "@/components/packages/import-wizard"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { PackagesViewWaybillModal } from "@/components/packages/waybill/view-waybill-modal"
+import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
 
 function PageHeader() {
   return (
@@ -72,7 +73,9 @@ function PackageStatus({ packageId }: { packageId: number }) {
 }
 
 function PackageTableItem({ package: _package }: { package: Package }) {
-  const [isOpenViewWaybillModal, setIsOpenViewWaybillModal] = useState(false)
+  const [visibleModal, setVisibleModal] = useState<
+    null | "VIEW_DETAILS" | "VIEW_WAYBILL"
+  >(null)
 
   return (
     <>
@@ -120,7 +123,13 @@ function PackageTableItem({ package: _package }: { package: Package }) {
               <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm">
                 <DropdownMenu.Item
                   className="transition-colors hover:bg-sky-50 px-3 py-2"
-                  onClick={() => setIsOpenViewWaybillModal(true)}
+                  onClick={() => setVisibleModal("VIEW_DETAILS")}
+                >
+                  View Details
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className="transition-colors hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("VIEW_WAYBILL")}
                 >
                   View Waybill
                 </DropdownMenu.Item>
@@ -130,10 +139,15 @@ function PackageTableItem({ package: _package }: { package: Package }) {
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
 
+          <PackagesViewDetailsModal
+            package={_package}
+            isOpen={visibleModal === "VIEW_DETAILS"}
+            close={() => setVisibleModal(null)}
+          />
           <PackagesViewWaybillModal
             package={_package}
-            isOpen={isOpenViewWaybillModal}
-            close={() => setIsOpenViewWaybillModal(false)}
+            isOpen={visibleModal === "VIEW_WAYBILL"}
+            close={() => setVisibleModal(null)}
           />
         </div>
       </div>
