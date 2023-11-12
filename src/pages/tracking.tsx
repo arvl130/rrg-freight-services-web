@@ -1,14 +1,18 @@
-import { FC } from "react"
 import Image from "next/image"
 import Head from "next/head"
 import Footer from "@/components/footer"
 import Navbar from "@/components/navBar"
-import VerticalTimeline from "../components/tracking/tracking_timeline"
+import { TrackingVerticalTimeline } from "../components/tracking/timeline"
 import { Truck } from "@phosphor-icons/react/Truck"
 import { Path } from "@phosphor-icons/react/Path"
 import { MapPin } from "@phosphor-icons/react/MapPin"
 import { CheckCircle } from "@phosphor-icons/react/CheckCircle"
 import { Package } from "@phosphor-icons/react/Package"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { api } from "@/utils/api"
 
 function TrackingPageHead() {
   return (
@@ -22,7 +26,164 @@ function TrackingPageHead() {
   )
 }
 
-const Tracking: FC = () => {
+function PackageDetailsSections({ packageId }: { packageId: number }) {
+  const {
+    status,
+    data: _package,
+    error,
+  } = api.package.getWithStatusLogsById.useQuery({
+    id: packageId,
+  })
+
+  if (status === "loading") return <>Loading ...</>
+  if (status === "error") return <>Error: {error.message}</>
+
+  return (
+    <>
+      <section className="max-w-4xl mx-auto flex justify-between mb-6">
+        <div className="flex flex-col items-center">
+          <div className="outline black rounded-full p-4 mb-6">
+            <Package size={44} color="#1d798b" />
+          </div>
+          <div>Handed Over</div>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="outline black rounded-full p-4 mb-6">
+            <Truck size={44} color="#1d798b" />
+          </div>
+          <div>In Transit</div>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="outline black rounded-full p-4 mb-6">
+            <Path size={44} color="#1d798b" />
+          </div>
+          <div>Out for Delivery</div>
+        </div>
+        <div className="flex flex-col items-center">
+          <div className="outline black rounded-full p-4 mb-6">
+            <MapPin size={44} color="#1d798b" />
+          </div>
+          <div>Delivered</div>
+        </div>
+      </section>
+
+      <section className="max-w-4xl mx-auto">
+        <div className="grid grid-cols-[2fr,_3fr] gap-4">
+          <div className="bg-[#EEEAEA] w-full rounded-lg flex flex-col justify-center items-center py-4">
+            <CheckCircle size={96} color="#1E1E1E" />
+            <div className="text-center font-semibold">Estimated Delivery</div>
+            <div className="text-center">N/A</div>
+          </div>
+
+          <div className="bg-[#ACDEE2] w-full rounded-lg flex flex-col items-center px-6 py-4">
+            <div className="text-center mb-3 font-semibold">
+              Shipping Details
+            </div>
+
+            <div className="w-full justify-center items-center grid grid-cols-2">
+              <div className="text-center">Tracking Number</div>
+              <div className="text-center border-l border-black px-3">
+                {_package.id}
+              </div>
+              <div className="text-center">Recipient Name</div>
+              <div className="text-center border-l border-black px-3">
+                {_package.receiverFullName}
+              </div>
+              <div className="text-center">Location</div>
+              <div className="text-center border-l border-black px-3">
+                {_package.receiverStreetAddress}, Brgy.{" "}
+                {_package.receiverBarangay}, {_package.receiverCity},{" "}
+                {_package.receiverStateOrProvince},{" "}
+                {_package.receiverCountryCode} {_package.receiverPostalCode}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <TrackingVerticalTimeline packageStatusLogs={_package.statusLogs} />
+    </>
+  )
+}
+
+const choosePackageFormSchema = z.object({
+  packageId: z
+    .string()
+    .min(1, {
+      message: "Please enter a tracking number",
+    })
+    .regex(/^\d+$/, {
+      message: "Please enter a valid tracking number",
+    }),
+})
+
+type ChoosePackageFormType = z.infer<typeof choosePackageFormSchema>
+
+export function ChoosePackageForm({
+  setSelectedPackageId,
+}: {
+  setSelectedPackageId: (packageId: string) => void
+}) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ChoosePackageFormType>({
+    resolver: zodResolver(choosePackageFormSchema),
+  })
+
+  return (
+    <div className="max-w-4xl mx-auto grid grid-cols-[auto_1fr] gap-4 my-6">
+      <div className="bg-[#ACDEE2] w-full h-full aspect-square rounded-lg">
+        <Image
+          src="/assets/img/logos/logo.jpg"
+          alt="Logo"
+          width={150}
+          height={150}
+          className="w-full h-full p-6"
+        />
+      </div>
+      <form
+        className="bg-[#EEEAEA] w-full px-6 py-4 rounded-lg flex flex-col items-center justify-center"
+        onSubmit={handleSubmit((formData) => {
+          setSelectedPackageId(formData.packageId)
+        })}
+      >
+        <div className="text-2xl text-center font-semibold">
+          Track your Shipment
+        </div>
+        <div className="text-center">Let&apos;s Find your Package!</div>
+        <div className="text-center mb-6">
+          Enter your Tracking Number to Track your Package
+        </div>
+
+        <input
+          {...register("packageId")}
+          type="text"
+          placeholder="Enter tracking number ..."
+          className="bg-white border rounded-md px-4 py-2 text-xl w-full"
+        />
+        {errors.packageId && (
+          <p className="text-red-600 mt-1">{errors.packageId.message}.</p>
+        )}
+        <div className="text-center mt-6">
+          <button
+            type="submit"
+            className="bg-[#ED5959] text-white rounded-full p-4"
+          >
+            Search
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+export default function TrackingPage() {
+  const [selectedPackageId, setSelectedPackageId] = useState<null | number>(
+    null,
+  )
+
   return (
     <>
       <TrackingPageHead />
@@ -33,136 +194,32 @@ const Tracking: FC = () => {
           <Image
             src="/assets/img/tracking/tracking-bg-1.png"
             alt="Track Package"
-            className="max-w-full h-full shadow-md"
-            width={1923}
-            height={832}
+            className="w-full h-full shadow-md"
+            width={1280}
+            height={800}
           />
         </div>
       </header>
 
-      <div className="container mx-auto p-8">
-        <div className="flex flex-col lg:flex-row items-center justify-center">
-          <div className="bg-[#ACDEE2] w-full lg:w-1/2 h-96 flex flex-col items-center justify-center rounded-md lg:mr-2 lg:mb-0 ">
-            <Image
-              src="/assets/img/logos/logo.jpg"
-              alt="Logo"
-              width={350}
-              height={50}
-            />
-          </div>
+      <ChoosePackageForm
+        setSelectedPackageId={(packageId) =>
+          setSelectedPackageId(parseInt(packageId))
+        }
+      />
 
-          <div className="bg-[#EEEAEA] w-full lg:w-4/5 min-h-[18rem] h-96 rounded-md p-8 lg:ml-4 flex flex-col justify-center items-center lg:mt-0 mt-6">
-            <div className="font-dm-sans text-4xl lg:text-6xl text-center mb-4 font-semibold">
-              Track your Shipment
-            </div>
-            <div className="text-2xl lg:text-2xl text-center">
-              Let’s Find your Package!
-            </div>
-            <div className="text-2xl lg:text-2xl text-center mb-6">
-              Enter your Tracking Number to Track your Package
-            </div>
-
-            <input
-              type="text"
-              placeholder="Enter Shipping Number:"
-              className="bg-white border rounded-md p-4 text-xl w-full mb-6"
-            />
-            <button className="bg-[#ED5959] text-white rounded-full p-4">
-              Search
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto p-10">
-        <div className="flex justify-between mt-10">
-          <div className="flex flex-col items-center">
-            <div className="outline black rounded-full p-4 mb-6">
-              <Package size={44} color="#1d798b" />
-            </div>
-            <div>Handed Over</div>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="outline black rounded-full p-4 mb-6">
-              <Truck size={44} color="#1d798b" />
-            </div>
-            <div>In Transit</div>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="outline black rounded-full p-4 mb-6">
-              <Path size={44} color="#1d798b" />
-            </div>
-            <div>Out for Delivery</div>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="outline black rounded-full p-4 mb-6">
-              <MapPin size={44} color="#1d798b" />
-            </div>
-            <div>Delivered</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto p-8">
-        <div className="flex flex-col lg:flex-row items-center justify-center">
-          <div className="bg-[#EEEAEA] w-full lg:w-1/2 h-96 flex flex-col items-center justify-center rounded-md lg:mr-2 lg:mb-0 ">
-            <CheckCircle size={96} color="#1E1E1E" />
-            <div className="text-2xl lg:text-2xl text-center font-semibold">
-              Estimated Delivery
-            </div>
-            <div className="text-2xl lg:text-xl text-center mb-6">
-              September 3, 2023
-            </div>
-            <button className="bg-[#ACDEE2] text-black rounded-lg p-4">
-              Delivered
-            </button>
-          </div>
-
-          <div className="bg-[#ACDEE2] w-full lg:w-4/5 h-auto lg:h-96 rounded-md p-8 lg:ml-4 flex flex-col  justify-center items-center lg:mt-0 mt-6">
-            <div className="font-dm-sans text-4xl lg:text-6xl text-center mb-6 font-semibold ">
-              Shipping Details
-            </div>
-
-            <div className="w-full lg:w-4/5 h-auto lg:h-96 rounded-md p-8 lg:ml-4 flex flex-col  justify-center items-center lg:flex-row">
-              <div>
-                <div className="text-2xl lg:text-2xl text-center mb-6">
-                  Shipping Number
-                </div>
-                <div className="text-2xl lg:text-2xl text-center mb-6">
-                  Recipient Name
-                </div>
-                <div className="text-2xl lg:text-2xl text-center">Location</div>
-              </div>
-              <div className="hidden lg:block bg-black h-24 w-2 lg:w-[3px] mx-4"></div>
-              <div>
-                <div className="text-2xl lg:text-2xl text-center mb-6">
-                  0123456789
-                </div>
-                <div className="text-2xl lg:text-2xl text-center mb-6">
-                  Willy D. Parrot
-                </div>
-                <div className="text-2xl lg:text-2xl text-center ">
-                  Quezon City
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <VerticalTimeline />
+      {selectedPackageId !== null && (
+        <PackageDetailsSections packageId={selectedPackageId} />
+      )}
       <div className="flex justify-center items-center">
         <Image
           src="/assets/img/tracking/tracking-bg-2.png"
           alt="Track Package"
           className="max-w-full h-full shadow-md"
-          width={1923}
-          height={832}
+          width={1280}
+          height={800}
         />
       </div>
       <Footer />
     </>
   )
 }
-
-export default Tracking

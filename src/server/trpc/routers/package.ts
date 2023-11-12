@@ -1,5 +1,5 @@
 import { and, eq, getTableColumns, isNull, lt, sql } from "drizzle-orm"
-import { protectedProcedure, router } from "../trpc"
+import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   packageStatusLogs,
   packages,
@@ -29,7 +29,40 @@ export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(packages)
   }),
+  getWithStatusLogsById: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const packageResults = await ctx.db
+        .select()
+        .from(packages)
+        .where(eq(packages.id, input.id))
 
+      if (packageResults.length === 0)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        })
+
+      if (packageResults.length > 1)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Expected 1 result, but got multiple.",
+        })
+
+      const [_package] = packageResults
+      const statusResults = await ctx.db
+        .select()
+        .from(packageStatusLogs)
+        .where(eq(packageStatusLogs.packageId, input.id))
+
+      return {
+        ..._package,
+        statusLogs: statusResults,
+      }
+    }),
   updatePackageStatusByIds: protectedProcedure
     .input(
       z.object({
