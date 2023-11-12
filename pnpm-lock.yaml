@@ -65,6 +65,9 @@ dependencies:
   firebase-admin:
     specifier: ^11.11.0
     version: 11.11.0
+  leaflet:
+    specifier: ^1.9.4
+    version: 1.9.4
   luxon:
     specifier: ^3.4.3
     version: 3.4.3
@@ -92,6 +95,9 @@ dependencies:
   react-hot-toast:
     specifier: ^2.4.1
     version: 2.4.1(csstype@3.1.2)(react-dom@18.2.0)(react@18.2.0)
+  react-leaflet:
+    specifier: ^4.2.1
+    version: 4.2.1(leaflet@1.9.4)(react-dom@18.2.0)(react@18.2.0)
   react-qr-code:
     specifier: ^2.0.12
     version: 2.0.12(react@18.2.0)
@@ -115,6 +121,9 @@ dependencies:
     version: 3.22.4
 
 devDependencies:
+  '@types/leaflet':
+    specifier: ^1.9.8
+    version: 1.9.8
   '@types/luxon':
     specifier: ^3.3.3
     version: 3.3.3
@@ -1801,6 +1810,18 @@ packages:
       '@babel/runtime': 7.23.2
     dev: false
 
+  /@react-leaflet/core@2.1.0(leaflet@1.9.4)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-Qk7Pfu8BSarKGqILj4x7bCSZ1pjuAPZ+qmRwH5S7mDS91VSbVVsJSrW4qA+GPrro8t69gFYVMWb1Zc4yFmPiVg==}
+    peerDependencies:
+      leaflet: ^1.9.0
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      leaflet: 1.9.4
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /@rushstack/eslint-patch@1.5.1:
     resolution: {integrity: sha512-6i/8UoL0P5y4leBIGzvkZdS85RDMG9y1ihZzmTZQ5LdHUYmZ7pKFoj8X0236s3lusPs1Fa5HTQUpwI+UfTcmeA==}
     dev: false
@@ -1941,6 +1962,10 @@ packages:
       '@types/serve-static': 1.15.4
     dev: false
 
+  /@types/geojson@7946.0.13:
+    resolution: {integrity: sha512-bmrNrgKMOhM3WsafmbGmC+6dsF2Z308vLFsQ3a/bT8X8Sv5clVYpPars/UPq+sAaJP+5OoLAYgwbkS5QEJdLUQ==}
+    dev: true
+
   /@types/glob@8.1.0:
     resolution: {integrity: sha512-IO+MJPVhoqz+28h1qLAcBEH2+xHMK6MTyHJc7MTnnYb6wsoLR29POVGJ7LycmVXIqyy/4/2ShP5sUwTXuOwb/w==}
     requiresBuild: true
@@ -1963,6 +1988,12 @@ packages:
     dependencies:
       '@types/node': 20.6.0
     dev: false
+
+  /@types/leaflet@1.9.8:
+    resolution: {integrity: sha512-EXdsL4EhoUtGm2GC2ZYtXn+Fzc6pluVgagvo2VC1RHWToLGlTRwVYoDpqS/7QXa01rmDyBjJk3Catpf60VMkwg==}
+    dependencies:
+      '@types/geojson': 7946.0.13
+    dev: true
 
   /@types/linkify-it@3.0.4:
     resolution: {integrity: sha512-hPpIeeHb/2UuCw06kSNAOVWgehBLXEo0/fUs0mw3W2qhqX89PI2yvok83MnuctYGCPrabGIoi0fFso4DQ+sNUQ==}
@@ -4402,6 +4433,10 @@ packages:
       language-subtag-registry: 0.3.22
     dev: false
 
+  /leaflet@1.9.4:
+    resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
+    dev: false
+
   /levn@0.3.0:
     resolution: {integrity: sha512-0OO4y2iOHix2W6ujICbKIaEQXvFQHue65vUG3pb5EUomzPI90z9hsA1VsO/dbIIpC53J8gxM9Q4Oho0jrCM/yA==}
     engines: {node: '>= 0.8.0'}
@@ -5226,6 +5261,19 @@ packages:
 
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+    dev: false
+
+  /react-leaflet@4.2.1(leaflet@1.9.4)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-p9chkvhcKrWn/H/1FFeVSqLdReGwn2qmiobOQGO3BifX+/vV/39qhY8dGqbdcPh1e6jxh/QHriLXr7a4eLFK4Q==}
+    peerDependencies:
+      leaflet: ^1.9.0
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      '@react-leaflet/core': 2.1.0(leaflet@1.9.4)(react-dom@18.2.0)(react@18.2.0)
+      leaflet: 1.9.4
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react-qr-code@2.0.12(react@18.2.0):

@@ -6,6 +6,7 @@ import { shipmentRouter } from "./shipment"
 import { packageStatusLogRouter } from "./package-status-logs"
 import { shipmentStatusLogRouter } from "./shipment-status-logs"
 import { shipmentHubRouter } from "./shipment-hub"
+import { shipmentLocationRouter } from "./shipment-location"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -25,6 +26,7 @@ export const rootRouter = router({
   shipmentHub: shipmentHubRouter,
   shipment: shipmentRouter,
   shipmentStatusLog: shipmentStatusLogRouter,
+  shipmentLocation: shipmentLocationRouter,
 })
 
 export type RootRouter = typeof rootRouter

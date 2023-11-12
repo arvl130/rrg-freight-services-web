@@ -60,3 +60,5 @@ export type UsersTableItemScreen =
   | "UPDATE_INFO"
   | "UPDATE_ROLE"
   | "UPDATE_PHOTO"
+
+export const LEAFLET_DEFAULT_ZOOM_LEVEL = 16
