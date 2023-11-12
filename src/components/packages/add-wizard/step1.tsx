@@ -292,14 +292,14 @@ export default function Forms() {
         </div>
       </div>
       <div className="flex justify-end">
-        <button className="bg-red-400 hover:bg-blue-400 disabled:bg-blue-300 transition-colors px-4 py-2 rounded-md font-medium mr-2 text-white">
-          {" "}
+        <button className="bg-red-400 hover:bg-blue-400 disabled:bg-blue-300 transition-colors px-4 py-2 rounded-md font-medium mr-2 text-white" 
+        onClick={close}>
           Cancel
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className="bg-green-400 hover:bg-blue-400 disabled:bg-blue-300 transition-colors px-4 py-2 rounded-md font-medium text-white"
+          className="bg-green-400 hover:bg-slate-400 disabled:bg-green-300 transition-colors px-4 py-2 rounded-md font-medium text-white"
         >
           {isLoading ? "Saving ..." : "Save"}
         </button>
