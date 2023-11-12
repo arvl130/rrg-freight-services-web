@@ -33,10 +33,7 @@ export function PackagesAddWizard({
       `}
     >
       <div className="h-full grid">
-        <PackagesAddWizardInformation
-          isOpenModal={isModalOpen}
-          setIsOpenModal={setIsModalOpen}
-        />
+        <PackagesAddWizardInformation isOpenModal={isModalOpen} />
       </div>
     </dialog>
   )
