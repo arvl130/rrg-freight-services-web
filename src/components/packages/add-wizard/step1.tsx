@@ -292,8 +292,10 @@ export default function Forms() {
         </div>
       </div>
       <div className="flex justify-end">
-        <button className="bg-red-400 hover:bg-blue-400 disabled:bg-blue-300 transition-colors px-4 py-2 rounded-md font-medium mr-2 text-white" 
-        onClick={close}>
+        <button
+          className="bg-red-400 hover:bg-blue-400 disabled:bg-blue-300 transition-colors px-4 py-2 rounded-md font-medium mr-2 text-white"
+          onClick={close}
+        >
           Cancel
         </button>
         <button
