@@ -16,7 +16,7 @@ import { LoadingSpinner } from "@/components/spinner"
 import { Plus } from "@phosphor-icons/react/Plus"
 import { PackagesImportWizard } from "@/components/packages/import-wizard"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import { PackagesViewWaybillModal } from "@/components/packages/waybill/view-waybill-modal"
+import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { PackagesAddWizard } from "@/components/packages/add-wizard"
 function PageHeader() {
   const [isOpenAddWizard, setIsOpenAddWizard] = useState(false)
