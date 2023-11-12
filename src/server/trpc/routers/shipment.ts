@@ -135,7 +135,7 @@ export const shipmentRouter = router({
   LEFT JOIN shipment_status_logs ssl2
   ON ssl1.shipment_id = ssl2.shipment_id
   AND ssl1.created_at < ssl2.created_at
-  JOIN shipments ON ssl1.shipment_id=shipments.id JOIN shipment_hubs ON shipments.destination_hub_id=shipment_hubs.id WHERE ssl2.id IS NULL AND shipments.origin_hub_id=${shipmentHubId} AND ssl1.status="PREPARING"`)
+  JOIN shipments ON ssl1.shipment_id=shipments.id LEFT JOIN shipment_hubs ON shipments.destination_hub_id=shipment_hubs.id WHERE ssl2.id IS NULL AND shipments.origin_hub_id=${shipmentHubId} AND ssl1.status="PREPARING"`)
 
     return results as unknown as {
       id: number
