@@ -6,53 +6,16 @@ import { Gear } from "@phosphor-icons/react/Gear"
 import { List } from "@phosphor-icons/react/List"
 import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { Package } from "@phosphor-icons/react/Package"
-import { Scroll } from "@phosphor-icons/react/Scroll"
 import { SignOut } from "@phosphor-icons/react/SignOut"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
-import { UsersThree } from "@phosphor-icons/react/UsersThree"
 import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
 import { User, getAuth, signOut } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/router"
 import { ReactNode, useState } from "react"
 import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
 import { QrCode } from "@phosphor-icons/react/QrCode"
-
-function SideBarLink({
-  href,
-  name,
-  icon,
-  otherRouteNames,
-}: {
-  href: string
-  otherRouteNames?: string[]
-  name: string
-  icon: ReactNode
-}) {
-  const router = useRouter()
-  const matchingRouteNames = Array.isArray(otherRouteNames)
-    ? [...new Set([href, ...otherRouteNames])]
-    : [href]
-
-  return (
-    <Link
-      href={href}
-      className={`
-        flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200
-        ${
-          matchingRouteNames.includes(router.pathname)
-            ? "border-x-2 border-l-white border-r-transparent"
-            : ""
-        }
-      `}
-    >
-      <span className="sr-only">{name}</span>
-      {icon}
-    </Link>
-  )
-}
+import { SideBarLink } from "@/components/sidebar-link"
 
 export function OverseasSideBar() {
   const [isSigningOut, setIsSigningOut] = useState(false)

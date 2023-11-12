@@ -12,38 +12,8 @@ import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
 import { getAuth, signOut, User } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/router"
 import { ReactNode, useState } from "react"
-
-function SideBarLink({
-  href,
-  name,
-  icon,
-}: {
-  href: string
-  name: string
-  icon: ReactNode
-}) {
-  const router = useRouter()
-
-  return (
-    <Link
-      href={href}
-      className={`
-flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200
-${
-  router.pathname === href
-    ? "border-x-2 border-l-white border-r-transparent"
-    : ""
-}
-`}
-    >
-      <span className="sr-only">{name}</span>
-      {icon}
-    </Link>
-  )
-}
+import { SideBarLink } from "@/components/sidebar-link"
 
 export function DomesticSideBar() {
   const [isSigningOut, setIsSigningOut] = useState(false)
