@@ -1,267 +1,314 @@
-import { zodResolver } from "@hookform/resolvers/zod"
+import React, { useRef } from "react"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { WorkBook, read } from "xlsx"
 import { useEffect } from "react"
+import { api } from "@/utils/api"
+import {
+  ShippingMode,
+  ShippingType,
+  supportedShippingModes,
+  supportedShippingTypes,
+  supportedReceptionModes,
+  ReceptionMode,
+} from "@/utils/constants"
+import { countryCodeToName, supportedCountryCodes } from "@/utils/country-code"
+import toast from "react-hot-toast"
 
-function Forms() {
+export default function Forms() {
+  const formRef = useRef<null | HTMLFormElement>(null)
+  const { status, data: packages, refetch } = api.package.getAll.useQuery()
+  const { isLoading, mutate: addPackage } = api.package.create.useMutation({
+    onSuccess: () => {
+      toast.success("Submit successful!")
+      refetch()
+      formRef.current?.reset()
+    },
+  })
+
   return (
-    <div className="overflow-auto p-4">
-      <form>
-        <h1 className="font-semibold text-lg mb-2">Sender Info:</h1>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Full Name</label>
-            <input
-              id="fullname"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="Fernando Jabili"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Contact Number</label>
-            <input
-              id="contactnumber"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="+852 | 2838 8961"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Email Address</label>
-            <input
-              id="email"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="e-mail@example.com"
-            />
-          </div>
+    <form
+      ref={formRef}
+      className="bg-white px-12 py-6 rounded-2xl"
+      onSubmit={(e) => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget)
+        addPackage({
+          shippingMode: formData.get("shippingMode") as ShippingMode,
+          shippingType: formData.get("shippingType") as ShippingType,
+          receptionMode: formData.get("receptionMode") as ReceptionMode,
+          weightInKg: parseInt(formData.get("weightInKg") as string),
+          senderFullName: formData.get("senderFullName") as string,
+          senderContactNumber: formData.get("senderContactNumber") as string,
+          senderEmailAddress: formData.get("senderEmailAddress") as string,
+          senderStreetAddress: formData.get("senderStreetAddress") as string,
+          senderCity: formData.get("senderCity") as string,
+          senderStateOrProvince: formData.get(
+            "senderStateOrProvince",
+          ) as string,
+          senderCountryCode: formData.get("senderCountryCode") as string,
+          senderPostalCode: parseInt(
+            formData.get("senderPostalCode") as string,
+          ),
+          receiverFullName: formData.get("receiverFullName") as string,
+          receiverContactNumber: formData.get(
+            "receiverContactNumber",
+          ) as string,
+          receiverEmailAddress: formData.get("receiverEmailAddress") as string,
+          receiverStreetAddress: formData.get(
+            "receiverStreetAddress",
+          ) as string,
+          receiverBarangay: formData.get("receiverBarangay") as string,
+          receiverCity: formData.get("receiverCity") as string,
+          receiverStateOrProvince: formData.get(
+            "receiverStateOrProvince",
+          ) as string,
+          receiverCountryCode: formData.get("receiverCountryCode") as string,
+          receiverPostalCode: parseInt(
+            formData.get("receiverPostalCode") as string,
+          ),
+        })
+      }}
+    >
+      <h1 className="font-semibold text-lg mb-2">Sender Info:</h1>
+      <div className="grid grid-cols-3 gap-x-4 mb-4">
+        <div className="mb-2">
+          <label className="block mb-1">Full Name</label>
+          <input
+            required
+            name="senderFullName"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
         </div>
-        <div className="mt-4 grid grid-cols-4 gap-4">
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Street Name, Building</label>
-            <input
-              id="street"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="Cambridge House 19 Cameron Road Tsimshatsui Kow..."
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Province</label>
-            <select
-              id="province"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-            >
-              <option value="HK">Hong Kong</option>
-              <option value="TV">TV/Monitors</option>
-              <option value="PC">PC</option>
-              <option value="GA">Gaming/Console</option>
-              <option value="PH">Phones</option>
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Country</label>
-            <select
-              id="country"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-            >
-              <option value="HK">Hong Kong</option>
-              <option value="TV">TV/Monitors</option>
-              <option value="PC">PC</option>
-              <option value="GA">Gaming/Console</option>
-              <option value="PH">Phones</option>
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="pcode" className="text-sm font-bold">
-              Postal Code
-            </label>
-            <input
-              id="pcode"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="852"
-            />
-          </div>
+        <div className="mb-2">
+          <label className="block mb-1">Contact Number</label>
+          <input
+            required
+            name="senderContactNumber"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
         </div>
-        <div className=" mt-4 grid grid-cols-5 gap-5 pb-4">
-          <div className="flex flex-col">
-            <label htmlFor="mode" className="text-sm font-bold">
-              Mode
-            </label>
-            <select
-              id="mode"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-            >
-              <option value="AF">Air Freight</option>
-              <option value="TV">TV/Monitors</option>
-              <option value="PC">PC</option>
-              <option value="GA">Gaming/Console</option>
-              <option value="PH">Phones</option>
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="dtype" className="text-sm font-bold">
-              Delivery Type
-            </label>
-            <select
-              id="dtype"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-            >
-              <option value="SD">Standard Delivery</option>
-              <option value="TV">TV/Monitors</option>
-              <option value="PC">PC</option>
-              <option value="GA">Gaming/Console</option>
-              <option value="PH">Phones</option>
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="weight" className="text-sm font-bold">
-              Weight
-            </label>
-            <input
-              id="weight"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="KG | 50"
-            />
-          </div>
-          <div className="flex items-center mb-2 ml-10 space-x-10">
-            <div className="flex items-center space-x-2">
-              <input type="radio" id="pickup" className="w-5 h-5" />
-              <label htmlFor="pickup" className="text-sm font-bold">
-                For Pick-Up
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <input type="radio" id="d2d" className="w-5 h-5" />
-              <label htmlFor="d2d" className="text-sm font-bold">
-                Door-to-Door Delivery
-              </label>
-            </div>
-          </div>
+        <div className="mb-2">
+          <label className="block mb-1">Email Address</label>
+          <input
+            required
+            name="senderEmailAddress"
+            type="email"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
         </div>
-        <hr className="my-4 border-t border-gray-200" />
-        <h1 className="font-semibold text-lg mb-2">Receiver Info:</h1>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Receiver Name</label>
-            <input
-              id="receiver-fullname"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="Jeriko Batumbakal"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Contact Number</label>
-            <input
-              id="receiver-contactnumber"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="+63 | 9123456789"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Email Address</label>
-            <input
-              id="receiver-email"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="e-mailex@example.com"
-            />
-          </div>
+        <div className="mb-2">
+          <label className="block mb-1">City</label>
+          <input
+            required
+            name="senderCity"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
         </div>
-        <div className="mt-4 grid grid-cols-4 gap-4">
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Street Name, Building</label>
-            <input
-              id="street"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="1830 Job Street, Jordan Plains Subdivision"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Barangay</label>
-            <select
-              id="province"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-            >
-              <option value="HK">Hong Kong</option>
-              <option value="TV">TV/Monitors</option>
-              <option value="PC">PC</option>
-              <option value="GA">Gaming/Console</option>
-              <option value="PH">Phones</option>
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Province</label>
-            <select
-              id="country"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-            >
-              <option value="HK">Hong Kong</option>
-              <option value="TV">TV/Monitors</option>
-              <option value="PC">PC</option>
-              <option value="GA">Gaming/Console</option>
-              <option value="PH">Phones</option>
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Region</label>
-            <select
-              id="region"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-            >
-              <option value="HK">Hong Kong</option>
-              <option value="TV">TV/Monitors</option>
-              <option value="PC">PC</option>
-              <option value="GA">Gaming/Console</option>
-              <option value="PH">Phones</option>
-            </select>
-          </div>
+        <div className="mb-2">
+          <label className="block mb-1">Street Address</label>
+          <input
+            required
+            name="senderStreetAddress"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
         </div>
-        <div className="mt-4 grid grid-cols-4 gap-4">
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Country</label>
-            <select
-              id="province"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-            >
-              <option value="HK">Hong Kong</option>
-              <option value="TV">TV/Monitors</option>
-              <option value="PC">PC</option>
-              <option value="GA">Gaming/Console</option>
-              <option value="PH">Phones</option>
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <label className="text-sm font-bold">Postal Code</label>
-            <input
-              id="street"
-              className="w-full h-10 bg-white rounded border border-stone-300 p-2"
-              placeholder="1119"
-            />
-          </div>
+        <div className="mb-2">
+          <label className="block mb-1">State/Province</label>
+          <input
+            required
+            name="senderStateOrProvince"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
         </div>
-        <div className="flex justify-end">
-          <button className="w-20 h-10 text-white bg-green-400 rounded-lg">
-            Save
-          </button>
-          <button className="w-20 h-10 text-white bg-red-400 rounded-lg ml-2">
-            Cancel
-          </button>
+        <div className="mb-2">
+          <label className="block mb-1">Country Code</label>
+          <select
+            name="senderCountryCode"
+            className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          >
+            {supportedCountryCodes.map((countryCode) => (
+              <option key={countryCode} value={countryCode}>
+                {countryCodeToName(countryCode)}
+              </option>
+            ))}
+          </select>
         </div>
-      </form>
-    </div>
+        <div className="mb-2">
+          <label className="block mb-1">Postal Code</label>
+          <input
+            required
+            name="senderPostalCode"
+            type="number"
+            placeholder="1111"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Shipping Mode</label>
+          <select
+            name="shippingMode"
+            className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          >
+            {supportedShippingModes.map((shippingMode) => (
+              <option key={shippingMode} value={shippingMode}>
+                {shippingMode}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-2">
+          <label className="block mb-1">Shipping Type</label>
+          <select
+            name="shippingType"
+            className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          >
+            {supportedShippingTypes.map((shippingType) => (
+              <option key={shippingType} value={shippingType}>
+                {shippingType}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Weight in KG</label>
+          <input
+            required
+            name="weightInKg"
+            type="number"
+            placeholder="50"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Reception Mode</label>
+          <select
+            name="receptionMode"
+            className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          >
+            {supportedReceptionModes.map((receptionMode) => (
+              <option key={receptionMode} value={receptionMode}>
+                {receptionMode}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <hr className="my-4 border-t border-gray-200" />
+
+      <h1 className="font-semibold text-lg mb-2">Receiver Info:</h1>
+      <div className="grid grid-cols-3 gap-x-4 mb-4">
+        <div className="mb-2">
+          <label className="block mb-1">Full Name</label>
+          <input
+            required
+            name="receiverFullName"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Contact Number</label>
+          <input
+            required
+            name="receiverContactNumber"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+
+        <div className="mb-2">
+          <label className="block mb-1">Email Address</label>
+          <input
+            required
+            name="receiverEmailAddress"
+            type="email"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+
+        <div className="mb-2">
+          <label className="block mb-1">Street Address</label>
+          <input
+            required
+            name="receiverStreetAddress"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Barangay</label>
+          <input
+            required
+            name="receiverBarangay"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">City</label>
+          <input
+            required
+            name="receiverCity"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">State/Province</label>
+          <input
+            required
+            name="receiverStateOrProvince"
+            type="text"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Country Code</label>
+          <select
+            name="receiverCountryCode"
+            className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          >
+            {supportedCountryCodes.map((countryCode) => (
+              <option key={countryCode} value={countryCode}>
+                {countryCodeToName(countryCode)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-2">
+          <label className="block mb-1">Postal Code</label>
+          <input
+            required
+            name="receiverPostalCode"
+            type="number"
+            placeholder="1111"
+            className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+          />
+        </div>
+      </div>
+      <div className="flex justify-end">
+        <button
+          className="bg-red-400 hover:bg-blue-400 disabled:bg-blue-300 transition-colors px-4 py-2 rounded-md font-medium mr-2 text-white"
+          onClick={close}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="bg-green-400 hover:bg-slate-400 disabled:bg-green-300 transition-colors px-4 py-2 rounded-md font-medium text-white"
+        >
+          {isLoading ? "Saving ..." : "Save"}
+        </button>
+      </div>
+    </form>
   )
 }
-
-const selectFileFormSchema = z.object({
-  sheetFiles: z.custom<FileList>(
-    (val) => {
-      return (val as FileList)?.length === 1
-    },
-    {
-      message: "Please select a file.",
-    },
-  ),
-})
-
-type SelectFileFormType = z.infer<typeof selectFileFormSchema>
 
 export function PackagesAddWizardInformation({
   isOpenModal,
