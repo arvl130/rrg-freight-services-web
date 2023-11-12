@@ -14,44 +14,9 @@ import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
 import { User, getAuth, signOut } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/router"
 import { ReactNode, useState } from "react"
 import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
-
-function SideBarLink({
-  href,
-  name,
-  icon,
-  otherRouteNames,
-}: {
-  href: string
-  otherRouteNames?: string[]
-  name: string
-  icon: ReactNode
-}) {
-  const router = useRouter()
-  const matchingRouteNames = Array.isArray(otherRouteNames)
-    ? [...new Set([href, ...otherRouteNames])]
-    : [href]
-
-  return (
-    <Link
-      href={href}
-      className={`
-        flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200
-        ${
-          matchingRouteNames.includes(router.pathname)
-            ? "border-x-2 border-l-white border-r-transparent"
-            : ""
-        }
-      `}
-    >
-      <span className="sr-only">{name}</span>
-      {icon}
-    </Link>
-  )
-}
+import { SideBarLink } from "@/components/sidebar-link"
 
 export function AdminSideBar() {
   const [isSigningOut, setIsSigningOut] = useState(false)
