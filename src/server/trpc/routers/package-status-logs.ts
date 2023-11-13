@@ -34,6 +34,18 @@ export const packageStatusLogRouter = router({
 
       return results[0]
     }),
+  getByPackageId: protectedProcedure
+    .input(
+      z.object({
+        packageId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db
+        .select()
+        .from(packageStatusLogs)
+        .where(eq(packageStatusLogs.packageId, input.packageId))
+    }),
   getLatest: protectedProcedure.query(async ({ ctx }) => {
     // Obtain the latest status using the group-wise maximum of a column.
     //
