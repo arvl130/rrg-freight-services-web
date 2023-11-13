@@ -25,6 +25,7 @@ export const supportedPackageStatuses = [
   // in the UI.
   "DELIVERING",
   "DELIVERED",
+  "TRANSFERRED",
 ] as const
 export type PackageStatus = (typeof supportedPackageStatuses)[number]
 
@@ -32,6 +33,7 @@ export const supportedShipmentStatuses = [
   "PREPARING",
   "IN_TRANSIT",
   "ARRIVED",
+  "FAILED",
 ] as const
 export type ShipmentStatus = (typeof supportedShipmentStatuses)[number]
 
