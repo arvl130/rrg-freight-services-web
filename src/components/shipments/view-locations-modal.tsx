@@ -65,54 +65,65 @@ export function ShipmentsViewLocationsModal({
           )}
           {status === "success" && (
             <div className="grid grid-cols-[20rem_1fr] h-full overflow-y-auto">
-              <div className="h-full overflow-y-auto border-r border-gray-300">
-                {shipmentLocations.map((shipmentLocation, index) => (
-                  <button
-                    key={shipmentLocation.id}
-                    type="button"
-                    className={`
+              {shipmentLocations.length === 0 ? (
+                <>
+                  <div className="border-r border-gray-300 text-center pt-4 text-gray-500 text-sm">
+                    No locations recorded.
+                  </div>
+                  <div className="bg-gray-50"></div>
+                </>
+              ) : (
+                <>
+                  <div className="h-full overflow-y-auto border-r border-gray-300">
+                    {shipmentLocations.map((shipmentLocation, index) => (
+                      <button
+                        key={shipmentLocation.id}
+                        type="button"
+                        className={`
                       border-b border-gray-300 block w-full text-left px-4 py-2 text-sm
                       ${index === selectedItemIndex ? "bg-gray-50" : ""}
                     `}
-                    onClick={() => {
-                      if (selectedItemIndex === index && map !== null) {
-                        map.flyTo(
-                          [
-                            shipmentLocations[selectedItemIndex].lat,
-                            shipmentLocations[selectedItemIndex].long,
-                          ],
-                          LEAFLET_DEFAULT_ZOOM_LEVEL,
-                        )
-                      }
-                      setSelectedItemIndex(index)
-                    }}
-                  >
-                    <div className="font-medium">
-                      {DateTime.fromJSDate(
-                        shipmentLocation.createdAt,
-                      ).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)}
+                        onClick={() => {
+                          if (selectedItemIndex === index && map !== null) {
+                            map.flyTo(
+                              [
+                                shipmentLocations[selectedItemIndex].lat,
+                                shipmentLocations[selectedItemIndex].long,
+                              ],
+                              LEAFLET_DEFAULT_ZOOM_LEVEL,
+                            )
+                          }
+                          setSelectedItemIndex(index)
+                        }}
+                      >
+                        <div className="font-medium">
+                          {DateTime.fromJSDate(
+                            shipmentLocation.createdAt,
+                          ).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)}
+                        </div>
+                        <div className="text-gray-500">
+                          {shipmentLocation.lat}&quot;, {shipmentLocation.long}
+                          &quot;
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  {selectedItemIndex === null ? (
+                    <div className="flex items-center justify-center bg-gray-50">
+                      <p className="text-center text-gray-500">
+                        Please select a location log.
+                      </p>
                     </div>
-                    <div className="text-gray-500">
-                      {shipmentLocation.lat}&quot;, {shipmentLocation.long}
-                      &quot;
+                  ) : (
+                    <div className="h-full w-full bg-gray-50">
+                      <Map
+                        long={shipmentLocations[selectedItemIndex].long}
+                        lat={shipmentLocations[selectedItemIndex].lat}
+                        setMap={(map) => setMap(map)}
+                      />
                     </div>
-                  </button>
-                ))}
-              </div>
-              {selectedItemIndex === null ? (
-                <div className="flex items-center justify-center">
-                  <p className="text-center text-gray-500">
-                    Please select a location log.
-                  </p>
-                </div>
-              ) : (
-                <div className="h-full w-full">
-                  <Map
-                    long={shipmentLocations[selectedItemIndex].long}
-                    lat={shipmentLocations[selectedItemIndex].lat}
-                    setMap={(map) => setMap(map)}
-                  />
-                </div>
+                  )}
+                </>
               )}
             </div>
           )}
