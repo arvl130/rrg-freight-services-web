@@ -29,6 +29,57 @@ export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(packages)
   }),
+  getByShipmentId: protectedProcedure
+    .input(
+      z.object({
+        shipmentId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(shipmentPackages)
+        .innerJoin(packages, eq(packages.id, shipmentPackages.packageId))
+        .where(eq(shipmentPackages.shipmentId, input.shipmentId))
+
+      return results.map(({ packages }) => packages)
+    }),
+  getWithLatestStatusByShipmentId: protectedProcedure
+    .input(
+      z.object({
+        shipmentId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const psl1 = alias(packageStatusLogs, "psl1")
+      const psl2 = alias(packageStatusLogs, "psl2")
+      const results = await ctx.db
+        .select()
+        .from(psl1)
+        .leftJoin(
+          psl2,
+          and(
+            eq(psl1.packageId, psl2.packageId),
+            lt(psl1.createdAt, psl2.createdAt),
+          ),
+        )
+        .innerJoin(
+          shipmentPackages,
+          eq(psl1.packageId, shipmentPackages.packageId),
+        )
+        .innerJoin(packages, eq(psl1.packageId, packages.id))
+        .where(
+          and(
+            isNull(psl2.id),
+            eq(shipmentPackages.shipmentId, input.shipmentId),
+          ),
+        )
+
+      return results.map(({ packages, psl1 }) => ({
+        ...packages,
+        status: psl1.status,
+      }))
+    }),
   getWithStatusLogsById: publicProcedure
     .input(
       z.object({
