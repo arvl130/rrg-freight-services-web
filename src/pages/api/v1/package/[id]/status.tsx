@@ -1,7 +1,7 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packageStatusLogs, packages } from "@/server/db/schema"
-import { PackageStatus } from "@/utils/constants"
+import { PackageStatus, supportedPackageStatuses } from "@/utils/constants"
 import { and, eq, isNull, lt } from "drizzle-orm"
 import { alias } from "drizzle-orm/mysql-core"
 import { ResultSetHeader } from "mysql2"
@@ -10,13 +10,9 @@ import { ZodError, z } from "zod"
 
 const inputSchema = z.object({
   packageId: z.number(),
-  status: z.union([
-    z.literal("IN_WAREHOUSE"),
-    z.literal("SORTING"),
-    z.literal("SHIPPING"),
-    z.literal("DELIVERING"),
-    z.literal("DELIVERED"),
-  ]),
+  status: z.custom<PackageStatus>((val) =>
+    supportedPackageStatuses.includes(val as PackageStatus),
+  ),
 })
 
 const packageStatusDescriptions: Record<PackageStatus, string> = {
@@ -25,6 +21,7 @@ const packageStatusDescriptions: Record<PackageStatus, string> = {
   SHIPPING: "Package has been prepared and is being currently being shipped.",
   DELIVERING: "Package is out for delivery.",
   DELIVERED: "Package has been delivered.",
+  TRANSFERRED: "Package was transferred to another freight forwarder.",
 }
 
 function createPackageDescription(status: PackageStatus) {
