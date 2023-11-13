@@ -112,7 +112,10 @@ export function PackagesViewDetailsModal({
       <Dialog.Portal>
         <Dialog.Overlay className="bg-black/40 fixed inset-0" />
         <Dialog.Content
-          onEscapeKeyDown={close}
+          onEscapeKeyDown={() => {
+            setIsVisibleStatusLogs(false)
+            close()
+          }}
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_2rem),_56rem)] h-[34.5rem] grid grid-rows-[2.5rem_1fr] rounded-t-lg bg-white"
         >
           <Dialog.Title className="[background-color:_#78CFDC] px-4 py-2 rounded-t-lg text-white font-semibold text-center grid grid-cols-[1.5rem_1fr_1.5rem]">
@@ -121,7 +124,10 @@ export function PackagesViewDetailsModal({
             <button
               type="button"
               className="flex items-center justify-center"
-              onClick={() => close()}
+              onClick={() => {
+                setIsVisibleStatusLogs(false)
+                close()
+              }}
             >
               <X size={20} />
             </button>
