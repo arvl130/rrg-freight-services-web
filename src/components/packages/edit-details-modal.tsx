@@ -1,6 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import { Package } from "@/server/db/entities"
 import {
+  REGEX_ONE_OR_MORE_DIGITS,
   ReceptionMode,
   ShippingMode,
   ShippingParty,
@@ -30,7 +31,7 @@ const editFormSchema = z.object({
   receptionMode: z.custom<ReceptionMode>((val) =>
     supportedReceptionModes.includes(val as ReceptionMode),
   ),
-  weightInKg: z.number(),
+  weightInKg: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
   senderFullName: z.string().min(1).max(100),
   senderContactNumber: z.string().min(1).max(15),
   senderEmailAddress: z.string().min(1).max(100).email(),
@@ -38,7 +39,7 @@ const editFormSchema = z.object({
   senderCity: z.string().min(1).max(100),
   senderStateOrProvince: z.string().min(1).max(100),
   senderCountryCode: z.string().length(3),
-  senderPostalCode: z.number(),
+  senderPostalCode: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
   receiverFullName: z.string().min(1).max(100),
   receiverContactNumber: z.string().min(1).max(15),
   receiverEmailAddress: z.string().min(1).max(100).email(),
@@ -47,7 +48,7 @@ const editFormSchema = z.object({
   receiverCity: z.string().min(1).max(100),
   receiverStateOrProvince: z.string().min(1).max(100),
   receiverCountryCode: z.string().length(3),
-  receiverPostalCode: z.number(),
+  receiverPostalCode: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
 })
 
 type EditFormType = z.infer<typeof editFormSchema>
@@ -78,7 +79,7 @@ export function PackagesEditDetailsModal({
       shippingMode: _package.shippingMode,
       shippingType: _package.shippingType,
       receptionMode: _package.receptionMode,
-      weightInKg: _package.weightInKg,
+      weightInKg: _package.weightInKg.toString(),
       senderFullName: _package.senderFullName,
       senderContactNumber: _package.senderContactNumber,
       senderEmailAddress: _package.senderEmailAddress,
@@ -86,7 +87,7 @@ export function PackagesEditDetailsModal({
       senderCity: _package.senderCity,
       senderStateOrProvince: _package.senderStateOrProvince,
       senderCountryCode: _package.senderCountryCode,
-      senderPostalCode: _package.senderPostalCode,
+      senderPostalCode: _package.senderPostalCode.toString(),
       receiverFullName: _package.receiverFullName,
       receiverContactNumber: _package.receiverContactNumber,
       receiverEmailAddress: _package.receiverEmailAddress,
@@ -95,7 +96,7 @@ export function PackagesEditDetailsModal({
       receiverCity: _package.receiverCity,
       receiverStateOrProvince: _package.receiverStateOrProvince,
       receiverCountryCode: _package.receiverCountryCode,
-      receiverPostalCode: _package.receiverPostalCode,
+      receiverPostalCode: _package.receiverPostalCode.toString(),
     },
   })
 
@@ -112,7 +113,14 @@ export function PackagesEditDetailsModal({
           </Dialog.Title>
           <form
             className="px-6 py-4 h-full grid overflow-y-auto"
-            onSubmit={handleSubmit((formData) => mutate(formData))}
+            onSubmit={handleSubmit((formData) =>
+              mutate({
+                ...formData,
+                weightInKg: Number(formData.weightInKg),
+                senderPostalCode: Number(formData.senderPostalCode),
+                receiverPostalCode: Number(formData.receiverPostalCode),
+              }),
+            )}
           >
             <div className="overflow-y-auto pb-2">
               <div className="border-b border-gray-300 pb-6 mb-5">

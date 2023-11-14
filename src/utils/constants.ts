@@ -64,3 +64,4 @@ export type UsersTableItemScreen =
   | "UPDATE_PHOTO"
 
 export const LEAFLET_DEFAULT_ZOOM_LEVEL = 16
+export const REGEX_ONE_OR_MORE_DIGITS = /^\d+$/
