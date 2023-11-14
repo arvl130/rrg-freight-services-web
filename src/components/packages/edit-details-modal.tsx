@@ -68,11 +68,20 @@ export function PackagesEditDetailsModal({
       apiUtils.package.getAll.invalidate()
       toast.success("Update success!")
       close()
+      reset()
     },
   })
 
-  const { register, handleSubmit } = useForm<EditFormType>({
+  const {
+    reset,
+    register,
+    handleSubmit,
+    formState: { isDirty },
+  } = useForm<EditFormType>({
     resolver: zodResolver(editFormSchema),
+    resetOptions: {
+      keepDirtyValues: true,
+    },
     defaultValues: {
       id: _package.id,
       shippingParty: _package.shippingParty,
@@ -326,7 +335,7 @@ export function PackagesEditDetailsModal({
               </button>
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !isDirty}
                 className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 transition-colors text-white px-6 py-2 rounded-md"
               >
                 Save
