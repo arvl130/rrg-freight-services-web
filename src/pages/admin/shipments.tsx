@@ -19,6 +19,7 @@ import { ShipmentsCreateModal } from "@/components/shipments/create-modal"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { ShipmentsViewDetailsModal } from "@/components/shipments/view-details-modal"
 import { ShipmentsViewLocationsModal } from "@/components/shipments/view-locations-modal"
+import { ShipmentsEditDetailsModal } from "@/components/shipments/edit-details-modal"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -120,7 +121,7 @@ function ShipmentTableItem({
   }
 }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "VIEW_LOCATIONS"
+    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "VIEW_LOCATIONS"
   >(null)
 
   return (
@@ -177,6 +178,12 @@ function ShipmentTableItem({
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("EDIT_DETAILS")}
+              >
+                Edit Details
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("VIEW_LOCATIONS")}
               >
                 View Locations
@@ -190,6 +197,11 @@ function ShipmentTableItem({
         <ShipmentsViewDetailsModal
           shipment={shipment}
           isOpen={visibleModal === "VIEW_DETAILS"}
+          close={() => setVisibleModal(null)}
+        />
+        <ShipmentsEditDetailsModal
+          shipment={shipment}
+          isOpen={visibleModal === "EDIT_DETAILS"}
           close={() => setVisibleModal(null)}
         />
         <ShipmentsViewLocationsModal

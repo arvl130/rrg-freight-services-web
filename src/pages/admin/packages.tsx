@@ -18,6 +18,7 @@ import { PackagesImportWizard } from "@/components/packages/import-wizard"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
+import { PackagesEditDetailsModal } from "@/components/packages/edit-details-modal"
 
 function PageHeader() {
   return (
@@ -74,7 +75,7 @@ function PackageStatus({ packageId }: { packageId: number }) {
 
 function PackageTableItem({ package: _package }: { package: Package }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "VIEW_WAYBILL"
+    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "VIEW_WAYBILL"
   >(null)
 
   return (
@@ -129,6 +130,12 @@ function PackageTableItem({ package: _package }: { package: Package }) {
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="transition-colors hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("EDIT_DETAILS")}
+                >
+                  Edit Details
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className="transition-colors hover:bg-sky-50 px-3 py-2"
                   onClick={() => setVisibleModal("VIEW_WAYBILL")}
                 >
                   View Waybill
@@ -142,6 +149,11 @@ function PackageTableItem({ package: _package }: { package: Package }) {
           <PackagesViewDetailsModal
             package={_package}
             isOpen={visibleModal === "VIEW_DETAILS"}
+            close={() => setVisibleModal(null)}
+          />
+          <PackagesEditDetailsModal
+            package={_package}
+            isOpen={visibleModal === "EDIT_DETAILS"}
             close={() => setVisibleModal(null)}
           />
           <PackagesViewWaybillModal
