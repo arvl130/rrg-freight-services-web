@@ -148,31 +148,34 @@ export const packageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.db.update(packages).set({
-        shippingMode: input.shippingMode,
-        shippingType: input.shippingType,
-        receptionMode: input.receptionMode,
-        weightInKg: input.weightInKg,
-        senderFullName: input.senderFullName,
-        senderContactNumber: input.senderContactNumber,
-        senderEmailAddress: input.senderEmailAddress,
-        senderStreetAddress: input.senderStreetAddress,
-        senderCity: input.senderCity,
-        senderStateOrProvince: input.senderStateOrProvince,
-        senderCountryCode: input.senderCountryCode,
-        senderPostalCode: input.senderPostalCode,
-        receiverFullName: input.receiverFullName,
-        receiverContactNumber: input.receiverContactNumber,
-        receiverEmailAddress: input.receiverEmailAddress,
-        receiverStreetAddress: input.receiverStreetAddress,
-        receiverBarangay: input.receiverBarangay,
-        receiverCity: input.receiverCity,
-        receiverStateOrProvince: input.receiverStateOrProvince,
-        receiverCountryCode: input.receiverCountryCode,
-        receiverPostalCode: input.receiverPostalCode,
-        updatedById: ctx.user.uid,
-        updatedAt: new Date(),
-      })
+      return await ctx.db
+        .update(packages)
+        .set({
+          shippingMode: input.shippingMode,
+          shippingType: input.shippingType,
+          receptionMode: input.receptionMode,
+          weightInKg: input.weightInKg,
+          senderFullName: input.senderFullName,
+          senderContactNumber: input.senderContactNumber,
+          senderEmailAddress: input.senderEmailAddress,
+          senderStreetAddress: input.senderStreetAddress,
+          senderCity: input.senderCity,
+          senderStateOrProvince: input.senderStateOrProvince,
+          senderCountryCode: input.senderCountryCode,
+          senderPostalCode: input.senderPostalCode,
+          receiverFullName: input.receiverFullName,
+          receiverContactNumber: input.receiverContactNumber,
+          receiverEmailAddress: input.receiverEmailAddress,
+          receiverStreetAddress: input.receiverStreetAddress,
+          receiverBarangay: input.receiverBarangay,
+          receiverCity: input.receiverCity,
+          receiverStateOrProvince: input.receiverStateOrProvince,
+          receiverCountryCode: input.receiverCountryCode,
+          receiverPostalCode: input.receiverPostalCode,
+          updatedById: ctx.user.uid,
+          updatedAt: new Date(),
+        })
+        .where(eq(packages.id, input.id))
     }),
   updatePackageStatusByIds: protectedProcedure
     .input(
