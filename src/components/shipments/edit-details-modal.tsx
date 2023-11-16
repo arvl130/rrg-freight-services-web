@@ -74,6 +74,8 @@ function AddPackageForm({
     <form
       className="grid grid-cols-[1fr_auto] gap-3 mb-3"
       onSubmit={handleSubmit((formData) =>
+        // TODO: Add a warning before firing mutations, because editing
+        // shipment packages can lead to inconsistent database state.
         mutate({
           id: shipmentId,
           packageId: Number(formData.packageId),
