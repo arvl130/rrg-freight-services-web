@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { REGEX_ONE_OR_MORE_DIGITS } from "@/utils/constants"
+import { X } from "@phosphor-icons/react/X"
 
 function PackageItem({
   package: _package,
@@ -135,8 +136,19 @@ export function ShipmentsEditDetailsModal({
           onEscapeKeyDown={close}
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_2rem),_36rem)] h-[24rem] rounded-lg bg-white"
         >
-          <Dialog.Title className="[background-color:_#78CFDC] px-4 py-2 rounded-t-lg text-white font-semibold text-center">
-            Edit Details
+          <Dialog.Title className="[background-color:_#78CFDC] px-4 py-2 rounded-t-lg text-white font-semibold text-center grid grid-cols-[1.5rem_1fr_1.5rem]">
+            <div></div>
+            <div>Edit Details</div>
+            <button
+              type="button"
+              className="flex items-center justify-center"
+              onClick={() => {
+                setSelectedIds([])
+                close()
+              }}
+            >
+              <X size={20} />
+            </button>
           </Dialog.Title>
           {status === "loading" && (
             <div className="flex justify-center items-center">Loading ...</div>
