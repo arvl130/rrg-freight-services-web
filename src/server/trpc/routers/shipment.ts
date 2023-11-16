@@ -9,7 +9,7 @@ import {
   shipmentStatusLogs,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
-import { and, eq } from "drizzle-orm"
+import { and, eq, inArray } from "drizzle-orm"
 import { alias } from "drizzle-orm/mysql-core"
 import { sql } from "drizzle-orm"
 import { Package, Shipment } from "@/server/db/entities"
@@ -357,5 +357,35 @@ export const shipmentRouter = router({
             "Shipment has been created and is waiting to be shipped.",
         })
       })
+    }),
+  addPackageIdById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        packageId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(shipmentPackages).values({
+        shipmentId: input.id,
+        packageId: input.packageId,
+      })
+    }),
+  removePackageIdsById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        packageIds: z.number().array().nonempty(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .delete(shipmentPackages)
+        .where(
+          and(
+            eq(shipmentPackages.shipmentId, input.id),
+            inArray(shipmentPackages.packageId, input.packageIds),
+          ),
+        )
     }),
 })
