@@ -4,6 +4,7 @@ import { packageStatusLogs } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { alias } from "drizzle-orm/mysql-core"
+import { PackageStatus, supportedPackageStatuses } from "@/utils/constants"
 
 export const packageStatusLogRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -122,5 +123,31 @@ export const packageStatusLogRouter = router({
         })
 
       return results[0].psl1
+    }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        packageId: z.number(),
+        status: z.custom<PackageStatus>((val) =>
+          supportedPackageStatuses.includes(val as PackageStatus),
+        ),
+        description: z.string(),
+        createdAt: z.date(),
+        createdById: z.string().length(28),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(packageStatusLogs).values(input)
+    }),
+  deleteById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .delete(packageStatusLogs)
+        .where(eq(packageStatusLogs.id, input.id))
     }),
 })

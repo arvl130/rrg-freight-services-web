@@ -65,3 +65,21 @@ export type UsersTableItemScreen =
 
 export const LEAFLET_DEFAULT_ZOOM_LEVEL = 16
 export const REGEX_ONE_OR_MORE_DIGITS = /^\d+$/
+
+// FIXME: This should be more dynamic and include origin or destination hub
+// information, as well as who's responsible for a specific action or status
+// change.
+const packageStatusLogWithDescriptions: Record<PackageStatus, string> = {
+  IN_WAREHOUSE: "Package has been received at one of our hubs.",
+  SORTING: "Package has been added to a shipment and is now being sorted.",
+  SHIPPING: "Package is being shipped.",
+  DELIVERING: "Package is now being delivered.",
+  DELIVERED: "Package has been delivered.",
+  TRANSFERRED: "Package has been transferred.",
+}
+
+export function getDescriptionForNewPackageStatusLog(
+  packageStatus: PackageStatus,
+) {
+  return packageStatusLogWithDescriptions[packageStatus] ?? ""
+}
