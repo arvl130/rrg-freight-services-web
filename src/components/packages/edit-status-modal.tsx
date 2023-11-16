@@ -225,17 +225,20 @@ export function PackagesEditStatusModal({
             </div>
           )}
           {status === "success" && (
-            <div className="px-4 py-2">
+            <div className="px-4 pt-2 pb-4">
               <AddStatusLogForm packageId={_package.id} />
-              {statusLogs.map((statusLog, index) => (
-                <StatusLogItem
-                  key={statusLog.id}
-                  packageId={_package.id}
-                  isOnlyItem={statusLogs.length === 1}
-                  isFirstItem={index === 0}
-                  statusLog={statusLog}
-                />
-              ))}
+              <div>
+                <p className="font-medium mb-1">Status Logs</p>
+                {statusLogs.map((statusLog, index) => (
+                  <StatusLogItem
+                    key={statusLog.id}
+                    packageId={_package.id}
+                    isOnlyItem={statusLogs.length === 1}
+                    isFirstItem={index === 0}
+                    statusLog={statusLog}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </Dialog.Content>
