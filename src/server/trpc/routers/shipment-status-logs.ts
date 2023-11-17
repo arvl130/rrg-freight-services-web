@@ -4,6 +4,7 @@ import { shipmentStatusLogs } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { alias } from "drizzle-orm/mysql-core"
+import { ShipmentStatus, supportedShipmentStatuses } from "@/utils/constants"
 
 export const shipmentStatusLogRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -33,6 +34,18 @@ export const shipmentStatusLogRouter = router({
         })
 
       return results[0]
+    }),
+  getByShipmentId: protectedProcedure
+    .input(
+      z.object({
+        shipmentId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db
+        .select()
+        .from(shipmentStatusLogs)
+        .where(eq(shipmentStatusLogs.shipmentId, input.shipmentId))
     }),
   getLatest: protectedProcedure.query(async ({ ctx }) => {
     // Obtain the latest status using the group-wise maximum of a column.
@@ -110,5 +123,31 @@ export const shipmentStatusLogRouter = router({
         })
 
       return results[0]
+    }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        shipmentId: z.number(),
+        status: z.custom<ShipmentStatus>((val) =>
+          supportedShipmentStatuses.includes(val as ShipmentStatus),
+        ),
+        description: z.string(),
+        createdAt: z.date(),
+        createdById: z.string().length(28),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(shipmentStatusLogs).values(input)
+    }),
+  deleteById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .delete(shipmentStatusLogs)
+        .where(eq(shipmentStatusLogs.id, input.id))
     }),
 })

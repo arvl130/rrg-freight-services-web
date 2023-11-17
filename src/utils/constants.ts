@@ -83,3 +83,16 @@ export function getDescriptionForNewPackageStatusLog(
 ) {
   return packageStatusLogWithDescriptions[packageStatus] ?? ""
 }
+
+const shipmentStatusLogWithDescriptions: Record<ShipmentStatus, string> = {
+  PREPARING: "Shipment is currently being prepared.",
+  IN_TRANSIT: "Shipment is currently in transit.",
+  ARRIVED: "Shipment has arrived in its destination.",
+  FAILED: "Shipment failed to reach its destination.",
+}
+
+export function getDescriptionForNewShipmentStatusLog(
+  shipmentStatus: ShipmentStatus,
+) {
+  return shipmentStatusLogWithDescriptions[shipmentStatus] ?? ""
+}
