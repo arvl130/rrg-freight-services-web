@@ -21,6 +21,7 @@ import { ShipmentsViewDetailsModal } from "@/components/shipments/view-details-m
 import { ShipmentsViewLocationsModal } from "@/components/shipments/view-locations-modal"
 import { ShipmentsEditDetailsModal } from "@/components/shipments/edit-details-modal"
 import { ShipmentsEditStatusModal } from "@/components/shipments/edit-status-modal"
+import { ShipmentsViewQrCodeModal } from "@/components/shipments/view-qrcode-modal"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -122,7 +123,12 @@ function ShipmentTableItem({
   }
 }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "EDIT_STATUS" | "VIEW_LOCATIONS"
+    | null
+    | "VIEW_DETAILS"
+    | "EDIT_DETAILS"
+    | "EDIT_STATUS"
+    | "VIEW_LOCATIONS"
+    | "VIEW_QRCODE"
   >(null)
 
   return (
@@ -195,6 +201,12 @@ function ShipmentTableItem({
               >
                 View Locations
               </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("VIEW_QRCODE")}
+              >
+                View QR Code
+              </DropdownMenu.Item>
 
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
@@ -219,6 +231,11 @@ function ShipmentTableItem({
         <ShipmentsViewLocationsModal
           shipment={shipment}
           isOpen={visibleModal === "VIEW_LOCATIONS"}
+          close={() => setVisibleModal(null)}
+        />
+        <ShipmentsViewQrCodeModal
+          shipment={shipment}
+          isOpen={visibleModal === "VIEW_QRCODE"}
           close={() => setVisibleModal(null)}
         />
       </div>
