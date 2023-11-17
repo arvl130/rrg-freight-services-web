@@ -6,6 +6,6 @@ export default {
   schema: "./src/server/db/schema.ts",
   driver: "mysql2",
   dbCredentials: {
-    connectionString: serverEnv.DATABASE_URL,
+    uri: serverEnv.DATABASE_URL,
   },
 } satisfies Config
