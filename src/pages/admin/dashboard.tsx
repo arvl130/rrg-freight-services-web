@@ -60,7 +60,7 @@ function ManifestsShippedTile() {
     >
       <div className="flex flex-col justify-center items-start">
         <p className="text-4xl font-semibold">120</p>
-        <p>Manifests shipped</p>
+        <p>Shipments shipped</p>
       </div>
       <div>
         <Article size={96} />

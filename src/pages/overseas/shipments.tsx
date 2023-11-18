@@ -33,7 +33,7 @@ function PageHeader() {
           onClick={() => setIsOpenCreateModal(true)}
         >
           <Plus size={16} />
-          <span>Create Manifest</span>
+          <span>Create Shipment</span>
         </button>
       </div>
       <ShipmentsCreateModal
