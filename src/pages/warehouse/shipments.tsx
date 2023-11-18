@@ -401,17 +401,7 @@ export default function DashboardPage() {
   return (
     <WarehouseLayout title="Dashboard">
       <div className="flex	justify-between	my-4">
-        <h1 className="text-3xl font-black [color:_#00203F] mb-4">
-          Shipment List
-        </h1>
-        <button
-          style={{ backgroundColor: "#79CFDC", borderRadius: "5px" }}
-          className="flex items-center text-white px-3	"
-        >
-          {" "}
-          <Plus size={20} />
-          &nbsp; Create Manifest
-        </button>
+        <h1 className="text-3xl font-black [color:_#00203F] mb-4">Shipments</h1>
       </div>
       <SearchBar />
 
