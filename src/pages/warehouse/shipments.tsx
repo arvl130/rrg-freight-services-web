@@ -17,6 +17,10 @@ import { useState } from "react"
 import { DateTime } from "luxon"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { ShipmentsViewQrCodeModal } from "@/components/shipments/view-qrcode-modal"
+import { ShipmentsViewDetailsModal } from "@/components/shipments/view-details-modal"
+
 function SearchBar() {
   return (
     <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
@@ -144,6 +148,10 @@ function ShipmentTableItem({
     destinationHub: ShipmentHub | null
   }
 }) {
+  const [visibleModal, setVisibleModal] = useState<
+    null | "VIEW_DETAILS" | "VIEW_QRCODE"
+  >(null)
+
   return (
     <tbody>
       <tr
@@ -191,9 +199,44 @@ function ShipmentTableItem({
           <ShipmentStatus shipmentId={shipment.id} />
         </td>
         <td>
-          <button>
-            <DotsThree size={32} />
-          </button>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button type="button">
+                <span className="sr-only">Actions</span>
+                <DotsThree size={16} />
+              </button>
+            </DropdownMenu.Trigger>
+
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm">
+                <DropdownMenu.Item
+                  className="transition-colors hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("VIEW_DETAILS")}
+                >
+                  View Details
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className="transition-colors hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("VIEW_QRCODE")}
+                >
+                  View QR Code
+                </DropdownMenu.Item>
+
+                <DropdownMenu.Arrow className="fill-white" />
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+
+          <ShipmentsViewDetailsModal
+            shipment={shipment}
+            isOpen={visibleModal === "VIEW_DETAILS"}
+            close={() => setVisibleModal(null)}
+          />
+          <ShipmentsViewQrCodeModal
+            shipment={shipment}
+            isOpen={visibleModal === "VIEW_QRCODE"}
+            close={() => setVisibleModal(null)}
+          />
         </td>
       </tr>
     </tbody>

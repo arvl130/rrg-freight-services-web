@@ -17,6 +17,9 @@ import { getColorFromPackageStatus } from "@/utils/colors"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
+import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
 
 function PackageStatus({ packageId }: { packageId: number }) {
   const {
@@ -264,6 +267,10 @@ function RecentActivityTile({ packages }: { packages: Package[] }) {
   )
 }
 function TableItem({ package: _package }: { package: Package }) {
+  const [visibleModal, setVisibleModal] = useState<
+    null | "VIEW_DETAILS" | "VIEW_WAYBILL"
+  >(null)
+
   return (
     <tbody>
       <tr
@@ -302,9 +309,44 @@ function TableItem({ package: _package }: { package: Package }) {
           <PackageStatus packageId={_package.id} />
         </td>
         <td>
-          <button onClick={() => {}}>
-            <DotsThree size={32} />
-          </button>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button type="button">
+                <span className="sr-only">Actions</span>
+                <DotsThree size={16} />
+              </button>
+            </DropdownMenu.Trigger>
+
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm">
+                <DropdownMenu.Item
+                  className="transition-colors hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("VIEW_DETAILS")}
+                >
+                  View Details
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className="transition-colors hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("VIEW_WAYBILL")}
+                >
+                  View Waybill
+                </DropdownMenu.Item>
+
+                <DropdownMenu.Arrow className="fill-white" />
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+
+          <PackagesViewDetailsModal
+            package={_package}
+            isOpen={visibleModal === "VIEW_DETAILS"}
+            close={() => setVisibleModal(null)}
+          />
+          <PackagesViewWaybillModal
+            package={_package}
+            isOpen={visibleModal === "VIEW_WAYBILL"}
+            close={() => setVisibleModal(null)}
+          />
         </td>
       </tr>
     </tbody>
