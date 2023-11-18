@@ -367,7 +367,7 @@ export default function PackageList() {
       <WarehouseLayout title="Dashboard">
         <div className="flex	justify-between	my-4">
           <h1 className="text-3xl font-black [color:_#00203F] mb-4">
-            Package List
+            Packages
           </h1>
         </div>
         <SearchBar />
