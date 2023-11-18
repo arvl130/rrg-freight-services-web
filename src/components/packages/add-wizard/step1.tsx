@@ -13,7 +13,7 @@ import {
 import { countryCodeToName, supportedCountryCodes } from "@/utils/country-code"
 import toast from "react-hot-toast"
 
-export default function Forms() {
+export default function Forms({ close }: { close: () => void }) {
   const formRef = useRef<null | HTMLFormElement>(null)
   const { status, data: packages, refetch } = api.package.getAll.useQuery()
   const { isLoading, mutate: addPackage } = api.package.create.useMutation({
@@ -293,8 +293,9 @@ export default function Forms() {
       </div>
       <div className="flex justify-end">
         <button
+          type="button"
           className="bg-red-400 hover:bg-blue-400 disabled:bg-blue-300 transition-colors px-4 py-2 rounded-md font-medium mr-2 text-white"
-          onClick={close}
+          onClick={() => close()}
         >
           Cancel
         </button>
@@ -312,8 +313,10 @@ export default function Forms() {
 
 export function PackagesAddWizardInformation({
   isOpenModal,
+  close,
 }: {
   isOpenModal: boolean
+  close: () => void
 }) {
   const { reset } = useForm()
 
@@ -326,7 +329,7 @@ export function PackagesAddWizardInformation({
         ADD PACKAGE
       </div>
       <div className="px-12 py-4 grid grid-rows-[auto_auto_1fr]">
-        <Forms />
+        <Forms close={() => close()} />
       </div>
     </div>
   )
