@@ -130,10 +130,11 @@ export default function Forms({ close }: { close: () => void }) {
           <select
             name="senderCountryCode"
             className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+            defaultValue={"ARE"}
           >
             {supportedCountryCodes.map((countryCode) => (
               <option key={countryCode} value={countryCode}>
-                {countryCodeToName(countryCode)}
+                {countryCodeToName(countryCode)} ({countryCode})
               </option>
             ))}
           </select>
@@ -273,10 +274,11 @@ export default function Forms({ close }: { close: () => void }) {
           <select
             name="receiverCountryCode"
             className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
+            defaultValue={"PHL"}
           >
             {supportedCountryCodes.map((countryCode) => (
               <option key={countryCode} value={countryCode}>
-                {countryCodeToName(countryCode)}
+                {countryCodeToName(countryCode)} ({countryCode})
               </option>
             ))}
           </select>
