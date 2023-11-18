@@ -21,6 +21,7 @@ import {
 import { ResultSetHeader } from "mysql2"
 import {
   getShipmentHubIdOfUser,
+  getShipmentHubIdOfUserId,
   getShipmentHubOfUserId,
 } from "@/server/db/helpers/shipment-hub"
 import { alias } from "drizzle-orm/mysql-core"
@@ -491,7 +492,11 @@ export const packageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.db.insert(packages).values({
+      const shipmentHubIdOfUserId = await getShipmentHubIdOfUserId(
+        ctx.db,
+        ctx.user.uid,
+      )
+      const [result] = (await ctx.db.insert(packages).values({
         shippingMode: input.shippingMode,
         shippingType: input.shippingType,
         receptionMode: input.receptionMode,
@@ -513,9 +518,17 @@ export const packageRouter = router({
         receiverStateOrProvince: input.receiverStateOrProvince,
         receiverCountryCode: input.receiverCountryCode,
         receiverPostalCode: input.receiverPostalCode,
-        createdInHubId: 1,
-        createdById: "user1234",
-        updatedById: "user1234",
+        createdInHubId: shipmentHubIdOfUserId,
+        createdById: ctx.user.uid,
+        updatedById: ctx.user.uid,
+      })) as unknown as [ResultSetHeader]
+
+      await ctx.db.insert(packageStatusLogs).values({
+        packageId: result.insertId,
+        status: "IN_WAREHOUSE",
+        description: "Package registered.",
+        createdAt: new Date(),
+        createdById: ctx.user.uid,
       })
     }),
 })
