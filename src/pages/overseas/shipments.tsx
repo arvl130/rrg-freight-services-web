@@ -15,7 +15,10 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { useState } from "react"
 import { DateTime } from "luxon"
 import { useSession } from "@/utils/auth"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { ShipmentsCreateModal } from "@/components/shipments/create-modal"
+import { ShipmentsViewDetailsModal } from "@/components/shipments/view-details-modal"
+import { ShipmentsEditDetailsModal } from "@/components/shipments/edit-details-modal"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -116,6 +119,10 @@ function ShipmentTableItem({
     destinationHub: ShipmentHub | null
   }
 }) {
+  const [visibleModal, setVisibleModal] = useState<
+    null | "VIEW_DETAILS" | "EDIT_DETAILS"
+  >(null)
+
   return (
     <div className="grid grid-cols-5 border-b border-gray-300 text-sm">
       <div className="px-4 py-2 flex items-center gap-1">
@@ -152,10 +159,43 @@ function ShipmentTableItem({
       </div>
       <div className="px-4 py-2 flex items-center gap-2">
         <ShipmentStatus shipmentId={shipment.id} />
-        <button type="button">
-          <span className="sr-only">Actions</span>
-          <DotsThree size={16} />
-        </button>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button type="button">
+              <span className="sr-only">Actions</span>
+              <DotsThree size={16} />
+            </button>
+          </DropdownMenu.Trigger>
+
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm">
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("VIEW_DETAILS")}
+              >
+                View Details
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("EDIT_DETAILS")}
+              >
+                Edit Details
+              </DropdownMenu.Item>
+              <DropdownMenu.Arrow className="fill-white" />
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+
+        <ShipmentsViewDetailsModal
+          shipment={shipment}
+          isOpen={visibleModal === "VIEW_DETAILS"}
+          close={() => setVisibleModal(null)}
+        />
+        <ShipmentsEditDetailsModal
+          shipment={shipment}
+          isOpen={visibleModal === "EDIT_DETAILS"}
+          close={() => setVisibleModal(null)}
+        />
       </div>
     </div>
   )
