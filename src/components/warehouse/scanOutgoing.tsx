@@ -458,7 +458,7 @@ function ShipmentSelection({ shipment: _shipment }: { shipment: any }) {
     <option value={_shipment.shipment_id}>
       &nbsp;
       {_shipment.shipment_id}&nbsp;
-      {destionationHub} To {_shipment.display_name}
+      {destionationHub} To {_shipment.display_name ?? "Receiver Address"}
     </option>
   )
 }
