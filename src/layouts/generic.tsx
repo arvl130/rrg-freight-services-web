@@ -45,9 +45,6 @@ function GenericHeader({ user }: { user: User }) {
         </div>
       </div>
       <div className="flex">
-        <select className="block text-sm font-medium pl-8 pr-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring">
-          <option value="en-US">English</option>
-        </select>
         <div className="px-2 flex text-gray-400">
           <button type="button" className="px-2">
             <Gear size={24} />
