@@ -21,6 +21,7 @@ export default function Forms({ close }: { close: () => void }) {
       toast.success("Submit successful!")
       refetch()
       formRef.current?.reset()
+      close()
     },
   })
 
