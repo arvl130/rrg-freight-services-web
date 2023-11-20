@@ -16,6 +16,7 @@ import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
 import { SideBarLink } from "@/components/sidebar-link"
 import { api } from "@/utils/api"
 import { CreateUserProfileForm } from "@/components/customer/create-user-profile-form"
+import type { User as UserProfile, CustomerAddress } from "@/server/db/entities"
 
 export function CustomerSideBar() {
   const [isSigningOut, setIsSigningOut] = useState(false)
@@ -136,11 +137,9 @@ export function SkeletonCustomerLayout() {
 
 type WithFunctionChildren = {
   hasSession: true
-  children: ({
-    user,
-    role,
-  }: {
+  children: (props: {
     user: User
+    userProfileWithAddress: UserProfile & CustomerAddress
     role: "CUSTOMER"
     reload: () => Promise<void>
   }) => ReactNode
@@ -172,8 +171,8 @@ export function CustomerLayout({ title, children }: LayoutProps) {
   const {
     status,
     error,
-    data: userProfile,
-  } = api.user.getById.useQuery(
+    data: userProfileWithAddress,
+  } = api.user.getWithAddressById.useQuery(
     {
       id: user?.uid as string,
     },
@@ -236,7 +235,7 @@ export function CustomerLayout({ title, children }: LayoutProps) {
       </>
     )
 
-  if (userProfile === null)
+  if (userProfileWithAddress === null)
     return (
       <>
         <Head>
@@ -247,7 +246,7 @@ export function CustomerLayout({ title, children }: LayoutProps) {
           />
         </Head>
         <main className="min-h-screen bg-brand-cyan-100 pt-12">
-          <CreateUserProfileForm user={user} role={role} />
+          <CreateUserProfileForm user={user} />
         </main>
       </>
     )
@@ -276,6 +275,7 @@ export function CustomerLayout({ title, children }: LayoutProps) {
                   user,
                   role,
                   reload,
+                  userProfileWithAddress,
                 })}
               </>
             ) : (

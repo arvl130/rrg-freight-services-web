@@ -1,6 +1,11 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
-import { shipmentHubAgents, shipmentHubs, users } from "@/server/db/schema"
+import {
+  customerAddresses,
+  shipmentHubAgents,
+  shipmentHubs,
+  users,
+} from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
 import { updateProfile } from "@/server/auth"
@@ -52,6 +57,33 @@ export const userRouter = router({
 
       return results[0]
     }),
+  getWithAddressById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().length(28),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(users)
+        .innerJoin(customerAddresses, eq(users.id, customerAddresses.id))
+        .where(eq(users.id, input.id))
+
+      if (results.length === 0) return null
+      if (results.length > 1)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Expected 1 result, but got multiple.",
+        })
+
+      const [result] = results.map(({ users, customer_addresses }) => ({
+        ...customer_addresses,
+        ...users,
+      }))
+
+      return result
+    }),
   createDetails: protectedProcedure
     .input(
       z.object({
@@ -77,6 +109,46 @@ export const userRouter = router({
         emailAddress: input.emailAddress,
         gender: input.gender,
         role: input.role,
+      })
+    }),
+  createDetailsWithAddress: protectedProcedure
+    .input(
+      z.object({
+        displayName: z.string().min(1),
+        contactNumber: z.string().min(1),
+        emailAddress: z.string().min(1).max(100).email(),
+        gender: z.custom<Gender>((val) =>
+          supportedGenders.includes(val as Gender),
+        ),
+        streetAddress: z.string().min(1).max(255),
+        city: z.string().min(1).max(100),
+        stateOrProvince: z.string().min(1).max(100),
+        countryCode: z.string().min(1).max(3),
+        postalCode: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await updateProfile(ctx.user, {
+        displayName: input.displayName,
+        email: input.emailAddress,
+      })
+
+      await ctx.db.insert(users).values({
+        id: ctx.user.uid,
+        displayName: input.displayName,
+        contactNumber: input.contactNumber,
+        emailAddress: input.emailAddress,
+        gender: input.gender,
+        role: "CUSTOMER",
+      })
+
+      await ctx.db.insert(customerAddresses).values({
+        id: ctx.user.uid,
+        streetAddress: input.streetAddress,
+        city: input.city,
+        stateOrProvince: input.stateOrProvince,
+        countryCode: input.countryCode,
+        postalCode: input.postalCode,
       })
     }),
   updateDetails: protectedProcedure

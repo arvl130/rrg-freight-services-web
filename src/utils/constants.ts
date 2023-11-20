@@ -11,6 +11,7 @@ export const supportedRoles = [
 export type Role = (typeof supportedRoles)[number]
 
 export const supportedPackageStatuses = [
+  "FOR_APPROVAL",
   "IN_WAREHOUSE",
   "SORTING",
   "SHIPPING",
@@ -71,6 +72,7 @@ export const REGEX_ONE_OR_MORE_DIGITS = /^\d+$/
 // information, as well as who's responsible for a specific action or status
 // change.
 const packageStatusLogWithDescriptions: Record<PackageStatus, string> = {
+  FOR_APPROVAL: "Package is awaiting approval from an agent.",
   IN_WAREHOUSE: "Package has been received at one of our hubs.",
   SORTING: "Package has been added to a shipment and is now being sorted.",
   SHIPPING: "Package is being shipped.",

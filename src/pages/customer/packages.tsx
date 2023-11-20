@@ -17,9 +17,15 @@ import { Plus } from "@phosphor-icons/react/Plus"
 import { PackagesImportWizard } from "@/components/packages/import-wizard"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
-import { PackagesAddModal } from "@/components/packages/add-modal"
 import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
-function PageHeader() {
+import type { User as UserProfile, CustomerAddress } from "@/server/db/entities"
+import { CustomerPackagesAddModal } from "@/components/packages/customer-add-modal"
+
+function PageHeader({
+  userProfileWithAddress,
+}: {
+  userProfileWithAddress: UserProfile & CustomerAddress
+}) {
   const [isOpenAddModal, setIsOpenAddModal] = useState(false)
 
   return (
@@ -34,7 +40,8 @@ function PageHeader() {
           <Plus size={16} /> <span>Add Package</span>
         </button>
       </div>
-      <PackagesAddModal
+      <CustomerPackagesAddModal
+        userProfileWithAddress={userProfileWithAddress}
         isOpen={isOpenAddModal}
         close={() => setIsOpenAddModal(false)}
       />
@@ -291,71 +298,79 @@ export default function PackagesPage() {
   const [isOpenImportWizard, setIsOpenImportWizard] = useState(false)
 
   return (
-    <CustomerLayout title="Packages">
-      <PageHeader />
-      <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
-        <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
-          <input
-            type="text"
-            className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
-            placeholder="Quick search"
-          />
-          <button
-            type="button"
-            className="text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
-          >
-            <span className="sr-only">Search</span>
-            <MagnifyingGlass size={16} />
-          </button>
-        </div>
-        <div className="flex gap-3 text-sm">
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Status</option>
-          </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Warehouse</option>
-          </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">City</option>
-          </select>
-          <button
-            type="button"
-            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
-          >
-            Clear Filter
-          </button>
-        </div>
-        <div className="flex gap-3 text-sm">
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-            onClick={() => setIsOpenImportWizard(true)}
-          >
-            <DownloadSimple size={16} />
-            <span>Import</span>
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <Export size={16} />
-            <span>Export</span>
-          </button>
-        </div>
-      </div>
-      {isLoading ? (
-        <div className="flex justify-center pt-4">
-          <LoadingSpinner />
-        </div>
-      ) : (
+    <CustomerLayout title="Packages" hasSession>
+      {({ userProfileWithAddress }) => (
         <>
-          {isError ? <>Error :{"("}</> : <PackagesTable packages={packages} />}
+          <PageHeader userProfileWithAddress={userProfileWithAddress} />
+          <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
+            <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
+              <input
+                type="text"
+                className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
+                placeholder="Quick search"
+              />
+              <button
+                type="button"
+                className="text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
+              >
+                <span className="sr-only">Search</span>
+                <MagnifyingGlass size={16} />
+              </button>
+            </div>
+            <div className="flex gap-3 text-sm">
+              <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+                <option value="">Status</option>
+              </select>
+              <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+                <option value="">Warehouse</option>
+              </select>
+              <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+                <option value="">City</option>
+              </select>
+              <button
+                type="button"
+                className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
+              >
+                Clear Filter
+              </button>
+            </div>
+            <div className="flex gap-3 text-sm">
+              <button
+                type="button"
+                className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+                onClick={() => setIsOpenImportWizard(true)}
+              >
+                <DownloadSimple size={16} />
+                <span>Import</span>
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+              >
+                <Export size={16} />
+                <span>Export</span>
+              </button>
+            </div>
+          </div>
+          {isLoading ? (
+            <div className="flex justify-center pt-4">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <>
+              {isError ? (
+                <>Error :{"("}</>
+              ) : (
+                <PackagesTable packages={packages} />
+              )}
+            </>
+          )}
+          <PackagesImportWizard
+            isOpen={isOpenImportWizard}
+            close={() => setIsOpenImportWizard(false)}
+          />
         </>
       )}
-      <PackagesImportWizard
-        isOpen={isOpenImportWizard}
-        close={() => setIsOpenImportWizard(false)}
-      />
     </CustomerLayout>
   )
 }

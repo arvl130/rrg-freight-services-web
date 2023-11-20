@@ -1,5 +1,6 @@
 import {
   users,
+  customerAddresses,
   shipments,
   shipmentStatusLogs,
   shipmentHubs,
@@ -13,6 +14,9 @@ import {
 
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
+
+export type CustomerAddress = typeof customerAddresses.$inferSelect
+export type NewCustomerAddress = typeof customerAddresses.$inferInsert
 
 export type Shipment = typeof shipments.$inferSelect
 export type NewShipment = typeof shipments.$inferInsert

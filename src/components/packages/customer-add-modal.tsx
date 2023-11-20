@@ -15,6 +15,7 @@ import { countryCodeToName, supportedCountryCodes } from "@/utils/country-code"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import type { User as UserProfile, CustomerAddress } from "@/server/db/entities"
 
 const createPackageFormSchema = z.object({
   shippingMode: z.custom<ShippingMode>((val) =>
@@ -27,14 +28,6 @@ const createPackageFormSchema = z.object({
     supportedReceptionModes.includes(val as ReceptionMode),
   ),
   weightInKg: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
-  senderFullName: z.string().min(1).max(100),
-  senderContactNumber: z.string().min(1).max(15),
-  senderEmailAddress: z.string().min(1).max(100),
-  senderStreetAddress: z.string().min(1).max(255),
-  senderCity: z.string().min(1).max(100),
-  senderStateOrProvince: z.string().min(1).max(100),
-  senderCountryCode: z.string().min(1).max(3),
-  senderPostalCode: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
   receiverFullName: z.string().min(1).max(100),
   receiverContactNumber: z.string().min(1).max(15),
   receiverEmailAddress: z.string().min(1).max(100),
@@ -48,10 +41,12 @@ const createPackageFormSchema = z.object({
 
 type CreatePackageFormType = z.infer<typeof createPackageFormSchema>
 
-export function PackagesAddModal({
+export function CustomerPackagesAddModal({
+  userProfileWithAddress,
   isOpen,
   close,
 }: {
+  userProfileWithAddress: UserProfile & CustomerAddress
   isOpen: boolean
   close: () => void
 }) {
@@ -60,7 +55,7 @@ export function PackagesAddModal({
   })
 
   const apiUtils = api.useUtils()
-  const { isLoading, mutate } = api.package.create.useMutation({
+  const { isLoading, mutate } = api.package.createPending.useMutation({
     onSuccess: () => {
       toast.success("Submit successful!")
       apiUtils.package.getAll.invalidate()
@@ -91,90 +86,19 @@ export function PackagesAddModal({
                 ...formData,
                 weightInKg: Number(formData.weightInKg),
                 receiverPostalCode: Number(formData.receiverPostalCode),
-                senderPostalCode: Number(formData.senderPostalCode),
+                senderFullName: userProfileWithAddress.displayName,
+                senderContactNumber: userProfileWithAddress.contactNumber,
+                senderEmailAddress: userProfileWithAddress.emailAddress,
+                senderStreetAddress: userProfileWithAddress.streetAddress,
+                senderCity: userProfileWithAddress.city,
+                senderStateOrProvince: userProfileWithAddress.stateOrProvince,
+                senderCountryCode: userProfileWithAddress.countryCode,
+                senderPostalCode: Number(userProfileWithAddress.postalCode),
               }),
             )}
           >
             <h1 className="font-semibold text-lg mb-2">Sender Info:</h1>
-            <div className="grid grid-cols-3 gap-x-4 mb-4">
-              <div className="mb-2">
-                <label className="block mb-1">Full Name</label>
-                <input
-                  required
-                  {...register("senderFullName")}
-                  type="text"
-                  className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
-                />
-              </div>
-              <div className="mb-2">
-                <label className="block mb-1">Contact Number</label>
-                <input
-                  required
-                  {...register("senderContactNumber")}
-                  type="text"
-                  className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
-                />
-              </div>
-              <div className="mb-2">
-                <label className="block mb-1">Email Address</label>
-                <input
-                  required
-                  {...register("senderEmailAddress")}
-                  type="email"
-                  className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
-                />
-              </div>
-              <div className="mb-2">
-                <label className="block mb-1">Street Address</label>
-                <input
-                  required
-                  {...register("senderStreetAddress")}
-                  type="text"
-                  className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
-                />
-              </div>
-              <div className="mb-2">
-                <label className="block mb-1">City</label>
-                <input
-                  required
-                  {...register("senderCity")}
-                  type="text"
-                  className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
-                />
-              </div>
-              <div className="mb-2">
-                <label className="block mb-1">State/Province</label>
-                <input
-                  required
-                  {...register("senderStateOrProvince")}
-                  type="text"
-                  className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
-                />
-              </div>
-              <div className="mb-2">
-                <label className="block mb-1">Country Code</label>
-                <select
-                  {...register("senderCountryCode")}
-                  className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
-                  defaultValue={"ARE"}
-                >
-                  {supportedCountryCodes.map((countryCode) => (
-                    <option key={countryCode} value={countryCode}>
-                      {countryCodeToName(countryCode)} ({countryCode})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-2">
-                <label className="block mb-1">Postal Code</label>
-                <input
-                  required
-                  {...register("senderPostalCode")}
-                  type="number"
-                  placeholder="1111"
-                  className="block w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
-                />
-              </div>
+            <div className="grid grid-cols-4 gap-x-4 mb-4">
               <div className="mb-2">
                 <label className="block mb-1">Shipping Mode</label>
                 <select

@@ -1,7 +1,11 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packageStatusLogs, packages } from "@/server/db/schema"
-import { PackageStatus, supportedPackageStatuses } from "@/utils/constants"
+import {
+  PackageStatus,
+  getDescriptionForNewPackageStatusLog,
+  supportedPackageStatuses,
+} from "@/utils/constants"
 import { and, eq, isNull, lt } from "drizzle-orm"
 import { alias } from "drizzle-orm/mysql-core"
 import { ResultSetHeader } from "mysql2"
@@ -14,19 +18,6 @@ const inputSchema = z.object({
     supportedPackageStatuses.includes(val as PackageStatus),
   ),
 })
-
-const packageStatusDescriptions: Record<PackageStatus, string> = {
-  IN_WAREHOUSE: "Package has been received in a hub.",
-  SORTING: "Package has been added to a shipment and is being prepared.",
-  SHIPPING: "Package has been prepared and is being currently being shipped.",
-  DELIVERING: "Package is out for delivery.",
-  DELIVERED: "Package has been delivered.",
-  TRANSFERRED: "Package was transferred to another freight forwarder.",
-}
-
-function createPackageDescription(status: PackageStatus) {
-  return packageStatusDescriptions[status]
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -92,7 +83,7 @@ export default async function handler(
     }
 
     const createdAt = new Date()
-    const description = createPackageDescription(status)
+    const description = getDescriptionForNewPackageStatusLog(status)
     const createdById = session.user.uid
     const [result] = (await db.insert(packageStatusLogs).values({
       packageId,
