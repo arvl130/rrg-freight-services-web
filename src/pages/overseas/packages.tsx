@@ -17,10 +17,10 @@ import { Plus } from "@phosphor-icons/react/Plus"
 import { PackagesImportWizard } from "@/components/packages/import-wizard"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
-import { PackagesAddWizard } from "@/components/packages/add-wizard"
+import { PackagesAddModal } from "@/components/packages/add-modal"
 import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
 function PageHeader() {
-  const [isOpenAddWizard, setIsOpenAddWizard] = useState(false)
+  const [isOpenAddModal, setIsOpenAddModal] = useState(false)
 
   return (
     <div className="flex justify-between mb-4">
@@ -29,14 +29,14 @@ function PageHeader() {
         <button
           type="button"
           className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          onClick={() => setIsOpenAddWizard(true)}
+          onClick={() => setIsOpenAddModal(true)}
         >
           <Plus size={16} /> <span>Add Package</span>
         </button>
       </div>
-      <PackagesAddWizard
-        isOpen={isOpenAddWizard}
-        close={() => setIsOpenAddWizard(false)}
+      <PackagesAddModal
+        isOpen={isOpenAddModal}
+        close={() => setIsOpenAddModal(false)}
       />
     </div>
   )

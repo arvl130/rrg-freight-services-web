@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import * as Dialog from "@radix-ui/react-dialog"
 import { api } from "@/utils/api"
@@ -47,15 +47,13 @@ const createPackageFormSchema = z.object({
 
 type CreatePackageFormType = z.infer<typeof createPackageFormSchema>
 
-export function PackagesAddWizard({
+export function PackagesAddModal({
   isOpen,
   close,
 }: {
   isOpen: boolean
   close: () => void
 }) {
-  const modalRef = useRef<null | HTMLDialogElement>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const { register, handleSubmit, reset } = useForm<CreatePackageFormType>({
     resolver: zodResolver(createPackageFormSchema),
   })
@@ -71,14 +69,7 @@ export function PackagesAddWizard({
   })
 
   useEffect(() => {
-    if (isOpen) {
-      setIsModalOpen(true)
-      modalRef.current?.showModal()
-    } else {
-      setIsModalOpen(false)
-      reset()
-      modalRef.current?.close()
-    }
+    if (!isOpen) reset()
   }, [isOpen, reset])
 
   return (
