@@ -64,7 +64,7 @@ export const userRouter = router({
         role: z.custom<Role>((val) => supportedRoles.includes(val as Role)),
       }),
     )
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       await updateProfile(ctx.user, {
         displayName: input.displayName,
         email: input.emailAddress,

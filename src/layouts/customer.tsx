@@ -13,6 +13,8 @@ import Image from "next/image"
 import { ReactNode, useState } from "react"
 import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
 import { SideBarLink } from "@/components/sidebar-link"
+import { api } from "@/utils/api"
+import { CreateUserProfileForm } from "@/components/customer/create-user-profile-form"
 
 export function CustomerSideBar() {
   const [isSigningOut, setIsSigningOut] = useState(false)
@@ -161,7 +163,36 @@ export function CustomerLayout({ title, children }: LayoutProps) {
     },
   })
 
-  if (isLoading)
+  const {
+    status,
+    error,
+    data: userProfile,
+  } = api.user.getById.useQuery(
+    {
+      id: user?.uid as string,
+    },
+    {
+      enabled: user !== null,
+    },
+  )
+
+  if (status === "error")
+    return (
+      <>
+        <Head>
+          <title>RRG Freight Services</title>
+          <meta
+            name="description"
+            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+          />
+        </Head>
+        <main className="min-h-screen bg-brand-cyan-100">
+          Error while retrieving user profile: {error.message}
+        </main>
+      </>
+    )
+
+  if (isLoading || status !== "success")
     return (
       <>
         <Head>
@@ -196,6 +227,22 @@ export function CustomerLayout({ title, children }: LayoutProps) {
           />
         </Head>
         <SkeletonCustomerLayout />
+      </>
+    )
+
+  if (userProfile === null)
+    return (
+      <>
+        <Head>
+          <title>Create Profile &#x2013; RRG Freight Services</title>
+          <meta
+            name="description"
+            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+          />
+        </Head>
+        <main className="min-h-screen bg-brand-cyan-100 pt-12">
+          <CreateUserProfileForm user={user} role={role} />
+        </main>
       </>
     )
 
