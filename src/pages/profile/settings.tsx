@@ -14,6 +14,8 @@ function RightColumn({ user }: { user: User }) {
     return <article></article>
   }
 
+  if (data === null) return <article>User profile is not yet created.</article>
+
   return (
     <article>
       <ProfileUpdatePictureForm user={data} />
