@@ -4,7 +4,12 @@ import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth"
 import { useEffect, useState } from "react"
 import { FirebaseError } from "firebase/app"
 import { getSessionRoleRedirectPath, useSession } from "@/utils/auth"
@@ -13,6 +18,8 @@ import { Eye } from "@phosphor-icons/react/Eye"
 import { EyeSlash } from "@phosphor-icons/react/EyeSlash"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { SkeletonAdminLayout } from "@/layouts/admin"
+
+const provider = new GoogleAuthProvider()
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -302,6 +309,22 @@ export default function LoginPage() {
                 className="font-semibold w-full mt-4 px-8 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-blue-500 rounded-md hover:bg-blue-400 focus:outline-none focus:bg-blue-400 disabled:bg-blue-300"
               >
                 Sign in
+              </button>
+              <button
+                type="button"
+                disabled={isSigningIn}
+                className="font-semibold w-full mt-4 px-8 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-green-500 rounded-md hover:bg-green-400 focus:outline-none focus:bg-green-400 disabled:bg-green-300"
+                onClick={async () => {
+                  setIsSigningIn(true)
+                  try {
+                    const auth = getAuth()
+                    await signInWithPopup(auth, provider)
+                  } finally {
+                    setIsSigningIn(false)
+                  }
+                }}
+              >
+                Sign in with Google
               </button>
             </form>
           </div>

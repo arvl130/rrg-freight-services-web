@@ -10,6 +10,12 @@ const nextConfig = {
         protocol: "https",
         hostname: "firebasestorage.googleapis.com",
       },
+      // Domain used by profile pictures of users
+      // signing in for the first time with Google.
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
 }

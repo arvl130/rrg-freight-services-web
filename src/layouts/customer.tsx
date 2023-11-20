@@ -1,37 +1,74 @@
 import { useSession } from "@/utils/auth"
-import { User } from "firebase/auth"
-import Head from "next/head"
-import { ReactNode } from "react"
-import { AdminSideBar } from "./admin"
-import { WarehouseSideBar } from "./warehouse"
-import { DomesticSideBar } from "./domestic"
-import { OverseasSideBar } from "./overseas"
+import { Bell } from "@phosphor-icons/react/Bell"
+import { CaretDown } from "@phosphor-icons/react/CaretDown"
+import { Gauge } from "@phosphor-icons/react/Gauge"
+import { Gear } from "@phosphor-icons/react/Gear"
 import { List } from "@phosphor-icons/react/List"
 import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
-import { Gear } from "@phosphor-icons/react/Gear"
-import { Bell } from "@phosphor-icons/react/Bell"
+import { SignOut } from "@phosphor-icons/react/SignOut"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
-import { CaretDown } from "@phosphor-icons/react/CaretDown"
-import { Role } from "@/utils/constants"
+import { User, getAuth, signOut } from "firebase/auth"
+import Head from "next/head"
 import Image from "next/image"
+import { ReactNode, useState } from "react"
 import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
-import { CustomerSideBar } from "./customer"
+import { SideBarLink } from "@/components/sidebar-link"
 
-function GenericSidebar() {
-  const { role } = useSession()
-
-  if (role === "ADMIN") return <AdminSideBar />
-  if (role === "WAREHOUSE") return <WarehouseSideBar />
-  if (role === "DOMESTIC_AGENT") return <DomesticSideBar />
-  if (role === "OVERSEAS_AGENT") return <OverseasSideBar />
-  if (role === "CUSTOMER") return <CustomerSideBar />
+export function CustomerSideBar() {
+  const [isSigningOut, setIsSigningOut] = useState(false)
 
   return (
-    <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
+    <nav className="bg-brand-cyan-500 flex flex-col justify-between items-center py-3 h-screen sticky top-0 bottom-0">
+      <div className="flex flex-col items-center gap-3 w-full">
+        <Image
+          src="/assets/img/logos/logo-white-bg.png"
+          alt="RRG Freight Services circle logo with white background"
+          height={60}
+          width={60}
+          className="w-12 h-12 rounded-full"
+        />
+        <SideBarLink
+          name="Dashboard"
+          href="/customer/dashboard"
+          icon={<Gauge size={32} className="text-white " />}
+        />
+        <SideBarLink
+          name="Profile"
+          href="/profile/settings"
+          otherRouteNames={[
+            "/profile/notifications",
+            "/profile/change-password",
+          ]}
+          icon={<UserCircle size={32} className="text-white" />}
+        />
+      </div>
+      <div className="w-full">
+        <button
+          type="button"
+          className="flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200"
+          disabled={isSigningOut}
+          onClick={async () => {
+            setIsSigningOut(true)
+            try {
+              const auth = getAuth()
+              await signOut(auth)
+            } finally {
+              setIsSigningOut(false)
+            }
+          }}
+        >
+          <span className="sr-only">Logout</span>
+          <SignOut
+            size={32}
+            className={isSigningOut ? "text-sky-200" : "text-white"}
+          />
+        </button>
+      </div>
+    </nav>
   )
 }
 
-function GenericHeader({ user }: { user: User }) {
+export function CustomerHeader({ user }: { user: User }) {
   return (
     <header className="flex justify-between bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-4">
       <div className="flex items-center gap-3 rounded-md">
@@ -80,6 +117,15 @@ function GenericHeader({ user }: { user: User }) {
   )
 }
 
+export function SkeletonCustomerLayout() {
+  return (
+    <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+      <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
+      <main className="bg-brand-cyan-100"></main>
+    </div>
+  )
+}
+
 type WithFunctionChildren = {
   hasSession: true
   children: ({
@@ -87,7 +133,7 @@ type WithFunctionChildren = {
     role,
   }: {
     user: User
-    role: Role | null
+    role: "CUSTOMER"
     reload: () => Promise<void>
   }) => ReactNode
 }
@@ -101,7 +147,7 @@ type LayoutProps = {
   title: string | string[]
 } & (WithFunctionChildren | WithNodeChildren)
 
-export function GenericLayout({ title, children }: LayoutProps) {
+export function CustomerLayout({ title, children }: LayoutProps) {
   const titleContent = Array.isArray(title)
     ? // Our deployment platform only supports Node v18.
       // Use this method for now, until they support Node v20
@@ -110,7 +156,9 @@ export function GenericLayout({ title, children }: LayoutProps) {
     : `${title} \u2013 RRG Freight Services`
 
   const { isLoading, user, role, reload } = useSession({
-    required: true,
+    required: {
+      role: "CUSTOMER",
+    },
   })
 
   if (isLoading)
@@ -135,6 +183,22 @@ export function GenericLayout({ title, children }: LayoutProps) {
       </>
     )
 
+  // FIXME: Either use a unified skeleton component in here,
+  // or show a skeleton component based on the detected role.
+  if (role !== "CUSTOMER")
+    return (
+      <>
+        <Head>
+          <title>Dashboard &#x2013; RRG Freight Services</title>
+          <meta
+            name="description"
+            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+          />
+        </Head>
+        <SkeletonCustomerLayout />
+      </>
+    )
+
   return (
     <>
       <Head>
@@ -145,9 +209,9 @@ export function GenericLayout({ title, children }: LayoutProps) {
         />
       </Head>
       <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
-        <GenericSidebar />
+        <CustomerSideBar />
         <div className="bg-brand-cyan-100 px-6 py-4">
-          <GenericHeader user={user} />
+          <CustomerHeader user={user} />
           <div>
             {typeof children === "function" ? (
               <>
