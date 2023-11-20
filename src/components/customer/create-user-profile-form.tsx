@@ -53,7 +53,6 @@ export function CreateUserProfileForm({
       <p className="mb-3">
         Please enter the following details to complete your registration.
       </p>
-      {JSON.stringify(errors)}
       <form onSubmit={handleSubmit((formData) => mutate(formData))}>
         <div className="mb-3">
           <label className="block mb-1">Contact Number</label>
