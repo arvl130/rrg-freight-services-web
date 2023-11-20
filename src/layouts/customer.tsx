@@ -4,6 +4,7 @@ import { CaretDown } from "@phosphor-icons/react/CaretDown"
 import { Gauge } from "@phosphor-icons/react/Gauge"
 import { Gear } from "@phosphor-icons/react/Gear"
 import { List } from "@phosphor-icons/react/List"
+import { Package } from "@phosphor-icons/react/Package"
 import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { SignOut } from "@phosphor-icons/react/SignOut"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
@@ -33,6 +34,11 @@ export function CustomerSideBar() {
           name="Dashboard"
           href="/customer/dashboard"
           icon={<Gauge size={32} className="text-white " />}
+        />
+        <SideBarLink
+          name="Packages"
+          href="/customer/packages"
+          icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
           name="Profile"
