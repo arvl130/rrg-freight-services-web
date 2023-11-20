@@ -6,7 +6,12 @@ import { eq } from "drizzle-orm"
 import { updateProfile } from "@/server/auth"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
-import { Role, supportedRoles } from "@/utils/constants"
+import {
+  Gender,
+  Role,
+  supportedGenders,
+  supportedRoles,
+} from "@/utils/constants"
 
 // Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
 const TEXT_COLUMN_DEFAULT_LIMIT = 65_535
@@ -46,6 +51,33 @@ export const userRouter = router({
         })
 
       return results[0]
+    }),
+  createDetails: protectedProcedure
+    .input(
+      z.object({
+        displayName: z.string().min(1),
+        contactNumber: z.string().min(1),
+        emailAddress: z.string().min(1).max(100).email(),
+        gender: z.custom<Gender>((val) =>
+          supportedGenders.includes(val as Gender),
+        ),
+        role: z.custom<Role>((val) => supportedRoles.includes(val as Role)),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      await updateProfile(ctx.user, {
+        displayName: input.displayName,
+        email: input.emailAddress,
+      })
+
+      await ctx.db.insert(users).values({
+        id: ctx.user.uid,
+        displayName: input.displayName,
+        contactNumber: input.contactNumber,
+        emailAddress: input.emailAddress,
+        gender: input.gender,
+        role: input.role,
+      })
     }),
   updateDetails: protectedProcedure
     .input(
