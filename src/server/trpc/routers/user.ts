@@ -71,6 +71,7 @@ export const userRouter = router({
 
       await updateProfile(ctx.user, {
         displayName: input.displayName,
+        email: input.emailAddress,
       })
     }),
   updatePhotoUrl: protectedProcedure

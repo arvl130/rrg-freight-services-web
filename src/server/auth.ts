@@ -27,14 +27,17 @@ export async function updateProfile(
   {
     displayName,
     photoURL,
+    email,
   }: {
     displayName?: string | null
     photoURL?: string | null
+    email?: string
   },
 ) {
   await auth.updateUser(user.uid, {
     displayName,
     photoURL,
+    email,
   })
 }
 
