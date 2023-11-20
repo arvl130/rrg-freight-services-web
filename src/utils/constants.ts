@@ -6,6 +6,7 @@ export const supportedRoles = [
   "WAREHOUSE",
   "OVERSEAS_AGENT",
   "DOMESTIC_AGENT",
+  "CUSTOMER",
 ] as const
 export type Role = (typeof supportedRoles)[number]
 

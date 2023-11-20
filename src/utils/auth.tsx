@@ -27,6 +27,7 @@ const sessionRoleRedirectPaths: Record<Role, string> = {
   WAREHOUSE: "/warehouse/dashboard",
   OVERSEAS_AGENT: "/overseas/dashboard",
   DOMESTIC_AGENT: "/domestic/dashboard",
+  CUSTOMER: "/customer/dashboard",
 }
 
 export function getSessionRoleRedirectPath(role: Role | null) {
@@ -54,7 +55,7 @@ type AuthContextType = {
   | {
       isLoading: false
       user: User
-      role: Role | null
+      role: Role
     }
 )
 
@@ -98,7 +99,7 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
         setSession({
           isLoading: false,
           user,
-          role: (idTokenResult.claims.role as Role) ?? null,
+          role: (idTokenResult.claims.role as Role) ?? "CUSTOMER",
           reload,
         })
       } catch {
