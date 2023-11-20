@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react"
 import { PackagesAddWizardInformation } from "./add-wizard/step1"
-import { WorkBook } from "xlsx"
-import { Package } from "@/server/db/entities"
 
 export function PackagesAddWizard({
   isOpen,
