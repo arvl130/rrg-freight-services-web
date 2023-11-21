@@ -15,7 +15,6 @@ import { CaretDown } from "@phosphor-icons/react/CaretDown"
 import { Role } from "@/utils/constants"
 import Image from "next/image"
 import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
-import { CustomerSideBar } from "./customer"
 
 function GenericSidebar() {
   const { role } = useSession()
@@ -24,7 +23,6 @@ function GenericSidebar() {
   if (role === "WAREHOUSE") return <WarehouseSideBar />
   if (role === "DOMESTIC_AGENT") return <DomesticSideBar />
   if (role === "OVERSEAS_AGENT") return <OverseasSideBar />
-  if (role === "CUSTOMER") return <CustomerSideBar />
 
   return (
     <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>

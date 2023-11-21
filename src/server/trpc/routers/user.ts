@@ -111,46 +111,6 @@ export const userRouter = router({
         role: input.role,
       })
     }),
-  createDetailsWithAddress: protectedProcedure
-    .input(
-      z.object({
-        displayName: z.string().min(1),
-        contactNumber: z.string().min(1),
-        emailAddress: z.string().min(1).max(100).email(),
-        gender: z.custom<Gender>((val) =>
-          supportedGenders.includes(val as Gender),
-        ),
-        streetAddress: z.string().min(1).max(255),
-        city: z.string().min(1).max(100),
-        stateOrProvince: z.string().min(1).max(100),
-        countryCode: z.string().min(1).max(3),
-        postalCode: z.number(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      await updateProfile(ctx.user, {
-        displayName: input.displayName,
-        email: input.emailAddress,
-      })
-
-      await ctx.db.insert(users).values({
-        id: ctx.user.uid,
-        displayName: input.displayName,
-        contactNumber: input.contactNumber,
-        emailAddress: input.emailAddress,
-        gender: input.gender,
-        role: "CUSTOMER",
-      })
-
-      await ctx.db.insert(customerAddresses).values({
-        id: ctx.user.uid,
-        streetAddress: input.streetAddress,
-        city: input.city,
-        stateOrProvince: input.stateOrProvince,
-        countryCode: input.countryCode,
-        postalCode: input.postalCode,
-      })
-    }),
   updateDetails: protectedProcedure
     .input(
       z.object({

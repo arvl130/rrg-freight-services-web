@@ -1,7 +1,6 @@
 import { PackageStatus, ShipmentStatus } from "./constants"
 
 const packageStatusColors: Record<PackageStatus, string> = {
-  FOR_APPROVAL: "bg-amber-500",
   IN_WAREHOUSE: "bg-pink-500",
   SORTING: "bg-cyan-400",
   SHIPPING: "bg-blue-500",
