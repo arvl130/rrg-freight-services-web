@@ -13,6 +13,7 @@ import {
   NewShipmentStatusLog,
   NewShipmentHubAgent,
   NewShipmentPackage,
+  NewVehicle,
 } from "@/server/db/entities"
 import { DateTime } from "luxon"
 
@@ -473,31 +474,69 @@ const newShipmentHubAgents: NewShipmentHubAgent[] = [
   },
 ]
 
+const newVehicles: NewVehicle[] = [
+  {
+    type: "TRUCK",
+    displayName: "Truck 1",
+    isExpressAllowed: 0,
+  },
+  {
+    type: "TRUCK",
+    displayName: "Truck 2",
+    isExpressAllowed: 0,
+  },
+  {
+    type: "TRUCK",
+    displayName: "Truck 3",
+    isExpressAllowed: 0,
+  },
+  {
+    type: "VAN",
+    displayName: "Van 1",
+    isExpressAllowed: 1,
+  },
+  {
+    type: "MOTORCYCLE",
+    displayName: "Motorcycle 1",
+    isExpressAllowed: 1,
+  },
+  {
+    type: "MOTORCYCLE",
+    displayName: "Motorcycle 2",
+    isExpressAllowed: 1,
+  },
+]
+
 const newShipments: NewShipment[] = [
   {
     id: 20_000,
     originHubId: 1,
     destinationHubId: 2,
+    deliveredById: 1,
   },
   {
     id: 20001,
     originHubId: 1,
     destinationHubId: 2,
+    deliveredById: 1,
   },
   {
     id: 20002,
     originHubId: 1,
     destinationHubId: 2,
+    deliveredById: 1,
   },
   {
     id: 20003,
     originHubId: 1,
     destinationHubId: 2,
+    deliveredById: 1,
   },
   {
     id: 20004,
     originHubId: 1,
     destinationHubId: 2,
+    deliveredById: 1,
   },
 ]
 
@@ -630,6 +669,7 @@ const newShipmentsStatusLogs: NewShipmentStatusLog[] = [
 await db.insert(schema.users).values(newUsers)
 await db.insert(schema.shipmentHubs).values(newShipmentHubs)
 await db.insert(schema.shipmentHubAgents).values(newShipmentHubAgents)
+await db.insert(schema.vehicles).values(newVehicles)
 await db.insert(schema.packages).values(newPackages)
 await db.insert(schema.packageStatusLogs).values(newPackageStatusLogs)
 await db.insert(schema.shipments).values(newShipments)

@@ -317,6 +317,7 @@ export const shipmentRouter = router({
       z.object({
         packageIds: z.number().array().nonempty(),
         destinationHubId: z.number().nullable(),
+        deliveredById: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -326,6 +327,7 @@ export const shipmentRouter = router({
         const [result] = (await tx.insert(shipments).values({
           originHubId,
           destinationHubId: input.destinationHubId,
+          deliveredById: input.deliveredById,
         })) as unknown as [ResultSetHeader]
 
         const shipmentId = result.insertId

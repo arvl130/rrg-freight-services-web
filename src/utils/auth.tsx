@@ -27,6 +27,7 @@ const sessionRoleRedirectPaths: Record<Role, string> = {
   WAREHOUSE: "/warehouse/dashboard",
   OVERSEAS_AGENT: "/overseas/dashboard",
   DOMESTIC_AGENT: "/domestic/dashboard",
+  RIDER: "/rider/dashboard",
 }
 
 export function getSessionRoleRedirectPath(role: Role | null) {

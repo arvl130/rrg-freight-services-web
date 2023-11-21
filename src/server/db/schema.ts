@@ -8,6 +8,7 @@ import {
   supportedShippingModes,
   supportedShippingParties,
   supportedShippingTypes,
+  supportedVehicleTypes,
 } from "../../utils/constants"
 import { relations } from "drizzle-orm"
 import {
@@ -47,6 +48,7 @@ export const shipments = mysqlTable("shipments", {
   //
   // For now, we will use a NULL destinationHub to signify that.
   destinationHubId: bigint("destination_hub_id", { mode: "number" }),
+  deliveredById: bigint("delivered_by_id", { mode: "number" }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
@@ -83,6 +85,10 @@ export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
   destinationHub: one(shipmentHubs, {
     fields: [shipments.destinationHubId],
     references: [shipmentHubs.id],
+  }),
+  deliveredBy: one(vehicles, {
+    fields: [shipments.deliveredById],
+    references: [vehicles.id],
   }),
   shipmentPackages: many(shipmentPackages),
   shipmentStatusLogs: many(shipmentStatusLogs),
@@ -349,3 +355,16 @@ export const activitiesRelations = relations(activities, ({ one }) => ({
     references: [users.id],
   }),
 }))
+
+export const vehicles = mysqlTable("vehicles", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  type: mysqlEnum("type", supportedVehicleTypes).notNull(),
+  displayName: varchar("display_name", {
+    length: 100,
+  }).notNull(),
+  isExpressAllowed: tinyint("is_express_allowed").notNull(),
+})

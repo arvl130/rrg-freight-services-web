@@ -6,6 +6,7 @@ export const supportedRoles = [
   "WAREHOUSE",
   "OVERSEAS_AGENT",
   "DOMESTIC_AGENT",
+  "RIDER",
 ] as const
 export type Role = (typeof supportedRoles)[number]
 
@@ -96,3 +97,6 @@ export function getDescriptionForNewShipmentStatusLog(
 ) {
   return shipmentStatusLogWithDescriptions[shipmentStatus] ?? ""
 }
+
+export const supportedVehicleTypes = ["TRUCK", "VAN", "MOTORCYCLE"] as const
+export type VehicleType = (typeof supportedVehicleTypes)[number]

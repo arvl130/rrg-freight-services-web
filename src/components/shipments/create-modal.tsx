@@ -306,6 +306,8 @@ export function ShipmentsCreateModal({
           const [first, ...others] = selectedPackageIds
           mutate({
             destinationHubId: selectedDestinationHubId,
+            // TODO: add an option to choose delivery vehicle.
+            deliveredById: 1,
             packageIds: [first, ...others],
           })
         }}

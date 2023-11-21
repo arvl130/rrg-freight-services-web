@@ -9,6 +9,7 @@ import {
   packageStatusLogs,
   activities,
   shipmentLocations,
+  vehicles,
 } from "./schema"
 
 export type User = typeof users.$inferSelect
@@ -40,3 +41,6 @@ export type NewPackageStatusLog = typeof packageStatusLogs.$inferInsert
 
 export type Activity = typeof activities.$inferSelect
 export type NewActivity = typeof activities.$inferInsert
+
+export type Vehicle = typeof vehicles.$inferSelect
+export type NewVehicle = typeof vehicles.$inferInsert
