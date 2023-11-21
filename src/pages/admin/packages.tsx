@@ -13,7 +13,7 @@ import { getColorFromPackageStatus } from "@/utils/colors"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
-import { PackagesMultiStepImportWizard } from "@/components/packages/multistep-import-wizard/import-wizard"
+import { PackagesImportModal } from "@/components/packages/import-modal"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
@@ -339,7 +339,7 @@ export default function PackagesPage() {
   } = api.package.getAll.useQuery(undefined, {
     enabled: user !== null && role === "ADMIN",
   })
-  const [isOpenImportWizard, setIsOpenImportWizard] = useState(false)
+  const [isOpenImportModal, setIsOpenImportModal] = useState(false)
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")
@@ -392,7 +392,7 @@ export default function PackagesPage() {
           <button
             type="button"
             className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-            onClick={() => setIsOpenImportWizard(true)}
+            onClick={() => setIsOpenImportModal(true)}
           >
             <DownloadSimple size={16} />
             <span>Import</span>
@@ -422,9 +422,9 @@ export default function PackagesPage() {
           )}
         </>
       )}
-      <PackagesMultiStepImportWizard
-        isOpen={isOpenImportWizard}
-        close={() => setIsOpenImportWizard(false)}
+      <PackagesImportModal
+        isOpen={isOpenImportModal}
+        close={() => setIsOpenImportModal(false)}
       />
     </AdminLayout>
   )
