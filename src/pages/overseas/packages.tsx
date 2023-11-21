@@ -13,31 +13,14 @@ import { getColorFromPackageStatus } from "@/utils/colors"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
-import { Plus } from "@phosphor-icons/react/Plus"
 import { PackagesImportWizard } from "@/components/packages/import-wizard"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
-import { PackagesAddModal } from "@/components/packages/add-modal"
 import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
 function PageHeader() {
-  const [isOpenAddModal, setIsOpenAddModal] = useState(false)
-
   return (
     <div className="flex justify-between mb-4">
       <h1 className="text-3xl font-black [color:_#00203F] mb-2">Packages</h1>
-      <div>
-        <button
-          type="button"
-          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          onClick={() => setIsOpenAddModal(true)}
-        >
-          <Plus size={16} /> <span>Add Package</span>
-        </button>
-      </div>
-      <PackagesAddModal
-        isOpen={isOpenAddModal}
-        close={() => setIsOpenAddModal(false)}
-      />
     </div>
   )
 }
@@ -288,7 +271,6 @@ export default function PackagesPage() {
   } = api.package.getAll.useQuery(undefined, {
     enabled: user !== null && role === "OVERSEAS_AGENT",
   })
-  const [isOpenImportWizard, setIsOpenImportWizard] = useState(false)
 
   return (
     <OverseasLayout title="Packages">
@@ -329,14 +311,6 @@ export default function PackagesPage() {
           <button
             type="button"
             className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-            onClick={() => setIsOpenImportWizard(true)}
-          >
-            <DownloadSimple size={16} />
-            <span>Import</span>
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
           >
             <Export size={16} />
             <span>Export</span>
@@ -352,10 +326,6 @@ export default function PackagesPage() {
           {isError ? <>Error :{"("}</> : <PackagesTable packages={packages} />}
         </>
       )}
-      <PackagesImportWizard
-        isOpen={isOpenImportWizard}
-        close={() => setIsOpenImportWizard(false)}
-      />
     </OverseasLayout>
   )
 }

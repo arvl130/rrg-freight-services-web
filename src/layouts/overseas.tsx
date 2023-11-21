@@ -41,16 +41,6 @@ export function OverseasSideBar() {
           icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Shipments"
-          href="/overseas/shipments"
-          icon={<ClipboardText size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Scan"
-          href="/overseas/packages/scan"
-          icon={<QrCode size={32} className="text-white" />}
-        />
-        <SideBarLink
           name="Profile"
           href="/profile/settings"
           otherRouteNames={[
