@@ -1,4 +1,240 @@
+import { zodResolver } from "@hookform/resolvers/zod"
 import * as Dialog from "@radix-ui/react-dialog"
+import { useForm } from "react-hook-form"
+import { ZodError, z } from "zod"
+import { utils, read, WorkBook } from "xlsx"
+import { useEffect, useState } from "react"
+import {
+  ReceptionMode,
+  ShippingMode,
+  ShippingType,
+  supportedReceptionModes,
+  supportedShippingModes,
+  supportedShippingTypes,
+} from "@/utils/constants"
+import { api } from "@/utils/api"
+import toast from "react-hot-toast"
+
+const selectFileFormSchema = z.object({
+  sheetFiles: z.custom<FileList>(
+    (val) => {
+      return (val as FileList)?.length === 1
+    },
+    {
+      message: "Please select a file.",
+    },
+  ),
+})
+
+type SelectFileFormType = z.infer<typeof selectFileFormSchema>
+
+function SelectFileForm({
+  setSelectedWorkBook,
+}: {
+  setSelectedWorkBook: (wb: WorkBook) => void
+}) {
+  const {
+    register,
+    formState: { isValid },
+    handleSubmit,
+  } = useForm<SelectFileFormType>({
+    resolver: zodResolver(selectFileFormSchema),
+  })
+
+  return (
+    <form
+      className="px-4 py-2"
+      onSubmit={handleSubmit(async (formData) => {
+        const [sheetFile] = formData.sheetFiles
+        const buffer = await sheetFile.arrayBuffer()
+        const workBook = read(buffer)
+
+        setSelectedWorkBook(workBook)
+      })}
+    >
+      <p className="mb-1">
+        Select an .xlsx, .xls., or .csv file to be imported
+      </p>
+      <input
+        type="file"
+        className="block w-full text-sm border border-gray-300 px-1.5 py-1.5 mb-3 rounded-lg"
+        accept="
+      application/vnd.ms-excel,
+      application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+      application/vnd.oasis.opendocument.spreadsheet,
+      text/csv
+    "
+        {...register("sheetFiles")}
+      />
+      <button
+        type="submit"
+        className="bg-cyan-500 disabled:bg-cyan-300 hover:bg-cyan-400 transition-colors text-white font-medium px-4 py-2 rounded-md"
+        disabled={!isValid}
+      >
+        Select File
+      </button>
+    </form>
+  )
+}
+
+function SelectSheetNameForm({
+  selectedWorkBook,
+  setSelectedSheetName,
+}: {
+  selectedWorkBook: WorkBook
+  setSelectedSheetName: (sheetName: string) => void
+}) {
+  return (
+    <div className="px-4 py-2">
+      <label className="mr-3">Choose a sheet to import:</label>
+      <select
+        className="px-3 py-1 bg-white border border-gray-300 rounded-md w-56"
+        onChange={(e) => setSelectedSheetName(e.currentTarget.value)}
+        defaultValue=""
+      >
+        <option value="" disabled>
+          Select ...
+        </option>
+        {selectedWorkBook.SheetNames.map((sheetName) => (
+          <option key={sheetName} value={sheetName}>
+            {sheetName}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+}
+
+const sheetRowsSchema = z
+  .object({
+    "Shipping Mode": z.custom<ShippingMode>((val) =>
+      supportedShippingModes.includes(val as ShippingMode),
+    ),
+    "Shipping Type": z.custom<ShippingType>((val) =>
+      supportedShippingTypes.includes(val as ShippingType),
+    ),
+    "Reception Mode": z.custom<ReceptionMode>((val) =>
+      supportedReceptionModes.includes(val as ReceptionMode),
+    ),
+    "Weight In Kg": z.number(),
+    "Sender Full Name": z.string().min(1).max(100),
+    "Sender Contact Number": z.string().min(1).max(15),
+    "Sender Email Address": z.string().min(1).max(100),
+    "Sender Street Address": z.string().min(1).max(255),
+    "Sender City": z.string().min(1).max(100),
+    "Sender State/Province": z.string().min(1).max(100),
+    "Sender Country Code": z.string().min(1).max(3),
+    "Sender Postal Code": z.number(),
+    "Receiver Full Name": z.string().min(1).max(100),
+    "Receiver Contact Number": z.string().min(1).max(15),
+    "Receiver Email Address": z.string().min(1).max(100),
+    "Receiver Street Address": z.string().min(1).max(255),
+    "Receiver Barangay": z.string().min(1).max(100),
+    "Receiver City": z.string().min(1).max(100),
+    "Receiver State/Province": z.string().min(1).max(100),
+    "Receiver Country Code": z.string().min(1).max(3),
+    "Receiver Postal Code": z.number(),
+  })
+  .array()
+
+function CreatePackagesForm({
+  selectedWorkBook,
+  selectedSheetName,
+  close,
+}: {
+  selectedWorkBook: WorkBook
+  selectedSheetName: string
+  close: () => void
+}) {
+  const apiUtils = api.useUtils()
+  const { isLoading, mutate } = api.package.createMany.useMutation({
+    onSuccess: () => {
+      apiUtils.package.getAll.invalidate()
+      close()
+      toast.success("Packages Imported")
+    },
+  })
+
+  try {
+    const sheetRows = sheetRowsSchema.parse(
+      utils.sheet_to_json(selectedWorkBook.Sheets[selectedSheetName]),
+    )
+
+    if (sheetRows.length === 0) return <div>Selected sheet has no rows.</div>
+    return (
+      <div className="px-4 grid grid-rows-[1fr_auto]">
+        <div className="h-full overflow-x-auto border border-gray-300">
+          <div className="grid grid-cols-[repeat(22,_13rem)] font-medium">
+            {Object.keys(sheetRows[0]).map((key) => (
+              <div key={key} className="px-1.5 py-1">
+                {key}
+              </div>
+            ))}
+          </div>
+          {sheetRows.map((newPackage, index) => (
+            <div key={index} className="grid grid-cols-[repeat(22,_13rem)]">
+              {Object.keys(newPackage).map((key) => (
+                <div
+                  key={key}
+                  className="w-full overflow-hidden text-ellipsis px-1.5 py-1"
+                >
+                  {newPackage[key as keyof typeof newPackage]}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end pt-2">
+          <button
+            type="button"
+            className="bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
+            disabled={isLoading}
+            onClick={() => {
+              mutate({
+                newPackages: sheetRows.map((newPackage) => ({
+                  shippingMode: newPackage["Shipping Mode"],
+                  shippingType: newPackage["Shipping Type"],
+                  receptionMode: newPackage["Reception Mode"],
+                  weightInKg: newPackage["Weight In Kg"],
+                  senderFullName: newPackage["Sender Full Name"],
+                  senderContactNumber: newPackage["Sender Contact Number"],
+                  senderEmailAddress: newPackage["Sender Email Address"],
+                  senderStreetAddress: newPackage["Sender Street Address"],
+                  senderCity: newPackage["Sender City"],
+                  senderStateOrProvince: newPackage["Sender State/Province"],
+                  senderCountryCode: newPackage["Sender Country Code"],
+                  senderPostalCode: newPackage["Sender Postal Code"],
+                  receiverFullName: newPackage["Receiver Full Name"],
+                  receiverContactNumber: newPackage["Receiver Contact Number"],
+                  receiverEmailAddress: newPackage["Receiver Email Address"],
+                  receiverStreetAddress: newPackage["Receiver Street Address"],
+                  receiverBarangay: newPackage["Receiver Barangay"],
+                  receiverCity: newPackage["Receiver City"],
+                  receiverStateOrProvince:
+                    newPackage["Receiver State/Province"],
+                  receiverCountryCode: newPackage["Receiver Country Code"],
+                  receiverPostalCode: newPackage["Receiver Postal Code"],
+                })),
+              })
+            }}
+          >
+            Import
+          </button>
+        </div>
+      </div>
+    )
+  } catch (e) {
+    if (e instanceof ZodError)
+      // TODO: Add option to show rows with errors.
+      return (
+        <div>
+          One or more or rows in this sheet contains errors. Please recheck its
+          contents.
+        </div>
+      )
+    else return <div>An unknown error occured while parsing this sheet.</div>
+  }
+}
 
 export function PackagesImportModal({
   isOpen,
@@ -7,6 +243,20 @@ export function PackagesImportModal({
   isOpen: boolean
   close: () => void
 }) {
+  const [selectedWorkbook, setSelectedWorkBook] = useState<null | WorkBook>(
+    null,
+  )
+  const [selectedSheetName, setSelectedSheetName] = useState<null | string>(
+    null,
+  )
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedWorkBook(null)
+      setSelectedSheetName(null)
+    }
+  }, [isOpen])
+
   return (
     <Dialog.Root open={isOpen}>
       <Dialog.Portal>
@@ -18,7 +268,28 @@ export function PackagesImportModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             Import Packages
           </Dialog.Title>
-          <div>hello world</div>
+          <div className="px-4 py-2 grid grid-rows-[auto_1fr]">
+            {selectedWorkbook === null ? (
+              <SelectFileForm
+                setSelectedWorkBook={(wb) => setSelectedWorkBook(wb)}
+              />
+            ) : (
+              <SelectSheetNameForm
+                selectedWorkBook={selectedWorkbook}
+                setSelectedSheetName={(sheetName) =>
+                  setSelectedSheetName(sheetName)
+                }
+              />
+            )}
+
+            {selectedWorkbook && selectedSheetName && (
+              <CreatePackagesForm
+                selectedWorkBook={selectedWorkbook}
+                selectedSheetName={selectedSheetName}
+                close={close}
+              />
+            )}
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
