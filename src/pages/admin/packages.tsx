@@ -25,15 +25,6 @@ function PageHeader() {
   return (
     <div className="flex justify-between mb-4">
       <h1 className="text-3xl font-black [color:_#00203F] mb-2">Packages</h1>
-      <div>
-        <button
-          type="button"
-          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-        >
-          <Plus size={16} />
-          <span>Add Package</span>
-        </button>
-      </div>
     </div>
   )
 }
