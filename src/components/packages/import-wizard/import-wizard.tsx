@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react"
-import { PackagesImportWizardSelectFile } from "./import-wizard/step1"
-import { PackagesImportWizardSelectHeader } from "./import-wizard/step3"
+import { PackagesImportWizardSelectFile } from "./step1"
+import { PackagesImportWizardSelectHeader } from "./step3"
 import {
   MatchColumnsFormType,
   PackagesImportWizardSelectColumnNames,
-} from "./import-wizard/step4"
-import { PackagesImportWizardCreatePackages } from "./import-wizard/step5"
-import { PackagesImportWizardSummary } from "./import-wizard/step6"
+} from "./step4"
+import { PackagesImportWizardCreatePackages } from "./step5"
+import { PackagesImportWizardSummary } from "./step6"
 import { WorkBook } from "xlsx"
 import { Package } from "@/server/db/entities"
-import { PackagesImportWizardSelectSheetName } from "./import-wizard/step2"
+import { PackagesImportWizardSelectSheetName } from "./step2"
 
 type Selection =
   | {
