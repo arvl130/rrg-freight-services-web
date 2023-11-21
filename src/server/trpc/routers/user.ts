@@ -1,11 +1,6 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
-import {
-  customerAddresses,
-  shipmentHubAgents,
-  shipmentHubs,
-  users,
-} from "@/server/db/schema"
+import { shipmentHubAgents, shipmentHubs, users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
 import { updateProfile } from "@/server/auth"
@@ -56,33 +51,6 @@ export const userRouter = router({
         })
 
       return results[0]
-    }),
-  getWithAddressById: protectedProcedure
-    .input(
-      z.object({
-        id: z.string().length(28),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const results = await ctx.db
-        .select()
-        .from(users)
-        .innerJoin(customerAddresses, eq(users.id, customerAddresses.id))
-        .where(eq(users.id, input.id))
-
-      if (results.length === 0) return null
-      if (results.length > 1)
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Expected 1 result, but got multiple.",
-        })
-
-      const [result] = results.map(({ users, customer_addresses }) => ({
-        ...customer_addresses,
-        ...users,
-      }))
-
-      return result
     }),
   createDetails: protectedProcedure
     .input(
