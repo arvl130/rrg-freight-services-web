@@ -140,7 +140,7 @@ const createPackagesFormSchema = z.object({
 
 type createPackagesFormType = z.infer<typeof createPackagesFormSchema>
 
-export function PackagesImportWizardCreatePackages({
+export function PackagesMultiStepImportWizardCreatePackages({
   selectedWorkBook,
   selectedSheetName,
   selectedHeaderRow,

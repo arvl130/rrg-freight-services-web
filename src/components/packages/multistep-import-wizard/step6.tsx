@@ -2,7 +2,7 @@ import { Package } from "@/server/db/entities"
 import { Check } from "@phosphor-icons/react/Check"
 import { DateTime } from "luxon"
 
-export function PackagesImportWizardSummary({
+export function PackagesMultiStepImportWizardSummary({
   createdPackages,
   close,
 }: {

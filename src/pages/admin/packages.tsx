@@ -13,7 +13,7 @@ import { getColorFromPackageStatus } from "@/utils/colors"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
-import { PackagesImportWizard } from "@/components/packages/multistep-import-wizard/import-wizard"
+import { PackagesMultiStepImportWizard } from "@/components/packages/multistep-import-wizard/import-wizard"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
@@ -422,7 +422,7 @@ export default function PackagesPage() {
           )}
         </>
       )}
-      <PackagesImportWizard
+      <PackagesMultiStepImportWizard
         isOpen={isOpenImportWizard}
         close={() => setIsOpenImportWizard(false)}
       />

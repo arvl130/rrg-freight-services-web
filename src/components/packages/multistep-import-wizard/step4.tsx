@@ -32,7 +32,7 @@ const matchColumnsFormSchema = z.object({
 
 export type MatchColumnsFormType = z.infer<typeof matchColumnsFormSchema>
 
-export function PackagesImportWizardSelectColumnNames({
+export function PackagesMultiStepImportWizardSelectColumnNames({
   selectedWorkBook,
   selectedSheetName,
   selectedHeaderRow,

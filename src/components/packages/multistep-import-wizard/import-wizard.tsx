@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react"
-import { PackagesImportWizardSelectFile } from "./step1"
-import { PackagesImportWizardSelectHeader } from "./step3"
+import { PackagesMultiStepImportWizardSelectFile } from "./step1"
+import { PackagesMultiStepImportWizardSelectHeader } from "./step3"
 import {
   MatchColumnsFormType,
-  PackagesImportWizardSelectColumnNames,
+  PackagesMultiStepImportWizardSelectColumnNames,
 } from "./step4"
-import { PackagesImportWizardCreatePackages } from "./step5"
-import { PackagesImportWizardSummary } from "./step6"
+import { PackagesMultiStepImportWizardCreatePackages } from "./step5"
+import { PackagesMultiStepImportWizardSummary } from "./step6"
 import { WorkBook } from "xlsx"
 import { Package } from "@/server/db/entities"
-import { PackagesImportWizardSelectSheetName } from "./step2"
+import { PackagesMultiStepImportWizardSelectSheetName } from "./step2"
 
 type Selection =
   | {
@@ -55,7 +55,7 @@ type Selection =
       createdPackages: Package[]
     }
 
-export function PackagesImportWizard({
+export function PackagesMultiStepImportWizard({
   isOpen,
   close,
 }: {
@@ -110,7 +110,7 @@ export function PackagesImportWizard({
     >
       <div className="h-full grid">
         {selectedItems.workBook === null ? (
-          <PackagesImportWizardSelectFile
+          <PackagesMultiStepImportWizardSelectFile
             isOpenModal={isOpen}
             setSelectedWorkBook={(wb) => {
               setSelectedItems((currSelectedItems) => ({
@@ -122,7 +122,7 @@ export function PackagesImportWizard({
         ) : (
           <>
             {selectedItems.sheetName === null ? (
-              <PackagesImportWizardSelectSheetName
+              <PackagesMultiStepImportWizardSelectSheetName
                 selectedWorkBook={selectedItems.workBook}
                 setSelectedSheetName={(sheetName) => {
                   setSelectedItems({
@@ -146,7 +146,7 @@ export function PackagesImportWizard({
             ) : (
               <>
                 {selectedItems.headerRow === null ? (
-                  <PackagesImportWizardSelectHeader
+                  <PackagesMultiStepImportWizardSelectHeader
                     selectedWorkBook={selectedItems.workBook}
                     selectedSheetName={selectedItems.sheetName}
                     setSelectedHeaderRow={(headerRow) => {
@@ -171,7 +171,7 @@ export function PackagesImportWizard({
                 ) : (
                   <>
                     {selectedItems.columnNames === null ? (
-                      <PackagesImportWizardSelectColumnNames
+                      <PackagesMultiStepImportWizardSelectColumnNames
                         selectedWorkBook={selectedItems.workBook}
                         selectedSheetName={selectedItems.sheetName}
                         selectedHeaderRow={selectedItems.headerRow}
@@ -197,7 +197,7 @@ export function PackagesImportWizard({
                     ) : (
                       <>
                         {selectedItems.createdPackages === null ? (
-                          <PackagesImportWizardCreatePackages
+                          <PackagesMultiStepImportWizardCreatePackages
                             selectedWorkBook={selectedItems.workBook}
                             selectedSheetName={selectedItems.sheetName}
                             selectedHeaderRow={selectedItems.headerRow}
@@ -222,7 +222,7 @@ export function PackagesImportWizard({
                             }}
                           />
                         ) : (
-                          <PackagesImportWizardSummary
+                          <PackagesMultiStepImportWizardSummary
                             createdPackages={selectedItems.createdPackages}
                             close={close}
                           />

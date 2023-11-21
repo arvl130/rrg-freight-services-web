@@ -2,7 +2,7 @@ import { ArrowLeft } from "@phosphor-icons/react/ArrowLeft"
 import { Check } from "@phosphor-icons/react/Check"
 import { WorkBook } from "xlsx"
 
-export function PackagesImportWizardSelectSheetName({
+export function PackagesMultiStepImportWizardSelectSheetName({
   selectedWorkBook,
   setSelectedSheetName,
   goBack,

@@ -12,7 +12,7 @@ const selectHeaderFormSchema = z.object({
 
 type SelectHeaderFormType = z.infer<typeof selectHeaderFormSchema>
 
-export function PackagesImportWizardSelectHeader({
+export function PackagesMultiStepImportWizardSelectHeader({
   selectedWorkBook,
   selectedSheetName,
   setSelectedHeaderRow,

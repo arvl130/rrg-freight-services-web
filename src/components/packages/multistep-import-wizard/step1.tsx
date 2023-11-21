@@ -142,7 +142,7 @@ const selectFileFormSchema = z.object({
 
 type SelectFileFormType = z.infer<typeof selectFileFormSchema>
 
-export function PackagesImportWizardSelectFile({
+export function PackagesMultiStepImportWizardSelectFile({
   isOpenModal,
   setSelectedWorkBook,
 }: {
