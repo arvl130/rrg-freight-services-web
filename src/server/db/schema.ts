@@ -35,33 +35,6 @@ export const users = mysqlTable("users", {
   isEnabled: tinyint("is_enabled").notNull().default(1),
 })
 
-export const customerAddresses = mysqlTable("customer_addresses", {
-  id: varchar("id", { length: 28 }).primaryKey(),
-  streetAddress: varchar("street_address", {
-    length: 255,
-  }).notNull(),
-  city: varchar("city", {
-    length: 100,
-  }).notNull(),
-  stateOrProvince: varchar("state_province", {
-    length: 100,
-  }).notNull(),
-  // Uses ISO 3166-1 alpha-3 format.
-  // See: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
-  countryCode: varchar("country_code", { length: 3 }).notNull(),
-  postalCode: int("postal_code").notNull(),
-})
-
-export const customerAddressesRelations = relations(
-  customerAddresses,
-  ({ one }) => ({
-    customer: one(users, {
-      fields: [customerAddresses.id],
-      references: [users.id],
-    }),
-  }),
-)
-
 export const usersRelations = relations(users, ({ many }) => ({
   activities: many(activities),
 }))
