@@ -170,17 +170,60 @@ function PackageTableItem({ package: _package }: { package: Package }) {
   )
 }
 
-function PackagesTable({ packages }: { packages: Package[] }) {
-  const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
-  const allPackages = packages.filter((_package) => _package.isArchived === 0)
-  const archivedPackages = packages.filter(
-    (_package) => _package.isArchived === 1,
+function PackagesTable({
+  packages,
+  isArchived,
+}: {
+  packages: Package[]
+  isArchived: boolean
+}) {
+  const [selectedTab, setSelectedTab] = useState<
+    "EXPRESS" | "STANDARD" | "ALL"
+  >("EXPRESS")
+  const allPackages = isArchived
+    ? packages.filter((_package) => _package.isArchived === 1)
+    : packages.filter((_package) => _package.isArchived === 0)
+
+  const standardPackages = packages.filter(
+    (_package) => _package.shippingType === "STANDARD",
+  )
+
+  const expressPackages = packages.filter(
+    (_package) => _package.shippingType === "EXPRESS",
   )
 
   return (
     <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
       <div className="flex justify-between mb-3">
-        <div className="flex gap-6">
+        <div className="flex gap-3">
+          <button
+            type="button"
+            className={`
+              text-lg pb-1 font-semibold border-b-2
+              ${
+                selectedTab === "EXPRESS"
+                  ? "text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+            onClick={() => setSelectedTab("EXPRESS")}
+          >
+            Express
+          </button>
+          <button
+            type="button"
+            className={`
+              text-lg pb-1 font-semibold border-b-2
+              ${
+                selectedTab === "STANDARD"
+                  ? "text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+            onClick={() => setSelectedTab("STANDARD")}
+          >
+            Standard
+          </button>
           <button
             type="button"
             className={`
@@ -193,21 +236,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             `}
             onClick={() => setSelectedTab("ALL")}
           >
-            All Packages
-          </button>
-          <button
-            type="button"
-            className={`
-              text-lg pb-1 font-semibold border-b-2
-              ${
-                selectedTab === "ARCHIVED"
-                  ? "text-brand-cyan-500 border-brand-cyan-500"
-                  : "text-gray-400 border-b-transparent"
-              }
-            `}
-            onClick={() => setSelectedTab("ARCHIVED")}
-          >
-            Archived Packages
+            All
           </button>
         </div>
         <div className="flex gap-8">
@@ -258,25 +287,39 @@ function PackagesTable({ packages }: { packages: Package[] }) {
           <div className="uppercase px-4 py-2">Status</div>
         </div>
         {/* Body */}
-        {selectedTab === "ALL" ? (
+        {selectedTab === "EXPRESS" && (
+          <>
+            {expressPackages.length === 0 ? (
+              <div className="text-center pt-4">No packages found.</div>
+            ) : (
+              <div>
+                {expressPackages.map((_package) => (
+                  <PackageTableItem key={_package.id} package={_package} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+        {selectedTab === "STANDARD" && (
+          <>
+            {standardPackages.length === 0 ? (
+              <div className="text-center pt-4">No packages found.</div>
+            ) : (
+              <div>
+                {standardPackages.map((_package) => (
+                  <PackageTableItem key={_package.id} package={_package} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+        {selectedTab === "ALL" && (
           <>
             {allPackages.length === 0 ? (
               <div className="text-center pt-4">No packages found.</div>
             ) : (
               <div>
                 {allPackages.map((_package) => (
-                  <PackageTableItem key={_package.id} package={_package} />
-                ))}
-              </div>
-            )}
-          </>
-        ) : (
-          <>
-            {archivedPackages.length === 0 ? (
-              <div className="text-center pt-4">No packages found.</div>
-            ) : (
-              <div>
-                {archivedPackages.map((_package) => (
                   <PackageTableItem key={_package.id} package={_package} />
                 ))}
               </div>
@@ -298,6 +341,9 @@ export default function PackagesPage() {
     enabled: user !== null && role === "ADMIN",
   })
   const [isOpenImportWizard, setIsOpenImportWizard] = useState(false)
+  const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
+    "ARCHIVED" | "NOT_ARCHIVED"
+  >("NOT_ARCHIVED")
 
   return (
     <AdminLayout title="Packages">
@@ -324,8 +370,17 @@ export default function PackagesPage() {
           <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
             <option value="">Warehouse</option>
           </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">City</option>
+          <select
+            className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+            value={visibleArchiveStatus}
+            onChange={(e) => {
+              if (e.currentTarget.value === "ARCHIVED")
+                setVisibleArchiveStatus("ARCHIVED")
+              else setVisibleArchiveStatus("NOT_ARCHIVED")
+            }}
+          >
+            <option value="NOT_ARCHIVED">Not Archived</option>
+            <option value="ARCHIVED">Archived</option>
           </select>
           <button
             type="button"
@@ -358,7 +413,14 @@ export default function PackagesPage() {
         </div>
       ) : (
         <>
-          {isError ? <>Error :{"("}</> : <PackagesTable packages={packages} />}
+          {isError ? (
+            <>Error :{"("}</>
+          ) : (
+            <PackagesTable
+              packages={packages}
+              isArchived={visibleArchiveStatus === "ARCHIVED"}
+            />
+          )}
         </>
       )}
       <PackagesImportWizard
