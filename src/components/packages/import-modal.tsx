@@ -105,45 +105,71 @@ function SelectSheetNameForm({
   )
 }
 
-const sheetRowsSchema = z
-  .object({
-    "Shipping Mode": z.custom<ShippingMode>((val) =>
-      supportedShippingModes.includes(val as ShippingMode),
-    ),
-    "Shipping Type": z.custom<ShippingType>((val) =>
-      supportedShippingTypes.includes(val as ShippingType),
-    ),
-    "Reception Mode": z.custom<ReceptionMode>((val) =>
-      supportedReceptionModes.includes(val as ReceptionMode),
-    ),
-    "Weight In Kg": z.number(),
-    "Sender Full Name": z.string().min(1).max(100),
-    "Sender Contact Number": z.string().min(1).max(15),
-    "Sender Email Address": z.string().min(1).max(100),
-    "Sender Street Address": z.string().min(1).max(255),
-    "Sender City": z.string().min(1).max(100),
-    "Sender State/Province": z.string().min(1).max(100),
-    "Sender Country Code": z.string().min(1).max(3),
-    "Sender Postal Code": z.number(),
-    "Receiver Full Name": z.string().min(1).max(100),
-    "Receiver Contact Number": z.string().min(1).max(15),
-    "Receiver Email Address": z.string().min(1).max(100),
-    "Receiver Street Address": z.string().min(1).max(255),
-    "Receiver Barangay": z.string().min(1).max(100),
-    "Receiver City": z.string().min(1).max(100),
-    "Receiver State/Province": z.string().min(1).max(100),
-    "Receiver Country Code": z.string().min(1).max(3),
-    "Receiver Postal Code": z.number(),
-  })
-  .array()
+const expectedColumns = [
+  "Shipping Mode",
+  "Shipping Type",
+  "Reception Mode",
+  "Weight In ",
+  "Sender Full ",
+  "Sender Contact ",
+  "Sender Email ",
+  "Sender Street ",
+  "Sender City",
+  "Sender State/",
+  "Sender Country ",
+  "Sender Postal ",
+  "Receiver Full ",
+  "Receiver Contact ",
+  "Receiver Email ",
+  "Receiver Street ",
+  "Receiver Barangay",
+  "Receiver City",
+  "Receiver State/",
+  "Receiver Country ",
+  "Receiver Postal ",
+]
+
+const sheetRowSchema = z.object({
+  "Shipping Mode": z.custom<ShippingMode>((val) =>
+    supportedShippingModes.includes(val as ShippingMode),
+  ),
+  "Shipping Type": z.custom<ShippingType>((val) =>
+    supportedShippingTypes.includes(val as ShippingType),
+  ),
+  "Reception Mode": z.custom<ReceptionMode>((val) =>
+    supportedReceptionModes.includes(val as ReceptionMode),
+  ),
+  "Weight In Kg": z.number(),
+  "Sender Full Name": z.string().min(1).max(100),
+  "Sender Contact Number": z.string().min(1).max(15),
+  "Sender Email Address": z.string().min(1).max(100),
+  "Sender Street Address": z.string().min(1).max(255),
+  "Sender City": z.string().min(1).max(100),
+  "Sender State/Province": z.string().min(1).max(100),
+  "Sender Country Code": z.string().min(1).max(3),
+  "Sender Postal Code": z.number(),
+  "Receiver Full Name": z.string().min(1).max(100),
+  "Receiver Contact Number": z.string().min(1).max(15),
+  "Receiver Email Address": z.string().min(1).max(100),
+  "Receiver Street Address": z.string().min(1).max(255),
+  "Receiver Barangay": z.string().min(1).max(100),
+  "Receiver City": z.string().min(1).max(100),
+  "Receiver State/Province": z.string().min(1).max(100),
+  "Receiver Country Code": z.string().min(1).max(3),
+  "Receiver Postal Code": z.number(),
+})
+
+type SheetRow = z.infer<typeof sheetRowSchema>
 
 function CreatePackagesForm({
   selectedWorkBook,
   selectedSheetName,
+  reset,
   close,
 }: {
   selectedWorkBook: WorkBook
   selectedSheetName: string
+  reset: () => void
   close: () => void
 }) {
   const apiUtils = api.useUtils()
@@ -154,17 +180,20 @@ function CreatePackagesForm({
       toast.success("Packages Imported")
     },
   })
+  const sheetRowsRaw = utils.sheet_to_json<Record<string, unknown>>(
+    selectedWorkBook.Sheets[selectedSheetName],
+  )
 
   try {
-    const sheetRows = sheetRowsSchema.parse(
-      utils.sheet_to_json(selectedWorkBook.Sheets[selectedSheetName]),
-    )
+    const sheetRows = sheetRowSchema.array().parse(sheetRowsRaw)
 
     if (sheetRows.length === 0) return <div>Selected sheet has no rows.</div>
     return (
       <div className="px-4 grid grid-rows-[1fr_auto]">
         <div className="h-full overflow-x-auto border border-gray-300">
-          <div className="grid grid-cols-[repeat(22,_13rem)] font-medium">
+          <div
+            className={`grid grid-cols-[repeat(${expectedColumns.length},_13rem)] font-medium`}
+          >
             {Object.keys(sheetRows[0]).map((key) => (
               <div key={key} className="px-1.5 py-1">
                 {key}
@@ -172,7 +201,10 @@ function CreatePackagesForm({
             ))}
           </div>
           {sheetRows.map((newPackage, index) => (
-            <div key={index} className="grid grid-cols-[repeat(22,_13rem)]">
+            <div
+              key={index}
+              className={`grid grid-cols-[repeat(${expectedColumns.length},_13rem)]`}
+            >
               {Object.keys(newPackage).map((key) => (
                 <div
                   key={key}
@@ -184,10 +216,18 @@ function CreatePackagesForm({
             </div>
           ))}
         </div>
-        <div className="flex justify-end pt-2">
+        <div className="flex justify-end gap-3 pt-2">
           <button
             type="button"
-            className="bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
+            className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
+            onClick={reset}
+          >
+            Change File
+          </button>
+
+          <button
+            type="button"
+            className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
             disabled={isLoading}
             onClick={() => {
               mutate({
@@ -224,15 +264,70 @@ function CreatePackagesForm({
       </div>
     )
   } catch (e) {
-    if (e instanceof ZodError)
-      // TODO: Add option to show rows with errors.
+    if (e instanceof ZodError) {
+      const rowsWithErrors = Object.keys(e.flatten().fieldErrors)
+
       return (
-        <div>
-          One or more or rows in this sheet contains errors. Please recheck its
-          contents.
+        <div className="px-4 grid grid-rows-[auto_1fr]">
+          <p className="mb-3">
+            One or more or rows in this sheet contains errors. Please recheck
+            its contents.
+          </p>
+          <div className="h-full overflow-x-auto border border-gray-300">
+            <div
+              className={`grid grid-cols-[repeat(${expectedColumns.length},_13rem)] font-medium`}
+            >
+              {expectedColumns.map((column) => (
+                <div key={column} className="px-1.5 py-1">
+                  {column}
+                </div>
+              ))}
+            </div>
+            {rowsWithErrors.map((row) => {
+              try {
+                sheetRowSchema.parse(
+                  sheetRowsRaw[row as keyof typeof sheetRowsRaw],
+                )
+              } catch (e) {
+                if (e instanceof ZodError) {
+                  const fieldsWithErrors = Object.keys(e.flatten().fieldErrors)
+                  const newPackage = sheetRowsRaw[row as any] as SheetRow
+
+                  return (
+                    <div
+                      className={`grid grid-cols-[repeat(${expectedColumns.length},_13rem)]`}
+                    >
+                      {expectedColumns.map((column) => (
+                        <div
+                          key={column}
+                          className={`px-1.5 py-1 ${
+                            fieldsWithErrors.includes(column)
+                              ? "bg-red-300"
+                              : ""
+                          }`}
+                        >
+                          {typeof newPackage[column as keyof SheetRow] !==
+                            "undefined" && newPackage[column as keyof SheetRow]}
+                        </div>
+                      ))}
+                    </div>
+                  )
+                }
+              }
+            })}
+          </div>
+          <div className="pt-2 flex justify-end">
+            <button
+              type="button"
+              className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
+              onClick={reset}
+            >
+              Change File
+            </button>
+          </div>
         </div>
       )
-    else return <div>An unknown error occured while parsing this sheet.</div>
+    } else return <div>An unknown error occured while parsing this sheet.</div>
   }
 }
 
@@ -286,6 +381,10 @@ export function PackagesImportModal({
               <CreatePackagesForm
                 selectedWorkBook={selectedWorkbook}
                 selectedSheetName={selectedSheetName}
+                reset={() => {
+                  setSelectedWorkBook(null)
+                  setSelectedSheetName(null)
+                }}
                 close={close}
               />
             )}
