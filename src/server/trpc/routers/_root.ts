@@ -4,6 +4,7 @@ import { packageRouter } from "./package"
 import { userRouter } from "./user"
 import { deliveryLocationRouter } from "./delivery-location"
 import { packageStatusLogRouter } from "./package-status-logs"
+import { incomingShipmentRouter } from "./incoming-shipment"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -20,6 +21,7 @@ export const rootRouter = router({
   user: userRouter,
   package: packageRouter,
   packageStatusLog: packageStatusLogRouter,
+  incomingShipment: incomingShipmentRouter,
   deliveryLocation: deliveryLocationRouter,
 })
 

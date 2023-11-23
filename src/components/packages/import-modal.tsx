@@ -14,6 +14,7 @@ import {
 } from "@/utils/constants"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
+import { User } from "@/server/db/entities"
 
 const selectFileFormSchema = z.object({
   sheetFiles: z.custom<FileList>(
@@ -161,6 +162,104 @@ const sheetRowSchema = z.object({
 
 type SheetRow = z.infer<typeof sheetRowSchema>
 
+const chooseAgentFormSchema = z.object({
+  sentByAgentId: z.string().length(28),
+})
+
+type ChooseAgentFormType = z.infer<typeof chooseAgentFormSchema>
+
+function ChooseAgentForm({
+  agents,
+  sheetRows,
+  reset,
+  close,
+}: {
+  agents: User[]
+  sheetRows: SheetRow[]
+  reset: () => void
+  close: () => void
+}) {
+  const apiUtils = api.useUtils()
+  const { isLoading, mutate } = api.incomingShipment.create.useMutation({
+    onSuccess: () => {
+      apiUtils.package.getAll.invalidate()
+      close()
+      toast.success("Packages Imported")
+    },
+  })
+  const {
+    handleSubmit,
+    register,
+    formState: { isValid },
+  } = useForm<ChooseAgentFormType>({
+    resolver: zodResolver(chooseAgentFormSchema),
+  })
+
+  return (
+    <form
+      onSubmit={handleSubmit((formData) => {
+        mutate({
+          sentByAgentId: formData.sentByAgentId,
+          newPackages: sheetRows.map((newPackage) => ({
+            shippingMode: newPackage["Shipping Mode"],
+            shippingType: newPackage["Shipping Type"],
+            receptionMode: newPackage["Reception Mode"],
+            weightInKg: newPackage["Weight In Kg"],
+            senderFullName: newPackage["Sender Full Name"],
+            senderContactNumber: newPackage["Sender Contact Number"],
+            senderEmailAddress: newPackage["Sender Email Address"],
+            senderStreetAddress: newPackage["Sender Street Address"],
+            senderCity: newPackage["Sender City"],
+            senderStateOrProvince: newPackage["Sender State/Province"],
+            senderCountryCode: newPackage["Sender Country Code"],
+            senderPostalCode: newPackage["Sender Postal Code"],
+            receiverFullName: newPackage["Receiver Full Name"],
+            receiverContactNumber: newPackage["Receiver Contact Number"],
+            receiverEmailAddress: newPackage["Receiver Email Address"],
+            receiverStreetAddress: newPackage["Receiver Street Address"],
+            receiverBarangay: newPackage["Receiver Barangay"],
+            receiverCity: newPackage["Receiver City"],
+            receiverStateOrProvince: newPackage["Receiver State/Province"],
+            receiverCountryCode: newPackage["Receiver Country Code"],
+            receiverPostalCode: newPackage["Receiver Postal Code"],
+          })),
+        })
+      })}
+      className="flex justify-between gap-3 pt-2"
+    >
+      <div>
+        <select {...register("sentByAgentId")}>
+          <option value={undefined} selected>
+            Select an agent ...
+          </option>
+          {agents.map((agent) => (
+            <option key={agent.id} value={agent.id}>
+              {agent.displayName}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="flex gap-3">
+        <button
+          type="button"
+          className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
+          onClick={reset}
+        >
+          Change File
+        </button>
+
+        <button
+          type="submit"
+          className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
+          disabled={isLoading || !isValid}
+        >
+          Import
+        </button>
+      </div>
+    </form>
+  )
+}
+
 function CreatePackagesForm({
   selectedWorkBook,
   selectedSheetName,
@@ -172,17 +271,10 @@ function CreatePackagesForm({
   reset: () => void
   close: () => void
 }) {
-  const apiUtils = api.useUtils()
-  // const { isLoading, mutate } = api.package.createMany.useMutation({
-  //   onSuccess: () => {
-  //     apiUtils.package.getAll.invalidate()
-  //     close()
-  //     toast.success("Packages Imported")
-  //   },
-  // })
   const sheetRowsRaw = utils.sheet_to_json<Record<string, unknown>>(
     selectedWorkBook.Sheets[selectedSheetName],
   )
+  const { status, data: agents, error } = api.user.getOverseasAgents.useQuery()
 
   try {
     const sheetRows = sheetRowSchema.array().parse(sheetRowsRaw)
@@ -216,51 +308,18 @@ function CreatePackagesForm({
             </div>
           ))}
         </div>
-        <div className="flex justify-end gap-3 pt-2">
-          <button
-            type="button"
-            className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
-            onClick={reset}
-          >
-            Change File
-          </button>
-
-          <button
-            type="button"
-            className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
-            // disabled={isLoading}
-            onClick={() => {
-              // mutate({
-              //   newPackages: sheetRows.map((newPackage) => ({
-              //     shippingMode: newPackage["Shipping Mode"],
-              //     shippingType: newPackage["Shipping Type"],
-              //     receptionMode: newPackage["Reception Mode"],
-              //     weightInKg: newPackage["Weight In Kg"],
-              //     senderFullName: newPackage["Sender Full Name"],
-              //     senderContactNumber: newPackage["Sender Contact Number"],
-              //     senderEmailAddress: newPackage["Sender Email Address"],
-              //     senderStreetAddress: newPackage["Sender Street Address"],
-              //     senderCity: newPackage["Sender City"],
-              //     senderStateOrProvince: newPackage["Sender State/Province"],
-              //     senderCountryCode: newPackage["Sender Country Code"],
-              //     senderPostalCode: newPackage["Sender Postal Code"],
-              //     receiverFullName: newPackage["Receiver Full Name"],
-              //     receiverContactNumber: newPackage["Receiver Contact Number"],
-              //     receiverEmailAddress: newPackage["Receiver Email Address"],
-              //     receiverStreetAddress: newPackage["Receiver Street Address"],
-              //     receiverBarangay: newPackage["Receiver Barangay"],
-              //     receiverCity: newPackage["Receiver City"],
-              //     receiverStateOrProvince:
-              //       newPackage["Receiver State/Province"],
-              //     receiverCountryCode: newPackage["Receiver Country Code"],
-              //     receiverPostalCode: newPackage["Receiver Postal Code"],
-              //   })),
-              // })
-            }}
-          >
-            Import
-          </button>
-        </div>
+        {status === "loading" && <div>Loading agents ...</div>}
+        {status === "error" && (
+          <div>Error while loading agents. {error.message}</div>
+        )}
+        {status === "success" && (
+          <ChooseAgentForm
+            agents={agents}
+            sheetRows={sheetRows}
+            reset={() => reset()}
+            close={() => close()}
+          />
+        )}
       </div>
     )
   } catch (e) {

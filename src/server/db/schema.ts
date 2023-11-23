@@ -40,8 +40,8 @@ export const incomingShipments = mysqlTable("incoming_shipments", {
   })
     .primaryKey()
     .autoincrement(),
-  sentByAgentId: bigint("sent_by_agent_id", {
-    mode: "number",
+  sentByAgentId: varchar("sent_by_agent_id", {
+    length: 28,
   }).notNull(),
   status: mysqlEnum("status", supportedShipmentStatuses).notNull(),
   createdAt: timestamp("created_at", {
@@ -73,8 +73,8 @@ export const transferShipments = mysqlTable("incoming_shipments", {
   })
     .primaryKey()
     .autoincrement(),
-  sentToAgentId: bigint("sent_to_agent_id", {
-    mode: "number",
+  sentToAgentId: varchar("sent_by_agent_id", {
+    length: 28,
   }).notNull(),
   status: mysqlEnum("status", supportedShipmentStatuses).notNull(),
   createdAt: timestamp("created_at", {
@@ -244,7 +244,6 @@ export const packages = mysqlTable("packages", {
     .notNull()
     .defaultNow(),
   updatedById: varchar("updated_by_id", { length: 28 }).notNull(),
-  createdInHubId: bigint("created_in_hub_id", { mode: "number" }),
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
@@ -261,9 +260,11 @@ export const packageStatusLogs = mysqlTable("package_status_logs", {
   description: varchar("description", {
     length: 255,
   }).notNull(),
-  createdAt: datetime("created_at", {
+  createdAt: timestamp("created_at", {
     mode: "date",
-  }).notNull(),
+  })
+    .notNull()
+    .defaultNow(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
 
