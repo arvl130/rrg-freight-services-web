@@ -12,7 +12,7 @@ function PageHeader() {
   return (
     <div className="flex justify-between mb-4">
       <h1 className="text-3xl font-black mb-2 [color:_#00203F]">
-        Incoming Shipments
+        Transfer Shipments
       </h1>
       <div className="grid">
         <button

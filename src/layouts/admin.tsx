@@ -10,7 +10,9 @@ import { Scroll } from "@phosphor-icons/react/Scroll"
 import { SignOut } from "@phosphor-icons/react/SignOut"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { UsersThree } from "@phosphor-icons/react/UsersThree"
-import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
+import { Motorcycle } from "@phosphor-icons/react/Motorcycle"
+import { Boat } from "@phosphor-icons/react/Boat"
+import { Swap } from "@phosphor-icons/react/Swap"
 import { User, getAuth, signOut } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
@@ -37,14 +39,24 @@ export function AdminSideBar() {
           icon={<Gauge size={32} className="text-white " />}
         />
         <SideBarLink
-          name="Packages"
-          href="/admin/packages"
-          icon={<Package size={32} className="text-white" />}
+          name="Shipments"
+          href="/admin/incoming-shipments"
+          icon={<Boat size={32} className="text-white" />}
         />
         <SideBarLink
           name="Shipments"
-          href="/admin/shipments"
-          icon={<ClipboardText size={32} className="text-white" />}
+          href="/admin/transfer-shipments"
+          icon={<Swap size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Deliveries"
+          href="/admin/deliveries"
+          icon={<Motorcycle size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Packages"
+          href="/admin/packages"
+          icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
           name="Users"
