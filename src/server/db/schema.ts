@@ -1,6 +1,5 @@
 import {
   supportedGenders,
-  supportedHubRoles,
   supportedPackageStatuses,
   supportedReceptionModes,
   supportedRoles,
@@ -20,8 +19,8 @@ import {
   tinyint,
   int,
   double,
-  primaryKey,
   datetime,
+  primaryKey,
 } from "drizzle-orm/mysql-core"
 
 export const users = mysqlTable("users", {
@@ -35,25 +34,116 @@ export const users = mysqlTable("users", {
   isEnabled: tinyint("is_enabled").notNull().default(1),
 })
 
-export const shipments = mysqlTable("shipments", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  originHubId: bigint("origin_hub_id", { mode: "number" }).notNull(),
-  // FIXME: Use a better design to signify that a shipment is headed
-  // for customer receivers.
-  //
-  // For now, we will use a NULL destinationHub to signify that.
-  destinationHubId: bigint("destination_hub_id", { mode: "number" }),
-  deliveredById: bigint("delivered_by_id", { mode: "number" }).notNull(),
-  isArchived: tinyint("is_archived").notNull().default(0),
-})
-
-export const shipmentLocations = mysqlTable("shipment_locations", {
+export const incomingShipments = mysqlTable("incoming_shipments", {
   id: bigint("id", {
     mode: "number",
   })
     .primaryKey()
     .autoincrement(),
-  shipmentId: bigint("shipment_id", {
+  sentByAgentId: bigint("sent_by_agent_id", {
+    mode: "number",
+  }).notNull(),
+  status: mysqlEnum("status", supportedShipmentStatuses).notNull(),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+  })
+    .notNull()
+    .defaultNow(),
+  isArchived: tinyint("is_archived").notNull().default(0),
+})
+
+export const incomingShipmentPackages = mysqlTable(
+  "incoming_shipment_packages",
+  {
+    incomingShipmentId: bigint("incoming_shipment_id", {
+      mode: "number",
+    }).notNull(),
+    packageId: bigint("package_id", { mode: "number" }).notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.incomingShipmentId, table.packageId],
+    }),
+  }),
+)
+
+export const transferShipments = mysqlTable("incoming_shipments", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  sentToAgentId: bigint("sent_to_agent_id", {
+    mode: "number",
+  }).notNull(),
+  status: mysqlEnum("status", supportedShipmentStatuses).notNull(),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+  })
+    .notNull()
+    .defaultNow(),
+  isArchived: tinyint("is_archived").notNull().default(0),
+})
+
+export const transferShipmentPackages = mysqlTable(
+  "transfer_shipment_packages",
+  {
+    transferShipmentId: bigint("transfer_shipment_id", {
+      mode: "number",
+    }).notNull(),
+    packageId: bigint("package_id", { mode: "number" }).notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.transferShipmentId, table.packageId],
+    }),
+  }),
+)
+
+export const deliveries = mysqlTable("deliveries", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  riderId: bigint("rider_id", {
+    mode: "number",
+  }).notNull(),
+  vehicleId: bigint("vehicle_id", {
+    mode: "number",
+  }).notNull(),
+  status: mysqlEnum("status", supportedShipmentStatuses).notNull(),
+  isExpress: tinyint("is_express").notNull(),
+  createdAt: timestamp("created_at", {
+    mode: "date",
+  })
+    .notNull()
+    .defaultNow(),
+  isArchived: tinyint("is_archived").notNull().default(0),
+})
+
+export const deliveryPackages = mysqlTable(
+  "delivery_packages",
+  {
+    deliveryId: bigint("delivery_id", {
+      mode: "number",
+    }).notNull(),
+    packageId: bigint("package_id", { mode: "number" }).notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.deliveryId, table.packageId],
+    }),
+  }),
+)
+
+export const deliveryLocations = mysqlTable("delivery_locations", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  deliveryId: bigint("delivery_id", {
     mode: "number",
   }).notNull(),
   long: double("long", {
@@ -72,71 +162,18 @@ export const shipmentLocations = mysqlTable("shipment_locations", {
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
 
-export const shipmentStatusLogs = mysqlTable("shipment_status_logs", {
+export const vehicles = mysqlTable("vehicles", {
   id: bigint("id", {
     mode: "number",
   })
     .primaryKey()
     .autoincrement(),
-  shipmentId: bigint("shipment_id", {
-    mode: "number",
-  }).notNull(),
-  status: mysqlEnum("status", supportedShipmentStatuses).notNull(),
-  description: varchar("description", {
-    length: 255,
-  }).notNull(),
-  createdAt: datetime("created_at", {
-    mode: "date",
-  }).notNull(),
-  createdById: varchar("created_by_id", { length: 28 }).notNull(),
-})
-
-export const shipmentHubs = mysqlTable("shipment_hubs", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  type: mysqlEnum("type", supportedVehicleTypes).notNull(),
   displayName: varchar("display_name", {
-    length: 255,
-  }).notNull(),
-  role: mysqlEnum("role", supportedHubRoles).notNull(),
-  streetAddress: varchar("street_address", {
-    length: 255,
-  }).notNull(),
-  barangay: varchar("barangay", {
-    length: 100,
-  }),
-  city: varchar("city", {
-    length: 100,
-  }),
-  stateOrProvince: varchar("state_or_province", {
     length: 100,
   }).notNull(),
-  countryCode: varchar("country_code", {
-    length: 3,
-  }).notNull(),
-  isMainHub: tinyint("is_main_hub").notNull(),
-  postalCode: int("postal_code").notNull(),
+  isExpressAllowed: tinyint("is_express_allowed").notNull(),
 })
-
-export const shipmentHubAgents = mysqlTable(
-  "shipment_hub_agents",
-  {
-    shipmentHubId: bigint("shipment_hub_id", { mode: "number" }).notNull(),
-    userId: varchar("user_id", { length: 28 }).notNull(),
-  },
-  (table) => ({
-    pk: primaryKey(table.shipmentHubId, table.userId),
-  }),
-)
-
-export const shipmentPackages = mysqlTable(
-  "shipment_packages",
-  {
-    shipmentId: bigint("shipment_id", { mode: "number" }).notNull(),
-    packageId: bigint("package_id", { mode: "number" }).notNull(),
-  },
-  (table) => ({
-    pk: primaryKey(table.shipmentId, table.packageId),
-  }),
-)
 
 export const packages = mysqlTable("packages", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
@@ -253,17 +290,4 @@ export const activities = mysqlTable("activities", {
     .defaultNow(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
-})
-
-export const vehicles = mysqlTable("vehicles", {
-  id: bigint("id", {
-    mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
-  type: mysqlEnum("type", supportedVehicleTypes).notNull(),
-  displayName: varchar("display_name", {
-    length: 100,
-  }).notNull(),
-  isExpressAllowed: tinyint("is_express_allowed").notNull(),
 })
