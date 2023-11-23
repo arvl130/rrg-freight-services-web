@@ -1,13 +1,13 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
-import { shipmentLocations, shipments } from "@/server/db/schema"
+import { deliveryLocations, deliveries } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import { ResultSetHeader } from "mysql2"
 import type { NextApiRequest, NextApiResponse } from "next"
 import { ZodError, z } from "zod"
 
 const getLocationsSchema = z.object({
-  shipmentId: z.number(),
+  deliveryId: z.number(),
 })
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
@@ -18,14 +18,14 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       return
     }
 
-    const { shipmentId } = getLocationsSchema.parse({
-      shipmentId: parseInt(req.query.id as string),
+    const { deliveryId } = getLocationsSchema.parse({
+      deliveryId: parseInt(req.query.id as string),
     })
 
     const shipmentResults = await db
       .select()
-      .from(shipments)
-      .where(eq(shipments.id, shipmentId))
+      .from(deliveries)
+      .where(eq(deliveries.id, deliveryId))
 
     if (shipmentResults.length === 0) {
       res.status(404).json({ message: "No such shipment" })
@@ -39,8 +39,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
     const shipmentLocationResults = await db
       .select()
-      .from(shipmentLocations)
-      .where(eq(shipmentLocations.shipmentId, shipmentId))
+      .from(deliveryLocations)
+      .where(eq(deliveryLocations.deliveryId, deliveryId))
 
     res.json({
       message: "Shipment locations retrieved",
@@ -62,7 +62,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 }
 
 const newLocationSchema = z.object({
-  shipmentId: z.number(),
+  deliveryId: z.number(),
   location: z.object({
     long: z.number(),
     lat: z.number(),
@@ -77,8 +77,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       return
     }
 
-    const { shipmentId, location } = newLocationSchema.parse({
-      shipmentId: parseInt(req.query.id as string),
+    const { deliveryId, location } = newLocationSchema.parse({
+      deliveryId: parseInt(req.query.id as string),
       location: {
         long: req.body.long,
         lat: req.body.lat,
@@ -87,8 +87,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 
     const shipmentResults = await db
       .select()
-      .from(shipments)
-      .where(eq(shipments.id, shipmentId))
+      .from(deliveries)
+      .where(eq(deliveries.id, deliveryId))
 
     if (shipmentResults.length === 0) {
       res.status(404).json({ message: "No such shipment" })
@@ -101,8 +101,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const createdById = session.user.uid
-    const [result] = (await db.insert(shipmentLocations).values({
-      shipmentId,
+    const [result] = (await db.insert(deliveryLocations).values({
+      deliveryId,
       long: location.long,
       lat: location.lat,
       createdById,
@@ -112,7 +112,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       message: "Shipment location recorded",
       data: {
         id: result.insertId,
-        shipmentId,
+        deliveryId,
         long: location.long,
         lat: location.lat,
         createdById,

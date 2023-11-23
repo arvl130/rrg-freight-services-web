@@ -1,6 +1,6 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
-import { shipments } from "@/server/db/schema"
+import { deliveries } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import { NextApiRequest, NextApiResponse } from "next"
 import { z } from "zod"
@@ -30,25 +30,25 @@ export default async function handler(
     id: parseInt(req.query.id as string),
   })
 
-  const shipmentResults = await db
+  const deliveriesResults = await db
     .select()
-    .from(shipments)
-    .where(eq(shipments.id, id))
+    .from(deliveries)
+    .where(eq(deliveries.id, id))
 
-  if (shipmentResults.length === 0) {
-    res.status(404).json({ message: "No such shipment" })
+  if (deliveriesResults.length === 0) {
+    res.status(404).json({ message: "No such delivery" })
     return
   }
 
-  if (shipmentResults.length > 1) {
+  if (deliveriesResults.length > 1) {
     res.status(412).json({ message: "Expected 1 result, but got more" })
     return
   }
 
-  const [shipment] = shipmentResults
+  const [delivery] = deliveriesResults
 
   res.json({
-    message: "Shipment retrieved",
-    shipment,
+    message: "Delivery retrieved",
+    delivery,
   })
 }

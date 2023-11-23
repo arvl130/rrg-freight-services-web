@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog"
-import { Shipment } from "@/server/db/entities"
+import { Delivery } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { DateTime } from "luxon"
 import { useState } from "react"
@@ -8,12 +8,12 @@ import { X } from "@phosphor-icons/react/X"
 import { Map as TMap } from "leaflet"
 import { LEAFLET_DEFAULT_ZOOM_LEVEL } from "@/utils/constants"
 
-export function ShipmentsViewLocationsModal({
-  shipment,
+export function DeliveriesViewLocationsModal({
+  delivery,
   isOpen,
   close,
 }: {
-  shipment: Shipment
+  delivery: Delivery
   isOpen: boolean
   close: () => void
 }) {
@@ -24,10 +24,10 @@ export function ShipmentsViewLocationsModal({
 
   const {
     status,
-    data: shipmentLocations,
+    data: deliveryLocations,
     error,
-  } = api.shipmentLocation.getByShipmentId.useQuery({
-    shipmentId: shipment.id,
+  } = api.deliveryLocation.getByDeliveryId.useQuery({
+    deliveryId: delivery.id,
   })
 
   return (
@@ -65,7 +65,7 @@ export function ShipmentsViewLocationsModal({
           )}
           {status === "success" && (
             <div className="grid grid-cols-[20rem_1fr] h-full overflow-y-auto">
-              {shipmentLocations.length === 0 ? (
+              {deliveryLocations.length === 0 ? (
                 <>
                   <div className="border-r border-gray-300 text-center pt-4 text-gray-500 text-sm">
                     No locations recorded.
@@ -75,9 +75,9 @@ export function ShipmentsViewLocationsModal({
               ) : (
                 <>
                   <div className="h-full overflow-y-auto border-r border-gray-300">
-                    {shipmentLocations.map((shipmentLocation, index) => (
+                    {deliveryLocations.map((deliveryLocation, index) => (
                       <button
-                        key={shipmentLocation.id}
+                        key={deliveryLocation.id}
                         type="button"
                         className={`
                       border-b border-gray-300 block w-full text-left px-4 py-2 text-sm
@@ -87,8 +87,8 @@ export function ShipmentsViewLocationsModal({
                           if (selectedItemIndex === index && map !== null) {
                             map.flyTo(
                               [
-                                shipmentLocations[selectedItemIndex].lat,
-                                shipmentLocations[selectedItemIndex].long,
+                                deliveryLocations[selectedItemIndex].lat,
+                                deliveryLocations[selectedItemIndex].long,
                               ],
                               LEAFLET_DEFAULT_ZOOM_LEVEL,
                             )
@@ -98,11 +98,11 @@ export function ShipmentsViewLocationsModal({
                       >
                         <div className="font-medium">
                           {DateTime.fromJSDate(
-                            shipmentLocation.createdAt,
+                            deliveryLocation.createdAt,
                           ).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)}
                         </div>
                         <div className="text-gray-500">
-                          {shipmentLocation.lat}&quot;, {shipmentLocation.long}
+                          {deliveryLocation.lat}&quot;, {deliveryLocation.long}
                           &quot;
                         </div>
                       </button>
@@ -117,8 +117,8 @@ export function ShipmentsViewLocationsModal({
                   ) : (
                     <div className="h-full w-full bg-gray-50">
                       <Map
-                        long={shipmentLocations[selectedItemIndex].long}
-                        lat={shipmentLocations[selectedItemIndex].lat}
+                        long={deliveryLocations[selectedItemIndex].long}
+                        lat={deliveryLocations[selectedItemIndex].lat}
                         setMap={(map) => setMap(map)}
                       />
                     </div>

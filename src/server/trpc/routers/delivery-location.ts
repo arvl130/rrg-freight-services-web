@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { shipmentLocations } from "@/server/db/schema"
+import { deliveryLocations } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
-export const shipmentLocationRouter = router({
+export const deliveryLocationRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(shipmentLocations)
+    return await ctx.db.select().from(deliveryLocations)
   }),
   getById: protectedProcedure
     .input(
@@ -17,8 +17,8 @@ export const shipmentLocationRouter = router({
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
         .select()
-        .from(shipmentLocations)
-        .where(eq(shipmentLocations.id, input.id))
+        .from(deliveryLocations)
+        .where(eq(deliveryLocations.id, input.id))
 
       if (results.length === 0)
         throw new TRPCError({
@@ -33,16 +33,16 @@ export const shipmentLocationRouter = router({
 
       return results[0]
     }),
-  getByShipmentId: protectedProcedure
+  getByDeliveryId: protectedProcedure
     .input(
       z.object({
-        shipmentId: z.number(),
+        deliveryId: z.number(),
       }),
     )
     .query(async ({ ctx, input }) => {
       return await ctx.db
         .select()
-        .from(shipmentLocations)
-        .where(eq(shipmentLocations.shipmentId, input.shipmentId))
+        .from(deliveryLocations)
+        .where(eq(deliveryLocations.deliveryId, input.deliveryId))
     }),
 })

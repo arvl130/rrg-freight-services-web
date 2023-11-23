@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
-import { shipmentHubAgents, shipmentHubs, users } from "@/server/db/schema"
+import { users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
 import { updateProfile } from "@/server/auth"
@@ -19,17 +19,6 @@ const TEXT_COLUMN_DEFAULT_LIMIT = 65_535
 export const userRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(users)
-  }),
-  getCurrent: protectedProcedure.query(({ ctx }) => {
-    const userId = ctx.user.uid
-    return ctx.db
-      .select()
-      .from(shipmentHubAgents)
-      .innerJoin(
-        shipmentHubs,
-        eq(shipmentHubAgents.shipmentHubId, shipmentHubs.id),
-      )
-      .where(eq(shipmentHubAgents.userId, userId))
   }),
   getById: protectedProcedure
     .input(

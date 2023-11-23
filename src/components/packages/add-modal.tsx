@@ -60,14 +60,6 @@ export function PackagesAddModal({
   })
 
   const apiUtils = api.useUtils()
-  const { isLoading, mutate } = api.package.create.useMutation({
-    onSuccess: () => {
-      toast.success("Submit successful!")
-      apiUtils.package.getAll.invalidate()
-      reset()
-      close()
-    },
-  })
 
   useEffect(() => {
     if (!isOpen) reset()
@@ -86,14 +78,7 @@ export function PackagesAddModal({
           </Dialog.Title>
           <form
             className="bg-white px-24 py-10 rounded-2xl h-full overflow-y-auto"
-            onSubmit={handleSubmit((formData) =>
-              mutate({
-                ...formData,
-                weightInKg: Number(formData.weightInKg),
-                receiverPostalCode: Number(formData.receiverPostalCode),
-                senderPostalCode: Number(formData.senderPostalCode),
-              }),
-            )}
+            onSubmit={handleSubmit((formData) => {})}
           >
             <h1 className="font-semibold text-lg mb-2">Sender Info:</h1>
             <div className="grid grid-cols-3 gap-x-4 mb-4">
@@ -330,10 +315,9 @@ export function PackagesAddModal({
               </button>
               <button
                 type="submit"
-                disabled={isLoading}
                 className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 transition-colors px-4 py-2 rounded-md font-medium text-white"
               >
-                {isLoading ? "Saving ..." : "Save"}
+                wip
               </button>
             </div>
           </form>

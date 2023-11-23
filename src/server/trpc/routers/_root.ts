@@ -2,11 +2,8 @@ import { z } from "zod"
 import { publicProcedure, router } from "../trpc"
 import { packageRouter } from "./package"
 import { userRouter } from "./user"
-import { shipmentRouter } from "./shipment"
+import { deliveryLocationRouter } from "./delivery-location"
 import { packageStatusLogRouter } from "./package-status-logs"
-import { shipmentStatusLogRouter } from "./shipment-status-logs"
-import { shipmentHubRouter } from "./shipment-hub"
-import { shipmentLocationRouter } from "./shipment-location"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -23,10 +20,7 @@ export const rootRouter = router({
   user: userRouter,
   package: packageRouter,
   packageStatusLog: packageStatusLogRouter,
-  shipmentHub: shipmentHubRouter,
-  shipment: shipmentRouter,
-  shipmentStatusLog: shipmentStatusLogRouter,
-  shipmentLocation: shipmentLocationRouter,
+  deliveryLocation: deliveryLocationRouter,
 })
 
 export type RootRouter = typeof rootRouter
