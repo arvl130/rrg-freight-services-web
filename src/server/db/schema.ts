@@ -10,7 +10,6 @@ import {
   supportedShippingTypes,
   supportedVehicleTypes,
 } from "../../utils/constants"
-import { relations } from "drizzle-orm"
 import {
   bigint,
   mysqlTable,
@@ -35,10 +34,6 @@ export const users = mysqlTable("users", {
   role: mysqlEnum("role", supportedRoles).notNull(),
   isEnabled: tinyint("is_enabled").notNull().default(1),
 })
-
-export const usersRelations = relations(users, ({ many }) => ({
-  activities: many(activities),
-}))
 
 export const shipments = mysqlTable("shipments", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
@@ -77,23 +72,6 @@ export const shipmentLocations = mysqlTable("shipment_locations", {
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
 
-export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
-  originHub: one(shipmentHubs, {
-    fields: [shipments.originHubId],
-    references: [shipmentHubs.id],
-  }),
-  destinationHub: one(shipmentHubs, {
-    fields: [shipments.destinationHubId],
-    references: [shipmentHubs.id],
-  }),
-  deliveredBy: one(vehicles, {
-    fields: [shipments.deliveredById],
-    references: [vehicles.id],
-  }),
-  shipmentPackages: many(shipmentPackages),
-  shipmentStatusLogs: many(shipmentStatusLogs),
-}))
-
 export const shipmentStatusLogs = mysqlTable("shipment_status_logs", {
   id: bigint("id", {
     mode: "number",
@@ -112,20 +90,6 @@ export const shipmentStatusLogs = mysqlTable("shipment_status_logs", {
   }).notNull(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
-
-export const shipmentStatusLogsRelations = relations(
-  shipmentStatusLogs,
-  ({ one }) => ({
-    shipment: one(shipments, {
-      fields: [shipmentStatusLogs.shipmentId],
-      references: [shipments.id],
-    }),
-    createdBy: one(users, {
-      fields: [shipmentStatusLogs.createdById],
-      references: [users.id],
-    }),
-  }),
-)
 
 export const shipmentHubs = mysqlTable("shipment_hubs", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
@@ -152,10 +116,6 @@ export const shipmentHubs = mysqlTable("shipment_hubs", {
   postalCode: int("postal_code").notNull(),
 })
 
-export const shipmentHubsRelations = relations(shipmentHubs, ({ many }) => ({
-  shipmentHubAgents: many(shipmentHubAgents),
-}))
-
 export const shipmentHubAgents = mysqlTable(
   "shipment_hub_agents",
   {
@@ -167,20 +127,6 @@ export const shipmentHubAgents = mysqlTable(
   }),
 )
 
-export const shipmentHubAgentsRelations = relations(
-  shipmentHubAgents,
-  ({ one }) => ({
-    shipmentHub: one(shipmentHubs, {
-      fields: [shipmentHubAgents.shipmentHubId],
-      references: [shipmentHubs.id],
-    }),
-    user: one(users, {
-      fields: [shipmentHubAgents.userId],
-      references: [users.id],
-    }),
-  }),
-)
-
 export const shipmentPackages = mysqlTable(
   "shipment_packages",
   {
@@ -189,20 +135,6 @@ export const shipmentPackages = mysqlTable(
   },
   (table) => ({
     pk: primaryKey(table.shipmentId, table.packageId),
-  }),
-)
-
-export const shipmentPackagesRelations = relations(
-  shipmentPackages,
-  ({ one }) => ({
-    package: one(packages, {
-      fields: [shipmentPackages.packageId],
-      references: [packages.id],
-    }),
-    shipment: one(shipments, {
-      fields: [shipmentPackages.shipmentId],
-      references: [shipments.id],
-    }),
   }),
 )
 
@@ -279,18 +211,6 @@ export const packages = mysqlTable("packages", {
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
-export const packagesRelations = relations(packages, ({ one, many }) => ({
-  packageStatusLogs: many(packageStatusLogs),
-  createdBy: one(users, {
-    fields: [packages.createdById],
-    references: [users.id],
-  }),
-  updatedBy: one(users, {
-    fields: [packages.updatedById],
-    references: [users.id],
-  }),
-}))
-
 export const packageStatusLogs = mysqlTable("package_status_logs", {
   id: bigint("id", {
     mode: "number",
@@ -309,20 +229,6 @@ export const packageStatusLogs = mysqlTable("package_status_logs", {
   }).notNull(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
-
-export const packageStatusLogsRelations = relations(
-  packageStatusLogs,
-  ({ one }) => ({
-    package: one(packages, {
-      fields: [packageStatusLogs.packageId],
-      references: [packages.id],
-    }),
-    createdBy: one(users, {
-      fields: [packageStatusLogs.createdById],
-      references: [users.id],
-    }),
-  }),
-)
 
 export const activities = mysqlTable("activities", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
@@ -348,13 +254,6 @@ export const activities = mysqlTable("activities", {
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
 })
-
-export const activitiesRelations = relations(activities, ({ one }) => ({
-  createdBy: one(users, {
-    fields: [activities.createdById],
-    references: [users.id],
-  }),
-}))
 
 export const vehicles = mysqlTable("vehicles", {
   id: bigint("id", {
