@@ -44,9 +44,9 @@ export function AdminSideBar() {
           icon={<Boat size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Shipments"
-          href="/admin/transfer-shipments"
-          icon={<Swap size={32} className="text-white" />}
+          name="Packages"
+          href="/admin/packages"
+          icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
           name="Deliveries"
@@ -54,9 +54,9 @@ export function AdminSideBar() {
           icon={<Motorcycle size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Packages"
-          href="/admin/packages"
-          icon={<Package size={32} className="text-white" />}
+          name="Shipments"
+          href="/admin/transfer-shipments"
+          icon={<Swap size={32} className="text-white" />}
         />
         <SideBarLink
           name="Users"
