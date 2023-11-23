@@ -283,9 +283,7 @@ function CreatePackagesForm({
     return (
       <div className="px-4 grid grid-rows-[1fr_auto]">
         <div className="h-full overflow-x-auto border border-gray-300">
-          <div
-            className={`grid grid-cols-[repeat(${expectedColumns.length},_13rem)] font-medium`}
-          >
+          <div className={`grid grid-cols-[repeat(21,_13rem)] font-medium`}>
             {Object.keys(sheetRows[0]).map((key) => (
               <div key={key} className="px-1.5 py-1">
                 {key}
@@ -293,10 +291,7 @@ function CreatePackagesForm({
             ))}
           </div>
           {sheetRows.map((newPackage, index) => (
-            <div
-              key={index}
-              className={`grid grid-cols-[repeat(${expectedColumns.length},_13rem)]`}
-            >
+            <div key={index} className={`grid grid-cols-[repeat(21,_13rem)]`}>
               {Object.keys(newPackage).map((key) => (
                 <div
                   key={key}
@@ -333,9 +328,7 @@ function CreatePackagesForm({
             its contents.
           </p>
           <div className="h-full overflow-x-auto border border-gray-300">
-            <div
-              className={`grid grid-cols-[repeat(${expectedColumns.length},_13rem)] font-medium`}
-            >
+            <div className={`grid grid-cols-[repeat(21,_13rem)] font-medium`}>
               {expectedColumns.map((column) => (
                 <div key={column} className="px-1.5 py-1">
                   {column}
@@ -353,9 +346,7 @@ function CreatePackagesForm({
                   const newPackage = sheetRowsRaw[row as any] as SheetRow
 
                   return (
-                    <div
-                      className={`grid grid-cols-[repeat(${expectedColumns.length},_13rem)]`}
-                    >
+                    <div className={`grid grid-cols-[repeat(21,_13rem)]`}>
                       {expectedColumns.map((column) => (
                         <div
                           key={column}
