@@ -16,8 +16,34 @@ import {
   supportedShippingTypes,
 } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
+import { TRPCError } from "@trpc/server"
+import { eq } from "drizzle-orm"
 
 export const incomingShipmentRouter = router({
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db.select().from(incomingShipments)
+  }),
+  getById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(incomingShipments)
+        .where(eq(incomingShipments.id, input.id))
+
+      if (results.length === 0) return null
+      if (results.length > 1)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Expected 1 result, but got multiple.",
+        })
+
+      return results[0]
+    }),
   create: protectedProcedure
     .input(
       z.object({
