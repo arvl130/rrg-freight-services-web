@@ -5,6 +5,8 @@ import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
+import { DeliveriesCreateModal } from "@/components/deliveries/create-modal"
+import { api } from "@/utils/api"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -22,12 +24,17 @@ function PageHeader() {
           <span>Create Delivery</span>
         </button>
       </div>
+      <DeliveriesCreateModal
+        isOpen={isOpenCreateModal}
+        close={() => setIsOpenCreateModal(false)}
+      />
     </div>
   )
 }
 
-export default function IncomingShipmentsPage() {
+export default function DeliveriesPage() {
   const { user, role } = useSession()
+  const { status, data: deliveries, error } = api.delivery.getAll.useQuery()
 
   return (
     <AdminLayout title="Shipments">
@@ -81,7 +88,9 @@ export default function IncomingShipmentsPage() {
           </button>
         </div>
       </div>
-      wip
+      {status === "loading" && <div></div>}
+      {status === "error" && <div>Error: {error.message}</div>}
+      {status === "success" && <div>{JSON.stringify(deliveries)}</div>}
     </AdminLayout>
   )
 }

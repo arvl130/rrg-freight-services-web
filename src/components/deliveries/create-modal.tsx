@@ -1,8 +1,19 @@
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
-import { api } from "@/utils/api"
-import { Package } from "@/server/db/entities"
+import { Package, Vehicle } from "@/server/db/entities"
 import { useSession } from "@/utils/auth"
+import * as Dialog from "@radix-ui/react-dialog"
+import { useForm } from "react-hook-form"
+import {
+  REGEX_ONE_OR_MORE_DIGITS,
+  SUPPORTED_SHIPPING_TYPES,
+  ShippingType,
+  supportedShippingTypeToHumanized,
+} from "@/utils/constants"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { api } from "@/utils/api"
+import toast from "react-hot-toast"
 
 function ChooseDestinationPanel({
   isOpenModal,
@@ -73,10 +84,16 @@ function ChoosePackageTable({
   onSelectAll: (props: { isChecked: boolean; packageIds: number[] }) => void
   onCheckboxChange: (props: { isChecked: boolean; packageId: number }) => void
 }) {
+  const {
+    refetch,
+    status,
+    data: packages,
+  } = api.package.getDeliverable.useQuery()
+
   return (
     <div>
       <div className="flex justify-between mb-3">
-        <p className="font-medium text-gray-700">Choose package to include:</p>
+        <p className="font-medium text-gray-700">Packages</p>
         <div className="flex justify-end">
           <div className="flex-col grid grid-cols-[1fr_2.25rem] h-[2.375rem] ml-2">
             <input
@@ -93,8 +110,240 @@ function ChoosePackageTable({
           </div>
         </div>
       </div>
-      <div>wip</div>
+      <div>
+        {status === "loading" && (
+          <article className="bg-white rounded-lg px-6 py-3 drop-shadow-md h-80 text-center flex justify-center items-center">
+            Loading ...
+          </article>
+        )}
+
+        {status === "error" && (
+          <article className="bg-white rounded-lg px-6 py-3 drop-shadow-md h-80 text-center flex flex-col justify-center items-center">
+            <p className="mb-1">An error occured :(</p>
+            <button
+              type="button"
+              className="px-3 py-1.5 text-sm rounded-md border border-gray-300 hover:bg-gray-50 transition-colors"
+              onClick={() => refetch()}
+            >
+              Retry
+            </button>
+          </article>
+        )}
+
+        {status === "success" && (
+          <article className="bg-white rounded-lg px-6 py-3 drop-shadow-md h-80">
+            <div className="mb-2"></div>
+            <div className="text-sm">
+              <div className="grid grid-cols-3 font-bold mb-1">
+                <div className=" py-2 flex items-center gap-1">
+                  {packages.length === 0 ? (
+                    <input type="checkbox" disabled />
+                  ) : (
+                    <input
+                      type="checkbox"
+                      checked={packages.length === selectedPackageIds.length}
+                      onChange={(e) => {
+                        onSelectAll({
+                          isChecked: e.currentTarget.checked,
+                          packageIds: packages.map((_package) => _package.id),
+                        })
+                      }}
+                    />
+                  )}
+                  <span>Product ID</span>
+                </div>
+                <div>Sender</div>
+                <div>Receiver</div>
+              </div>
+              {packages.length === 0 ? (
+                <p className="text-center">No packages available</p>
+              ) : (
+                <>
+                  {packages.map((_package) => (
+                    <PackagesTableItem
+                      key={_package.id}
+                      selectedPackageIds={selectedPackageIds}
+                      package={_package}
+                      onCheckboxChange={onCheckboxChange}
+                    />
+                  ))}
+                </>
+              )}
+            </div>
+          </article>
+        )}
+      </div>
     </div>
+  )
+}
+
+const createDeliveryFormSchema = z.object({
+  deliveryType: z.custom<ShippingType>((val) =>
+    SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
+  ),
+  vehicleId: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
+  riderId: z.string().length(28),
+})
+
+type CreateDeliveryFormType = z.infer<typeof createDeliveryFormSchema>
+
+function CreateDeliveryForm({ close }: { close: () => void }) {
+  const utils = api.useUtils()
+  const { isLoading, mutate } = api.delivery.create.useMutation({
+    onSuccess: () => {
+      utils.delivery.getAll.invalidate()
+      close()
+      toast.success("Delivery Created")
+    },
+  })
+  const {
+    status: statusOfAvailableVehicles,
+    data: availableVehicles,
+    error: errorOfAvailableVehicles,
+  } = api.vehicle.getAvailable.useQuery()
+
+  const {
+    status: statusOfAvailableRiders,
+    data: availableRiders,
+    error: errorOfAvailableRiders,
+  } = api.user.getAvailableRiders.useQuery()
+
+  const [selectedPackageIds, setSelectedPackageIds] = useState<number[]>([])
+
+  const {
+    watch,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateDeliveryFormType>({
+    resolver: zodResolver(createDeliveryFormSchema),
+    defaultValues: {
+      deliveryType: "STANDARD",
+    },
+  })
+
+  function filterByVehiclesDeliveryType(
+    vehicles: Vehicle[],
+    deliveryType: ShippingType,
+  ) {
+    return deliveryType === "EXPRESS"
+      ? vehicles.filter((vehicle) => vehicle.isExpressAllowed)
+      : vehicles
+  }
+
+  return (
+    <form
+      className="grid grid-rows-[1fr_auto] px-4 py-2"
+      onSubmit={handleSubmit((formData) =>
+        mutate({
+          riderId: formData.riderId,
+          vehicleId: Number(formData.vehicleId),
+          isExpress: formData.deliveryType === "EXPRESS",
+          packageIds: [selectedPackageIds[0], ...selectedPackageIds.slice(1)],
+        }),
+      )}
+    >
+      <div className="grid grid-cols-[auto_1fr] gap-3">
+        <div>
+          <div>
+            <label className="block">Delivery Type</label>
+            <select className="w-full" {...register("deliveryType")}>
+              {SUPPORTED_SHIPPING_TYPES.map((shippingType) => (
+                <option key={shippingType} value={shippingType}>
+                  {supportedShippingTypeToHumanized(
+                    shippingType as ShippingType,
+                  )}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block">Vehicle</label>
+            {statusOfAvailableVehicles === "loading" && <p>Loading ...</p>}
+            {statusOfAvailableVehicles === "error" && (
+              <p>Error: {errorOfAvailableVehicles.message}</p>
+            )}
+            {statusOfAvailableVehicles === "success" && (
+              <>
+                {filterByVehiclesDeliveryType(
+                  availableVehicles,
+                  watch("deliveryType"),
+                ).length === 0 ? (
+                  <p>No available vehicles.</p>
+                ) : (
+                  <select className="w-full" {...register("vehicleId")}>
+                    {filterByVehiclesDeliveryType(
+                      availableVehicles,
+                      watch("deliveryType"),
+                    ).map((vehicle) => (
+                      <option key={vehicle.id} value={vehicle.id.toString()}>
+                        {vehicle.displayName}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </>
+            )}
+          </div>
+          <div>
+            <label>Rider</label>
+            {statusOfAvailableRiders === "loading" && <p>Loading ...</p>}
+            {statusOfAvailableRiders === "error" && (
+              <p>Error: {errorOfAvailableRiders.message}</p>
+            )}
+            {statusOfAvailableRiders === "success" && (
+              <>
+                {availableRiders.length === 0 ? (
+                  <p>No available riders.</p>
+                ) : (
+                  <select className="w-full" {...register("riderId")}>
+                    {availableRiders.map((rider) => (
+                      <option key={rider.id} value={rider.id.toString()}>
+                        {rider.displayName}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+        <div>
+          <ChoosePackageTable
+            selectedPackageIds={selectedPackageIds}
+            onSelectAll={({ isChecked, packageIds }) => {
+              if (isChecked) {
+                setSelectedPackageIds(packageIds)
+              } else {
+                setSelectedPackageIds([])
+              }
+            }}
+            onCheckboxChange={({ isChecked, packageId }) => {
+              if (isChecked)
+                setSelectedPackageIds((currSelectedPackageIds) => [
+                  ...currSelectedPackageIds,
+                  packageId,
+                ])
+              else
+                setSelectedPackageIds((currSelectedPackageIds) =>
+                  currSelectedPackageIds.filter(
+                    (selectedPackageId) => selectedPackageId !== packageId,
+                  ),
+                )
+            }}
+          />
+        </div>
+      </div>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          className="px-4 py-2 bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 text-white transition-colors rounded-md"
+          disabled={isLoading || selectedPackageIds.length === 0}
+        >
+          Create
+        </button>
+      </div>
+    </form>
   )
 }
 
@@ -105,22 +354,20 @@ export function DeliveriesCreateModal({
   isOpen: boolean
   close: () => void
 }) {
-  const modalRef = useRef<null | HTMLDialogElement>(null)
-  const [selectedDestinationHubId, setSelectedDestinationHubId] = useState<
-    null | number
-  >(null)
-  const [selectedPackageIds, setSelectedPackageIds] = useState<number[]>([])
-
   return (
-    <dialog
-      ref={modalRef}
-      onClose={close}
-      className={`
-        bg-white w-[min(100%,_64rem)] rounded-2xl h-[calc(100vh-_6rem)]
-        ${isOpen ? "grid" : ""}
-      `}
-    >
-      wip
-    </dialog>
+    <Dialog.Root open={isOpen}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="bg-black/40 fixed inset-0" />
+        <Dialog.Content
+          onEscapeKeyDown={close}
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_56rem)] h-[32rem] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
+        >
+          <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
+            New Delivery
+          </Dialog.Title>
+          <CreateDeliveryForm close={close} />
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
