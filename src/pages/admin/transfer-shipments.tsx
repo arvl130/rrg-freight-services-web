@@ -6,6 +6,8 @@ import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
 import { TransferShipmentsCreateModal } from "@/components/transfer-shipments/create-modal"
+import { api } from "@/utils/api"
+import { LoadingSpinner } from "@/components/spinner"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -33,8 +35,15 @@ function PageHeader() {
   )
 }
 
-export default function IncomingShipmentsPage() {
+export default function TransferShipmentsPage() {
   const { user, role } = useSession()
+  const {
+    status,
+    data: transferShipments,
+    error,
+  } = api.transferShipment.getAll.useQuery(undefined, {
+    enabled: user !== null && role === "ADMIN",
+  })
 
   return (
     <AdminLayout title="Shipments">
@@ -88,7 +97,17 @@ export default function IncomingShipmentsPage() {
           </button>
         </div>
       </div>
-      wip
+      {status === "loading" && (
+        <div className="flex justify-center pt-4">
+          <LoadingSpinner />
+        </div>
+      )}
+      {status === "error" && (
+        <div className="flex justify-center pt-4">
+          An error occured: {error.message}
+        </div>
+      )}
+      {status === "success" && <>{JSON.stringify(transferShipments)}</>}
     </AdminLayout>
   )
 }
