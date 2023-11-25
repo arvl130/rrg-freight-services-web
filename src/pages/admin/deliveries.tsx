@@ -220,7 +220,7 @@ function DeliveriesTable({
             <input type="checkbox" name="" id="" />
             <span>Delivery ID</span>
           </div>
-          <div className="uppercase px-4 py-2">Sent By</div>
+          <div className="uppercase px-4 py-2">Assigned To</div>
           <div className="uppercase px-4 py-2">Created At</div>
           <div className="uppercase px-4 py-2">Status</div>
         </div>
