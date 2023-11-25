@@ -17,6 +17,7 @@ import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
+import { ShipmentStatus } from "@/utils/constants"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -80,7 +81,7 @@ function IncomingShipmentTableItem({
         <div
           className={`
         w-36 py-0.5 text-white text-center rounded-md
-        ${getColorFromShipmentStatus(incomingShipment.status)}
+        ${getColorFromShipmentStatus(incomingShipment.status as ShipmentStatus)}
       `}
         >
           {incomingShipment.status.replaceAll("_", " ")}

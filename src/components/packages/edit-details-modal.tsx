@@ -86,7 +86,7 @@ export function PackagesEditDetailsModal({
       id: _package.id,
       shippingParty: _package.shippingParty,
       shippingMode: _package.shippingMode,
-      shippingType: _package.shippingType,
+      shippingType: _package.shippingType as ShippingType,
       receptionMode: _package.receptionMode,
       weightInKg: _package.weightInKg.toString(),
       senderFullName: _package.senderFullName,
