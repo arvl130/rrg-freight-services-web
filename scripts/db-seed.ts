@@ -4,7 +4,7 @@ import { seedEnv } from "./env.mjs"
 import * as schema from "@/server/db/schema"
 import mysql from "mysql2/promise"
 import { drizzle } from "drizzle-orm/mysql2"
-import { NewUser } from "@/server/db/entities"
+import { NewUser, NewVehicle } from "@/server/db/entities"
 
 const pool = mysql.createPool({
   uri: serverEnv.DATABASE_URL,
@@ -52,9 +52,59 @@ const newUsers: NewUser[] = [
     gender: "FEMALE",
     isEnabled: 1,
   },
+  {
+    id: seedEnv.TEST_RIDER_USER_ID,
+    displayName: "Rider 1",
+    contactNumber: "+1112223333",
+    emailAddress: seedEnv.TEST_RIDER_EMAIL,
+    role: "RIDER",
+    gender: "MALE",
+    isEnabled: 1,
+  },
+]
+
+const newVehicles: NewVehicle[] = [
+  {
+    id: 1,
+    displayName: "Truck 1",
+    type: "TRUCK",
+    isExpressAllowed: 0,
+  },
+  {
+    id: 2,
+    displayName: "Truck 2",
+    type: "TRUCK",
+    isExpressAllowed: 0,
+  },
+  {
+    id: 3,
+    displayName: "Truck 3",
+    type: "TRUCK",
+    isExpressAllowed: 0,
+  },
+  {
+    id: 4,
+    displayName: "Van 1",
+    type: "VAN",
+    isExpressAllowed: 0,
+  },
+  {
+    id: 5,
+    displayName: "Motorcycle 1",
+    type: "MOTORCYCLE",
+    isExpressAllowed: 1,
+  },
+  {
+    id: 6,
+    displayName: "Motorcycle 2",
+    type: "MOTORCYCLE",
+    isExpressAllowed: 1,
+  },
 ]
 
 await db.insert(schema.users).values(newUsers)
+await db.insert(schema.vehicles).values(newVehicles)
+
 await pool
   .end()
   .then(() => console.log("[\x1b[32m%s\x1b[0m] Database seeded", "✓"))
