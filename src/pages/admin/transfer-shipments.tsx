@@ -5,6 +5,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
+import { TransferShipmentsCreateModal } from "@/components/transfer-shipments/create-modal"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -24,6 +25,10 @@ function PageHeader() {
           <span>Create Shipment</span>
         </button>
       </div>
+      <TransferShipmentsCreateModal
+        isOpen={isOpenCreateModal}
+        close={() => setIsOpenCreateModal(false)}
+      />
     </div>
   )
 }
