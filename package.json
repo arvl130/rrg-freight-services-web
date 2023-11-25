@@ -45,6 +45,7 @@
     "react-hot-toast": "^2.4.1",
     "react-leaflet": "^4.2.1",
     "react-qr-code": "^2.0.12",
+    "react-responsive-carousel": "^3.2.23",
     "react-to-pdf": "^1.0.1",
     "superjson": "^2.2.1",
     "tailwindcss": "3.3.5",

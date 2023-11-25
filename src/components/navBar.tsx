@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from "react"
+import { useState, useEffect, useRef, FC } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { CaretDown } from "@phosphor-icons/react/CaretDown"
@@ -14,15 +14,11 @@ const Navbar: FC = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
-  const toggleAboutOptions = () => {
-    setShowAboutOptions(!showAboutOptions)
-  }
-
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY || document.documentElement.scrollTop
 
-      const scrollThreshold = 100
+      const scrollThreshold = 150
 
       setIsScrolled(scrollY > scrollThreshold)
     }
@@ -36,8 +32,8 @@ const Navbar: FC = () => {
 
   return (
     <div
-      className={`fixed p-10 w-full transition-all duration-300 ${
-        isScrolled ? "bg-[#A4D8D8] opacity-95" : "bg-transparent"
+      className={`z-50 fixed p-5 w-full transition-all duration-300 drop-shadow-xl ${
+        isScrolled ? "bg-[#79CFDC]" : "bg-transparent"
       }`}
     >
       <div className="container mx-auto flex justify-between items-center text-white">
@@ -83,28 +79,9 @@ const Navbar: FC = () => {
             </Link>
           </li>
           <li className="relative group">
-            <div
-              onClick={toggleAboutOptions}
-              className="text-white py-2 cursor-pointer flex items-center"
-            >
-              About Us <CaretDown size={18} />
-            </div>
-            <ul
-              className={`${
-                showAboutOptions ? "block" : "hidden"
-              } absolute left-0 space-y-2 bg-white text-black border rounded-md border-gray-300`}
-            >
-              <li>
-                <Link href="/about" passHref>
-                  <div className=" py-2">Company Profile</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" passHref>
-                  <div className=" py-2">Meet the Team</div>
-                </Link>
-              </li>
-            </ul>
+            <Link href="/about" passHref>
+              <div className=" text-white py-2">About Us</div>
+            </Link>
           </li>
           <li>
             <Link href="/" passHref>

@@ -1,6 +1,6 @@
 import Head from "next/head"
 import Link from "next/link"
-import { useState, FC } from "react"
+import { useState, FC, useRef } from "react"
 import Navbar from "@/components/navBar"
 import Image from "next/image"
 import Footer from "@/components/footer"
@@ -11,18 +11,20 @@ import { InstagramLogo } from "@phosphor-icons/react/InstagramLogo"
 import { FacebookLogo } from "@phosphor-icons/react/FacebookLogo"
 import { TwitterLogo } from "@phosphor-icons/react/TwitterLogo"
 import { Quotes } from "@phosphor-icons/react/Quotes"
+import { Carousel } from "react-responsive-carousel"
+import "react-responsive-carousel/lib/styles/carousel.min.css"
+import { CaretRight } from "@phosphor-icons/react/dist/icons/CaretRight"
+import { Path } from "@phosphor-icons/react/dist/icons/Path"
+import ShipVector from "@/components/icons/ship-vector"
+import GuyVector from "@/components/icons/guy-vector"
+
+const images = [
+  "/assets/img/home/ship1.jpg",
+  "/assets/img/home/ship2.jpg",
+  "/assets/img/home/ship3.jpg",
+]
 
 const HomePage: FC = () => {
-  const [currentSlide, setCurrentSlide] = useState(0)
-
-  const nextSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide + 1) % 2)
-  }
-
-  const prevSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide - 1 + 2) % 2)
-  }
-
   return (
     <>
       <Head>
@@ -32,76 +34,119 @@ const HomePage: FC = () => {
       <main className="">
         <Navbar />
         <section key="section1">
-          <div className="imageWrapper">
-            <Image
-              src="/assets/img/homepage/homepage-bg1.png"
-              alt="RRG Freight Services logo with its name on the right"
-              sizes="(max-width: 1920px) 100vw, (max-width: 1104px) 50vw, 33vw"
-              width={1920}
-              height={1080}
-            />
+          <div
+            style={{
+              minWidth: "100%",
+              minHeight: "650px",
+              background: "linear-gradient(#79CFDC 80%, #FFFFFF)",
+            }}
+            className="relative"
+          >
+            <p
+              style={{
+                letterSpacing: "2px",
+                textShadow: "2px 2px #707070",
+              }}
+              className="text-[45px] font-semibold text-white text-center w-full pt-[200px] leading-none tracking-wide lg:absolute lg:w-[650px] lg:top-[30%] lg:left-10 lg:text-left lg:pt-0"
+            >
+              Do not leave your shipments to chance take charge of your
+              logistics today.
+            </p>
+            <div className="absolute right-2 bottom-20 hidden md:block  lg:bottom-0">
+              <ShipVector></ShipVector>
+            </div>
           </div>
         </section>
 
         <section key="section2">
           {/* Track Section */}
           <div className="bg-white">
-            <div className="text-center my-5 md:my-10">
-              <div className="font-sans font-bold text-2xl sm:text-2xl md:text-3xl lg:text-6xl my-5 sm:my-20 lg:my-20">
-                <p className="lg:p-4 sm:p-2">Track now your package and</p>
-                <p className="lg:p-4 sm:p-2">
+            <div className=" my-5 flex justify-center	 md:my-10">
+              <div className="hidden sm:block sm:flex sm:justify-center sm:items-center">
+                <div>
+                  <GuyVector></GuyVector>
+                </div>
+              </div>
+              <div className="font-sans font-bold text-center text-2xl md:text-3xl md:leading-normal lg:text-4xl sm:text-left">
+                <p className="lg:p-3 sm:p-2">Track now your package and</p>
+                <p className="lg:p-3 sm:p-2">
                   ensure your cargo arrives safely
                 </p>
-                <p className="lg:p-4 sm:p-2">and on schedule!</p>
+                <p className="lg:p-3 sm:p-2">and on schedule!</p>
+
+                <Link href="/tracking">
+                  <button className="drop-shadow-lg inline-flex items-center bg-red-500 text-white px-6 py-3.5 text-base rounded-full hover:bg-red-800 font-bold font-family my-5">
+                    Track Now{" "}
+                    <Path
+                      className="ml-1"
+                      size={22}
+                      color="#FFFFFF"
+                      weight="thin"
+                    />
+                  </button>
+                </Link>
               </div>
-              <button className="bg-red-500 text-white px-6 py-3.5 rounded-full hover:bg-red-800 font-bold font-family my-5">
-                Track Now
-              </button>
             </div>
           </div>
         </section>
 
         <section key="section3">
           {/* Carousel section */}
-          <div className="bg-[#acdee2] w-fullscreen">
-            <div
-              id="controls-carousel"
-              className="relative max-w-full h-[70vh] md:h-[100vh]"
-              data-carousel="static"
-            >
-              {/* Carousel Content */}
-              <div
-                className="relative max-w-[1923px] h-full flex items-center justify-center transform transition-transform"
-                style={{
-                  transform: `translateX(-${currentSlide * 100}%)`,
-                }}
+
+          <div
+            style={{
+              background: "#79CFDC",
+            }}
+            className=" w-fullscreen flex px-10 py-[20px] md:py-[60px]"
+          >
+            <div className="drop-shadow-lg m-auto">
+              <Carousel
+                showStatus={false}
+                showThumbs={false}
+                useKeyboardArrows={true}
               >
-                <div className="w-full max-w-full">
-                  <div className="relative">
-                    <div className=" inset-0 flex items-center justify-center">
-                      <Image
-                        src="/assets/img/homepage/carousel1.png"
-                        alt="Truck"
-                        sizes="(max-width: 1920px) 100vw, (max-width: 1104px) 50vw, 33vw"
-                        width={1920}
-                        height={1080}
-                      />
-                    </div>
+                {images.map((URL, index) => (
+                  <div
+                    style={{ borderRadius: "10px" }}
+                    key={index}
+                    className="slide"
+                  >
+                    <Image
+                      style={{ borderRadius: "10px" }}
+                      src={URL}
+                      alt="ship"
+                      width={616}
+                      height={370}
+                    />
                   </div>
-                </div>
+                ))}
+              </Carousel>
+            </div>
+            <div className="hidden text-white m-auto px-12 md:block">
+              <div className="flex flex-col justify-center">
+                <h2 className="text-4xl font-bold mb-5">About RRG</h2>
+                <p className="ml-5 mb-10">
+                  RRG FREIGHT SERVICES is a Domestic and International Freight
+                  Forwarder founded by its proprietor Mr. Rafael C. Fabia
+                  located in Blk 213 Lot 41 Yuan Street Phase 8 North Fairview,
+                  Quezon City, Philippines, inspired by the New Heroes the
+                  OFW&apos;s.
+                </p>
               </div>
-              <button
-                onClick={prevSlide}
-                className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2  hover:bg-opacity-70"
-              >
-                &lt; {/* Previous Arrow */}
-              </button>
-              <button
-                onClick={nextSlide}
-                className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2  hover:bg-opacity-70"
-              >
-                &gt; {/* Next Arrow */}
-              </button>
+              <Link href="/about">
+                <button
+                  style={{ borderRadius: "20px" }}
+                  className="group p-3 px-4 bg-[#FFFFFF] text-[#79CFDC] font-bold hover:bg-slate-200 flex items-center	transition duration-500"
+                >
+                  Learn More{" "}
+                  <CaretRight
+                    className=" group-hover:ml-[10px]  duration-500"
+                    size={22}
+                    color="#79CFDC"
+                    weight="thin"
+                  />
+                </button>
+              </Link>
             </div>
           </div>
         </section>
@@ -109,31 +154,29 @@ const HomePage: FC = () => {
         <section key="section4">
           {/* Testimonials Section */}
           <div className="bg-white">
-            <div className="text-center my-5 md:my-10">
-              <div className="font-size font-semibold text-2xl sm:text-2xl md:text-3xl lg:text-5xl my-5 sm:my-20 lg:my-20">
-                <p className="sm:p-4 sm:p-2">RRG CLIENTS TESTIMONIALS</p>
+            <div className="text-center my-1 md:my-3">
+              <div className="font-size font-semibold text-2xl sm:text-2xl md:text-3xl lg:text-4xl my-2 sm:my-15 ">
+                <p className="py-3 mt-10">RRG CLIENTS TESTIMONIALS</p>
               </div>
             </div>
           </div>
         </section>
         <section>
           {/* Testimonial Cards */}
-          <div className="py-12">
+          <div className="py-2">
             <div className="max-w-6xl mx-auto flex flex-wrap justify-center">
               {/* Testimonial Card 1 */}
-              <div className="w-full md:w-1/2 lg:w-1/3 p-4">
-                <div className="bg-white rounded-lg p-6 shadow-md">
+              <div className="w-full md:w-1/2 lg:w-1/3 p-5 md:p-5">
+                <div className="min-h-[100%] drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] bg-white rounded-lg p-6 shadow-md">
                   <div className="text-3xl text-gray-600 mb-4">
                     <Quotes size={32} weight="fill" /> {/* Quotation Icon */}
                   </div>
                   <p className="text-lg text-gray-800 mb-4">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the
-                    industry&apos;s standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled
-                    it to make a type specimen book. It has survived not only
-                    five centuries, but also the leap into electronic
-                    typesetting, remaining essentially unchanged.
+                    RRG Freight Company is like the James Bond of logistics
+                    always on a top-secret mission to deliver packages with
+                    unmatched precision and style. I&apos;m convinced your
+                    trucks come equipped with secret agent gadgets and a license
+                    to thrill every client with lightning-fast deliveries.
                   </p>
                   <div className="text-3xl text-gray-600 mb-4">
                     <i className="far fa-comment-dots"></i> {/* Comment Icon */}
@@ -144,18 +187,17 @@ const HomePage: FC = () => {
 
               {/* Testimonial Card 2 */}
               <div className="w-full md:w-1/2 lg:w-1/3 p-4">
-                <div className="bg-white rounded-lg p-6 shadow-md">
+                <div className="min-h-[100%] drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] bg-white rounded-lg p-6 shadow-md">
                   <div className="text-3xl text-gray-600 mb-4">
                     <Quotes size={32} weight="fill" /> {/* Quotation Icon */}
                   </div>
                   <p className="text-lg text-gray-800 mb-4">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the
-                    industry&apos;s standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled
-                    it to make a type specimen book. It has survived not only
-                    five centuries, but also the leap into electronic
-                    typesetting, remaining essentially unchanged.
+                    RRG Freight Company doesn&apos;t just transport goods;
+                    you&apos;re the magicians of moving merchandise! I&apos;ve
+                    heard rumors that your trucks have a magical touch, turning
+                    traffic jams into open highways and transforming delivery
+                    deadlines into mere suggestions. It&apos;s like watching a
+                    magical spectacle every time RRG hits the road!
                   </p>
                   <div className="text-3xl text-gray-600 mb-4">
                     <i className="far fa-comment-dots"></i> {/* Comment Icon */}
@@ -166,18 +208,17 @@ const HomePage: FC = () => {
 
               {/* Testimonial Card 3 */}
               <div className="w-full md:w-1/2 lg:w-1/3 p-4">
-                <div className="bg-white rounded-lg p-6 shadow-md">
+                <div className="min-h-[100%] drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] bg-white rounded-lg p-6 shadow-md">
                   <div className="text-3xl text-gray-600 mb-4">
                     <Quotes size={32} weight="fill" /> {/* Quotation Icon */}
                   </div>
                   <p className="text-lg text-gray-800 mb-4">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the
-                    industry&apos;s standard dummy text ever since the 1500s,
-                    when an unknown printer took a galley of type and scrambled
-                    it to make a type specimen book. It has survived not only
-                    five centuries, but also the leap into electronic
-                    typesetting, remaining essentially unchanged.
+                    RRG Freight Company, you&apos;re the rock stars of the
+                    shipping world! Your trucks are like tour buses on a
+                    cross-country concert, bringing joy and harmony to every
+                    destination. I hear your delivery drivers even have their
+                    own fan clubs, complete with screaming admirers whenever
+                    they roll into town. Keep on rocking those deliveries, RRG!
                   </p>
                   <div className="text-3xl text-gray-600 mb-4">
                     <i className="far fa-comment-dots"></i> {/* Comment Icon */}
@@ -192,117 +233,120 @@ const HomePage: FC = () => {
         </section>
 
         <section
+          style={{
+            background:
+              "linear-gradient(#FFFFFF 5%, #79CFDC 15%, #79CFDC 85%, #FFFFFF 95%)",
+          }}
           key="section5"
-          className="bg-[#A4D8D8] w-1920 h-674 pb-16 py-10 md:py-20 mb-20"
+          className=" w-1920 my-20"
         >
-          <div className="flex flex-col md:flex-row items-center rounded-lg">
-            {/* Left side with social media links */}
-            <div className="md:w-1/2 min-h-[720px] rounded-lg flex flex-col items-center py-6 md:py-4 bg-gradient-to-r from-[#d3ebeb] via-[#91d4da] to-[#2bc0e4] text-white">
-              <div className="text-5xl font-semibold mt-60 mb-40 -rotate-90">
-                CONTACT US
+          <div className="drop-shadow-[-5px_10px_10px_rgba(0,0,0,0.25)] w-full px-10 flex md:w-2/3 md:m-auto">
+            {/*LEFT SIDE */}
+            <div
+              style={{
+                background: "linear-gradient(to right ,#A4D8D8 ,#2BC0E4)",
+              }}
+              className="hidden relative w-1/2 bg-[#FFFFFF] rounded-l-xl lg:block"
+            >
+              <div className="flex justify-center items-center h-2/3">
+                <p
+                  style={{ textShadow: "3px 3px gray" }}
+                  className="text-[40px] -rotate-90  h-1/2 flex text-white font-semibold"
+                >
+                  CONTACT US!
+                </p>
               </div>
-              <div className="flex space-x-4 mt-40 mb-4">
-                <Link href="#">
-                  <InstagramLogo size={32} color="#fffafa" weight="bold" />
-                </Link>
-                <Link
-                  href="#"
-                  className="text-4xl text-white hover:text-gray-200"
-                >
-                  <FacebookLogo size={32} color="#fffafa" weight="bold" />
-                </Link>
-                <Link
-                  href="#"
-                  className="text-4xl text-white hover:text-gray-200"
-                >
-                  <TwitterLogo size={32} color="#fffafa" weight="bold" />
-                </Link>
+
+              <div className="flex justify-evenly pt-20">
+                <div>
+                  <Link href="#">
+                    <InstagramLogo size={35} color="#FFFFFF" weight="bold" />
+                  </Link>
+                </div>
+                <div>
+                  <Link href="#">
+                    <FacebookLogo size={35} color="#FFFFFF" weight="bold" />
+                  </Link>
+                </div>
+                <div>
+                  <Link href="#">
+                    <TwitterLogo size={35} color="#FFFFFF" weight="bold" />
+                  </Link>
+                </div>
               </div>
             </div>
-            {/* Right side with contact form */}
-            <div className=" md:2/4 py-10 px-6 bg-white text-black rounded-lg">
-              <div className="text-center">
-                <p className="text-4xl font-semibold mb-3">Get in touch!</p>
-                <p className="text-lg font-semibold mb-8">
-                  Contact us for assistance, testimonials, or career
-                  opportunities.
+
+            {/*RIGHT SIDE */}
+            <div className="w-full bg-[#FFFFFF] p-2 rounded-xl lg:rounded-l-none">
+              <div>
+                <p className="text-center mt-5 text-[27px] font-semibold ">
+                  Get in touch!
                 </p>
-                <div className="grid grid-cols-3  text-sm text-center mb-8 font-semibold">
-                  <div>
-                    <MapPin size={32} weight="fill" className="mx-auto mb-2" />
-                    <p>Blk 213 Lot 41 Yuan Street Phase 8 North Fairview</p>
-                  </div>
-                  <div>
-                    <Phone size={32} weight="fill" className="mx-auto mb-2" />
-                    <p>(+02) 8461 6027</p>
-                  </div>
-                  <div>
-                    <EnvelopeSimple
-                      size={32}
-                      weight="fill"
-                      className="mx-auto mb-2"
-                    />
-                    <p>rrgfreight_imports@yahoo.com</p>
-                  </div>
+                <p className="text-center font-medium">
+                  Contact us for help, testimonies, or join our team
+                </p>
+              </div>
+
+              <div className="flex justify-around w-2/2 m-auto mt-8 mb-10 px-5">
+                <div className="flex flex-col items-center w-1/3">
+                  <MapPin size={40} color="#000000" weight="duotone" />
+                  <p className="text-[12px] text-center hidden sm:block">
+                    Blk 213 Lot 41 Yuan Street Phase 8 North Fairview
+                  </p>
+                </div>
+                <div className="flex flex-col items-center w-1/3">
+                  <Phone size={40} color="#000000" weight="duotone" />
+                  <p className="text-[12px] text-center hidden sm:block">
+                    (+02)84616027
+                  </p>
+                </div>
+                <div className="flex flex-col items-center w-1/3">
+                  <EnvelopeSimple size={40} color="#000000" weight="duotone" />
+                  <p className="text-[12px] text-center hidden sm:block">
+                    rrgfreight_imports@yahoo.com
+                  </p>
                 </div>
               </div>
 
-              <form>
-                <div className="bg-gray-200 p-6 rounded-lg">
-                  <div className="mb-4">
-                    <label
-                      className="block text-lg font-medium mb-2 px-1"
-                      htmlFor="fullName"
-                    >
-                      Full Name
-                    </label>
+              <div className="pb-4">
+                <form className="w-2/3 m-auto">
+                  <div className="flex flex-col mb-3">
+                    <label className="mb-1">Full Name</label>
                     <input
                       type="text"
-                      id="fullName"
-                      name="fullName"
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
+                      style={{ borderBottom: "2px solid #79CFDC" }}
+                      className="outline-none px-2"
                       required
-                    />
+                    ></input>
                   </div>
-                  <div className="mb-4">
-                    <label
-                      className="block text-lg font-medium mb-2 px-1"
-                      htmlFor="emailAddress"
-                    >
-                      Email Address
-                    </label>
+                  <div className="flex flex-col mb-3">
+                    <label className="mb-1">Email Address</label>
                     <input
                       type="email"
-                      id="emailAddress"
-                      name="emailAddress"
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
+                      style={{ borderBottom: "2px solid #79CFDC" }}
+                      className="outline-none px-2"
                       required
-                    />
+                    ></input>
                   </div>
-                  <div className="mb-4">
-                    <label
-                      className="block text-lg font-medium mb-2 px-1"
-                      htmlFor="messageContent"
-                    >
-                      Message
-                    </label>
+                  <div className="flex flex-col mb-3">
+                    <label className="mb-1">Message</label>
                     <textarea
-                      id="messageContent"
-                      name="messageContent"
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-400"
+                      style={{ borderBottom: "2px solid #79CFDC" }}
+                      className="outline-none px-2"
                       required
                     ></textarea>
                   </div>
-                  <div className="text-center">
+                  <div className="flex flex-col mb-3">
                     <button
+                      style={{ borderRadius: "10px" }}
+                      className="p-2 bg-red-500 text-white font-semibold duration-500 hover:bg-red-800"
                       type="submit"
-                      className="bg-red-500 hover:bg-red-800 text-white font-medium rounded-lg text-lg px-6 py-3"
                     >
-                      Send
+                      Submit
                     </button>
                   </div>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
         </section>

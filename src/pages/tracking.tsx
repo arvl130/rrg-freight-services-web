@@ -13,6 +13,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { api } from "@/utils/api"
+import { LoadingSpinner } from "@/components/spinner"
+import Boxes from "@/components/icons/boxes"
 
 function TrackingPageHead() {
   return (
@@ -35,8 +37,24 @@ function PackageDetailsSections({ packageId }: { packageId: number }) {
     id: packageId,
   })
 
-  if (status === "loading") return <>Loading ...</>
-  if (status === "error") return <>Error: {error.message}</>
+  if (status === "loading")
+    return (
+      <>
+        <div className="flex justify-center py-10">
+          <LoadingSpinner></LoadingSpinner>
+        </div>
+      </>
+    )
+  if (status === "error")
+    return (
+      <>
+        <div className="flex justify-center py-10">
+          <h2 className="text-[25px] text-red font-semibold">
+            Package Not Found!
+          </h2>
+        </div>
+      </>
+    )
 
   return (
     <>
@@ -133,14 +151,14 @@ export function ChoosePackageForm({
   })
 
   return (
-    <div className="max-w-4xl mx-auto grid grid-cols-[auto_1fr] gap-4 my-6">
-      <div className="bg-[#ACDEE2] w-full h-full aspect-square rounded-lg">
+    <div className="px-16 mb-14 w-full md:w-full md:mx-auto md:grid md:grid-cols-[auto_1fr] md:gap-4 md:my-6 lg:px-52 ">
+      <div className="bg-[#ACDEE2]  rounded-lg hidden md:block">
         <Image
           src="/assets/img/logos/logo.jpg"
           alt="Logo"
-          width={150}
-          height={150}
-          className="w-full h-full p-6"
+          width={250}
+          height={250}
+          className="w-full h-full m-auto p-6 "
         />
       </div>
       <form
@@ -149,11 +167,11 @@ export function ChoosePackageForm({
           setSelectedPackageId(formData.packageId)
         })}
       >
-        <div className="text-2xl text-center font-semibold">
+        <div className="text-4xl text-center font-semibold">
           Track your Shipment
         </div>
-        <div className="text-center">Let&apos;s Find your Package!</div>
-        <div className="text-center mb-6">
+        <div className="text-center font-medium mb-5">
+          Let&apos;s Find your Package! <br />
           Enter your Tracking Number to Track your Package
         </div>
 
@@ -161,7 +179,7 @@ export function ChoosePackageForm({
           {...register("packageId")}
           type="text"
           placeholder="Enter tracking number ..."
-          className="bg-white border rounded-md px-4 py-2 text-xl w-full"
+          className="bg-white border rounded-md px-4 py-1 text-xl w-full outline-none"
         />
         {errors.packageId && (
           <p className="text-red-600 mt-1">{errors.packageId.message}.</p>
@@ -169,7 +187,7 @@ export function ChoosePackageForm({
         <div className="text-center mt-6">
           <button
             type="submit"
-            className="bg-[#ED5959] text-white rounded-full p-4"
+            className="bg-[#ED5959] text-white rounded-full px-5 py-2"
           >
             Search
           </button>
@@ -190,15 +208,25 @@ export default function TrackingPage() {
       <Navbar />
 
       <header>
-        <div className="flex justify-center">
-          <Image
-            src="/assets/img/tracking/tracking-bg-1.png"
-            alt="Track Package"
-            className="w-full h-full shadow-md"
-            width={1280}
-            height={800}
-          />
-        </div>
+        <section key="section1">
+          <div
+            style={{
+              minWidth: "100%",
+              background: "linear-gradient(#79CFDC 80%, #FFFFFF)",
+            }}
+            className="relative min-h-[450px] md:min-h-[650px]"
+          >
+            <p
+              style={{ letterSpacing: "2px", textShadow: "2px 2px #707070" }}
+              className="text-[70px] text-white text-center w-full pt-[200px] font-bold leading-none tracking-wide lg:absolute lg:w-[650px] lg:top-[40%] lg:left-32 lg:text-left lg:pt-0"
+            >
+              Track Package
+            </p>
+            <div className="absolute right-0 bottom-20 hidden md:block">
+              <Boxes></Boxes>
+            </div>
+          </div>
+        </section>
       </header>
 
       <ChoosePackageForm
@@ -210,14 +238,18 @@ export default function TrackingPage() {
       {selectedPackageId !== null && (
         <PackageDetailsSections packageId={selectedPackageId} />
       )}
-      <div className="flex justify-center items-center">
-        <Image
-          src="/assets/img/tracking/tracking-bg-2.png"
-          alt="Track Package"
-          className="max-w-full h-full shadow-md"
-          width={1280}
-          height={800}
-        />
+      <div className="p-4  bg-[url('/assets/img/tracking/tracking-bg-footer.png')] bg-cover bg-no-repeat bg-center">
+        <div className="py-10">
+          <h1 className="text-center text-white font-semibold text-4xl mb-10">
+            Any other inquiries? <br />
+            Just Contact Us!
+          </h1>
+          <div className="flex justify-center">
+            <button className="drop-shadow-lg inline-flex items-center bg-red-500 text-white px-6 py-2 text-base rounded-full hover:bg-red-800 font-bold font-family  ">
+              Contact Us
+            </button>
+          </div>
+        </div>
       </div>
       <Footer />
     </>
