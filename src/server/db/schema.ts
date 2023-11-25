@@ -70,13 +70,13 @@ export const incomingShipmentPackages = mysqlTable(
   }),
 )
 
-export const transferShipments = mysqlTable("incoming_shipments", {
+export const transferShipments = mysqlTable("transfer_shipments", {
   id: bigint("id", {
     mode: "number",
   })
     .primaryKey()
     .autoincrement(),
-  sentToAgentId: varchar("sent_by_agent_id", {
+  sentToAgentId: varchar("sent_to_agent_id", {
     length: 28,
   }).notNull(),
   status: mysqlEnum("status", [
