@@ -26,6 +26,12 @@ export const userRouter = router({
       .from(users)
       .where(eq(users.role, "OVERSEAS_AGENT"))
   }),
+  getDomesticAgents: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select()
+      .from(users)
+      .where(eq(users.role, "DOMESTIC_AGENT"))
+  }),
   getById: protectedProcedure
     .input(
       z.object({
