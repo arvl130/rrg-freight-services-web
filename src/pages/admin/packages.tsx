@@ -178,15 +178,16 @@ function PackagesTable({
   const [selectedTab, setSelectedTab] = useState<
     "EXPRESS" | "STANDARD" | "ALL"
   >("EXPRESS")
+
   const allPackages = isArchived
     ? packages.filter((_package) => _package.isArchived === 1)
     : packages.filter((_package) => _package.isArchived === 0)
 
-  const standardPackages = packages.filter(
+  const standardPackages = allPackages.filter(
     (_package) => _package.shippingType === "STANDARD",
   )
 
-  const expressPackages = packages.filter(
+  const expressPackages = allPackages.filter(
     (_package) => _package.shippingType === "EXPRESS",
   )
 
