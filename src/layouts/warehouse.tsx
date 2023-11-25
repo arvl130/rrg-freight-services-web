@@ -42,11 +42,6 @@ export function WarehouseSideBar() {
           icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Shipments"
-          href="/warehouse/shipments"
-          icon={<ClipboardText size={32} className="text-white" />}
-        />
-        <SideBarLink
           name="Scan"
           href="/warehouse/packages/scan"
           icon={<QrCode size={32} className="text-white" />}
