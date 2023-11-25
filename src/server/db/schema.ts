@@ -3,7 +3,7 @@ import {
   supportedPackageStatuses,
   supportedReceptionModes,
   supportedRoles,
-  supportedShipmentStatuses,
+  SUPPORTED_SHIPMENT_STATUSES,
   supportedShippingModes,
   supportedShippingParties,
   SUPPORTED_SHIPPING_TYPES,
@@ -43,7 +43,10 @@ export const incomingShipments = mysqlTable("incoming_shipments", {
   sentByAgentId: varchar("sent_by_agent_id", {
     length: 28,
   }).notNull(),
-  status: mysqlEnum("status", supportedShipmentStatuses).notNull(),
+  status: mysqlEnum("status", [
+    SUPPORTED_SHIPMENT_STATUSES[0],
+    ...SUPPORTED_SHIPMENT_STATUSES.slice(1),
+  ]).notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
   })
@@ -76,7 +79,10 @@ export const transferShipments = mysqlTable("incoming_shipments", {
   sentToAgentId: varchar("sent_by_agent_id", {
     length: 28,
   }).notNull(),
-  status: mysqlEnum("status", supportedShipmentStatuses).notNull(),
+  status: mysqlEnum("status", [
+    SUPPORTED_SHIPMENT_STATUSES[0],
+    ...SUPPORTED_SHIPMENT_STATUSES.slice(1),
+  ]).notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
   })
@@ -112,7 +118,10 @@ export const deliveries = mysqlTable("deliveries", {
   vehicleId: bigint("vehicle_id", {
     mode: "number",
   }).notNull(),
-  status: mysqlEnum("status", supportedShipmentStatuses).notNull(),
+  status: mysqlEnum("status", [
+    SUPPORTED_SHIPMENT_STATUSES[0],
+    ...SUPPORTED_SHIPMENT_STATUSES.slice(1),
+  ]).notNull(),
   isExpress: tinyint("is_express").notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
