@@ -1,6 +1,10 @@
 import { and, eq, getTableColumns, isNull, lt, sql } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
-import { packageStatusLogs, packages } from "@/server/db/schema"
+import {
+  incomingShipmentPackages,
+  packageStatusLogs,
+  packages,
+} from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { inArray } from "drizzle-orm"
@@ -348,4 +352,48 @@ export const packageRouter = router({
       status: psl1.status,
     }))
   }),
+  getWithLatestStatusByIncomingShipmentId: protectedProcedure
+    .input(
+      z.object({
+        incomingShipmentId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const psl1 = alias(packageStatusLogs, "psl1")
+      const psl2 = alias(packageStatusLogs, "psl2")
+
+      const results = await ctx.db
+        .select()
+        .from(psl1)
+        .leftJoin(
+          psl2,
+          and(
+            eq(psl1.packageId, psl2.packageId),
+            lt(psl1.createdAt, psl2.createdAt),
+          ),
+        )
+        .innerJoin(
+          incomingShipmentPackages,
+          eq(psl1.packageId, incomingShipmentPackages.packageId),
+        )
+        .innerJoin(
+          packages,
+          eq(incomingShipmentPackages.packageId, packages.id),
+        )
+        .where(
+          and(
+            isNull(psl2.id),
+            eq(
+              incomingShipmentPackages.incomingShipmentId,
+              input.incomingShipmentId,
+            ),
+          ),
+        )
+        .orderBy(packages.id)
+
+      return results.map(({ packages, psl1 }) => ({
+        ...packages,
+        status: psl1.status,
+      }))
+    }),
 })
