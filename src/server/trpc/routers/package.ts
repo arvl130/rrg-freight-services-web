@@ -327,7 +327,7 @@ export const packageRouter = router({
         updatedById: ctx.user.uid,
       })
     }),
-  getDeliverable: protectedProcedure.query(async ({ ctx }) => {
+  getInWarehouse: protectedProcedure.query(async ({ ctx }) => {
     const psl1 = alias(packageStatusLogs, "psl1")
     const psl2 = alias(packageStatusLogs, "psl2")
     const results = await ctx.db

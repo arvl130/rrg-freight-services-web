@@ -88,7 +88,7 @@ function ChoosePackageTable({
     refetch,
     status,
     data: packages,
-  } = api.package.getDeliverable.useQuery()
+  } = api.package.getInWarehouse.useQuery()
 
   return (
     <div>
