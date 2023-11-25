@@ -8,6 +8,16 @@ import { Plus } from "@phosphor-icons/react/Plus"
 import { TransferShipmentsCreateModal } from "@/components/transfer-shipments/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
+import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
+import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
+import { CaretRight } from "@phosphor-icons/react/CaretRight"
+import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
+import { DotsThree } from "@phosphor-icons/react/DotsThree"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { getColorFromShipmentStatus } from "@/utils/colors"
+import { DateTime } from "luxon"
+import { TransferShipment } from "@/server/db/entities"
+import { ShipmentStatus } from "@/utils/constants"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -35,6 +45,154 @@ function PageHeader() {
   )
 }
 
+function UserDisplayName({ userId }: { userId: string }) {
+  const { status, data, error } = api.user.getById.useQuery({
+    id: userId,
+  })
+
+  if (status === "loading") return <>...</>
+  if (status === "error") return <>error: {error.message}</>
+
+  return <>{data?.displayName}</>
+}
+
+function TransferShipmentsTableItem({
+  transferShipment,
+}: {
+  transferShipment: TransferShipment
+}) {
+  const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
+
+  return (
+    <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
+      <div className="px-4 py-2 flex items-center gap-1">
+        <input type="checkbox" name="" id="" />
+        <span>{transferShipment.id}</span>
+      </div>
+      <div className="px-4 py-2">
+        <UserDisplayName userId={transferShipment.sentToAgentId} />
+      </div>
+      <div className="px-4 py-2">
+        {DateTime.fromJSDate(transferShipment.createdAt).toLocaleString(
+          DateTime.DATETIME_FULL,
+        )}
+      </div>
+      <div className="px-4 py-2 flex items-center gap-2">
+        <div
+          className={`
+        w-36 py-0.5 text-white text-center rounded-md
+        ${getColorFromShipmentStatus(transferShipment.status as ShipmentStatus)}
+      `}
+        >
+          {transferShipment.status.replaceAll("_", " ")}
+        </div>
+
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button type="button">
+              <span className="sr-only">Actions</span>
+              <DotsThree size={16} />
+            </button>
+          </DropdownMenu.Trigger>
+
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm">
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("VIEW_DETAILS")}
+              >
+                View Details
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Arrow className="fill-white" />
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+      </div>
+    </div>
+  )
+}
+
+function TransferShipmentsTable({
+  transferShipments,
+  isArchived,
+}: {
+  transferShipments: TransferShipment[]
+  isArchived: boolean
+}) {
+  const allTransferShipments = isArchived
+    ? transferShipments.filter(({ isArchived }) => isArchived)
+    : transferShipments.filter(({ isArchived }) => !isArchived)
+
+  return (
+    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
+      <div className="flex justify-between mb-3">
+        <div className="flex gap-3"></div>
+        <div className="flex gap-8">
+          <div>
+            Showing{" "}
+            <select className="bg-white border border-gray-300 px-2 py-1 w-16">
+              <option>All</option>
+            </select>{" "}
+            entries
+          </div>
+          <div className="flex items-center gap-3 text-sm">
+            <CaretLeft size={16} />
+            <CaretDoubleLeft size={16} />
+            <button
+              type="button"
+              className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
+            >
+              1
+            </button>
+            <button type="button" className="text-gray-400">
+              2
+            </button>
+            <button type="button" className="text-gray-400">
+              3
+            </button>
+            <button type="button" className="text-gray-400">
+              4
+            </button>
+            <span className="text-gray-400">...</span>
+            <button type="button" className="text-gray-400">
+              10
+            </button>
+            <CaretRight size={16} />
+            <CaretDoubleRight size={16} />
+          </div>
+        </div>
+      </div>
+      {/* Table */}
+      <div>
+        {/* Header */}
+        <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
+          <div className="uppercase px-4 py-2 flex gap-1">
+            <input type="checkbox" name="" id="" />
+            <span>Transfer Shipment ID</span>
+          </div>
+          <div className="uppercase px-4 py-2">Sent By</div>
+          <div className="uppercase px-4 py-2">Created At</div>
+          <div className="uppercase px-4 py-2">Status</div>
+        </div>
+        {/* Body */}
+        {allTransferShipments.length === 0 ? (
+          <div className="text-center pt-4">No transfer shipments found.</div>
+        ) : (
+          <div>
+            {allTransferShipments.map((transferShipment) => (
+              <TransferShipmentsTableItem
+                key={transferShipment.id}
+                transferShipment={transferShipment}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function TransferShipmentsPage() {
   const { user, role } = useSession()
   const {
@@ -44,6 +202,10 @@ export default function TransferShipmentsPage() {
   } = api.transferShipment.getAll.useQuery(undefined, {
     enabled: user !== null && role === "ADMIN",
   })
+
+  const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
+    "ARCHIVED" | "NOT_ARCHIVED"
+  >("NOT_ARCHIVED")
 
   return (
     <AdminLayout title="Shipments">
@@ -70,8 +232,17 @@ export default function TransferShipmentsPage() {
           <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
             <option value="">Warehouse</option>
           </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">City</option>
+          <select
+            className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+            value={visibleArchiveStatus}
+            onChange={(e) => {
+              if (e.currentTarget.value === "ARCHIVED")
+                setVisibleArchiveStatus("ARCHIVED")
+              else setVisibleArchiveStatus("NOT_ARCHIVED")
+            }}
+          >
+            <option value="NOT_ARCHIVED">Not Archived</option>
+            <option value="ARCHIVED">Archived</option>
           </select>
           <button
             type="button"
@@ -107,7 +278,16 @@ export default function TransferShipmentsPage() {
           An error occured: {error.message}
         </div>
       )}
-      {status === "success" && <>{JSON.stringify(transferShipments)}</>}
+      {status === "success" && (
+        <>
+          {
+            <TransferShipmentsTable
+              transferShipments={transferShipments}
+              isArchived={visibleArchiveStatus === "ARCHIVED"}
+            />
+          }
+        </>
+      )}
     </AdminLayout>
   )
 }
