@@ -183,6 +183,7 @@ function ChooseAgentForm({
   const { isLoading, mutate } = api.incomingShipment.create.useMutation({
     onSuccess: () => {
       apiUtils.incomingShipment.getAll.invalidate()
+      apiUtils.package.getInWarehouse.invalidate()
       apiUtils.package.getAll.invalidate()
       close()
       toast.success("Shipment Created")
