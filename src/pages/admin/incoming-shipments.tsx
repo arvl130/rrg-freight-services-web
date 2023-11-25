@@ -176,7 +176,7 @@ function IncomingShipmentsTable({
         </div>
         {/* Body */}
         {allIncomingShipments.length === 0 ? (
-          <div className="text-center pt-4">No packages found.</div>
+          <div className="text-center pt-4">No incoming shipments found.</div>
         ) : (
           <div>
             {allIncomingShipments.map((incomingShipment) => (
