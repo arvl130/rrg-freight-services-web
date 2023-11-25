@@ -1,8 +1,8 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
-import { users } from "@/server/db/schema"
+import { deliveries, users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
-import { eq } from "drizzle-orm"
+import { and, eq, inArray, isNull } from "drizzle-orm"
 import { updateProfile } from "@/server/auth"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
@@ -156,4 +156,22 @@ export const userRouter = router({
         })
         .where(eq(users.id, input.id))
     }),
+  getAvailableRiders: protectedProcedure.query(async ({ ctx }) => {
+    const deliveriesInProgress = ctx.db
+      .select()
+      .from(deliveries)
+      .where(inArray(deliveries.status, ["PREPARING", "IN_TRANSIT"]))
+      .as("deliveries_in_progress")
+
+    const results = await ctx.db
+      .select()
+      .from(users)
+      .leftJoin(
+        deliveriesInProgress,
+        eq(users.id, deliveriesInProgress.riderId),
+      )
+      .where(and(eq(users.role, "RIDER"), isNull(deliveriesInProgress.id)))
+
+    return results.map(({ users }) => users)
+  }),
 })

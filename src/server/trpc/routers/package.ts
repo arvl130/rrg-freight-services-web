@@ -12,7 +12,7 @@ import {
   supportedShippingModes,
   SUPPORTED_SHIPPING_TYPES,
 } from "@/utils/constants"
-import { ResultSetHeader } from "mysql2"
+import { alias } from "drizzle-orm/mysql-core"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -327,4 +327,25 @@ export const packageRouter = router({
         updatedById: ctx.user.uid,
       })
     }),
+  getDeliverable: protectedProcedure.query(async ({ ctx }) => {
+    const psl1 = alias(packageStatusLogs, "psl1")
+    const psl2 = alias(packageStatusLogs, "psl2")
+    const results = await ctx.db
+      .select()
+      .from(psl1)
+      .leftJoin(
+        psl2,
+        and(
+          eq(psl1.packageId, psl2.packageId),
+          lt(psl1.createdAt, psl2.createdAt),
+        ),
+      )
+      .innerJoin(packages, eq(psl1.packageId, packages.id))
+      .where(and(isNull(psl2.id), eq(psl1.status, "IN_WAREHOUSE")))
+
+    return results.map(({ packages, psl1 }) => ({
+      ...packages,
+      status: psl1.status,
+    }))
+  }),
 })
