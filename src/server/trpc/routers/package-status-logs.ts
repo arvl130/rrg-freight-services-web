@@ -139,6 +139,26 @@ export const packageStatusLogRouter = router({
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(packageStatusLogs).values(input)
     }),
+  createMany: protectedProcedure
+    .input(
+      z.object({
+        newStatusLogs: z
+          .object({
+            packageId: z.number(),
+            status: z.custom<PackageStatus>((val) =>
+              supportedPackageStatuses.includes(val as PackageStatus),
+            ),
+            description: z.string(),
+            createdAt: z.date(),
+            createdById: z.string().length(28),
+          })
+          .array()
+          .nonempty(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(packageStatusLogs).values(input.newStatusLogs)
+    }),
   deleteById: protectedProcedure
     .input(
       z.object({
