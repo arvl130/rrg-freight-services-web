@@ -12,7 +12,7 @@ import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { UsersThree } from "@phosphor-icons/react/UsersThree"
 import { Motorcycle } from "@phosphor-icons/react/Motorcycle"
 import { Boat } from "@phosphor-icons/react/Boat"
-import { Swap } from "@phosphor-icons/react/Swap"
+import { Truck } from "@phosphor-icons/react/Truck"
 import { User, getAuth, signOut } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
@@ -56,7 +56,7 @@ export function AdminSideBar() {
         <SideBarLink
           name="Shipments"
           href="/admin/transfer-shipments"
-          icon={<Swap size={32} className="text-white" />}
+          icon={<Truck size={32} className="text-white" />}
         />
         <SideBarLink
           name="Users"
