@@ -9,7 +9,7 @@ import {
   supportedReceptionModes,
   supportedShippingModes,
   supportedShippingParties,
-  supportedShippingTypes,
+  SUPPORTED_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
@@ -26,7 +26,7 @@ const editFormSchema = z.object({
     supportedShippingModes.includes(val as ShippingMode),
   ),
   shippingType: z.custom<ShippingType>((val) =>
-    supportedShippingTypes.includes(val as ShippingType),
+    SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
   ),
   receptionMode: z.custom<ReceptionMode>((val) =>
     supportedReceptionModes.includes(val as ReceptionMode),
@@ -218,7 +218,7 @@ export function PackagesEditDetailsModal({
                       className="block w-full text-sm px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
                       {...register("shippingType")}
                     >
-                      {supportedShippingTypes.map((shippingType) => (
+                      {SUPPORTED_SHIPPING_TYPES.map((shippingType) => (
                         <option key={shippingType} value={shippingType}>
                           {shippingType}
                         </option>

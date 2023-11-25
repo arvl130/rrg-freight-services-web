@@ -13,7 +13,7 @@ import {
   getDescriptionForNewPackageStatusLog,
   supportedReceptionModes,
   supportedShippingModes,
-  supportedShippingTypes,
+  SUPPORTED_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
@@ -54,7 +54,7 @@ export const incomingShipmentRouter = router({
               supportedShippingModes.includes(val as ShippingMode),
             ),
             shippingType: z.custom<ShippingType>((val) =>
-              supportedShippingTypes.includes(val as ShippingType),
+              SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
             ),
             receptionMode: z.custom<ReceptionMode>((val) =>
               supportedReceptionModes.includes(val as ReceptionMode),

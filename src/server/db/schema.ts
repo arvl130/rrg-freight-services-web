@@ -6,7 +6,7 @@ import {
   supportedShipmentStatuses,
   supportedShippingModes,
   supportedShippingParties,
-  supportedShippingTypes,
+  SUPPORTED_SHIPPING_TYPES,
   supportedVehicleTypes,
 } from "../../utils/constants"
 import {
@@ -181,7 +181,10 @@ export const packages = mysqlTable("packages", {
     .notNull()
     .default("FIRST_PARTY"),
   shippingMode: mysqlEnum("shipping_mode", supportedShippingModes).notNull(),
-  shippingType: mysqlEnum("shipping_type", supportedShippingTypes).notNull(),
+  shippingType: mysqlEnum("shipping_type", [
+    SUPPORTED_SHIPPING_TYPES[0],
+    ...SUPPORTED_SHIPPING_TYPES,
+  ]).notNull(),
   receptionMode: mysqlEnum("reception_mode", supportedReceptionModes).notNull(),
   weightInKg: double("weight_in_kg", {
     precision: 8,

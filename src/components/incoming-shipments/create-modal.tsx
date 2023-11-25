@@ -10,7 +10,7 @@ import {
   ShippingType,
   supportedReceptionModes,
   supportedShippingModes,
-  supportedShippingTypes,
+  SUPPORTED_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
@@ -135,7 +135,7 @@ const sheetRowSchema = z.object({
     supportedShippingModes.includes(val as ShippingMode),
   ),
   "Shipping Type": z.custom<ShippingType>((val) =>
-    supportedShippingTypes.includes(val as ShippingType),
+    SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
   ),
   "Reception Mode": z.custom<ReceptionMode>((val) =>
     supportedReceptionModes.includes(val as ReceptionMode),

@@ -6,7 +6,7 @@ import {
   ShippingMode,
   ShippingType,
   supportedShippingModes,
-  supportedShippingTypes,
+  SUPPORTED_SHIPPING_TYPES,
   supportedReceptionModes,
   ReceptionMode,
   REGEX_ONE_OR_MORE_DIGITS,
@@ -21,7 +21,7 @@ const createPackageFormSchema = z.object({
     supportedShippingModes.includes(val as ShippingMode),
   ),
   shippingType: z.custom<ShippingType>((val) =>
-    supportedShippingTypes.includes(val as ShippingType),
+    SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
   ),
   receptionMode: z.custom<ReceptionMode>((val) =>
     supportedReceptionModes.includes(val as ReceptionMode),
@@ -180,7 +180,7 @@ export function PackagesAddModal({
                   {...register("shippingType")}
                   className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
                 >
-                  {supportedShippingTypes.map((shippingType) => (
+                  {SUPPORTED_SHIPPING_TYPES.map((shippingType) => (
                     <option key={shippingType} value={shippingType}>
                       {shippingType}
                     </option>
