@@ -44,6 +44,26 @@ export const incomingShipmentRouter = router({
 
       return results[0]
     }),
+  getInTransit: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db
+      .select()
+      .from(incomingShipments)
+      .where(eq(incomingShipments.status, "IN_TRANSIT"))
+  }),
+  updateStatusToCompletedById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(incomingShipments)
+        .set({
+          status: "ARRIVED",
+        })
+        .where(eq(incomingShipments.id, input.id))
+    }),
   create: protectedProcedure
     .input(
       z.object({
