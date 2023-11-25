@@ -106,8 +106,8 @@ export const deliveries = mysqlTable("deliveries", {
   })
     .primaryKey()
     .autoincrement(),
-  riderId: bigint("rider_id", {
-    mode: "number",
+  riderId: varchar("rider_id", {
+    length: 28,
   }).notNull(),
   vehicleId: bigint("vehicle_id", {
     mode: "number",
@@ -183,7 +183,7 @@ export const packages = mysqlTable("packages", {
   shippingMode: mysqlEnum("shipping_mode", supportedShippingModes).notNull(),
   shippingType: mysqlEnum("shipping_type", [
     SUPPORTED_SHIPPING_TYPES[0],
-    ...SUPPORTED_SHIPPING_TYPES,
+    ...SUPPORTED_SHIPPING_TYPES.slice(1),
   ]).notNull(),
   receptionMode: mysqlEnum("reception_mode", supportedReceptionModes).notNull(),
   weightInKg: double("weight_in_kg", {
