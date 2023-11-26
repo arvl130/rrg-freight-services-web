@@ -243,6 +243,7 @@ export const packages = mysqlTable("packages", {
     length: 3,
   }).notNull(),
   receiverPostalCode: int("receiver_postal_code").notNull(),
+  proofOfDeliveryImgUrl: text("proof_of_delivery_img_url"),
   createdAt: timestamp("created_at", {
     mode: "date",
   })
