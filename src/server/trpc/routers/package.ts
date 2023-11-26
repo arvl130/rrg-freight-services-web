@@ -3,6 +3,7 @@ import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   incomingShipmentPackages,
   deliveryPackages,
+  transferShipmentPackages,
   packageStatusLogs,
   packages,
 } from "@/server/db/schema"
@@ -426,6 +427,50 @@ export const packageRouter = router({
           and(
             isNull(psl2.id),
             eq(deliveryPackages.deliveryId, input.deliveryId),
+          ),
+        )
+        .orderBy(packages.id)
+
+      return results.map(({ packages, psl1 }) => ({
+        ...packages,
+        status: psl1.status,
+      }))
+    }),
+  getWithLatestStatusByTransferShipmentId: protectedProcedure
+    .input(
+      z.object({
+        transferShipmentId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const psl1 = alias(packageStatusLogs, "psl1")
+      const psl2 = alias(packageStatusLogs, "psl2")
+
+      const results = await ctx.db
+        .select()
+        .from(psl1)
+        .leftJoin(
+          psl2,
+          and(
+            eq(psl1.packageId, psl2.packageId),
+            lt(psl1.createdAt, psl2.createdAt),
+          ),
+        )
+        .innerJoin(
+          transferShipmentPackages,
+          eq(psl1.packageId, transferShipmentPackages.packageId),
+        )
+        .innerJoin(
+          packages,
+          eq(transferShipmentPackages.packageId, packages.id),
+        )
+        .where(
+          and(
+            isNull(psl2.id),
+            eq(
+              transferShipmentPackages.transferShipmentId,
+              input.transferShipmentId,
+            ),
           ),
         )
         .orderBy(packages.id)

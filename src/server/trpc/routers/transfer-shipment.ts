@@ -35,6 +35,46 @@ export const transferShipmentRouter = router({
 
       return results[0]
     }),
+  getPreparing: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db
+      .select()
+      .from(transferShipments)
+      .where(eq(transferShipments.status, "PREPARING"))
+  }),
+  getInTransit: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db
+      .select()
+      .from(transferShipments)
+      .where(eq(transferShipments.status, "IN_TRANSIT"))
+  }),
+  updateStatusToInTransitById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(transferShipments)
+        .set({
+          status: "IN_TRANSIT",
+        })
+        .where(eq(transferShipments.id, input.id))
+    }),
+  updateStatusToCompletedById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(transferShipments)
+        .set({
+          status: "ARRIVED",
+        })
+        .where(eq(transferShipments.id, input.id))
+    }),
   create: protectedProcedure
     .input(
       z.object({
