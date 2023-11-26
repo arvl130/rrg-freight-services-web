@@ -280,9 +280,13 @@ function MarkAsCompleted({
     incomingShipmentId,
   })
 
+  const utils = api.useUtils()
   const { isLoading, mutate } =
     api.incomingShipment.updateStatusToCompletedById.useMutation({
-      onSuccess: () => resetSelectedIncomingShipmentId(),
+      onSuccess: () => {
+        utils.incomingShipment.getInTransit.invalidate()
+        resetSelectedIncomingShipmentId()
+      },
     })
 
   if (status === "loading") return <p>Loading ...</p>
