@@ -19,7 +19,6 @@ import {
   tinyint,
   int,
   double,
-  datetime,
   primaryKey,
 } from "drizzle-orm/mysql-core"
 

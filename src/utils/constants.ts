@@ -51,16 +51,8 @@ export type ShippingParty = (typeof supportedShippingParties)[number]
 export const supportedShippingModes = ["AIR", "SEA"] as const
 export type ShippingMode = (typeof supportedShippingModes)[number]
 
-const shippingTypes = {
-  STANDARD: "Standard",
-  EXPRESS: "Express",
-} as const
-
-export const SUPPORTED_SHIPPING_TYPES = Object.keys(shippingTypes)
-export type ShippingType = keyof typeof shippingTypes
-export function supportedShippingTypeToHumanized(shippingType: ShippingType) {
-  return shippingTypes[shippingType]
-}
+export const SUPPORTED_SHIPPING_TYPES = ["STANDARD", "EXPRESS"] as const
+export type ShippingType = (typeof SUPPORTED_SHIPPING_TYPES)[number]
 
 export const supportedReceptionModes = ["FOR_PICKUP", "DOOR_TO_DOOR"] as const
 export type ReceptionMode = (typeof supportedReceptionModes)[number]

@@ -8,8 +8,8 @@ import {
   REGEX_ONE_OR_MORE_DIGITS,
   SUPPORTED_SHIPPING_TYPES,
   ShippingType,
-  supportedShippingTypeToHumanized,
 } from "@/utils/constants"
+import { supportedShippingTypeToHumanized } from "@/utils/humanize"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
