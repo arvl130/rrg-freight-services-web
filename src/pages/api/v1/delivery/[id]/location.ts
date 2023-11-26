@@ -22,29 +22,29 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       deliveryId: parseInt(req.query.id as string),
     })
 
-    const shipmentResults = await db
+    const deliveryResults = await db
       .select()
       .from(deliveries)
       .where(eq(deliveries.id, deliveryId))
 
-    if (shipmentResults.length === 0) {
-      res.status(404).json({ message: "No such shipment" })
+    if (deliveryResults.length === 0) {
+      res.status(404).json({ message: "No such delivery" })
       return
     }
 
-    if (shipmentResults.length > 1) {
+    if (deliveryResults.length > 1) {
       res.status(412).json({ message: "Expected 1 result, but got more" })
       return
     }
 
-    const shipmentLocationResults = await db
+    const deliveryLocationResults = await db
       .select()
       .from(deliveryLocations)
       .where(eq(deliveryLocations.deliveryId, deliveryId))
 
     res.json({
-      message: "Shipment locations retrieved",
-      locations: shipmentLocationResults,
+      message: "Delivery locations retrieved",
+      locations: deliveryLocationResults,
     })
   } catch (e) {
     if (e instanceof ZodError) {
@@ -85,17 +85,17 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       },
     })
 
-    const shipmentResults = await db
+    const deliveryResults = await db
       .select()
       .from(deliveries)
       .where(eq(deliveries.id, deliveryId))
 
-    if (shipmentResults.length === 0) {
-      res.status(404).json({ message: "No such shipment" })
+    if (deliveryResults.length === 0) {
+      res.status(404).json({ message: "No such delivery" })
       return
     }
 
-    if (shipmentResults.length > 1) {
+    if (deliveryResults.length > 1) {
       res.status(412).json({ message: "Expected 1 result, but got more" })
       return
     }
@@ -109,7 +109,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     })) as unknown as [ResultSetHeader]
 
     res.status(200).json({
-      message: "Shipment location recorded",
+      message: "Delivery location recorded",
       data: {
         id: result.insertId,
         deliveryId,
