@@ -2,6 +2,7 @@ import { and, eq, getTableColumns, isNull, lt, sql } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   incomingShipmentPackages,
+  deliveryPackages,
   packageStatusLogs,
   packages,
 } from "@/server/db/schema"
@@ -387,6 +388,44 @@ export const packageRouter = router({
               incomingShipmentPackages.incomingShipmentId,
               input.incomingShipmentId,
             ),
+          ),
+        )
+        .orderBy(packages.id)
+
+      return results.map(({ packages, psl1 }) => ({
+        ...packages,
+        status: psl1.status,
+      }))
+    }),
+  getWithLatestStatusByDeliveryId: protectedProcedure
+    .input(
+      z.object({
+        deliveryId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const psl1 = alias(packageStatusLogs, "psl1")
+      const psl2 = alias(packageStatusLogs, "psl2")
+
+      const results = await ctx.db
+        .select()
+        .from(psl1)
+        .leftJoin(
+          psl2,
+          and(
+            eq(psl1.packageId, psl2.packageId),
+            lt(psl1.createdAt, psl2.createdAt),
+          ),
+        )
+        .innerJoin(
+          deliveryPackages,
+          eq(psl1.packageId, deliveryPackages.packageId),
+        )
+        .innerJoin(packages, eq(deliveryPackages.packageId, packages.id))
+        .where(
+          and(
+            isNull(psl2.id),
+            eq(deliveryPackages.deliveryId, input.deliveryId),
           ),
         )
         .orderBy(packages.id)

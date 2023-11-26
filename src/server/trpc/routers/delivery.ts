@@ -39,6 +39,26 @@ export const deliveryRouter = router({
 
       return results[0]
     }),
+  getPreparing: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db
+      .select()
+      .from(deliveries)
+      .where(eq(deliveries.status, "PREPARING"))
+  }),
+  updateStatusToCompletedById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(deliveries)
+        .set({
+          status: "ARRIVED",
+        })
+        .where(eq(deliveries.id, input.id))
+    }),
   create: protectedProcedure
     .input(
       z.object({
