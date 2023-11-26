@@ -258,7 +258,7 @@ function SelectDeliveries({
   )
 }
 
-function MarkAsCompleted({
+function MarkAsInTransit({
   deliveryId,
   resetSelectedDeliveryId,
 }: {
@@ -273,9 +273,13 @@ function MarkAsCompleted({
     deliveryId,
   })
 
+  const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.delivery.updateStatusToCompletedById.useMutation({
-      onSuccess: () => resetSelectedDeliveryId(),
+    api.delivery.updateStatusToInTransitById.useMutation({
+      onSuccess: () => {
+        utils.delivery.getPreparing.invalidate()
+        resetSelectedDeliveryId()
+      },
     })
 
   if (status === "loading") return <p>Loading ...</p>
@@ -297,7 +301,7 @@ function MarkAsCompleted({
         })
       }}
     >
-      Mark as Completed
+      Mark as In Transit
     </button>
   )
 }
@@ -369,7 +373,7 @@ export function ScanPackageDeliveryTab({
 
         <div>
           {selectedDeliveryId && (
-            <MarkAsCompleted
+            <MarkAsInTransit
               deliveryId={selectedDeliveryId}
               resetSelectedDeliveryId={() => setSelectedDeliveryId(null)}
             />
