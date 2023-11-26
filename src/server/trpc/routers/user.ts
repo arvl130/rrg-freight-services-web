@@ -162,7 +162,7 @@ export const userRouter = router({
         })
         .where(eq(users.id, input.id))
     }),
-  getAvailableRiders: protectedProcedure.query(async ({ ctx }) => {
+  getAvailableDrivers: protectedProcedure.query(async ({ ctx }) => {
     const deliveriesInProgress = ctx.db
       .select()
       .from(deliveries)
@@ -174,9 +174,9 @@ export const userRouter = router({
       .from(users)
       .leftJoin(
         deliveriesInProgress,
-        eq(users.id, deliveriesInProgress.riderId),
+        eq(users.id, deliveriesInProgress.driverId),
       )
-      .where(and(eq(users.role, "RIDER"), isNull(deliveriesInProgress.id)))
+      .where(and(eq(users.role, "DRIVER"), isNull(deliveriesInProgress.id)))
 
     return results.map(({ users }) => users)
   }),

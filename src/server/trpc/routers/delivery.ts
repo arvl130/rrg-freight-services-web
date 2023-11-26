@@ -76,7 +76,7 @@ export const deliveryRouter = router({
   create: protectedProcedure
     .input(
       z.object({
-        riderId: z.string().length(28),
+        driverId: z.string().length(28),
         vehicleId: z.number(),
         packageIds: z.number().array().nonempty(),
         isExpress: z.boolean(),
@@ -84,7 +84,7 @@ export const deliveryRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const [result] = (await ctx.db.insert(deliveries).values({
-        riderId: input.riderId,
+        driverId: input.driverId,
         vehicleId: input.vehicleId,
         status: "PREPARING",
         isExpress: input.isExpress ? 1 : 0,

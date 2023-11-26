@@ -182,7 +182,7 @@ const createDeliveryFormSchema = z.object({
     SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
   ),
   vehicleId: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
-  riderId: z.string().length(28),
+  driverId: z.string().length(28),
 })
 
 type CreateDeliveryFormType = z.infer<typeof createDeliveryFormSchema>
@@ -203,10 +203,10 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
   } = api.vehicle.getAvailable.useQuery()
 
   const {
-    status: statusOfAvailableRiders,
-    data: availableRiders,
-    error: errorOfAvailableRiders,
-  } = api.user.getAvailableRiders.useQuery()
+    status: statusOfAvailableDrivers,
+    data: availableDrivers,
+    error: errorOfAvailableDrivers,
+  } = api.user.getAvailableDrivers.useQuery()
 
   const [selectedPackageIds, setSelectedPackageIds] = useState<number[]>([])
 
@@ -236,7 +236,7 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
       className="grid grid-rows-[1fr_auto] px-4 py-2"
       onSubmit={handleSubmit((formData) =>
         mutate({
-          riderId: formData.riderId,
+          driverId: formData.driverId,
           vehicleId: Number(formData.vehicleId),
           isExpress: formData.deliveryType === "EXPRESS",
           packageIds: [selectedPackageIds[0], ...selectedPackageIds.slice(1)],
@@ -287,19 +287,19 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
           </div>
           <div>
             <label>Rider</label>
-            {statusOfAvailableRiders === "loading" && <p>Loading ...</p>}
-            {statusOfAvailableRiders === "error" && (
-              <p>Error: {errorOfAvailableRiders.message}</p>
+            {statusOfAvailableDrivers === "loading" && <p>Loading ...</p>}
+            {statusOfAvailableDrivers === "error" && (
+              <p>Error: {errorOfAvailableDrivers.message}</p>
             )}
-            {statusOfAvailableRiders === "success" && (
+            {statusOfAvailableDrivers === "success" && (
               <>
-                {availableRiders.length === 0 ? (
-                  <p>No available riders.</p>
+                {availableDrivers.length === 0 ? (
+                  <p>No available drivers.</p>
                 ) : (
-                  <select className="w-full" {...register("riderId")}>
-                    {availableRiders.map((rider) => (
-                      <option key={rider.id} value={rider.id.toString()}>
-                        {rider.displayName}
+                  <select className="w-full" {...register("driverId")}>
+                    {availableDrivers.map((driver) => (
+                      <option key={driver.id} value={driver.id.toString()}>
+                        {driver.displayName}
                       </option>
                     ))}
                   </select>

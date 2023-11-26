@@ -64,7 +64,7 @@ function DeliveriesTableItem({ delivery }: { delivery: Delivery }) {
         <span>{delivery.id}</span>
       </div>
       <div className="px-4 py-2">
-        <UserDisplayName userId={delivery.riderId} />
+        <UserDisplayName userId={delivery.driverId} />
       </div>
       <div className="px-4 py-2">
         {DateTime.fromJSDate(delivery.createdAt).toLocaleString(

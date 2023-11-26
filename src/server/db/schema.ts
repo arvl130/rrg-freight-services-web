@@ -111,7 +111,7 @@ export const deliveries = mysqlTable("deliveries", {
   })
     .primaryKey()
     .autoincrement(),
-  riderId: varchar("rider_id", {
+  driverId: varchar("driver_id", {
     length: 28,
   }).notNull(),
   vehicleId: bigint("vehicle_id", {
