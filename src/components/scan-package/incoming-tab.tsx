@@ -30,10 +30,12 @@ type ScanPackageSchemaFormType = z.infer<typeof scanPackageSchemaFormSchema>
 function ScanPackageForm({
   packageIds,
   scannedPackageIds,
+  updatedPackageIds,
   onSubmitValidPackageId,
 }: {
   packageIds: number[]
   scannedPackageIds: number[]
+  updatedPackageIds: number[]
   onSubmitValidPackageId: (packageId: number) => void
 }) {
   const {
@@ -51,6 +53,13 @@ function ScanPackageForm({
     <form
       className="mb-3"
       onSubmit={handleSubmit((formData) => {
+        if (updatedPackageIds.includes(Number(formData.packageId))) {
+          toast("Package was updated already.", {
+            icon: "⚠️",
+          })
+          return
+        }
+
         if (scannedPackageIds.includes(Number(formData.packageId))) {
           toast("Package was already scanned.", {
             icon: "⚠️",
@@ -116,8 +125,11 @@ function PackagesTable({ incomingShipmentId }: { incomingShipmentId: number }) {
   return (
     <div>
       <ScanPackageForm
-        scannedPackageIds={scannedPackageIds}
         packageIds={packages.map((_package) => _package.id)}
+        scannedPackageIds={scannedPackageIds}
+        updatedPackageIds={packages
+          .filter((_package) => _package.status === "IN_WAREHOUSE")
+          .map((_package) => _package.id)}
         onSubmitValidPackageId={(packageId) =>
           setScannedPackageIds((currScannedPackageIds) => [
             ...currScannedPackageIds,
