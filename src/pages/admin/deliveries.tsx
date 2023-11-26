@@ -123,11 +123,11 @@ function DeliveriesTable({
     : deliveries.filter(({ isArchived }) => !isArchived)
 
   const standardDeliveries = allDeliveries.filter(
-    (delivery) => delivery.isExpress,
+    (delivery) => !delivery.isExpress,
   )
 
   const expressDeliveries = allDeliveries.filter(
-    (delivery) => !delivery.isExpress,
+    (delivery) => delivery.isExpress,
   )
 
   return (
