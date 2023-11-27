@@ -125,7 +125,7 @@ export const incomingShipmentRouter = router({
 
         newPackageIds.push(packageId)
 
-        if (serverEnv.IS_EMAIL_ENABLED === 1) {
+        if (serverEnv.IS_EMAIL_ENABLED === "1") {
           await resend.emails.send({
             from: "notify@rrgfreightservices.vercel.app",
             to: newPackage.senderEmailAddress,

@@ -9,7 +9,7 @@ export const serverEnv = createEnv({
     FIREBASE_ADMIN_PRIVATE_KEY: z.string().min(1),
     FIREBASE_ADMIN_CLIENT_EMAIL: z.string().min(1).email(),
     RESEND_API_KEY: z.string().min(1),
-    IS_EMAIL_ENABLED: z.union([z.literal(0), z.literal(1)]),
+    IS_EMAIL_ENABLED: z.union([z.literal("0"), z.literal("1")]),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
