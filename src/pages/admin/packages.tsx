@@ -73,7 +73,7 @@ function PackageTableItem({ package: _package }: { package: Package }) {
       <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
         <div className="px-4 py-2 flex items-center gap-1">
           <input type="checkbox" name="" id="" />
-          <span>{_package.id}</span>
+          <span>{_package.id.toString().padStart(4, "0")}</span>
         </div>
         <div className="px-4 py-2">
           <div>{_package.senderFullName}</div>
@@ -279,7 +279,7 @@ function PackagesTable({
         <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
           <div className="uppercase px-4 py-2 flex gap-1">
             <input type="checkbox" name="" id="" />
-            <span>Product ID</span>
+            <span>Package ID</span>
           </div>
           <div className="uppercase px-4 py-2">Sender</div>
           <div className="uppercase px-4 py-2">Receiver</div>
