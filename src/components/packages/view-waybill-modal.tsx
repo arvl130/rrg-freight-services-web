@@ -104,7 +104,7 @@ export function PackagesViewWaybillModal({
                   </td>
                 </tr>
                 <tr>
-                  <th className="border border-black pb-4">Parcel Info</th>
+                  <th className="border border-black pb-4">Package Info</th>
                   <td
                     className="border border-black text-center px-2 pb-4 text-sm"
                     colSpan={2}
