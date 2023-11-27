@@ -18,6 +18,7 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { ShipmentStatus } from "@/utils/constants"
+import { DeliveriesViewLocationsModal } from "@/components/deliveries/view-locations-modal"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -55,7 +56,9 @@ function UserDisplayName({ userId }: { userId: string }) {
 }
 
 function DeliveriesTableItem({ delivery }: { delivery: Delivery }) {
-  const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
+  const [visibleModal, setVisibleModal] = useState<
+    null | "VIEW_DETAILS" | "VIEW_LOCATIONS"
+  >(null)
 
   return (
     <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
@@ -97,11 +100,23 @@ function DeliveriesTableItem({ delivery }: { delivery: Delivery }) {
               >
                 View Details
               </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("VIEW_LOCATIONS")}
+              >
+                View Locations
+              </DropdownMenu.Item>
 
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
+
+        <DeliveriesViewLocationsModal
+          isOpen={visibleModal === "VIEW_LOCATIONS"}
+          close={() => setVisibleModal(null)}
+          delivery={delivery}
+        />
       </div>
     </div>
   )

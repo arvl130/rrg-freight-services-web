@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { desc, eq } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
 import { deliveryLocations } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
@@ -44,5 +44,6 @@ export const deliveryLocationRouter = router({
         .select()
         .from(deliveryLocations)
         .where(eq(deliveryLocations.deliveryId, input.deliveryId))
+        .orderBy(desc(deliveryLocations.createdAt))
     }),
 })
