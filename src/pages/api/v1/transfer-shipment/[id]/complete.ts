@@ -1,6 +1,12 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
-import { transferShipments } from "@/server/db/schema"
+import {
+  packageStatusLogs,
+  packages,
+  transferShipmentPackages,
+  transferShipments,
+} from "@/server/db/schema"
+import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { eq } from "drizzle-orm"
 import type { NextApiRequest, NextApiResponse } from "next"
 import { ZodError, z } from "zod"
@@ -56,6 +62,23 @@ export default async function handler(
         proofOfTransferImgUrl: imageUrl,
       })
       .where(eq(transferShipments.id, transferShipmentId))
+
+    const transferShipmentPackagesResults = await db
+      .select()
+      .from(transferShipmentPackages)
+      .where(
+        eq(transferShipmentPackages.transferShipmentId, transferShipmentId),
+      )
+
+    for (const { packageId } of transferShipmentPackagesResults) {
+      await db.insert(packageStatusLogs).values({
+        packageId,
+        createdById: session.user.uid,
+        description: getDescriptionForNewPackageStatusLog("TRANSFERRED"),
+        status: "TRANSFERRED",
+        createdAt: new Date(),
+      })
+    }
 
     res.json({
       message: "Transfer shipment status updated",
