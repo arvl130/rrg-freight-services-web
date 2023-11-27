@@ -100,6 +100,7 @@ export const transferShipmentRouter = router({
           createdById: ctx.user.uid,
           status: "SORTING",
           description: getDescriptionForNewPackageStatusLog("SORTING"),
+          createdAt: new Date(),
         })
       }
     }),

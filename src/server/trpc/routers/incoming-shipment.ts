@@ -114,6 +114,7 @@ export const incomingShipmentRouter = router({
           createdById: ctx.user.uid,
           description: getDescriptionForNewPackageStatusLog("SHIPPING"),
           status: "SHIPPING",
+          createdAt: new Date(),
         })
         newPackageIds.push(result.insertId)
       }

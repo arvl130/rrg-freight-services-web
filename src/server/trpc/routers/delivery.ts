@@ -102,6 +102,7 @@ export const deliveryRouter = router({
           createdById: ctx.user.uid,
           description: getDescriptionForNewPackageStatusLog("SORTING"),
           status: "SORTING",
+          createdAt: new Date(),
         })
       }
     }),
