@@ -7,6 +7,7 @@ import { ZodError, z } from "zod"
 
 const getLocationsSchema = z.object({
   transferShipmentId: z.number(),
+  imageUrl: z.string().url(),
 })
 
 export default async function handler(
@@ -27,8 +28,9 @@ export default async function handler(
       return
     }
 
-    const { transferShipmentId } = getLocationsSchema.parse({
+    const { transferShipmentId, imageUrl } = getLocationsSchema.parse({
       transferShipmentId: parseInt(req.query.id as string),
+      imageUrl: req.body.imageUrl as string,
     })
 
     const transferShipmentResults = await db
@@ -51,6 +53,7 @@ export default async function handler(
       .update(transferShipments)
       .set({
         status: "ARRIVED",
+        proofOfTransferImgUrl: imageUrl,
       })
       .where(eq(transferShipments.id, transferShipmentId))
 

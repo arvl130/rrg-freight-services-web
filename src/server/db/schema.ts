@@ -84,6 +84,7 @@ export const transferShipments = mysqlTable("transfer_shipments", {
   sentToAgentId: varchar("sent_to_agent_id", {
     length: 28,
   }).notNull(),
+  proofOfTransferImgUrl: text("proof_of_transfer_img_url"),
   status: mysqlEnum("status", [
     SUPPORTED_SHIPMENT_STATUSES[0],
     ...SUPPORTED_SHIPMENT_STATUSES.slice(1),
