@@ -68,6 +68,9 @@ dependencies:
   leaflet:
     specifier: ^1.9.4
     version: 1.9.4
+  leaflet-arrowheads:
+    specifier: ^1.4.0
+    version: 1.4.0
   luxon:
     specifier: ^3.4.4
     version: 3.4.4
@@ -4794,6 +4797,19 @@ packages:
     engines: {node: '>=0.10'}
     dependencies:
       language-subtag-registry: 0.3.22
+    dev: false
+
+  /leaflet-arrowheads@1.4.0:
+    resolution: {integrity: sha512-aIjsmoWe1VJXaGOpKpS6E8EzN2vpx3GGCNP/FxQteLVzAg5xMID7elf9hj/1CWLJo8FuGRjSvKkUQDj7mocrYA==}
+    dependencies:
+      leaflet: 1.9.4
+      leaflet-geometryutil: 0.10.2
+    dev: false
+
+  /leaflet-geometryutil@0.10.2:
+    resolution: {integrity: sha512-NBKO0dW6+Ur0LKa6t5JMBd242lAMjRek23O8awlpvoDmTrb7fqgZC608YLwpZ4TYJZ/RbLu9fclIN8M4pIVwTQ==}
+    dependencies:
+      leaflet: 1.9.4
     dev: false
 
   /leaflet@1.9.4:

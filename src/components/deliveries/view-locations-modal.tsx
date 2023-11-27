@@ -7,6 +7,7 @@ import { Map } from "./map/map"
 import { X } from "@phosphor-icons/react/X"
 import { Map as TMap } from "leaflet"
 import { LEAFLET_DEFAULT_ZOOM_LEVEL } from "@/utils/constants"
+import { PathMap } from "./path-map/map"
 
 export function DeliveriesViewLocationsModal({
   delivery,
@@ -75,6 +76,25 @@ export function DeliveriesViewLocationsModal({
               ) : (
                 <>
                   <div className="h-full overflow-y-auto border-r border-gray-300">
+                    <button
+                      type="button"
+                      className={`
+                        border-b border-gray-300 block w-full text-left px-4 py-2 text-sm
+                        ${selectedItemIndex === null ? "bg-gray-50" : ""}
+                      `}
+                      onClick={() => {
+                        map?.flyTo(
+                          [deliveryLocations[0].lat, deliveryLocations[0].long],
+                          LEAFLET_DEFAULT_ZOOM_LEVEL,
+                        )
+                        setSelectedItemIndex(null)
+                      }}
+                    >
+                      <div className="font-medium">Show All</div>
+                      <div className="text-gray-500">
+                        Draw arrows connecting recorded locations
+                      </div>
+                    </button>
                     {deliveryLocations.map((deliveryLocation, index) => (
                       <button
                         key={deliveryLocation.id}
@@ -109,10 +129,11 @@ export function DeliveriesViewLocationsModal({
                     ))}
                   </div>
                   {selectedItemIndex === null ? (
-                    <div className="flex items-center justify-center bg-gray-50">
-                      <p className="text-center text-gray-500">
-                        Please select a location log.
-                      </p>
+                    <div className="h-full w-full bg-gray-50">
+                      <PathMap
+                        locations={deliveryLocations}
+                        setMap={(map) => setMap(map)}
+                      />
                     </div>
                   ) : (
                     <div className="h-full w-full bg-gray-50">
