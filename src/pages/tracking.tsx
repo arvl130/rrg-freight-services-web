@@ -28,6 +28,10 @@ function TrackingPageHead() {
   )
 }
 
+function censorWords(words: string) {
+  return words.replaceAll(/(?<=\w{2,})\w/g, "*")
+}
+
 function PackageDetailsSections({ packageId }: { packageId: number }) {
   const {
     status,
@@ -105,14 +109,12 @@ function PackageDetailsSections({ packageId }: { packageId: number }) {
               </div>
               <div className="text-center">Recipient Name</div>
               <div className="text-center border-l border-black px-3">
-                {_package.receiverFullName}
+                {censorWords(_package.receiverFullName)}
               </div>
               <div className="text-center">Location</div>
               <div className="text-center border-l border-black px-3">
-                {_package.receiverStreetAddress}, Brgy.{" "}
-                {_package.receiverBarangay}, {_package.receiverCity},{" "}
-                {_package.receiverStateOrProvince},{" "}
-                {_package.receiverCountryCode} {_package.receiverPostalCode}
+                {_package.receiverCity}, {_package.receiverStateOrProvince},{" "}
+                {_package.receiverCountryCode}
               </div>
             </div>
           </div>
