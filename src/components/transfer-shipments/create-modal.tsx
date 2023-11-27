@@ -7,6 +7,7 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import toast from "react-hot-toast"
+import { REGEX_ONE_OR_MORE_DIGITS } from "@/utils/constants"
 
 function PackagesTableItem({
   selectedPackageIds,
@@ -155,6 +156,8 @@ function ChoosePackageTable({
 
 const createTransferShipmentFormSchema = z.object({
   sentToAgentId: z.string().length(28),
+  vehicleId: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
+  driverId: z.string().length(28),
 })
 
 type CreateTransferShipmentFormType = z.infer<
@@ -169,7 +172,23 @@ export function TransferShipmentsCreateModal({
   close: () => void
 }) {
   const [selectedPackageIds, setSelectedPackageIds] = useState<number[]>([])
-  const { status, data: agents, error } = api.user.getDomesticAgents.useQuery()
+  const {
+    status: statusOfAgents,
+    data: agents,
+    error: errorOfAgents,
+  } = api.user.getDomesticAgents.useQuery()
+  const {
+    status: statusOfAvailableVehicles,
+    data: availableVehicles,
+    error: errorOfAvailableVehicles,
+  } = api.vehicle.getAvailable.useQuery()
+
+  const {
+    status: statusOfAvailableDrivers,
+    data: availableDrivers,
+    error: errorOfAvailableDrivers,
+  } = api.user.getAvailableDrivers.useQuery()
+
   const {
     register,
     handleSubmit,
@@ -210,67 +229,123 @@ export function TransferShipmentsCreateModal({
             onSubmit={handleSubmit((formData) =>
               mutate({
                 sentToAgentId: formData.sentToAgentId,
+                driverId: formData.driverId,
+                vehicleId: Number(formData.vehicleId),
                 packageIds: selectedPackageIds,
               }),
             )}
           >
-            <ChoosePackageTable
-              selectedPackageIds={selectedPackageIds}
-              onSelectAll={({ isChecked, packageIds }) => {
-                if (isChecked) {
-                  setSelectedPackageIds(packageIds)
-                } else {
-                  setSelectedPackageIds([])
-                }
-              }}
-              onCheckboxChange={({ isChecked, packageId }) => {
-                if (isChecked)
-                  setSelectedPackageIds((currSelectedPackageIds) => [
-                    ...currSelectedPackageIds,
-                    packageId,
-                  ])
-                else
-                  setSelectedPackageIds((currSelectedPackageIds) =>
-                    currSelectedPackageIds.filter(
-                      (selectedPackageId) => selectedPackageId !== packageId,
-                    ),
-                  )
-              }}
-            />
-            <div className="grid grid-cols-2">
-              {status === "loading" && <div>Loading ...</div>}
-              {status === "error" && (
-                <div>An error occured: {error.message}</div>
-              )}
-              {status === "success" && (
-                <div>
-                  {agents.length === 0 ? (
-                    <p>No agents found.</p>
-                  ) : (
-                    <select {...register("sentToAgentId")}>
-                      <option value={undefined} selected>
-                        Select an agent ...
-                      </option>
-                      {agents.map((agent) => (
-                        <option key={agent.id} value={agent.id}>
-                          {agent.displayName}
+            <div className="grid grid-cols-[auto_1fr]">
+              <div>
+                {statusOfAgents === "loading" && <div>Loading ...</div>}
+                {statusOfAgents === "error" && (
+                  <div>An error occured: {errorOfAgents.message}</div>
+                )}
+                {statusOfAgents === "success" && (
+                  <div>
+                    {agents.length === 0 ? (
+                      <p>No agents found.</p>
+                    ) : (
+                      <select {...register("sentToAgentId")}>
+                        <option value={undefined} selected>
+                          Select an agent ...
                         </option>
-                      ))}
-                    </select>
+                        {agents.map((agent) => (
+                          <option key={agent.id} value={agent.id}>
+                            {agent.displayName}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                )}
+                <div>
+                  <label className="block">Vehicle</label>
+                  {statusOfAvailableVehicles === "loading" && (
+                    <p>Loading ...</p>
+                  )}
+                  {statusOfAvailableVehicles === "error" && (
+                    <p>Error: {errorOfAvailableVehicles.message}</p>
+                  )}
+                  {statusOfAvailableVehicles === "success" && (
+                    <>
+                      {availableVehicles.length === 0 ? (
+                        <p>No available vehicles.</p>
+                      ) : (
+                        <select className="w-full" {...register("vehicleId")}>
+                          {availableVehicles.map((vehicle) => (
+                            <option
+                              key={vehicle.id}
+                              value={vehicle.id.toString()}
+                            >
+                              {vehicle.displayName}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </>
                   )}
                 </div>
-              )}
-              <div className="text-end">
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white rounded-md"
-                  disabled={
-                    isLoading || !isValid || selectedPackageIds.length === 0
-                  }
-                >
-                  Create
-                </button>
+                <div>
+                  <label>Rider</label>
+                  {statusOfAvailableDrivers === "loading" && <p>Loading ...</p>}
+                  {statusOfAvailableDrivers === "error" && (
+                    <p>Error: {errorOfAvailableDrivers.message}</p>
+                  )}
+                  {statusOfAvailableDrivers === "success" && (
+                    <>
+                      {availableDrivers.length === 0 ? (
+                        <p>No available drivers.</p>
+                      ) : (
+                        <select className="w-full" {...register("driverId")}>
+                          {availableDrivers.map((driver) => (
+                            <option
+                              key={driver.id}
+                              value={driver.id.toString()}
+                            >
+                              {driver.displayName}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
+              <ChoosePackageTable
+                selectedPackageIds={selectedPackageIds}
+                onSelectAll={({ isChecked, packageIds }) => {
+                  if (isChecked) {
+                    setSelectedPackageIds(packageIds)
+                  } else {
+                    setSelectedPackageIds([])
+                  }
+                }}
+                onCheckboxChange={({ isChecked, packageId }) => {
+                  if (isChecked)
+                    setSelectedPackageIds((currSelectedPackageIds) => [
+                      ...currSelectedPackageIds,
+                      packageId,
+                    ])
+                  else
+                    setSelectedPackageIds((currSelectedPackageIds) =>
+                      currSelectedPackageIds.filter(
+                        (selectedPackageId) => selectedPackageId !== packageId,
+                      ),
+                    )
+                }}
+              />
+            </div>
+            <div className="text-end">
+              <button
+                type="submit"
+                className="px-4 py-2 bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white rounded-md"
+                disabled={
+                  isLoading || !isValid || selectedPackageIds.length === 0
+                }
+              >
+                Create
+              </button>
             </div>
           </form>
         </Dialog.Content>

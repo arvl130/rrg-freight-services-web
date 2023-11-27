@@ -79,12 +79,16 @@ export const transferShipmentRouter = router({
     .input(
       z.object({
         sentToAgentId: z.string().length(28),
+        driverId: z.string().length(28),
+        vehicleId: z.number(),
         packageIds: z.number().array(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const [result] = (await ctx.db.insert(transferShipments).values({
         sentToAgentId: input.sentToAgentId,
+        driverId: input.driverId,
+        vehicleId: input.vehicleId,
         status: "PREPARING",
       })) as unknown as [ResultSetHeader]
       const transferShipmentId = result.insertId

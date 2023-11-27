@@ -75,6 +75,12 @@ export const transferShipments = mysqlTable("transfer_shipments", {
   })
     .primaryKey()
     .autoincrement(),
+  driverId: varchar("driver_id", {
+    length: 28,
+  }).notNull(),
+  vehicleId: bigint("vehicle_id", {
+    mode: "number",
+  }).notNull(),
   sentToAgentId: varchar("sent_to_agent_id", {
     length: 28,
   }).notNull(),
