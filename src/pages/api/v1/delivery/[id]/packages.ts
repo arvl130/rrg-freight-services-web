@@ -87,7 +87,6 @@ export default async function handler(
         error: e.flatten(),
       })
     } else {
-      console.log("fired", e)
       res.status(500).json({
         message: "Unknown error occured",
         error: e,

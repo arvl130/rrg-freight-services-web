@@ -15,7 +15,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  console.log("fired")
   if (req.method !== "POST") {
     res.status(405).json({
       message: "Unsupported method",
