@@ -48,6 +48,7 @@
     "react-qr-code": "^2.0.12",
     "react-responsive-carousel": "^3.2.23",
     "react-to-pdf": "^1.0.1",
+    "resend": "^2.0.0",
     "superjson": "^2.2.1",
     "tailwindcss": "3.3.5",
     "typescript": "5.2.2",
