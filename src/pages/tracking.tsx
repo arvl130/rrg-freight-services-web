@@ -101,7 +101,7 @@ function PackageDetailsSections({ packageId }: { packageId: number }) {
             <div className="w-full justify-center items-center grid grid-cols-2">
               <div className="text-center">Tracking Number</div>
               <div className="text-center border-l border-black px-3">
-                {_package.id}
+                {_package.id.toString().padStart(4, "0")}
               </div>
               <div className="text-center">Recipient Name</div>
               <div className="text-center border-l border-black px-3">
