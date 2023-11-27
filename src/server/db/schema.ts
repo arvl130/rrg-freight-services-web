@@ -111,6 +111,34 @@ export const transferShipmentPackages = mysqlTable(
   }),
 )
 
+export const transferShipmentLocations = mysqlTable(
+  "transfer_shipment_locations",
+  {
+    id: bigint("id", {
+      mode: "number",
+    })
+      .primaryKey()
+      .autoincrement(),
+    transferShipmentId: bigint("transfer_shipment_id", {
+      mode: "number",
+    }).notNull(),
+    long: double("long", {
+      precision: 12,
+      scale: 9,
+    }).notNull(),
+    lat: double("lat", {
+      precision: 12,
+      scale: 9,
+    }).notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "date",
+    })
+      .notNull()
+      .defaultNow(),
+    createdById: varchar("created_by_id", { length: 28 }).notNull(),
+  },
+)
+
 export const deliveries = mysqlTable("deliveries", {
   id: bigint("id", {
     mode: "number",
