@@ -2,6 +2,7 @@ import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packages,
+  deliveries,
   deliveryPackages,
   packageStatusLogs,
 } from "@/server/db/schema"
@@ -38,8 +39,8 @@ export default async function handler(
 
     const deliveryResults = await db
       .select()
-      .from(packages)
-      .where(eq(packages.id, deliveryId))
+      .from(deliveries)
+      .where(eq(deliveries.id, deliveryId))
 
     if (deliveryResults.length === 0) {
       res.status(404).json({ message: "No such delivery" })
