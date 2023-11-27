@@ -85,6 +85,7 @@ export const transferShipments = mysqlTable("transfer_shipments", {
     length: 28,
   }).notNull(),
   proofOfTransferImgUrl: text("proof_of_transfer_img_url"),
+  isTransferConfirmed: tinyint("is_transfer_confirmed").notNull().default(0),
   status: mysqlEnum("status", [
     SUPPORTED_SHIPMENT_STATUSES[0],
     ...SUPPORTED_SHIPMENT_STATUSES.slice(1),
