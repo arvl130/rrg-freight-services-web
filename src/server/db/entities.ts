@@ -11,6 +11,7 @@ import {
   packages,
   packageStatusLogs,
   activities,
+  transferShipmentLocations,
 } from "./schema"
 
 export type User = typeof users.$inferSelect
@@ -31,6 +32,11 @@ export type TransferShipmentPackage =
   typeof transferShipmentPackages.$inferSelect
 export type NewTransferShipmentPackage =
   typeof transferShipmentPackages.$inferInsert
+
+export type TransferShipmentLocation =
+  typeof transferShipmentLocations.$inferSelect
+export type NewTransferShipmentLocation =
+  typeof transferShipmentLocations.$inferInsert
 
 export type Delivery = typeof deliveries.$inferSelect
 export type NewDelivery = typeof deliveries.$inferInsert
