@@ -115,7 +115,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 
     res.status(200).json({
       message: "Transfer shipment location recorded",
-      data: {
+      newLocation: {
         id: result.insertId,
         transferShipmentId,
         long: location.long,
