@@ -18,6 +18,7 @@ import { DateTime } from "luxon"
 import { TransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
 import { DomesticLayout } from "@/layouts/domestic"
+import { TransferShipmentsConfirmTransferModal } from "@/components/transfer-shipments/confirm-transfer-modal"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -61,7 +62,9 @@ function TransferShipmentsTableItem({
 }: {
   transferShipment: TransferShipment
 }) {
-  const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
+  const [visibleModal, setVisibleModal] = useState<
+    null | "VIEW_DETAILS" | "CONFIRM_TRANSFER"
+  >(null)
 
   return (
     <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
@@ -104,10 +107,26 @@ function TransferShipmentsTableItem({
                 View Details
               </DropdownMenu.Item>
 
+              {transferShipment.proofOfTransferImgUrl !== null &&
+                transferShipment.isTransferConfirmed === 0 && (
+                  <DropdownMenu.Item
+                    className="transition-colors hover:bg-sky-50 px-3 py-2"
+                    onClick={() => setVisibleModal("CONFIRM_TRANSFER")}
+                  >
+                    Confirm Transfer
+                  </DropdownMenu.Item>
+                )}
+
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
+
+        <TransferShipmentsConfirmTransferModal
+          isOpen={visibleModal === "CONFIRM_TRANSFER"}
+          close={() => setVisibleModal(null)}
+          transferShipmentId={transferShipment.id}
+        />
       </div>
     </div>
   )

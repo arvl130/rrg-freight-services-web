@@ -108,4 +108,18 @@ export const transferShipmentRouter = router({
         })
       }
     }),
+  confirmTransferById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(transferShipments)
+        .set({
+          isTransferConfirmed: 1,
+        })
+        .where(eq(transferShipments.id, input.id))
+    }),
 })
