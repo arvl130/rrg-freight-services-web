@@ -283,8 +283,8 @@ function CreatePackagesForm({
 
     if (sheetRows.length === 0) return <div>Selected sheet has no rows.</div>
     return (
-      <div className="px-4 grid grid-rows-[1fr_auto]">
-        <div className="h-full overflow-x-auto border border-gray-300">
+      <div className="px-4 grid grid-rows-[1fr_auto] overflow-auto">
+        <div className="h-full overflow-auto border border-gray-300">
           <div className={`grid grid-cols-[repeat(21,_13rem)] font-medium`}>
             {Object.keys(sheetRows[0]).map((key) => (
               <div key={key} className="px-1.5 py-1">
@@ -324,12 +324,12 @@ function CreatePackagesForm({
       const rowsWithErrors = Object.keys(e.flatten().fieldErrors)
 
       return (
-        <div className="px-4 grid grid-rows-[auto_1fr]">
+        <div className="px-4 grid grid-rows-[auto_1fr] overflow-auto">
           <p className="mb-3">
             One or more or rows in this sheet contains errors. Please recheck
             its contents.
           </p>
-          <div className="h-full overflow-x-auto border border-gray-300">
+          <div className="h-full overflow-auto border border-gray-300">
             <div className={`grid grid-cols-[repeat(21,_13rem)] font-medium`}>
               {expectedColumns.map((column) => (
                 <div key={column} className="px-1.5 py-1">
@@ -415,7 +415,7 @@ export function IncomingShipmentsCreateModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             New Incoming Shipment
           </Dialog.Title>
-          <div className="px-4 py-2 grid grid-rows-[auto_1fr]">
+          <div className="px-4 py-2 grid grid-rows-[auto_1fr] overflow-auto">
             {selectedWorkbook === null ? (
               <SelectFileForm
                 setSelectedWorkBook={(wb) => setSelectedWorkBook(wb)}
