@@ -9,6 +9,7 @@ export const serverEnv = createEnv({
     FIREBASE_ADMIN_PRIVATE_KEY: z.string().min(1),
     FIREBASE_ADMIN_CLIENT_EMAIL: z.string().min(1).email(),
     RESEND_API_KEY: z.string().min(1),
+    MAIL_FROM_URL: z.string().min(1),
     IS_EMAIL_ENABLED: z.union([z.literal("0"), z.literal("1")]),
   },
   runtimeEnv: {
@@ -18,6 +19,7 @@ export const serverEnv = createEnv({
     FIREBASE_ADMIN_PRIVATE_KEY: process.env.FIREBASE_ADMIN_PRIVATE_KEY,
     FIREBASE_ADMIN_CLIENT_EMAIL: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
+    MAIL_FROM_URL: process.env.MAIL_FROM_URL,
     IS_EMAIL_ENABLED: process.env.IS_EMAIL_ENABLED,
   },
 })
