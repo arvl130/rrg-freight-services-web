@@ -127,7 +127,7 @@ export const incomingShipmentRouter = router({
 
         if (serverEnv.IS_EMAIL_ENABLED === "1") {
           await resend.emails.send({
-            from: `notify@${serverEnv.MAIL_FROM_URL}`,
+            from: `noreply@${serverEnv.MAIL_FROM_URL}`,
             to: newPackage.senderEmailAddress,
             subject: `Your package has been registered`,
             html: `<p>Your package with ID ${packageId
@@ -139,7 +139,7 @@ export const incomingShipmentRouter = router({
           })
 
           await resend.emails.send({
-            from: `notify@${serverEnv.MAIL_FROM_URL}`,
+            from: `noreply@${serverEnv.MAIL_FROM_URL}`,
             to: newPackage.receiverEmailAddress,
             subject: "A package will be sent to you",
             html: `<p>A package with ID ${packageId
