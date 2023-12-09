@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Head from "next/head"
 import Footer from "@/components/footer"
-import Navbar from "@/components/navBar"
+import { Navbar } from "@/components/navbar"
 import { TrackingVerticalTimeline } from "../components/tracking/timeline"
 import { Truck } from "@phosphor-icons/react/Truck"
 import { Path } from "@phosphor-icons/react/Path"
@@ -199,6 +199,24 @@ export function ChoosePackageForm({
   )
 }
 
+function HeroSection() {
+  return (
+    <section className="[background-color:_#79CFDC] relative">
+      <div className="min-h-[60vh] max-w-6xl mx-auto grid md:grid-cols-2 px-6 py-8">
+        <div className="flex items-center text-center text-white font-semibold">
+          <p className="text-4xl w-full text-center mb-3">Track Package</p>
+        </div>
+        <div className="hidden md:flex items-center h-full w-full">
+          <div className="w-full max-w-sm mx-auto">
+            <Boxes />
+          </div>
+        </div>
+      </div>
+      <div className="h-24 bg-gradient-to-b from-[#79CFDC] to-white"></div>
+    </section>
+  )
+}
+
 export default function TrackingPage() {
   const [selectedPackageId, setSelectedPackageId] = useState<null | number>(
     null,
@@ -208,29 +226,7 @@ export default function TrackingPage() {
     <>
       <TrackingPageHead />
       <Navbar />
-
-      <header>
-        <section key="section1">
-          <div
-            style={{
-              minWidth: "100%",
-              background: "linear-gradient(#79CFDC 80%, #FFFFFF)",
-            }}
-            className="relative min-h-[450px] md:min-h-[650px]"
-          >
-            <p
-              style={{ letterSpacing: "2px", textShadow: "2px 2px #707070" }}
-              className="text-[70px] text-white text-center w-full pt-[200px] font-bold leading-none tracking-wide lg:absolute lg:w-[650px] lg:top-[40%] lg:left-32 lg:text-left lg:pt-0"
-            >
-              Track Package
-            </p>
-            <div className="absolute right-0 bottom-20 hidden md:block">
-              <Boxes></Boxes>
-            </div>
-          </div>
-        </section>
-      </header>
-
+      <HeroSection />
       <ChoosePackageForm
         setSelectedPackageId={(packageId) =>
           setSelectedPackageId(parseInt(packageId))

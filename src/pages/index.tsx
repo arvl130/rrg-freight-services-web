@@ -1,7 +1,7 @@
 import Head from "next/head"
 import Link from "next/link"
-import { useState, FC, useRef } from "react"
-import Navbar from "@/components/navBar"
+import { FC } from "react"
+import { Navbar } from "@/components/navbar"
 import Image from "next/image"
 import Footer from "@/components/footer"
 import { MapPin } from "@phosphor-icons/react/MapPin"
@@ -24,45 +24,44 @@ const images = [
   "/assets/img/home/ship3.jpg",
 ]
 
+function HeroSection() {
+  return (
+    <section className="[background-color:_#79CFDC] relative">
+      <div className="min-h-[60vh] max-w-6xl mx-auto grid md:grid-cols-2 px-6">
+        <div className="flex flex-col justify-center text-white font-semibold">
+          <p className="text-4xl w-full text-center mb-3 max-w-md mx-auto">
+            Don&apos;t leave your shipments to chance.
+          </p>
+          <p className="text-2xl w-full text-center">
+            Take charge of your logistics today.
+          </p>
+        </div>
+        <div className="hidden md:flex items-end">
+          <div className="w-full max-w-lg mx-auto translate-y-24">
+            <ShipVector />
+          </div>
+        </div>
+      </div>
+      <div className="h-24 bg-gradient-to-b from-[#79CFDC] to-white"></div>
+    </section>
+  )
+}
+
 const HomePage: FC = () => {
   return (
     <>
       <Head>
         <title>Homepage &#x2013; RRG Freight Services</title>
       </Head>
+      <Navbar />
 
-      <main className="">
-        <Navbar />
-        <section key="section1">
-          <div
-            style={{
-              minWidth: "100%",
-              minHeight: "650px",
-              background: "linear-gradient(#79CFDC 80%, #FFFFFF)",
-            }}
-            className="relative"
-          >
-            <p
-              style={{
-                letterSpacing: "2px",
-                textShadow: "2px 2px #707070",
-              }}
-              className="text-[45px] font-semibold text-white text-center w-full pt-[200px] leading-none tracking-wide lg:absolute lg:w-[650px] lg:top-[30%] lg:left-10 lg:text-left lg:pt-0"
-            >
-              Do not leave your shipments to chance take charge of your
-              logistics today.
-            </p>
-            <div className="absolute right-2 bottom-20 hidden md:block  lg:bottom-0">
-              <ShipVector></ShipVector>
-            </div>
-          </div>
-        </section>
-
+      <main>
+        <HeroSection />
         <section key="section2">
           {/* Track Section */}
           <div className="bg-white">
             <div className=" my-5 flex justify-center	 md:my-10">
-              <div className="hidden sm:block sm:flex sm:justify-center sm:items-center">
+              <div className="hidden sm:flex sm:justify-center sm:items-center">
                 <div>
                   <GuyVector></GuyVector>
                 </div>
