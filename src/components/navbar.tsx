@@ -124,7 +124,7 @@ export function Navbar() {
     function handleScroll() {
       const scrollY = window.scrollY || document.documentElement.scrollTop
       // Consider not scrolled until we've passed this many pixels.
-      const scrollThreshold = 150
+      const scrollThreshold = 80 // 80px, 5rem, h-20
 
       setHasScrolled(scrollY > scrollThreshold)
     }
@@ -140,8 +140,8 @@ export function Navbar() {
     <>
       <div className="h-20 bg-[#79CFDC]"></div>
       <div
-        className={`z-50 top-0 fixed h-20 w-full transition-all duration-300 ${
-          hasScrolled ? "bg-[#79CFDC] drop-shadow-xl" : "bg-transparent"
+        className={`h-20 bg-[#79CFDC] w-full top-0 fixed z-50 transition-all duration-300 ${
+          hasScrolled ? "drop-shadow-xl" : ""
         }`}
       >
         <MobileNav hasScrolled={hasScrolled} />
