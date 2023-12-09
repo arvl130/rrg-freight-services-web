@@ -123,10 +123,7 @@ export function Navbar() {
   useEffect(() => {
     function handleScroll() {
       const scrollY = window.scrollY || document.documentElement.scrollTop
-      // Consider not scrolled until we've passed this many pixels.
-      const scrollThreshold = 80 // 80px, 5rem, h-20
-
-      setHasScrolled(scrollY > scrollThreshold)
+      setHasScrolled(scrollY > 0)
     }
 
     window.addEventListener("scroll", handleScroll)
