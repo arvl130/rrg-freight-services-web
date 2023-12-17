@@ -2,7 +2,9 @@ import { useSession } from "@/utils/auth"
 import { getAuth, signOut } from "firebase/auth"
 
 export default function SomethingWentWrongPage() {
-  const { isLoading, user } = useSession()
+  const { isLoading, user } = useSession({
+    required: true,
+  })
 
   return (
     <>
