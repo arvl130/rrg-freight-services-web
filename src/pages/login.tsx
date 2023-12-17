@@ -4,12 +4,7 @@ import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-} from "firebase/auth"
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { FirebaseError } from "firebase/app"
 import { getSessionRoleRedirectPath, useSession } from "@/utils/auth"
@@ -17,9 +12,7 @@ import { useRouter } from "next/router"
 import { Eye } from "@phosphor-icons/react/Eye"
 import { EyeSlash } from "@phosphor-icons/react/EyeSlash"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
-import { SkeletonAdminLayout } from "@/layouts/admin"
-
-const provider = new GoogleAuthProvider()
+import { SkeletonGenericLayout } from "@/layouts/generic"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -100,12 +93,6 @@ export default function LoginPage() {
       </>
     )
 
-  // FIXME: Either use a unified skeleton component for all users here,
-  // or show a skeleton based on the user's role, so we can show the
-  // correct skeleton.
-  //
-  // For now, let's just use the Admin user's skeleton component,
-  // since it matches all the other users' layout, anyways.
   if (user !== null)
     return (
       <>
@@ -116,7 +103,7 @@ export default function LoginPage() {
             content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
           />
         </Head>
-        <SkeletonAdminLayout />
+        <SkeletonGenericLayout />
       </>
     )
 

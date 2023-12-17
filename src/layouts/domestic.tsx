@@ -9,7 +9,7 @@ import Head from "next/head"
 import Image from "next/image"
 import { ReactNode, useState } from "react"
 import { SideBarLink } from "@/components/sidebar-link"
-import { AdminHeader, SkeletonAdminLayout } from "./admin"
+import { SkeletonGenericLayout, GenericHeader } from "./generic"
 import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
 
 export function DomesticSideBar() {
@@ -138,8 +138,6 @@ export function DomesticLayout({ title, children }: LayoutProps) {
       </>
     )
 
-  // FIXME: Either use a unified skeleton component in here,
-  // or show a skeleton component based on the detected role.
   if (role !== "DOMESTIC_AGENT")
     return (
       <>
@@ -150,7 +148,7 @@ export function DomesticLayout({ title, children }: LayoutProps) {
             content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
           />
         </Head>
-        <SkeletonAdminLayout />
+        <SkeletonGenericLayout />
       </>
     )
 
@@ -166,7 +164,7 @@ export function DomesticLayout({ title, children }: LayoutProps) {
       <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
         <DomesticSideBar />
         <div className="bg-brand-cyan-100 px-6 py-4">
-          <AdminHeader user={user} />
+          <GenericHeader user={user} />
           <div>
             {typeof children === "function" ? (
               <>

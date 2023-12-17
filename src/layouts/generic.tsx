@@ -16,6 +16,15 @@ import { Role } from "@/utils/constants"
 import Image from "next/image"
 import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
 
+export function SkeletonGenericLayout() {
+  return (
+    <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+      <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
+      <main className="bg-brand-cyan-100"></main>
+    </div>
+  )
+}
+
 function GenericSidebar() {
   const { role } = useSession()
 
@@ -29,7 +38,7 @@ function GenericSidebar() {
   )
 }
 
-function GenericHeader({ user }: { user: User }) {
+export function GenericHeader({ user }: { user: User }) {
   return (
     <header className="flex justify-between bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-4">
       <div className="flex items-center gap-3 rounded-md">
