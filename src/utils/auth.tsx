@@ -99,7 +99,7 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
         setSession({
           isLoading: false,
           user,
-          role: (idTokenResult.claims.role as UserRole) ?? "CUSTOMER",
+          role: idTokenResult.claims.role as UserRole,
           reload,
         })
       } catch {
