@@ -14,8 +14,8 @@ import {
   ReceptionMode,
   ShippingMode,
   ShippingType,
-  supportedReceptionModes,
-  supportedShippingModes,
+  SUPPORTED_RECEPTION_MODES,
+  SUPPORTED_SHIPPING_MODES,
   SUPPORTED_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { alias } from "drizzle-orm/mysql-core"
@@ -63,13 +63,13 @@ export const packageRouter = router({
       z.object({
         id: z.number(),
         shippingMode: z.custom<ShippingMode>((val) =>
-          supportedShippingModes.includes(val as ShippingMode),
+          SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
         ),
         shippingType: z.custom<ShippingType>((val) =>
           SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
         ),
         receptionMode: z.custom<ReceptionMode>((val) =>
-          supportedReceptionModes.includes(val as ReceptionMode),
+          SUPPORTED_RECEPTION_MODES.includes(val as ReceptionMode),
         ),
         weightInKg: z.number(),
         senderFullName: z.string().min(1).max(100),
@@ -210,13 +210,13 @@ export const packageRouter = router({
         newPackages: z
           .object({
             shippingMode: z.custom<ShippingMode>((val) =>
-              supportedShippingModes.includes(val as ShippingMode),
+              SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
             ),
             shippingType: z.custom<ShippingType>((val) =>
               SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
             ),
             receptionMode: z.custom<ReceptionMode>((val) =>
-              supportedReceptionModes.includes(val as ReceptionMode),
+              SUPPORTED_RECEPTION_MODES.includes(val as ReceptionMode),
             ),
             weightInKg: z.number(),
             senderFullName: z.string().min(1).max(100),
@@ -278,13 +278,13 @@ export const packageRouter = router({
     .input(
       z.object({
         shippingMode: z.custom<ShippingMode>((val) =>
-          supportedShippingModes.includes(val as ShippingMode),
+          SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
         ),
         shippingType: z.custom<ShippingType>((val) =>
           SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
         ),
         receptionMode: z.custom<ReceptionMode>((val) =>
-          supportedReceptionModes.includes(val as ReceptionMode),
+          SUPPORTED_RECEPTION_MODES.includes(val as ReceptionMode),
         ),
         weightInKg: z.number(),
         senderFullName: z.string().min(1).max(100),

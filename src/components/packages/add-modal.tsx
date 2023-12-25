@@ -5,9 +5,9 @@ import { api } from "@/utils/api"
 import {
   ShippingMode,
   ShippingType,
-  supportedShippingModes,
+  SUPPORTED_SHIPPING_MODES,
   SUPPORTED_SHIPPING_TYPES,
-  supportedReceptionModes,
+  SUPPORTED_RECEPTION_MODES,
   ReceptionMode,
   REGEX_ONE_OR_MORE_DIGITS,
 } from "@/utils/constants"
@@ -18,13 +18,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 const createPackageFormSchema = z.object({
   shippingMode: z.custom<ShippingMode>((val) =>
-    supportedShippingModes.includes(val as ShippingMode),
+    SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
   ),
   shippingType: z.custom<ShippingType>((val) =>
     SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
   ),
   receptionMode: z.custom<ReceptionMode>((val) =>
-    supportedReceptionModes.includes(val as ReceptionMode),
+    SUPPORTED_RECEPTION_MODES.includes(val as ReceptionMode),
   ),
   weightInKg: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
   senderFullName: z.string().min(1).max(100),
@@ -166,7 +166,7 @@ export function PackagesAddModal({
                   {...register("shippingMode")}
                   className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
                 >
-                  {supportedShippingModes.map((shippingMode) => (
+                  {SUPPORTED_SHIPPING_MODES.map((shippingMode) => (
                     <option key={shippingMode} value={shippingMode}>
                       {shippingMode}
                     </option>
@@ -203,7 +203,7 @@ export function PackagesAddModal({
                   {...register("receptionMode")}
                   className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
                 >
-                  {supportedReceptionModes.map((receptionMode) => (
+                  {SUPPORTED_RECEPTION_MODES.map((receptionMode) => (
                     <option key={receptionMode} value={receptionMode}>
                       {receptionMode}
                     </option>

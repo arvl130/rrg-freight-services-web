@@ -4,7 +4,7 @@ import { packageStatusLogs, packages } from "@/server/db/schema"
 import {
   PackageStatus,
   getDescriptionForNewPackageStatusLog,
-  supportedPackageStatuses,
+  SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"
 import { and, eq, isNull, lt } from "drizzle-orm"
 import { alias } from "drizzle-orm/mysql-core"
@@ -15,7 +15,7 @@ import { ZodError, z } from "zod"
 const inputSchema = z.object({
   packageId: z.number(),
   status: z.custom<PackageStatus>((val) =>
-    supportedPackageStatuses.includes(val as PackageStatus),
+    SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
   ),
 })
 

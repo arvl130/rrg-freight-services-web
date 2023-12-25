@@ -1,16 +1,16 @@
-export const supportedGenders = ["MALE", "FEMALE", "OTHER"] as const
-export type Gender = (typeof supportedGenders)[number]
+export const SUPPORTED_GENDERS = ["MALE", "FEMALE", "OTHER"] as const
+export type Gender = (typeof SUPPORTED_GENDERS)[number]
 
-export const supportedRoles = [
+export const SUPPORTED_USER_ROLES = [
   "ADMIN",
   "WAREHOUSE",
   "OVERSEAS_AGENT",
   "DOMESTIC_AGENT",
   "DRIVER",
 ] as const
-export type Role = (typeof supportedRoles)[number]
+export type Role = (typeof SUPPORTED_USER_ROLES)[number]
 
-export const supportedPackageStatuses = [
+export const SUPPORTED_PACKAGE_STATUSES = [
   "IN_WAREHOUSE",
   "SORTING",
   "SHIPPING",
@@ -18,7 +18,7 @@ export const supportedPackageStatuses = [
   "DELIVERED",
   "TRANSFERRED",
 ] as const
-export type PackageStatus = (typeof supportedPackageStatuses)[number]
+export type PackageStatus = (typeof SUPPORTED_PACKAGE_STATUSES)[number]
 
 export const SUPPORTED_SHIPMENT_STATUSES = [
   "PREPARING",
@@ -41,24 +41,27 @@ export function supportedShipmentStatusToHumanized(
   return shipmentStatusHumanized[shipmentStatus]
 }
 
-export const supportedShippingParties = ["FIRST_PARTY", "THIRD_PARTY"] as const
-export type ShippingParty = (typeof supportedShippingParties)[number]
+export const SUPPORTED_SHIPPING_PARTIES = [
+  "FIRST_PARTY",
+  "THIRD_PARTY",
+] as const
+export type ShippingParty = (typeof SUPPORTED_SHIPPING_PARTIES)[number]
 
-export const supportedShippingModes = ["AIR", "SEA"] as const
-export type ShippingMode = (typeof supportedShippingModes)[number]
+export const SUPPORTED_SHIPPING_MODES = ["AIR", "SEA"] as const
+export type ShippingMode = (typeof SUPPORTED_SHIPPING_MODES)[number]
 
 export const SUPPORTED_SHIPPING_TYPES = ["STANDARD", "EXPRESS"] as const
 export type ShippingType = (typeof SUPPORTED_SHIPPING_TYPES)[number]
 
-export const supportedReceptionModes = ["FOR_PICKUP", "DOOR_TO_DOOR"] as const
-export type ReceptionMode = (typeof supportedReceptionModes)[number]
+export const SUPPORTED_RECEPTION_MODES = ["FOR_PICKUP", "DOOR_TO_DOOR"] as const
+export type ReceptionMode = (typeof SUPPORTED_RECEPTION_MODES)[number]
 
-export const supportedHubRoles = [
+export const SUPPORED_HUB_ROLES = [
   "SENDING",
   "RECEIVING",
   "SENDING_RECEIVING",
 ] as const
-export type HubRole = (typeof supportedHubRoles)[number]
+export type HubRole = (typeof SUPPORED_HUB_ROLES)[number]
 
 export type UsersTableItemScreen =
   | "OVERVIEW"
@@ -101,5 +104,5 @@ export function getDescriptionForNewShipmentStatusLog(
   return shipmentStatusLogWithDescriptions[shipmentStatus] ?? ""
 }
 
-export const supportedVehicleTypes = ["TRUCK", "VAN", "MOTORCYCLE"] as const
-export type VehicleType = (typeof supportedVehicleTypes)[number]
+export const SUPPORTED_VEHICLE_TYPES = ["TRUCK", "VAN", "MOTORCYCLE"] as const
+export type VehicleType = (typeof SUPPORTED_VEHICLE_TYPES)[number]

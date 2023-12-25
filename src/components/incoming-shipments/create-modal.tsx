@@ -8,8 +8,8 @@ import {
   ReceptionMode,
   ShippingMode,
   ShippingType,
-  supportedReceptionModes,
-  supportedShippingModes,
+  SUPPORTED_RECEPTION_MODES,
+  SUPPORTED_SHIPPING_MODES,
   SUPPORTED_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { api } from "@/utils/api"
@@ -132,13 +132,13 @@ const expectedColumns = [
 
 const sheetRowSchema = z.object({
   "Shipping Mode": z.custom<ShippingMode>((val) =>
-    supportedShippingModes.includes(val as ShippingMode),
+    SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
   ),
   "Shipping Type": z.custom<ShippingType>((val) =>
     SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
   ),
   "Reception Mode": z.custom<ReceptionMode>((val) =>
-    supportedReceptionModes.includes(val as ReceptionMode),
+    SUPPORTED_RECEPTION_MODES.includes(val as ReceptionMode),
   ),
   "Weight In Kg": z.number(),
   "Sender Full Name": z.string().min(1).max(100),

@@ -9,8 +9,8 @@ import { clientEnv } from "@/utils/env.mjs"
 import {
   Gender,
   Role,
-  supportedGenders,
-  supportedRoles,
+  SUPPORTED_GENDERS,
+  SUPPORTED_USER_ROLES,
 } from "@/utils/constants"
 
 // Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
@@ -60,9 +60,11 @@ export const userRouter = router({
         contactNumber: z.string().min(1),
         emailAddress: z.string().min(1).max(100).email(),
         gender: z.custom<Gender>((val) =>
-          supportedGenders.includes(val as Gender),
+          SUPPORTED_GENDERS.includes(val as Gender),
         ),
-        role: z.custom<Role>((val) => supportedRoles.includes(val as Role)),
+        role: z.custom<Role>((val) =>
+          SUPPORTED_USER_ROLES.includes(val as Role),
+        ),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -148,7 +150,7 @@ export const userRouter = router({
       z.object({
         id: z.string().length(28),
         role: z.custom<Role>((val) => {
-          return supportedRoles.includes(val as Role)
+          return SUPPORTED_USER_ROLES.includes(val as Role)
         }),
         isEnabled: z.boolean(),
       }),

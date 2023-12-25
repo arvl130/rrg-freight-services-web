@@ -11,8 +11,8 @@ import {
   ShippingMode,
   ShippingType,
   getDescriptionForNewPackageStatusLog,
-  supportedReceptionModes,
-  supportedShippingModes,
+  SUPPORTED_RECEPTION_MODES,
+  SUPPORTED_SHIPPING_MODES,
   SUPPORTED_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
@@ -73,13 +73,13 @@ export const incomingShipmentRouter = router({
         newPackages: z
           .object({
             shippingMode: z.custom<ShippingMode>((val) =>
-              supportedShippingModes.includes(val as ShippingMode),
+              SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
             ),
             shippingType: z.custom<ShippingType>((val) =>
               SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
             ),
             receptionMode: z.custom<ReceptionMode>((val) =>
-              supportedReceptionModes.includes(val as ReceptionMode),
+              SUPPORTED_RECEPTION_MODES.includes(val as ReceptionMode),
             ),
             weightInKg: z.number(),
             senderFullName: z.string().min(1).max(100),

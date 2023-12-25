@@ -7,7 +7,7 @@ import { DateTime } from "luxon"
 import {
   PackageStatus,
   getDescriptionForNewPackageStatusLog,
-  supportedPackageStatuses,
+  SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
@@ -77,7 +77,7 @@ function StatusLogItem({
 
 const addStatusLogFormSchema = z.object({
   status: z.custom<PackageStatus>((val) =>
-    supportedPackageStatuses.includes(val as PackageStatus),
+    SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
   ),
   createdAt: z.string().min(1),
   createdById: z.string().length(28),
@@ -168,7 +168,7 @@ function AddStatusLogForm({ packageId }: { packageId: number }) {
           className="border border-gray-300 px-4 py-2 bg-white w-full"
           {...register("status")}
         >
-          {supportedPackageStatuses.map((packageStatus) => (
+          {SUPPORTED_PACKAGE_STATUSES.map((packageStatus) => (
             <option key={packageStatus} value={packageStatus}>
               {packageStatus}
             </option>

@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from "react"
-import { Role, supportedRoles } from "./constants"
+import { Role, SUPPORTED_USER_ROLES } from "./constants"
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -152,7 +152,7 @@ export function useSession(
         return
       }
 
-      for (const sessionRole of supportedRoles) {
+      for (const sessionRole of SUPPORTED_USER_ROLES) {
         if (required.role === sessionRole && session.role !== sessionRole) {
           const redirectPath = getSessionRoleRedirectPath(session.role)
           router.push(redirectPath)

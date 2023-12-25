@@ -1,13 +1,13 @@
 import {
-  supportedGenders,
-  supportedPackageStatuses,
-  supportedReceptionModes,
-  supportedRoles,
+  SUPPORTED_GENDERS,
+  SUPPORTED_PACKAGE_STATUSES,
+  SUPPORTED_RECEPTION_MODES,
+  SUPPORTED_USER_ROLES,
   SUPPORTED_SHIPMENT_STATUSES,
-  supportedShippingModes,
-  supportedShippingParties,
+  SUPPORTED_SHIPPING_MODES,
+  SUPPORTED_SHIPPING_PARTIES,
   SUPPORTED_SHIPPING_TYPES,
-  supportedVehicleTypes,
+  SUPPORTED_VEHICLE_TYPES,
 } from "../../utils/constants"
 import {
   bigint,
@@ -28,8 +28,8 @@ export const users = mysqlTable("users", {
   photoUrl: text("photo_url"),
   emailAddress: varchar("email_address", { length: 100 }).notNull(),
   contactNumber: varchar("contact_number", { length: 15 }).notNull(),
-  gender: mysqlEnum("gender", supportedGenders),
-  role: mysqlEnum("role", supportedRoles).notNull(),
+  gender: mysqlEnum("gender", SUPPORTED_GENDERS),
+  role: mysqlEnum("role", SUPPORTED_USER_ROLES).notNull(),
   isEnabled: tinyint("is_enabled").notNull().default(1),
 })
 
@@ -212,7 +212,7 @@ export const vehicles = mysqlTable("vehicles", {
   })
     .primaryKey()
     .autoincrement(),
-  type: mysqlEnum("type", supportedVehicleTypes).notNull(),
+  type: mysqlEnum("type", SUPPORTED_VEHICLE_TYPES).notNull(),
   displayName: varchar("display_name", {
     length: 100,
   }).notNull(),
@@ -221,15 +221,18 @@ export const vehicles = mysqlTable("vehicles", {
 
 export const packages = mysqlTable("packages", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  shippingParty: mysqlEnum("shipping_party", supportedShippingParties)
+  shippingParty: mysqlEnum("shipping_party", SUPPORTED_SHIPPING_PARTIES)
     .notNull()
     .default("FIRST_PARTY"),
-  shippingMode: mysqlEnum("shipping_mode", supportedShippingModes).notNull(),
+  shippingMode: mysqlEnum("shipping_mode", SUPPORTED_SHIPPING_MODES).notNull(),
   shippingType: mysqlEnum("shipping_type", [
     SUPPORTED_SHIPPING_TYPES[0],
     ...SUPPORTED_SHIPPING_TYPES.slice(1),
   ]).notNull(),
-  receptionMode: mysqlEnum("reception_mode", supportedReceptionModes).notNull(),
+  receptionMode: mysqlEnum(
+    "reception_mode",
+    SUPPORTED_RECEPTION_MODES,
+  ).notNull(),
   weightInKg: double("weight_in_kg", {
     precision: 8,
     scale: 2,
@@ -304,7 +307,7 @@ export const packageStatusLogs = mysqlTable("package_status_logs", {
   packageId: bigint("package_id", {
     mode: "number",
   }).notNull(),
-  status: mysqlEnum("status", supportedPackageStatuses).notNull(),
+  status: mysqlEnum("status", SUPPORTED_PACKAGE_STATUSES).notNull(),
   description: varchar("description", {
     length: 255,
   }).notNull(),

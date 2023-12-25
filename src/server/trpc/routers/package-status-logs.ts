@@ -4,7 +4,7 @@ import { packageStatusLogs } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { alias } from "drizzle-orm/mysql-core"
-import { PackageStatus, supportedPackageStatuses } from "@/utils/constants"
+import { PackageStatus, SUPPORTED_PACKAGE_STATUSES } from "@/utils/constants"
 
 export const packageStatusLogRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -129,7 +129,7 @@ export const packageStatusLogRouter = router({
       z.object({
         packageId: z.number(),
         status: z.custom<PackageStatus>((val) =>
-          supportedPackageStatuses.includes(val as PackageStatus),
+          SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
         ),
         description: z.string(),
         createdAt: z.date(),
@@ -146,7 +146,7 @@ export const packageStatusLogRouter = router({
           .object({
             packageId: z.number(),
             status: z.custom<PackageStatus>((val) =>
-              supportedPackageStatuses.includes(val as PackageStatus),
+              SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
             ),
             description: z.string(),
             createdAt: z.date(),
