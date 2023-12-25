@@ -20,19 +20,25 @@ export const supportedPackageStatuses = [
 ] as const
 export type PackageStatus = (typeof supportedPackageStatuses)[number]
 
-const shipmentStatuses = {
+export const SUPPORTED_SHIPMENT_STATUSES = [
+  "PREPARING",
+  "IN_TRANSIT",
+  "ARRIVED",
+  "FAILED",
+] as const
+export type ShipmentStatus = (typeof SUPPORTED_SHIPMENT_STATUSES)[number]
+
+const shipmentStatusHumanized: Record<ShipmentStatus, string> = {
   PREPARING: "Preparing",
   IN_TRANSIT: "In Transit",
   ARRIVED: "Arrived",
   FAILED: "Failed",
-} as const
+}
 
-export const SUPPORTED_SHIPMENT_STATUSES = Object.keys(shipmentStatuses)
-export type ShipmentStatus = keyof typeof shipmentStatuses
 export function supportedShipmentStatusToHumanized(
   shipmentStatus: ShipmentStatus,
 ) {
-  return shipmentStatuses[shipmentStatus]
+  return shipmentStatusHumanized[shipmentStatus]
 }
 
 export const supportedShippingParties = ["FIRST_PARTY", "THIRD_PARTY"] as const
