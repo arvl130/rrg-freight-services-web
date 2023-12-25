@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from "react"
-import { Role, SUPPORTED_USER_ROLES } from "./constants"
+import { UserRole, SUPPORTED_USER_ROLES } from "./constants"
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -22,7 +22,7 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
 const auth = getAuth(app)
 
-const sessionRoleRedirectPaths: Record<Role, string> = {
+const userRoleRedirectPaths: Record<UserRole, string> = {
   ADMIN: "/admin/dashboard",
   WAREHOUSE: "/warehouse/dashboard",
   OVERSEAS_AGENT: "/overseas/dashboard",
@@ -30,10 +30,10 @@ const sessionRoleRedirectPaths: Record<Role, string> = {
   DRIVER: "/driver/dashboard",
 }
 
-export function getSessionRoleRedirectPath(role: Role | null) {
+export function getUserRoleRedirectPath(role: UserRole | null) {
   if (role === null) return "/something-went-wrong"
 
-  return sessionRoleRedirectPaths[role]
+  return userRoleRedirectPaths[role]
 }
 
 type AuthContextType = {
@@ -55,7 +55,7 @@ type AuthContextType = {
   | {
       isLoading: false
       user: User
-      role: Role
+      role: UserRole
     }
 )
 
@@ -99,7 +99,7 @@ export function AuthProvider(props: { children: ReactNode; [x: string]: any }) {
         setSession({
           isLoading: false,
           user,
-          role: (idTokenResult.claims.role as Role) ?? "CUSTOMER",
+          role: (idTokenResult.claims.role as UserRole) ?? "CUSTOMER",
           reload,
         })
       } catch {
@@ -125,7 +125,7 @@ export function useSession(
       | true // Session is required, but any user is allowed.
       // Session is required, with a particular type.
       | {
-          role: Role
+          role: UserRole
         }
   } = {
     required: false,
@@ -154,7 +154,7 @@ export function useSession(
 
       for (const sessionRole of SUPPORTED_USER_ROLES) {
         if (required.role === sessionRole && session.role !== sessionRole) {
-          const redirectPath = getSessionRoleRedirectPath(session.role)
+          const redirectPath = getUserRoleRedirectPath(session.role)
           router.push(redirectPath)
 
           return

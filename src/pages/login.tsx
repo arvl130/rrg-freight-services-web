@@ -7,7 +7,7 @@ import { z } from "zod"
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { FirebaseError } from "firebase/app"
-import { getSessionRoleRedirectPath, useSession } from "@/utils/auth"
+import { getUserRoleRedirectPath, useSession } from "@/utils/auth"
 import { useRouter } from "next/router"
 import { Eye } from "@phosphor-icons/react/Eye"
 import { EyeSlash } from "@phosphor-icons/react/EyeSlash"
@@ -58,7 +58,7 @@ export default function LoginPage() {
     if (isLoading) return
     if (user === null) return
 
-    const redirectPath = getSessionRoleRedirectPath(role)
+    const redirectPath = getUserRoleRedirectPath(role)
     router.push(redirectPath)
   }, [router, isLoading, user, role])
 

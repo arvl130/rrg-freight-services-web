@@ -8,7 +8,7 @@ import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
 import {
   Gender,
-  Role,
+  UserRole,
   SUPPORTED_GENDERS,
   SUPPORTED_USER_ROLES,
 } from "@/utils/constants"
@@ -62,8 +62,8 @@ export const userRouter = router({
         gender: z.custom<Gender>((val) =>
           SUPPORTED_GENDERS.includes(val as Gender),
         ),
-        role: z.custom<Role>((val) =>
-          SUPPORTED_USER_ROLES.includes(val as Role),
+        role: z.custom<UserRole>((val) =>
+          SUPPORTED_USER_ROLES.includes(val as UserRole),
         ),
       }),
     )
@@ -149,8 +149,8 @@ export const userRouter = router({
     .input(
       z.object({
         id: z.string().length(28),
-        role: z.custom<Role>((val) => {
-          return SUPPORTED_USER_ROLES.includes(val as Role)
+        role: z.custom<UserRole>((val) => {
+          return SUPPORTED_USER_ROLES.includes(val as UserRole)
         }),
         isEnabled: z.boolean(),
       }),

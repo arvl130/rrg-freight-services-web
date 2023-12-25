@@ -1,9 +1,9 @@
-import { PackageStatus, Role, ShippingType } from "./constants"
+import { PackageStatus, UserRole, ShippingType } from "./constants"
 
 export function toTitleCase(word: string) {
   return word[0].toUpperCase() + word.slice(1).toLowerCase()
 }
-export function supportedRoleToHumanized(supportedRole: Role) {
+export function supportedRoleToHumanized(supportedRole: UserRole) {
   return supportedRole
     .toLowerCase()
     .split("_")

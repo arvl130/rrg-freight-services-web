@@ -8,7 +8,7 @@ export const SUPPORTED_USER_ROLES = [
   "DOMESTIC_AGENT",
   "DRIVER",
 ] as const
-export type Role = (typeof SUPPORTED_USER_ROLES)[number]
+export type UserRole = (typeof SUPPORTED_USER_ROLES)[number]
 
 export const SUPPORTED_PACKAGE_STATUSES = [
   "IN_WAREHOUSE",

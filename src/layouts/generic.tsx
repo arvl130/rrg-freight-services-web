@@ -12,7 +12,7 @@ import { Gear } from "@phosphor-icons/react/Gear"
 import { Bell } from "@phosphor-icons/react/Bell"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { CaretDown } from "@phosphor-icons/react/CaretDown"
-import { Role } from "@/utils/constants"
+import { UserRole } from "@/utils/constants"
 import Image from "next/image"
 import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
 
@@ -94,7 +94,7 @@ type WithFunctionChildren = {
     role,
   }: {
     user: User
-    role: Role | null
+    role: UserRole | null
     reload: () => Promise<void>
   }) => ReactNode
 }

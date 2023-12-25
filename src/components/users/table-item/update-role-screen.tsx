@@ -4,15 +4,15 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
-import { Role, SUPPORTED_USER_ROLES } from "@/utils/constants"
+import { UserRole, SUPPORTED_USER_ROLES } from "@/utils/constants"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { X } from "@phosphor-icons/react/X"
 import { supportedRoleToHumanized } from "@/utils/humanize"
 
 const updateRoleFormSchema = z.object({
-  role: z.custom<Role>(
+  role: z.custom<UserRole>(
     (val) => {
-      return SUPPORTED_USER_ROLES.includes(val as Role)
+      return SUPPORTED_USER_ROLES.includes(val as UserRole)
     },
     {
       message: "Please select a valid role.",
@@ -42,7 +42,7 @@ export function UsersTableItemUpdateRoleScreen({
   } = useForm<UpdateRoleFormType>({
     resolver: zodResolver(updateRoleFormSchema),
     defaultValues: {
-      role: (role ?? "UNKNOWN") as Role,
+      role: (role ?? "UNKNOWN") as UserRole,
       isEnabled: user.isEnabled === 1 ? "YES" : "NO",
     },
     resetOptions: {

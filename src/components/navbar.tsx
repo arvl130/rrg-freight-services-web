@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { List } from "@phosphor-icons/react/List"
 import { User } from "@phosphor-icons/react/User"
-import { getSessionRoleRedirectPath, useSession } from "@/utils/auth"
+import { getUserRoleRedirectPath, useSession } from "@/utils/auth"
 
 function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
@@ -104,7 +104,7 @@ function DesktopNav() {
         </div>
       ) : (
         <Link
-          href={getSessionRoleRedirectPath(role)}
+          href={getUserRoleRedirectPath(role)}
           className="flex items-center text-white"
         >
           <User
