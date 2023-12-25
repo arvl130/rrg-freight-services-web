@@ -128,7 +128,7 @@ function PackagesTable({ transferShipmentId }: { transferShipmentId: number }) {
         packageIds={packages.map((_package) => _package.id)}
         scannedPackageIds={scannedPackageIds}
         updatedPackageIds={packages
-          .filter((_package) => _package.status === "SHIPPING")
+          .filter((_package) => _package.status === "TRANSFERRING_FORWARDER")
           .map((_package) => _package.id)}
         onSubmitValidPackageId={(packageId) =>
           setScannedPackageIds((currScannedPackageIds) => [
@@ -161,10 +161,10 @@ function PackagesTable({ transferShipmentId }: { transferShipmentId: number }) {
               <ArrowRight size={24} />
               <span
                 className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
-                  "SHIPPING",
+                  "TRANSFERRING_FORWARDER",
                 )}`}
               >
-                {supportedPackageStatusToHumanized("SHIPPING")}
+                {supportedPackageStatusToHumanized("TRANSFERRING_FORWARDER")}
               </span>
             </div>
           ) : (
@@ -205,8 +205,10 @@ function PackagesTable({ transferShipmentId }: { transferShipmentId: number }) {
             const auth = getAuth()
             const newStatusLogs = scannedPackageIds.map((packageId) => ({
               packageId,
-              status: "SHIPPING" as const,
-              description: getDescriptionForNewPackageStatusLog("SHIPPING"),
+              status: "TRANSFERRING_FORWARDER" as const,
+              description: getDescriptionForNewPackageStatusLog(
+                "TRANSFERRING_FORWARDER",
+              ),
               createdAt: new Date(),
               createdById: auth.currentUser!.uid,
             }))
@@ -294,7 +296,7 @@ function MarkAsInTransit({
   if (packages.length === 0) return <p>No packages.</p>
 
   const hasPendingPackages = packages.some(
-    (_package) => _package.status !== "SHIPPING",
+    (_package) => _package.status !== "TRANSFERRING_FORWARDER",
   )
 
   return (

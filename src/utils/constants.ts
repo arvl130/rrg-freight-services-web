@@ -11,12 +11,14 @@ export const SUPPORTED_USER_ROLES = [
 export type UserRole = (typeof SUPPORTED_USER_ROLES)[number]
 
 export const SUPPORTED_PACKAGE_STATUSES = [
+  "INCOMING",
   "IN_WAREHOUSE",
   "SORTING",
-  "SHIPPING",
   "DELIVERING",
   "DELIVERED",
-  "TRANSFERRED",
+  "TRANSFERRING_WAREHOUSE",
+  "TRANSFERRING_FORWARDER",
+  "TRANSFERRED_FORWARDER",
 ] as const
 export type PackageStatus = (typeof SUPPORTED_PACKAGE_STATUSES)[number]
 
@@ -77,12 +79,14 @@ export const REGEX_ONE_OR_MORE_DIGITS = /^\d+$/
 // information, as well as who's responsible for a specific action or status
 // change.
 const packageStatusLogWithDescriptions: Record<PackageStatus, string> = {
-  IN_WAREHOUSE: "Package has been received at one of our hubs.",
-  SORTING: "Package has been added to a shipment and is now being sorted.",
-  SHIPPING: "Package is being shipped.",
-  DELIVERING: "Package is now being delivered.",
+  INCOMING: "Package is in transit to one of our warehouse.",
+  IN_WAREHOUSE: "Package has been received at one of our warehouse.",
+  SORTING: "Package is being sorted.",
+  TRANSFERRING_WAREHOUSE: "Package is being transferred to another warehouse.",
+  DELIVERING: "Package is out for delivery.",
   DELIVERED: "Package has been delivered.",
-  TRANSFERRED: "Package has been transferred.",
+  TRANSFERRING_FORWARDER: "Package is being transferred to another forwarder.",
+  TRANSFERRED_FORWARDER: "Package has been transferred to another forwarder.",
 }
 
 export function getDescriptionForNewPackageStatusLog(

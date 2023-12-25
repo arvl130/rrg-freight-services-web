@@ -118,8 +118,8 @@ export const incomingShipmentRouter = router({
         await ctx.db.insert(packageStatusLogs).values({
           packageId,
           createdById: ctx.user.uid,
-          description: getDescriptionForNewPackageStatusLog("SHIPPING"),
-          status: "SHIPPING",
+          description: getDescriptionForNewPackageStatusLog("INCOMING"),
+          status: "INCOMING",
           createdAt: new Date(),
         })
 

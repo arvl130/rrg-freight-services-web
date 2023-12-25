@@ -23,7 +23,9 @@ const TimelineItem = ({
         {packageStatusLog.status === "SORTING" && (
           <MagnifyingGlass size={44} color="#1d798b" />
         )}
-        {packageStatusLog.status === "SHIPPING" && (
+        {(packageStatusLog.status === "INCOMING" ||
+          packageStatusLog.status === "TRANSFERRING_FORWARDER" ||
+          packageStatusLog.status === "TRANSFERRING_WAREHOUSE") && (
           <Truck size={44} color="#1d798b" />
         )}
         {packageStatusLog.status === "IN_WAREHOUSE" && (

@@ -74,8 +74,10 @@ export default async function handler(
       await db.insert(packageStatusLogs).values({
         packageId,
         createdById: session.user.uid,
-        description: getDescriptionForNewPackageStatusLog("TRANSFERRED"),
-        status: "TRANSFERRED",
+        description: getDescriptionForNewPackageStatusLog(
+          "TRANSFERRED_FORWARDER",
+        ),
+        status: "TRANSFERRED_FORWARDER",
         createdAt: new Date(),
       })
     }
