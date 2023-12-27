@@ -11,7 +11,7 @@ import { z } from "zod"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
 
-export const deliveryRouter = router({
+export const deliveryShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const results = await ctx.db
       .select()

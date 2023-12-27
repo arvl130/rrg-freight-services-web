@@ -6,7 +6,7 @@ import { shipmentLocationRouter } from "./shipment-location"
 import { packageStatusLogRouter } from "./package-status-logs"
 import { incomingShipmentRouter } from "./incoming-shipment"
 import { transferShipmentRouter } from "./transfer-shipment"
-import { deliveryRouter } from "./delivery"
+import { deliveryShipmentRouter } from "./delivery-shipment"
 import { vehicleRouter } from "./vehicle"
 
 export const rootRouter = router({
@@ -26,7 +26,7 @@ export const rootRouter = router({
   packageStatusLog: packageStatusLogRouter,
   incomingShipment: incomingShipmentRouter,
   transferShipment: transferShipmentRouter,
-  delivery: deliveryRouter,
+  deliveryShipment: deliveryShipmentRouter,
   shipmentLocation: shipmentLocationRouter,
   vehicle: vehicleRouter,
 })

@@ -234,7 +234,7 @@ function SelectDeliveries({
     status,
     data: deliveries,
     error,
-  } = api.delivery.getPreparing.useQuery()
+  } = api.deliveryShipment.getPreparing.useQuery()
 
   if (status === "loading") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
@@ -275,9 +275,9 @@ function MarkAsInTransit({
 
   const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.delivery.updateStatusToInTransitById.useMutation({
+    api.deliveryShipment.updateStatusToInTransitById.useMutation({
       onSuccess: () => {
-        utils.delivery.getPreparing.invalidate()
+        utils.deliveryShipment.getPreparing.invalidate()
         resetSelectedDeliveryId()
       },
     })

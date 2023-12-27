@@ -290,7 +290,11 @@ function DeliveriesTable({
 
 export default function DeliveriesPage() {
   const { user, role } = useSession()
-  const { status, data: deliveries, error } = api.delivery.getAll.useQuery()
+  const {
+    status,
+    data: deliveries,
+    error,
+  } = api.deliveryShipment.getAll.useQuery()
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")
