@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
-import { deliveries, users } from "@/server/db/schema"
+import { deliveryShipments, users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { and, eq, inArray, isNull } from "drizzle-orm"
 import { updateProfile } from "@/server/auth"
@@ -167,8 +167,8 @@ export const userRouter = router({
   getAvailableDrivers: protectedProcedure.query(async ({ ctx }) => {
     const deliveriesInProgress = ctx.db
       .select()
-      .from(deliveries)
-      .where(inArray(deliveries.status, ["PREPARING", "IN_TRANSIT"]))
+      .from(deliveryShipments)
+      .where(inArray(deliveryShipments.status, ["PREPARING", "IN_TRANSIT"]))
       .as("deliveries_in_progress")
 
     const results = await ctx.db

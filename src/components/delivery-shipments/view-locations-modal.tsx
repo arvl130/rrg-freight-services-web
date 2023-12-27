@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog"
-import { Delivery } from "@/server/db/entities"
+import { DeliveryShipment } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { DateTime } from "luxon"
 import { useState } from "react"
@@ -9,12 +9,12 @@ import { Map as TMap } from "leaflet"
 import { LEAFLET_DEFAULT_ZOOM_LEVEL } from "@/utils/constants"
 import { PathMap } from "./path-map/map"
 
-export function DeliveriesViewLocationsModal({
+export function DeliveryShipmentsViewLocationsModal({
   delivery,
   isOpen,
   close,
 }: {
-  delivery: Delivery
+  delivery: DeliveryShipment
   isOpen: boolean
   close: () => void
 }) {

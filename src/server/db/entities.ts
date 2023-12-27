@@ -4,9 +4,9 @@ import {
   incomingShipmentPackages,
   transferShipments,
   transferShipmentPackages,
-  deliveries,
+  deliveryShipments,
   deliveryPackages,
-  deliveryLocations,
+  deliveryShipmentLocations,
   vehicles,
   packages,
   packageStatusLogs,
@@ -38,14 +38,16 @@ export type TransferShipmentLocation =
 export type NewTransferShipmentLocation =
   typeof transferShipmentLocations.$inferInsert
 
-export type Delivery = typeof deliveries.$inferSelect
-export type NewDelivery = typeof deliveries.$inferInsert
+export type DeliveryShipment = typeof deliveryShipments.$inferSelect
+export type NewDeliveryShipment = typeof deliveryShipments.$inferInsert
 
-export type DeliveryPackage = typeof deliveryPackages.$inferSelect
-export type NewDeliveryPackage = typeof deliveryPackages.$inferInsert
+export type DeliveryShipmentPackage = typeof deliveryPackages.$inferSelect
+export type NewDeliveryShipmentPackage = typeof deliveryPackages.$inferInsert
 
-export type DeliveryLocation = typeof deliveryLocations.$inferSelect
-export type NewDeliveryLocation = typeof deliveryLocations.$inferInsert
+export type DeliveryShipmentLocation =
+  typeof deliveryShipmentLocations.$inferSelect
+export type NewDeliveryShipmentLocation =
+  typeof deliveryShipmentLocations.$inferInsert
 
 export type Package = typeof packages.$inferSelect
 export type NewPackage = typeof packages.$inferInsert

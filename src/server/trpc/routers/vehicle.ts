@@ -1,6 +1,6 @@
 import { eq, isNull, inArray } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { vehicles, deliveries } from "@/server/db/schema"
+import { vehicles, deliveryShipments } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
@@ -36,8 +36,8 @@ export const vehicleRouter = router({
   getAvailable: protectedProcedure.query(async ({ ctx }) => {
     const deliveriesInProgress = ctx.db
       .select()
-      .from(deliveries)
-      .where(inArray(deliveries.status, ["PREPARING", "IN_TRANSIT"]))
+      .from(deliveryShipments)
+      .where(inArray(deliveryShipments.status, ["PREPARING", "IN_TRANSIT"]))
       .as("deliveries_in_progress")
 
     const results = await ctx.db

@@ -1,6 +1,9 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
-import { deliveryLocations, deliveries } from "@/server/db/schema"
+import {
+  deliveryShipmentLocations,
+  deliveryShipments,
+} from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import { ResultSetHeader } from "mysql2"
 import type { NextApiRequest, NextApiResponse } from "next"
@@ -24,8 +27,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
     const deliveryResults = await db
       .select()
-      .from(deliveries)
-      .where(eq(deliveries.id, deliveryId))
+      .from(deliveryShipments)
+      .where(eq(deliveryShipments.id, deliveryId))
 
     if (deliveryResults.length === 0) {
       res.status(404).json({ message: "No such delivery" })
@@ -39,8 +42,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
     const deliveryLocationResults = await db
       .select()
-      .from(deliveryLocations)
-      .where(eq(deliveryLocations.deliveryId, deliveryId))
+      .from(deliveryShipmentLocations)
+      .where(eq(deliveryShipmentLocations.deliveryId, deliveryId))
 
     res.json({
       message: "Delivery locations retrieved",
@@ -87,8 +90,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 
     const deliveryResults = await db
       .select()
-      .from(deliveries)
-      .where(eq(deliveries.id, deliveryId))
+      .from(deliveryShipments)
+      .where(eq(deliveryShipments.id, deliveryId))
 
     if (deliveryResults.length === 0) {
       res.status(404).json({ message: "No such delivery" })
@@ -101,7 +104,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const createdById = session.user.uid
-    const [result] = (await db.insert(deliveryLocations).values({
+    const [result] = (await db.insert(deliveryShipmentLocations).values({
       deliveryId,
       long: location.long,
       lat: location.lat,

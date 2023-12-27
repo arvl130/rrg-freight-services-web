@@ -5,20 +5,20 @@ import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
-import { DeliveriesCreateModal } from "@/components/deliveries/create-modal"
+import { DeliveryShipmentsCreateModal } from "@/components/delivery-shipments/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
-import { Delivery } from "@/server/db/entities"
+import { DeliveryShipment } from "@/server/db/entities"
 import { DateTime } from "luxon"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { ShipmentStatus } from "@/utils/constants"
-import { DeliveriesViewLocationsModal } from "@/components/deliveries/view-locations-modal"
+import { DeliveryShipmentsViewLocationsModal } from "@/components/delivery-shipments/view-locations-modal"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -36,7 +36,7 @@ function PageHeader() {
           <span>Create Delivery</span>
         </button>
       </div>
-      <DeliveriesCreateModal
+      <DeliveryShipmentsCreateModal
         isOpen={isOpenCreateModal}
         close={() => setIsOpenCreateModal(false)}
       />
@@ -55,7 +55,7 @@ function UserDisplayName({ userId }: { userId: string }) {
   return <>{data?.displayName}</>
 }
 
-function DeliveriesTableItem({ delivery }: { delivery: Delivery }) {
+function DeliveriesTableItem({ delivery }: { delivery: DeliveryShipment }) {
   const [visibleModal, setVisibleModal] = useState<
     null | "VIEW_DETAILS" | "VIEW_LOCATIONS"
   >(null)
@@ -112,7 +112,7 @@ function DeliveriesTableItem({ delivery }: { delivery: Delivery }) {
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
 
-        <DeliveriesViewLocationsModal
+        <DeliveryShipmentsViewLocationsModal
           isOpen={visibleModal === "VIEW_LOCATIONS"}
           close={() => setVisibleModal(null)}
           delivery={delivery}
@@ -126,7 +126,7 @@ function DeliveriesTable({
   deliveries,
   isArchived,
 }: {
-  deliveries: Delivery[]
+  deliveries: DeliveryShipment[]
   isArchived: boolean
 }) {
   const [selectedTab, setSelectedTab] = useState<

@@ -1,13 +1,13 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import QRCode from "react-qr-code"
-import { Delivery } from "@/server/db/entities"
+import { DeliveryShipment } from "@/server/db/entities"
 
-export function DeliveriesViewQrCodeModal({
+export function DeliveryShipmentsViewQrCodeModal({
   delivery,
   isOpen,
   close,
 }: {
-  delivery: Delivery
+  delivery: DeliveryShipment
   isOpen: boolean
   close: () => void
 }) {

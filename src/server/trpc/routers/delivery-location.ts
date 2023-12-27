@@ -1,12 +1,12 @@
 import { desc, eq } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { deliveryLocations } from "@/server/db/schema"
+import { deliveryShipmentLocations } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
 export const deliveryLocationRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(deliveryLocations)
+    return await ctx.db.select().from(deliveryShipmentLocations)
   }),
   getById: protectedProcedure
     .input(
@@ -17,8 +17,8 @@ export const deliveryLocationRouter = router({
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
         .select()
-        .from(deliveryLocations)
-        .where(eq(deliveryLocations.id, input.id))
+        .from(deliveryShipmentLocations)
+        .where(eq(deliveryShipmentLocations.id, input.id))
 
       if (results.length === 0)
         throw new TRPCError({
@@ -42,8 +42,8 @@ export const deliveryLocationRouter = router({
     .query(async ({ ctx, input }) => {
       return await ctx.db
         .select()
-        .from(deliveryLocations)
-        .where(eq(deliveryLocations.deliveryId, input.deliveryId))
-        .orderBy(desc(deliveryLocations.createdAt))
+        .from(deliveryShipmentLocations)
+        .where(eq(deliveryShipmentLocations.deliveryId, input.deliveryId))
+        .orderBy(desc(deliveryShipmentLocations.createdAt))
     }),
 })

@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
 import {
-  deliveries,
+  deliveryShipments,
   deliveryPackages,
   packageStatusLogs,
 } from "@/server/db/schema"
@@ -12,7 +12,7 @@ import { ResultSetHeader } from "mysql2"
 
 export const deliveryRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(deliveries)
+    return await ctx.db.select().from(deliveryShipments)
   }),
   getById: protectedProcedure
     .input(
@@ -23,8 +23,8 @@ export const deliveryRouter = router({
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
         .select()
-        .from(deliveries)
-        .where(eq(deliveries.id, input.id))
+        .from(deliveryShipments)
+        .where(eq(deliveryShipments.id, input.id))
 
       if (results.length === 0)
         throw new TRPCError({
@@ -42,8 +42,8 @@ export const deliveryRouter = router({
   getPreparing: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db
       .select()
-      .from(deliveries)
-      .where(eq(deliveries.status, "PREPARING"))
+      .from(deliveryShipments)
+      .where(eq(deliveryShipments.status, "PREPARING"))
   }),
   updateStatusToInTransitById: protectedProcedure
     .input(
@@ -53,11 +53,11 @@ export const deliveryRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db
-        .update(deliveries)
+        .update(deliveryShipments)
         .set({
           status: "IN_TRANSIT",
         })
-        .where(eq(deliveries.id, input.id))
+        .where(eq(deliveryShipments.id, input.id))
     }),
   updateStatusToCompletedById: protectedProcedure
     .input(
@@ -67,11 +67,11 @@ export const deliveryRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db
-        .update(deliveries)
+        .update(deliveryShipments)
         .set({
           status: "ARRIVED",
         })
-        .where(eq(deliveries.id, input.id))
+        .where(eq(deliveryShipments.id, input.id))
     }),
   create: protectedProcedure
     .input(
@@ -83,7 +83,7 @@ export const deliveryRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const [result] = (await ctx.db.insert(deliveries).values({
+      const [result] = (await ctx.db.insert(deliveryShipments).values({
         driverId: input.driverId,
         vehicleId: input.vehicleId,
         status: "PREPARING",

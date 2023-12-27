@@ -51,7 +51,7 @@ export function AdminSideBar() {
         />
         <SideBarLink
           name="Deliveries"
-          href="/admin/deliveries"
+          href="/admin/delivery-shipments"
           icon={<Motorcycle size={32} className="text-white" />}
         />
         <SideBarLink

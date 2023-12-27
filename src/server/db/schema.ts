@@ -141,7 +141,7 @@ export const transferShipmentLocations = mysqlTable(
   },
 )
 
-export const deliveries = mysqlTable("deliveries", {
+export const deliveryShipments = mysqlTable("delivery_shipments", {
   id: bigint("id", {
     mode: "number",
   })
@@ -181,30 +181,33 @@ export const deliveryPackages = mysqlTable(
   }),
 )
 
-export const deliveryLocations = mysqlTable("delivery_locations", {
-  id: bigint("id", {
-    mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
-  deliveryId: bigint("delivery_id", {
-    mode: "number",
-  }).notNull(),
-  long: double("long", {
-    precision: 12,
-    scale: 9,
-  }).notNull(),
-  lat: double("lat", {
-    precision: 12,
-    scale: 9,
-  }).notNull(),
-  createdAt: timestamp("created_at", {
-    mode: "date",
-  })
-    .notNull()
-    .defaultNow(),
-  createdById: varchar("created_by_id", { length: 28 }).notNull(),
-})
+export const deliveryShipmentLocations = mysqlTable(
+  "delivery_shipment_locations",
+  {
+    id: bigint("id", {
+      mode: "number",
+    })
+      .primaryKey()
+      .autoincrement(),
+    deliveryId: bigint("delivery_id", {
+      mode: "number",
+    }).notNull(),
+    long: double("long", {
+      precision: 12,
+      scale: 9,
+    }).notNull(),
+    lat: double("lat", {
+      precision: 12,
+      scale: 9,
+    }).notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "date",
+    })
+      .notNull()
+      .defaultNow(),
+    createdById: varchar("created_by_id", { length: 28 }).notNull(),
+  },
+)
 
 export const vehicles = mysqlTable("vehicles", {
   id: bigint("id", {
