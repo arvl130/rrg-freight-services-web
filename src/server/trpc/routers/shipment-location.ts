@@ -4,7 +4,7 @@ import { shipmentLocations } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
-export const deliveryLocationRouter = router({
+export const shipmentLocationRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(shipmentLocations)
   }),
