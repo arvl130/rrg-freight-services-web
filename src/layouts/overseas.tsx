@@ -93,10 +93,7 @@ type LayoutProps = {
 
 export function OverseasLayout({ title, children }: LayoutProps) {
   const titleContent = Array.isArray(title)
-    ? // Our deployment platform only supports Node v18.
-      // Use this method for now, until they support Node v20
-      // where toReversed() is available.
-      `${[...title].reverse().join(" \u2013 ")} \u2013 RRG Freight Services`
+    ? `${title.toReversed().join(" \u2013 ")} \u2013 RRG Freight Services`
     : `${title} \u2013 RRG Freight Services`
 
   const { isLoading, user, role, reload } = useSession({
