@@ -8,6 +8,7 @@ import { incomingShipmentRouter } from "./incoming-shipment"
 import { transferShipmentRouter } from "./transfer-shipment"
 import { deliveryShipmentRouter } from "./delivery-shipment"
 import { vehicleRouter } from "./vehicle"
+import { warehouseRouter } from "./warehouse"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -29,6 +30,7 @@ export const rootRouter = router({
   deliveryShipment: deliveryShipmentRouter,
   shipmentLocation: shipmentLocationRouter,
   vehicle: vehicleRouter,
+  warehouse: warehouseRouter,
 })
 
 export type RootRouter = typeof rootRouter
