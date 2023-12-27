@@ -3,12 +3,12 @@ import { useForm } from "react-hook-form"
 import * as Dialog from "@radix-ui/react-dialog"
 import { api } from "@/utils/api"
 import {
-  ShippingMode,
-  ShippingType,
-  SUPPORTED_SHIPPING_MODES,
-  SUPPORTED_SHIPPING_TYPES,
-  SUPPORTED_RECEPTION_MODES,
-  ReceptionMode,
+  PackageShippingMode,
+  PackageShippingType,
+  SUPPORTED_PACKAGE_SHIPPING_MODES,
+  SUPPORTED_PACKAGE_SHIPPING_TYPES,
+  SUPPORTED_PACKAGE_RECEPTION_MODES,
+  PackageReceptionMode,
   REGEX_ONE_OR_MORE_DIGITS,
 } from "@/utils/constants"
 import { countryCodeToName, supportedCountryCodes } from "@/utils/country-code"
@@ -17,14 +17,14 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 const createPackageFormSchema = z.object({
-  shippingMode: z.custom<ShippingMode>((val) =>
-    SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
+  shippingMode: z.custom<PackageShippingMode>((val) =>
+    SUPPORTED_PACKAGE_SHIPPING_MODES.includes(val as PackageShippingMode),
   ),
-  shippingType: z.custom<ShippingType>((val) =>
-    SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
+  shippingType: z.custom<PackageShippingType>((val) =>
+    SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(val as PackageShippingType),
   ),
-  receptionMode: z.custom<ReceptionMode>((val) =>
-    SUPPORTED_RECEPTION_MODES.includes(val as ReceptionMode),
+  receptionMode: z.custom<PackageReceptionMode>((val) =>
+    SUPPORTED_PACKAGE_RECEPTION_MODES.includes(val as PackageReceptionMode),
   ),
   weightInKg: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
   senderFullName: z.string().min(1).max(100),
@@ -166,7 +166,7 @@ export function PackagesAddModal({
                   {...register("shippingMode")}
                   className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
                 >
-                  {SUPPORTED_SHIPPING_MODES.map((shippingMode) => (
+                  {SUPPORTED_PACKAGE_SHIPPING_MODES.map((shippingMode) => (
                     <option key={shippingMode} value={shippingMode}>
                       {shippingMode}
                     </option>
@@ -180,7 +180,7 @@ export function PackagesAddModal({
                   {...register("shippingType")}
                   className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
                 >
-                  {SUPPORTED_SHIPPING_TYPES.map((shippingType) => (
+                  {SUPPORTED_PACKAGE_SHIPPING_TYPES.map((shippingType) => (
                     <option key={shippingType} value={shippingType}>
                       {shippingType}
                     </option>
@@ -203,7 +203,7 @@ export function PackagesAddModal({
                   {...register("receptionMode")}
                   className="block w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring focus:border-blue-400 focus:ring-blue-300/40"
                 >
-                  {SUPPORTED_RECEPTION_MODES.map((receptionMode) => (
+                  {SUPPORTED_PACKAGE_RECEPTION_MODES.map((receptionMode) => (
                     <option key={receptionMode} value={receptionMode}>
                       {receptionMode}
                     </option>

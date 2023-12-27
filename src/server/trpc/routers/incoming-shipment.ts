@@ -7,13 +7,13 @@ import {
   packages,
 } from "@/server/db/schema"
 import {
-  ReceptionMode,
-  ShippingMode,
-  ShippingType,
+  PackageReceptionMode,
+  PackageShippingMode,
+  PackageShippingType,
   getDescriptionForNewPackageStatusLog,
-  SUPPORTED_RECEPTION_MODES,
-  SUPPORTED_SHIPPING_MODES,
-  SUPPORTED_SHIPPING_TYPES,
+  SUPPORTED_PACKAGE_RECEPTION_MODES,
+  SUPPORTED_PACKAGE_SHIPPING_MODES,
+  SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
@@ -72,14 +72,20 @@ export const incomingShipmentRouter = router({
         sentByAgentId: z.string().length(28),
         newPackages: z
           .object({
-            shippingMode: z.custom<ShippingMode>((val) =>
-              SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
+            shippingMode: z.custom<PackageShippingMode>((val) =>
+              SUPPORTED_PACKAGE_SHIPPING_MODES.includes(
+                val as PackageShippingMode,
+              ),
             ),
-            shippingType: z.custom<ShippingType>((val) =>
-              SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
+            shippingType: z.custom<PackageShippingType>((val) =>
+              SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(
+                val as PackageShippingType,
+              ),
             ),
-            receptionMode: z.custom<ReceptionMode>((val) =>
-              SUPPORTED_RECEPTION_MODES.includes(val as ReceptionMode),
+            receptionMode: z.custom<PackageReceptionMode>((val) =>
+              SUPPORTED_PACKAGE_RECEPTION_MODES.includes(
+                val as PackageReceptionMode,
+              ),
             ),
             weightInKg: z.number(),
             senderFullName: z.string().min(1).max(100),

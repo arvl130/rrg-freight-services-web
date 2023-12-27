@@ -22,6 +22,21 @@ export const SUPPORTED_PACKAGE_STATUSES = [
 ] as const
 export type PackageStatus = (typeof SUPPORTED_PACKAGE_STATUSES)[number]
 
+export const SUPPORTED_PACKAGE_SHIPPING_MODES = ["AIR", "SEA"] as const
+export type PackageShippingMode =
+  (typeof SUPPORTED_PACKAGE_SHIPPING_MODES)[number]
+
+export const SUPPORTED_PACKAGE_SHIPPING_TYPES = ["STANDARD", "EXPRESS"] as const
+export type PackageShippingType =
+  (typeof SUPPORTED_PACKAGE_SHIPPING_TYPES)[number]
+
+export const SUPPORTED_PACKAGE_RECEPTION_MODES = [
+  "FOR_PICKUP",
+  "DOOR_TO_DOOR",
+] as const
+export type PackageReceptionMode =
+  (typeof SUPPORTED_PACKAGE_RECEPTION_MODES)[number]
+
 export const SUPPORTED_SHIPMENT_STATUSES = [
   "PREPARING",
   "IN_TRANSIT",
@@ -42,15 +57,6 @@ export function supportedShipmentStatusToHumanized(
 ) {
   return shipmentStatusHumanized[shipmentStatus]
 }
-
-export const SUPPORTED_SHIPPING_MODES = ["AIR", "SEA"] as const
-export type ShippingMode = (typeof SUPPORTED_SHIPPING_MODES)[number]
-
-export const SUPPORTED_SHIPPING_TYPES = ["STANDARD", "EXPRESS"] as const
-export type ShippingType = (typeof SUPPORTED_SHIPPING_TYPES)[number]
-
-export const SUPPORTED_RECEPTION_MODES = ["FOR_PICKUP", "DOOR_TO_DOOR"] as const
-export type ReceptionMode = (typeof SUPPORTED_RECEPTION_MODES)[number]
 
 export const SUPPORED_HUB_ROLES = [
   "SENDING",

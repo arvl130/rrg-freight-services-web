@@ -2,12 +2,12 @@ import * as Dialog from "@radix-ui/react-dialog"
 import { Package } from "@/server/db/entities"
 import {
   REGEX_ONE_OR_MORE_DIGITS,
-  ReceptionMode,
-  ShippingMode,
-  ShippingType,
-  SUPPORTED_RECEPTION_MODES,
-  SUPPORTED_SHIPPING_MODES,
-  SUPPORTED_SHIPPING_TYPES,
+  PackageReceptionMode,
+  PackageShippingMode,
+  PackageShippingType,
+  SUPPORTED_PACKAGE_RECEPTION_MODES,
+  SUPPORTED_PACKAGE_SHIPPING_MODES,
+  SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
@@ -17,14 +17,14 @@ import toast from "react-hot-toast"
 
 const editFormSchema = z.object({
   id: z.number(),
-  shippingMode: z.custom<ShippingMode>((val) =>
-    SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
+  shippingMode: z.custom<PackageShippingMode>((val) =>
+    SUPPORTED_PACKAGE_SHIPPING_MODES.includes(val as PackageShippingMode),
   ),
-  shippingType: z.custom<ShippingType>((val) =>
-    SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
+  shippingType: z.custom<PackageShippingType>((val) =>
+    SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(val as PackageShippingType),
   ),
-  receptionMode: z.custom<ReceptionMode>((val) =>
-    SUPPORTED_RECEPTION_MODES.includes(val as ReceptionMode),
+  receptionMode: z.custom<PackageReceptionMode>((val) =>
+    SUPPORTED_PACKAGE_RECEPTION_MODES.includes(val as PackageReceptionMode),
   ),
   weightInKg: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
   senderFullName: z.string().min(1).max(100),
@@ -80,7 +80,7 @@ export function PackagesEditDetailsModal({
     defaultValues: {
       id: _package.id,
       shippingMode: _package.shippingMode,
-      shippingType: _package.shippingType as ShippingType,
+      shippingType: _package.shippingType as PackageShippingType,
       receptionMode: _package.receptionMode,
       weightInKg: _package.weightInKg.toString(),
       senderFullName: _package.senderFullName,
@@ -199,7 +199,7 @@ export function PackagesEditDetailsModal({
                       className="block w-full text-sm px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
                       {...register("shippingMode")}
                     >
-                      {SUPPORTED_SHIPPING_MODES.map((shippingMode) => (
+                      {SUPPORTED_PACKAGE_SHIPPING_MODES.map((shippingMode) => (
                         <option key={shippingMode} value={shippingMode}>
                           {shippingMode}
                         </option>
@@ -212,7 +212,7 @@ export function PackagesEditDetailsModal({
                       className="block w-full text-sm px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
                       {...register("shippingType")}
                     >
-                      {SUPPORTED_SHIPPING_TYPES.map((shippingType) => (
+                      {SUPPORTED_PACKAGE_SHIPPING_TYPES.map((shippingType) => (
                         <option key={shippingType} value={shippingType}>
                           {shippingType}
                         </option>
@@ -228,7 +228,7 @@ export function PackagesEditDetailsModal({
                     />
                   </div>
                   <div className="flex gap-3">
-                    {SUPPORTED_RECEPTION_MODES.map((receptionMode) => (
+                    {SUPPORTED_PACKAGE_RECEPTION_MODES.map((receptionMode) => (
                       <label className="flex items-center" key={receptionMode}>
                         <input
                           type="radio"

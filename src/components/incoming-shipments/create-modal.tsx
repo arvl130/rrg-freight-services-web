@@ -5,12 +5,12 @@ import { ZodError, z } from "zod"
 import { utils, read, WorkBook } from "xlsx"
 import { useEffect, useState } from "react"
 import {
-  ReceptionMode,
-  ShippingMode,
-  ShippingType,
-  SUPPORTED_RECEPTION_MODES,
-  SUPPORTED_SHIPPING_MODES,
-  SUPPORTED_SHIPPING_TYPES,
+  PackageReceptionMode,
+  PackageShippingMode,
+  PackageShippingType,
+  SUPPORTED_PACKAGE_RECEPTION_MODES,
+  SUPPORTED_PACKAGE_SHIPPING_MODES,
+  SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
@@ -131,14 +131,14 @@ const expectedColumns = [
 ]
 
 const sheetRowSchema = z.object({
-  "Shipping Mode": z.custom<ShippingMode>((val) =>
-    SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
+  "Shipping Mode": z.custom<PackageShippingMode>((val) =>
+    SUPPORTED_PACKAGE_SHIPPING_MODES.includes(val as PackageShippingMode),
   ),
-  "Shipping Type": z.custom<ShippingType>((val) =>
-    SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
+  "Shipping Type": z.custom<PackageShippingType>((val) =>
+    SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(val as PackageShippingType),
   ),
-  "Reception Mode": z.custom<ReceptionMode>((val) =>
-    SUPPORTED_RECEPTION_MODES.includes(val as ReceptionMode),
+  "Reception Mode": z.custom<PackageReceptionMode>((val) =>
+    SUPPORTED_PACKAGE_RECEPTION_MODES.includes(val as PackageReceptionMode),
   ),
   "Weight In Kg": z.number(),
   "Sender Full Name": z.string().min(1).max(100),

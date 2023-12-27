@@ -6,8 +6,8 @@ import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"
 import {
   REGEX_ONE_OR_MORE_DIGITS,
-  SUPPORTED_SHIPPING_TYPES,
-  ShippingType,
+  SUPPORTED_PACKAGE_SHIPPING_TYPES,
+  PackageShippingType,
 } from "@/utils/constants"
 import { supportedShippingTypeToHumanized } from "@/utils/humanize"
 import { z } from "zod"
@@ -178,8 +178,8 @@ function ChoosePackageTable({
 }
 
 const createDeliveryFormSchema = z.object({
-  deliveryType: z.custom<ShippingType>((val) =>
-    SUPPORTED_SHIPPING_TYPES.includes(val as ShippingType),
+  deliveryType: z.custom<PackageShippingType>((val) =>
+    SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(val as PackageShippingType),
   ),
   vehicleId: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
   driverId: z.string().length(28),
@@ -224,7 +224,7 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
 
   function filterByVehiclesDeliveryType(
     vehicles: Vehicle[],
-    deliveryType: ShippingType,
+    deliveryType: PackageShippingType,
   ) {
     return deliveryType === "EXPRESS"
       ? vehicles.filter((vehicle) => vehicle.isExpressAllowed)
@@ -248,10 +248,10 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
           <div>
             <label className="block">Delivery Type</label>
             <select className="w-full" {...register("deliveryType")}>
-              {SUPPORTED_SHIPPING_TYPES.map((shippingType) => (
+              {SUPPORTED_PACKAGE_SHIPPING_TYPES.map((shippingType) => (
                 <option key={shippingType} value={shippingType}>
                   {supportedShippingTypeToHumanized(
-                    shippingType as ShippingType,
+                    shippingType as PackageShippingType,
                   )}
                 </option>
               ))}

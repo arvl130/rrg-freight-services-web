@@ -1,11 +1,11 @@
 import {
   SUPPORTED_GENDERS,
   SUPPORTED_PACKAGE_STATUSES,
-  SUPPORTED_RECEPTION_MODES,
+  SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_USER_ROLES,
   SUPPORTED_SHIPMENT_STATUSES,
-  SUPPORTED_SHIPPING_MODES,
-  SUPPORTED_SHIPPING_TYPES,
+  SUPPORTED_PACKAGE_SHIPPING_MODES,
+  SUPPORTED_PACKAGE_SHIPPING_TYPES,
   SUPPORTED_VEHICLE_TYPES,
 } from "../../utils/constants"
 import {
@@ -223,14 +223,17 @@ export const vehicles = mysqlTable("vehicles", {
 
 export const packages = mysqlTable("packages", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  shippingMode: mysqlEnum("shipping_mode", SUPPORTED_SHIPPING_MODES).notNull(),
+  shippingMode: mysqlEnum(
+    "shipping_mode",
+    SUPPORTED_PACKAGE_SHIPPING_MODES,
+  ).notNull(),
   shippingType: mysqlEnum("shipping_type", [
-    SUPPORTED_SHIPPING_TYPES[0],
-    ...SUPPORTED_SHIPPING_TYPES.slice(1),
+    SUPPORTED_PACKAGE_SHIPPING_TYPES[0],
+    ...SUPPORTED_PACKAGE_SHIPPING_TYPES.slice(1),
   ]).notNull(),
   receptionMode: mysqlEnum(
     "reception_mode",
-    SUPPORTED_RECEPTION_MODES,
+    SUPPORTED_PACKAGE_RECEPTION_MODES,
   ).notNull(),
   weightInKg: double("weight_in_kg", {
     precision: 8,

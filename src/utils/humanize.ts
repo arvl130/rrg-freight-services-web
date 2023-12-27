@@ -1,4 +1,4 @@
-import { PackageStatus, UserRole, ShippingType } from "./constants"
+import { PackageStatus, UserRole, PackageShippingType } from "./constants"
 
 export function toTitleCase(word: string) {
   return word[0].toUpperCase() + word.slice(1).toLowerCase()
@@ -21,11 +21,13 @@ export function supportedPackageStatusToHumanized(
     .join(" ")
 }
 
-const displayNameOfshippingTypes: Record<ShippingType, string> = {
+const displayNameOfshippingTypes: Record<PackageShippingType, string> = {
   STANDARD: "Standard",
   EXPRESS: "Express",
 }
 
-export function supportedShippingTypeToHumanized(shippingType: ShippingType) {
+export function supportedShippingTypeToHumanized(
+  shippingType: PackageShippingType,
+) {
   return displayNameOfshippingTypes[shippingType]
 }
