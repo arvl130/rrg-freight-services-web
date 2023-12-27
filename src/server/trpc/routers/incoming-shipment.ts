@@ -27,7 +27,7 @@ export const incomingShipmentRouter = router({
     const results = await ctx.db
       .select()
       .from(incomingShipments)
-      .innerJoin(shipments, eq(incomingShipments, shipments.id))
+      .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
 
     return results.map(({ shipments, incoming_shipments }) => ({
       ...shipments,
