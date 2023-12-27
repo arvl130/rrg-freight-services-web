@@ -2,9 +2,9 @@ import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packageStatusLogs,
-  packages,
-  transferShipmentPackages,
-  transferShipments,
+  shipments,
+  shipmentPackages,
+  transferForwarderShipments,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { eq } from "drizzle-orm"
@@ -41,8 +41,8 @@ export default async function handler(
 
     const transferShipmentResults = await db
       .select()
-      .from(transferShipments)
-      .where(eq(transferShipments.id, transferShipmentId))
+      .from(transferForwarderShipments)
+      .where(eq(transferForwarderShipments.shipmentId, transferShipmentId))
 
     if (transferShipmentResults.length === 0) {
       res.status(404).json({ message: "No such delivery" })
@@ -56,19 +56,23 @@ export default async function handler(
 
     const [transferShipment] = transferShipmentResults
     await db
-      .update(transferShipments)
+      .update(shipments)
       .set({
         status: "ARRIVED",
+      })
+      .where(eq(shipments.id, transferShipmentId))
+
+    await db
+      .update(transferForwarderShipments)
+      .set({
         proofOfTransferImgUrl: imageUrl,
       })
-      .where(eq(transferShipments.id, transferShipmentId))
+      .where(eq(transferForwarderShipments.shipmentId, transferShipmentId))
 
     const transferShipmentPackagesResults = await db
       .select()
-      .from(transferShipmentPackages)
-      .where(
-        eq(transferShipmentPackages.transferShipmentId, transferShipmentId),
-      )
+      .from(shipmentPackages)
+      .where(eq(shipmentPackages.shipmentId, transferShipmentId))
 
     for (const { packageId } of transferShipmentPackagesResults) {
       await db.insert(packageStatusLogs).values({

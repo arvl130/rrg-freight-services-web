@@ -1,7 +1,8 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
 import {
-  incomingShipmentPackages,
+  shipments,
+  shipmentPackages,
   incomingShipments,
   packageStatusLogs,
   packages,
@@ -23,7 +24,15 @@ import { serverEnv } from "@/server/env.mjs"
 
 export const incomingShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(incomingShipments)
+    const results = await ctx.db
+      .select()
+      .from(incomingShipments)
+      .innerJoin(shipments, eq(incomingShipments, shipments.id))
+
+    return results.map(({ shipments, incoming_shipments }) => ({
+      ...shipments,
+      ...incoming_shipments,
+    }))
   }),
   getById: protectedProcedure
     .input(
@@ -34,8 +43,8 @@ export const incomingShipmentRouter = router({
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
         .select()
-        .from(incomingShipments)
-        .where(eq(incomingShipments.id, input.id))
+        .from(shipments)
+        .where(eq(shipments.id, input.id))
 
       if (results.length === 0) return null
       if (results.length > 1)
@@ -49,8 +58,8 @@ export const incomingShipmentRouter = router({
   getInTransit: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db
       .select()
-      .from(incomingShipments)
-      .where(eq(incomingShipments.status, "IN_TRANSIT"))
+      .from(shipments)
+      .where(eq(shipments.status, "IN_TRANSIT"))
   }),
   updateStatusToCompletedById: protectedProcedure
     .input(
@@ -60,11 +69,11 @@ export const incomingShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db
-        .update(incomingShipments)
+        .update(shipments)
         .set({
           status: "ARRIVED",
         })
-        .where(eq(incomingShipments.id, input.id))
+        .where(eq(shipments.id, input.id))
     }),
   create: protectedProcedure
     .input(
@@ -158,15 +167,20 @@ export const incomingShipmentRouter = router({
         }
       }
 
-      const [result] = (await ctx.db.insert(incomingShipments).values({
-        sentByAgentId: input.sentByAgentId,
+      const [result] = (await ctx.db.insert(shipments).values({
+        type: "INCOMING",
         status: "IN_TRANSIT",
       })) as unknown as [ResultSetHeader]
-      const incomingShipmentId = result.insertId
+      const shipmentId = result.insertId
+
+      await ctx.db.insert(incomingShipments).values({
+        shipmentId,
+        sentByAgentId: input.sentByAgentId,
+      })
 
       for (const packageId of newPackageIds) {
-        await ctx.db.insert(incomingShipmentPackages).values({
-          incomingShipmentId,
+        await ctx.db.insert(shipmentPackages).values({
+          shipmentId,
           packageId,
         })
       }

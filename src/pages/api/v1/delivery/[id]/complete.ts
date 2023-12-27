@@ -1,6 +1,6 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
-import { deliveryShipments } from "@/server/db/schema"
+import { shipments } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import type { NextApiRequest, NextApiResponse } from "next"
 import { ZodError, z } from "zod"
@@ -33,8 +33,8 @@ export default async function handler(
 
     const deliveryResults = await db
       .select()
-      .from(deliveryShipments)
-      .where(eq(deliveryShipments.id, deliveryId))
+      .from(shipments)
+      .where(eq(shipments.id, deliveryId))
 
     if (deliveryResults.length === 0) {
       res.status(404).json({ message: "No such delivery" })
@@ -48,11 +48,11 @@ export default async function handler(
 
     const [delivery] = deliveryResults
     await db
-      .update(deliveryShipments)
+      .update(shipments)
       .set({
         status: "ARRIVED",
       })
-      .where(eq(deliveryShipments.id, deliveryId))
+      .where(eq(shipments.id, deliveryId))
 
     res.json({
       message: "Delivery status updated",

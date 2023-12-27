@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
-import { deliveryShipments, users } from "@/server/db/schema"
+import { shipments, deliveryShipments, users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { and, eq, inArray, isNull } from "drizzle-orm"
 import { updateProfile } from "@/server/auth"
@@ -165,10 +165,15 @@ export const userRouter = router({
         .where(eq(users.id, input.id))
     }),
   getAvailableDrivers: protectedProcedure.query(async ({ ctx }) => {
+    // FIXME: This db query should also consider transfers in progress.
     const deliveriesInProgress = ctx.db
       .select()
-      .from(deliveryShipments)
-      .where(inArray(deliveryShipments.status, ["PREPARING", "IN_TRANSIT"]))
+      .from(shipments)
+      .innerJoin(
+        deliveryShipments,
+        eq(shipments.id, deliveryShipments.shipmentId),
+      )
+      .where(inArray(shipments.status, ["PREPARING", "IN_TRANSIT"]))
       .as("deliveries_in_progress")
 
     const results = await ctx.db
@@ -176,9 +181,14 @@ export const userRouter = router({
       .from(users)
       .leftJoin(
         deliveriesInProgress,
-        eq(users.id, deliveriesInProgress.driverId),
+        eq(users.id, deliveriesInProgress.delivery_shipments.driverId),
       )
-      .where(and(eq(users.role, "DRIVER"), isNull(deliveriesInProgress.id)))
+      .where(
+        and(
+          eq(users.role, "DRIVER"),
+          isNull(deliveriesInProgress.shipments.id),
+        ),
+      )
 
     return results.map(({ users }) => users)
   }),

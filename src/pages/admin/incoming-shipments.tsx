@@ -8,7 +8,7 @@ import { Plus } from "@phosphor-icons/react/Plus"
 import { IncomingShipmentsCreateModal } from "@/components/incoming-shipments/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
-import { IncomingShipment } from "@/server/db/entities"
+import { Shipment, IncomingShipment } from "@/server/db/entities"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
@@ -59,7 +59,7 @@ function UserDisplayName({ userId }: { userId: string }) {
 function IncomingShipmentTableItem({
   incomingShipment,
 }: {
-  incomingShipment: IncomingShipment
+  incomingShipment: Shipment & IncomingShipment
 }) {
   const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
 
@@ -117,7 +117,7 @@ function IncomingShipmentsTable({
   incomingShipments,
   isArchived,
 }: {
-  incomingShipments: IncomingShipment[]
+  incomingShipments: (Shipment & IncomingShipment)[]
   isArchived: boolean
 }) {
   const allIncomingShipments = isArchived

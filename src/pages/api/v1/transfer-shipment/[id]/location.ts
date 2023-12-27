@@ -1,9 +1,6 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
-import {
-  transferShipmentLocations,
-  transferShipments,
-} from "@/server/db/schema"
+import { shipments, shipmentLocations } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import { ResultSetHeader } from "mysql2"
 import type { NextApiRequest, NextApiResponse } from "next"
@@ -27,8 +24,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
     const transferShipmentsResults = await db
       .select()
-      .from(transferShipments)
-      .where(eq(transferShipments.id, transferShipmentId))
+      .from(shipments)
+      .where(eq(shipments.id, transferShipmentId))
 
     if (transferShipmentsResults.length === 0) {
       res.status(404).json({ message: "No such transfer shipment" })
@@ -42,10 +39,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
     const transferShipmentLocationsResults = await db
       .select()
-      .from(transferShipmentLocations)
-      .where(
-        eq(transferShipmentLocations.transferShipmentId, transferShipmentId),
-      )
+      .from(shipmentLocations)
+      .where(eq(shipmentLocations.shipmentId, transferShipmentId))
 
     res.json({
       message: "Transfer shipment locations retrieved",
@@ -92,8 +87,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 
     const transferShipmentsResults = await db
       .select()
-      .from(transferShipments)
-      .where(eq(transferShipments.id, transferShipmentId))
+      .from(shipments)
+      .where(eq(shipments.id, transferShipmentId))
 
     if (transferShipmentsResults.length === 0) {
       res.status(404).json({ message: "No such transfer shipment" })
@@ -106,8 +101,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const createdById = session.user.uid
-    const [result] = (await db.insert(transferShipmentLocations).values({
-      transferShipmentId,
+    const [result] = (await db.insert(shipmentLocations).values({
+      shipmentId: transferShipmentId,
       long: location.long,
       lat: location.lat,
       createdById,

@@ -1,53 +1,46 @@
 import {
   users,
+  shipments,
+  shipmentPackages,
+  shipmentLocations,
   incomingShipments,
-  incomingShipmentPackages,
-  transferShipments,
-  transferShipmentPackages,
+  transferForwarderShipments,
+  transferWarehouseShipments,
   deliveryShipments,
-  deliveryPackages,
-  deliveryShipmentLocations,
   vehicles,
+  warehouses,
   packages,
   packageStatusLogs,
   activities,
-  transferShipmentLocations,
 } from "./schema"
 
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
 
+export type Shipment = typeof shipments.$inferSelect
+export type NewShipment = typeof shipments.$inferInsert
+
+export type ShipmentPackage = typeof shipmentPackages.$inferSelect
+export type NewShipmentPackage = typeof shipmentPackages.$inferInsert
+
+export type ShipmentLocation = typeof shipmentLocations.$inferSelect
+export type NewShipmentLocation = typeof shipmentLocations.$inferInsert
+
 export type IncomingShipment = typeof incomingShipments.$inferSelect
 export type NewIncomingShipment = typeof incomingShipments.$inferInsert
 
-export type IncomingShipmentPackage =
-  typeof incomingShipmentPackages.$inferSelect
-export type NewIncomingShipmentPackage =
-  typeof incomingShipmentPackages.$inferInsert
+export type TransferForwarderShipment =
+  typeof transferForwarderShipments.$inferSelect
+export type NewTransferForwarderShipment =
+  typeof transferForwarderShipments.$inferInsert
 
-export type TransferShipment = typeof transferShipments.$inferSelect
-export type NewTransferShipment = typeof transferShipments.$inferInsert
-
-export type TransferShipmentPackage =
-  typeof transferShipmentPackages.$inferSelect
-export type NewTransferShipmentPackage =
-  typeof transferShipmentPackages.$inferInsert
-
-export type TransferShipmentLocation =
-  typeof transferShipmentLocations.$inferSelect
-export type NewTransferShipmentLocation =
-  typeof transferShipmentLocations.$inferInsert
+export type TransferWarehouseShipment =
+  typeof transferWarehouseShipments.$inferSelect
+export type NewTransferWarehouseShipment =
+  typeof transferWarehouseShipments.$inferInsert
 
 export type DeliveryShipment = typeof deliveryShipments.$inferSelect
 export type NewDeliveryShipment = typeof deliveryShipments.$inferInsert
-
-export type DeliveryShipmentPackage = typeof deliveryPackages.$inferSelect
-export type NewDeliveryShipmentPackage = typeof deliveryPackages.$inferInsert
-
-export type DeliveryShipmentLocation =
-  typeof deliveryShipmentLocations.$inferSelect
-export type NewDeliveryShipmentLocation =
-  typeof deliveryShipmentLocations.$inferInsert
 
 export type Package = typeof packages.$inferSelect
 export type NewPackage = typeof packages.$inferInsert
@@ -60,3 +53,6 @@ export type NewActivity = typeof activities.$inferInsert
 
 export type Vehicle = typeof vehicles.$inferSelect
 export type NewVehicle = typeof vehicles.$inferInsert
+
+export type Warehouse = typeof warehouses.$inferSelect
+export type NewWarehouse = typeof warehouses.$inferInsert

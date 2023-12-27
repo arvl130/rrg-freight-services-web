@@ -2,8 +2,8 @@ import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packages,
-  transferShipments,
-  transferShipmentPackages,
+  shipments,
+  shipmentPackages,
   packageStatusLogs,
 } from "@/server/db/schema"
 import { and, eq, isNull, lt } from "drizzle-orm"
@@ -39,8 +39,8 @@ export default async function handler(
 
     const transferShipmentsResults = await db
       .select()
-      .from(transferShipments)
-      .where(eq(transferShipments.id, transferShipmentId))
+      .from(shipments)
+      .where(eq(shipments.id, transferShipmentId))
 
     if (transferShipmentsResults.length === 0) {
       res.status(404).json({ message: "No such transfer shipment" })
@@ -57,8 +57,8 @@ export default async function handler(
 
     const transferShipmentPackagesResults = await db
       .select()
-      .from(transferShipmentPackages)
-      .innerJoin(packages, eq(transferShipmentPackages.packageId, packages.id))
+      .from(shipmentPackages)
+      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .innerJoin(psl1, eq(packages.id, psl1.packageId))
       .leftJoin(
         psl2,
@@ -70,7 +70,7 @@ export default async function handler(
       .where(
         and(
           isNull(psl2.id),
-          eq(transferShipmentPackages.transferShipmentId, transferShipmentId),
+          eq(shipmentPackages.shipmentId, transferShipmentId),
         ),
       )
       .orderBy(packages.id)

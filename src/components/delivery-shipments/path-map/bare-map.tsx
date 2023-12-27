@@ -4,15 +4,11 @@ import { Polyline } from "react-leaflet/Polyline"
 import "leaflet/dist/leaflet.css"
 import { Map, Polyline as TPolyline } from "leaflet"
 import { LEAFLET_DEFAULT_ZOOM_LEVEL } from "@/utils/constants"
-import { DeliveryShipmentLocation } from "@/server/db/entities"
+import { ShipmentLocation } from "@/server/db/entities"
 import { useEffect, useRef } from "react"
 import "leaflet-arrowheads"
 
-function ArrowHeadPolylines({
-  locations,
-}: {
-  locations: DeliveryShipmentLocation[]
-}) {
+function ArrowHeadPolylines({ locations }: { locations: ShipmentLocation[] }) {
   const ref = useRef<null | TPolyline>(null)
 
   useEffect(() => {
@@ -35,7 +31,7 @@ export default function PathBareMap({
   locations,
   setMap,
 }: {
-  locations: DeliveryShipmentLocation[]
+  locations: ShipmentLocation[]
   setMap: (map: Map) => void
 }) {
   return (

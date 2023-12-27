@@ -2,8 +2,8 @@ import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packages,
-  deliveryShipments,
-  deliveryPackages,
+  shipments,
+  shipmentPackages,
   packageStatusLogs,
 } from "@/server/db/schema"
 import { and, eq, isNull, lt } from "drizzle-orm"
@@ -39,8 +39,8 @@ export default async function handler(
 
     const deliveryResults = await db
       .select()
-      .from(deliveryShipments)
-      .where(eq(deliveryShipments.id, deliveryId))
+      .from(shipments)
+      .where(eq(shipments.id, deliveryId))
 
     if (deliveryResults.length === 0) {
       res.status(404).json({ message: "No such delivery" })
@@ -55,10 +55,10 @@ export default async function handler(
     const psl1 = alias(packageStatusLogs, "psl1")
     const psl2 = alias(packageStatusLogs, "psl2")
 
-    const deliveryPackagesResults = await db
+    const shipmentPackagesResults = await db
       .select()
-      .from(deliveryPackages)
-      .innerJoin(packages, eq(deliveryPackages.packageId, packages.id))
+      .from(shipmentPackages)
+      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .innerJoin(psl1, eq(packages.id, psl1.packageId))
       .leftJoin(
         psl2,
@@ -67,10 +67,10 @@ export default async function handler(
           lt(psl1.createdAt, psl2.createdAt),
         ),
       )
-      .where(and(isNull(psl2.id), eq(deliveryPackages.deliveryId, deliveryId)))
+      .where(and(isNull(psl2.id), eq(shipmentPackages.shipmentId, deliveryId)))
       .orderBy(packages.id)
 
-    const packagesResults = deliveryPackagesResults.map(
+    const packagesResults = shipmentPackagesResults.map(
       ({ packages, psl1 }) => ({
         ...packages,
         status: psl1.status,

@@ -1,11 +1,9 @@
-import { and, eq, getTableColumns, isNull, lt, sql } from "drizzle-orm"
+import { and, eq, isNull, lt } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
-  incomingShipmentPackages,
-  deliveryPackages,
-  transferShipmentPackages,
   packageStatusLogs,
   packages,
+  shipmentPackages,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -385,20 +383,14 @@ export const packageRouter = router({
           ),
         )
         .innerJoin(
-          incomingShipmentPackages,
-          eq(psl1.packageId, incomingShipmentPackages.packageId),
+          shipmentPackages,
+          eq(psl1.packageId, shipmentPackages.packageId),
         )
-        .innerJoin(
-          packages,
-          eq(incomingShipmentPackages.packageId, packages.id),
-        )
+        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
         .where(
           and(
             isNull(psl2.id),
-            eq(
-              incomingShipmentPackages.incomingShipmentId,
-              input.incomingShipmentId,
-            ),
+            eq(shipmentPackages.shipmentId, input.incomingShipmentId),
           ),
         )
         .orderBy(packages.id)
@@ -429,14 +421,14 @@ export const packageRouter = router({
           ),
         )
         .innerJoin(
-          deliveryPackages,
-          eq(psl1.packageId, deliveryPackages.packageId),
+          shipmentPackages,
+          eq(psl1.packageId, shipmentPackages.packageId),
         )
-        .innerJoin(packages, eq(deliveryPackages.packageId, packages.id))
+        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
         .where(
           and(
             isNull(psl2.id),
-            eq(deliveryPackages.deliveryId, input.deliveryId),
+            eq(shipmentPackages.shipmentId, input.deliveryId),
           ),
         )
         .orderBy(packages.id)
@@ -467,20 +459,14 @@ export const packageRouter = router({
           ),
         )
         .innerJoin(
-          transferShipmentPackages,
-          eq(psl1.packageId, transferShipmentPackages.packageId),
+          shipmentPackages,
+          eq(psl1.packageId, shipmentPackages.packageId),
         )
-        .innerJoin(
-          packages,
-          eq(transferShipmentPackages.packageId, packages.id),
-        )
+        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
         .where(
           and(
             isNull(psl2.id),
-            eq(
-              transferShipmentPackages.transferShipmentId,
-              input.transferShipmentId,
-            ),
+            eq(shipmentPackages.shipmentId, input.transferShipmentId),
           ),
         )
         .orderBy(packages.id)

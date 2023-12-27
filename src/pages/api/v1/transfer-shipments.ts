@@ -1,6 +1,6 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
-import { transferShipments } from "@/server/db/schema"
+import { transferForwarderShipments } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import { NextApiRequest, NextApiResponse } from "next"
 
@@ -23,8 +23,8 @@ export default async function handler(
 
   const transferShipmentsResults = await db
     .select()
-    .from(transferShipments)
-    .where(eq(transferShipments.driverId, session.user.uid))
+    .from(transferForwarderShipments)
+    .where(eq(transferForwarderShipments.driverId, session.user.uid))
 
   res.json({
     message: "Transfer shipments retrieved",

@@ -1,6 +1,6 @@
 import { eq, isNull, inArray } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { vehicles, deliveryShipments } from "@/server/db/schema"
+import { vehicles, shipments, deliveryShipments } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
@@ -34,10 +34,15 @@ export const vehicleRouter = router({
       return results[0]
     }),
   getAvailable: protectedProcedure.query(async ({ ctx }) => {
+    // FIXME: This db query should also consider transfers in progress.
     const deliveriesInProgress = ctx.db
       .select()
-      .from(deliveryShipments)
-      .where(inArray(deliveryShipments.status, ["PREPARING", "IN_TRANSIT"]))
+      .from(shipments)
+      .innerJoin(
+        deliveryShipments,
+        eq(shipments.id, deliveryShipments.shipmentId),
+      )
+      .where(inArray(shipments.status, ["PREPARING", "IN_TRANSIT"]))
       .as("deliveries_in_progress")
 
     const results = await ctx.db
@@ -45,9 +50,9 @@ export const vehicleRouter = router({
       .from(vehicles)
       .leftJoin(
         deliveriesInProgress,
-        eq(vehicles.id, deliveriesInProgress.vehicleId),
+        eq(vehicles.id, deliveriesInProgress.delivery_shipments.vehicleId),
       )
-      .where(isNull(deliveriesInProgress.id))
+      .where(isNull(deliveriesInProgress.shipments.id))
 
     return results.map(({ vehicles }) => vehicles)
   }),

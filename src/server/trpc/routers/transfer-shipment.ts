@@ -1,8 +1,9 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
 import {
-  transferShipmentPackages,
-  transferShipments,
+  shipments,
+  shipmentPackages,
+  transferForwarderShipments,
   packageStatusLogs,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
@@ -12,7 +13,15 @@ import { eq } from "drizzle-orm"
 
 export const transferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(transferShipments)
+    const results = await ctx.db
+      .select()
+      .from(transferForwarderShipments)
+      .innerJoin(shipments, eq(transferForwarderShipments, shipments.id))
+
+    return results.map(({ shipments, transfer_forwarder_shipments }) => ({
+      ...shipments,
+      ...transfer_forwarder_shipments,
+    }))
   }),
   getById: protectedProcedure
     .input(
@@ -23,8 +32,8 @@ export const transferShipmentRouter = router({
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
         .select()
-        .from(transferShipments)
-        .where(eq(transferShipments.id, input.id))
+        .from(shipments)
+        .where(eq(shipments.id, input.id))
 
       if (results.length === 0) return null
       if (results.length > 1)
@@ -38,14 +47,14 @@ export const transferShipmentRouter = router({
   getPreparing: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db
       .select()
-      .from(transferShipments)
-      .where(eq(transferShipments.status, "PREPARING"))
+      .from(shipments)
+      .where(eq(shipments.status, "PREPARING"))
   }),
   getInTransit: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db
       .select()
-      .from(transferShipments)
-      .where(eq(transferShipments.status, "IN_TRANSIT"))
+      .from(shipments)
+      .where(eq(shipments.status, "IN_TRANSIT"))
   }),
   updateStatusToInTransitById: protectedProcedure
     .input(
@@ -55,11 +64,11 @@ export const transferShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db
-        .update(transferShipments)
+        .update(shipments)
         .set({
           status: "IN_TRANSIT",
         })
-        .where(eq(transferShipments.id, input.id))
+        .where(eq(shipments.id, input.id))
     }),
   updateStatusToCompletedById: protectedProcedure
     .input(
@@ -69,11 +78,11 @@ export const transferShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db
-        .update(transferShipments)
+        .update(shipments)
         .set({
           status: "ARRIVED",
         })
-        .where(eq(transferShipments.id, input.id))
+        .where(eq(shipments.id, input.id))
     }),
   create: protectedProcedure
     .input(
@@ -85,18 +94,23 @@ export const transferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const [result] = (await ctx.db.insert(transferShipments).values({
+      const [result] = (await ctx.db.insert(shipments).values({
+        type: "INCOMING",
+        status: "IN_TRANSIT",
+      })) as unknown as [ResultSetHeader]
+      const shipmentId = result.insertId
+
+      await ctx.db.insert(transferForwarderShipments).values({
+        shipmentId,
         sentToAgentId: input.sentToAgentId,
         driverId: input.driverId,
         vehicleId: input.vehicleId,
-        status: "PREPARING",
-      })) as unknown as [ResultSetHeader]
-      const transferShipmentId = result.insertId
+      })
 
       for (const packageId of input.packageIds) {
-        await ctx.db.insert(transferShipmentPackages).values({
+        await ctx.db.insert(shipmentPackages).values({
           packageId,
-          transferShipmentId,
+          shipmentId,
         })
 
         await ctx.db.insert(packageStatusLogs).values({
@@ -116,10 +130,10 @@ export const transferShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db
-        .update(transferShipments)
+        .update(transferForwarderShipments)
         .set({
           isTransferConfirmed: 1,
         })
-        .where(eq(transferShipments.id, input.id))
+        .where(eq(transferForwarderShipments.shipmentId, input.id))
     }),
 })

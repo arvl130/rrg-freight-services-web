@@ -1,7 +1,8 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
-  deliveryShipmentLocations,
+  shipments,
+  shipmentLocations,
   deliveryShipments,
 } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
@@ -27,8 +28,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
     const deliveryResults = await db
       .select()
-      .from(deliveryShipments)
-      .where(eq(deliveryShipments.id, deliveryId))
+      .from(shipments)
+      .where(eq(shipments.id, deliveryId))
 
     if (deliveryResults.length === 0) {
       res.status(404).json({ message: "No such delivery" })
@@ -42,8 +43,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
     const deliveryLocationResults = await db
       .select()
-      .from(deliveryShipmentLocations)
-      .where(eq(deliveryShipmentLocations.deliveryId, deliveryId))
+      .from(shipmentLocations)
+      .where(eq(shipmentLocations.shipmentId, deliveryId))
 
     res.json({
       message: "Delivery locations retrieved",
@@ -90,8 +91,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 
     const deliveryResults = await db
       .select()
-      .from(deliveryShipments)
-      .where(eq(deliveryShipments.id, deliveryId))
+      .from(shipments)
+      .where(eq(shipments.id, deliveryId))
 
     if (deliveryResults.length === 0) {
       res.status(404).json({ message: "No such delivery" })
@@ -104,8 +105,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const createdById = session.user.uid
-    const [result] = (await db.insert(deliveryShipmentLocations).values({
-      deliveryId,
+    const [result] = (await db.insert(shipmentLocations).values({
+      shipmentId: deliveryId,
       long: location.long,
       lat: location.lat,
       createdById,

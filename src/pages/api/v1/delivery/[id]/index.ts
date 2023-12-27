@@ -1,6 +1,6 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
-import { deliveryShipments } from "@/server/db/schema"
+import { shipments } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import { NextApiRequest, NextApiResponse } from "next"
 import { z } from "zod"
@@ -32,8 +32,8 @@ export default async function handler(
 
   const deliveriesResults = await db
     .select()
-    .from(deliveryShipments)
-    .where(eq(deliveryShipments.id, id))
+    .from(shipments)
+    .where(eq(shipments.id, id))
 
   if (deliveriesResults.length === 0) {
     res.status(404).json({ message: "No such delivery" })

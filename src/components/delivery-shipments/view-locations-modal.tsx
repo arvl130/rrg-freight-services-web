@@ -28,7 +28,7 @@ export function DeliveryShipmentsViewLocationsModal({
     data: deliveryLocations,
     error,
   } = api.deliveryLocation.getByDeliveryId.useQuery({
-    deliveryId: delivery.id,
+    deliveryId: delivery.shipmentId,
   })
 
   return (
