@@ -41,10 +41,7 @@ export const incomingShipments = mysqlTable("incoming_shipments", {
   sentByAgentId: varchar("sent_by_agent_id", {
     length: 28,
   }).notNull(),
-  status: mysqlEnum("status", [
-    SUPPORTED_SHIPMENT_STATUSES[0],
-    ...SUPPORTED_SHIPMENT_STATUSES.slice(1),
-  ]).notNull(),
+  status: mysqlEnum("status", SUPPORTED_SHIPMENT_STATUSES).notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
   })
@@ -85,10 +82,7 @@ export const transferShipments = mysqlTable("transfer_shipments", {
   }).notNull(),
   proofOfTransferImgUrl: text("proof_of_transfer_img_url"),
   isTransferConfirmed: tinyint("is_transfer_confirmed").notNull().default(0),
-  status: mysqlEnum("status", [
-    SUPPORTED_SHIPMENT_STATUSES[0],
-    ...SUPPORTED_SHIPMENT_STATUSES.slice(1),
-  ]).notNull(),
+  status: mysqlEnum("status", SUPPORTED_SHIPMENT_STATUSES).notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
   })
@@ -152,10 +146,7 @@ export const deliveryShipments = mysqlTable("delivery_shipments", {
   vehicleId: bigint("vehicle_id", {
     mode: "number",
   }).notNull(),
-  status: mysqlEnum("status", [
-    SUPPORTED_SHIPMENT_STATUSES[0],
-    ...SUPPORTED_SHIPMENT_STATUSES.slice(1),
-  ]).notNull(),
+  status: mysqlEnum("status", SUPPORTED_SHIPMENT_STATUSES).notNull(),
   isExpress: tinyint("is_express").notNull(),
   createdAt: timestamp("created_at", {
     mode: "date",
@@ -227,10 +218,10 @@ export const packages = mysqlTable("packages", {
     "shipping_mode",
     SUPPORTED_PACKAGE_SHIPPING_MODES,
   ).notNull(),
-  shippingType: mysqlEnum("shipping_type", [
-    SUPPORTED_PACKAGE_SHIPPING_TYPES[0],
-    ...SUPPORTED_PACKAGE_SHIPPING_TYPES.slice(1),
-  ]).notNull(),
+  shippingType: mysqlEnum(
+    "shippingtype",
+    SUPPORTED_PACKAGE_SHIPPING_TYPES,
+  ).notNull(),
   receptionMode: mysqlEnum(
     "reception_mode",
     SUPPORTED_PACKAGE_RECEPTION_MODES,
