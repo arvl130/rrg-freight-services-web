@@ -43,12 +43,6 @@ export function supportedShipmentStatusToHumanized(
   return shipmentStatusHumanized[shipmentStatus]
 }
 
-export const SUPPORTED_SHIPPING_PARTIES = [
-  "FIRST_PARTY",
-  "THIRD_PARTY",
-] as const
-export type ShippingParty = (typeof SUPPORTED_SHIPPING_PARTIES)[number]
-
 export const SUPPORTED_SHIPPING_MODES = ["AIR", "SEA"] as const
 export type ShippingMode = (typeof SUPPORTED_SHIPPING_MODES)[number]
 

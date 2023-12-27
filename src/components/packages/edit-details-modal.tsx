@@ -4,11 +4,9 @@ import {
   REGEX_ONE_OR_MORE_DIGITS,
   ReceptionMode,
   ShippingMode,
-  ShippingParty,
   ShippingType,
   SUPPORTED_RECEPTION_MODES,
   SUPPORTED_SHIPPING_MODES,
-  SUPPORTED_SHIPPING_PARTIES,
   SUPPORTED_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { z } from "zod"
@@ -19,9 +17,6 @@ import toast from "react-hot-toast"
 
 const editFormSchema = z.object({
   id: z.number(),
-  shippingParty: z.custom<ShippingParty>((val) =>
-    SUPPORTED_SHIPPING_PARTIES.includes(val as ShippingParty),
-  ),
   shippingMode: z.custom<ShippingMode>((val) =>
     SUPPORTED_SHIPPING_MODES.includes(val as ShippingMode),
   ),
@@ -84,7 +79,6 @@ export function PackagesEditDetailsModal({
     },
     defaultValues: {
       id: _package.id,
-      shippingParty: _package.shippingParty,
       shippingMode: _package.shippingMode,
       shippingType: _package.shippingType as ShippingType,
       receptionMode: _package.receptionMode,

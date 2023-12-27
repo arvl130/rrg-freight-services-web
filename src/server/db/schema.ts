@@ -224,9 +224,6 @@ export const vehicles = mysqlTable("vehicles", {
 
 export const packages = mysqlTable("packages", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  shippingParty: mysqlEnum("shipping_party", SUPPORTED_SHIPPING_PARTIES)
-    .notNull()
-    .default("FIRST_PARTY"),
   shippingMode: mysqlEnum("shipping_mode", SUPPORTED_SHIPPING_MODES).notNull(),
   shippingType: mysqlEnum("shipping_type", [
     SUPPORTED_SHIPPING_TYPES[0],
