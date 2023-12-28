@@ -189,9 +189,9 @@ type CreateDeliveryFormType = z.infer<typeof createDeliveryFormSchema>
 
 function CreateDeliveryForm({ close }: { close: () => void }) {
   const utils = api.useUtils()
-  const { isLoading, mutate } = api.deliveryShipment.create.useMutation({
+  const { isLoading, mutate } = api.shipment.delivery.create.useMutation({
     onSuccess: () => {
-      utils.deliveryShipment.getAll.invalidate()
+      utils.shipment.delivery.getAll.invalidate()
       close()
       toast.success("Delivery Created")
     },

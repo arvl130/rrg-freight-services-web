@@ -180,9 +180,9 @@ function ChooseAgentForm({
   close: () => void
 }) {
   const apiUtils = api.useUtils()
-  const { isLoading, mutate } = api.incomingShipment.create.useMutation({
+  const { isLoading, mutate } = api.shipment.incoming.create.useMutation({
     onSuccess: () => {
-      apiUtils.incomingShipment.getAll.invalidate()
+      apiUtils.shipment.incoming.getAll.invalidate()
       apiUtils.package.getInWarehouse.invalidate()
       apiUtils.package.getAll.invalidate()
       close()

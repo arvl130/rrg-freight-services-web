@@ -294,7 +294,7 @@ export default function DeliveriesPage() {
     status,
     data: deliveries,
     error,
-  } = api.deliveryShipment.getAll.useQuery()
+  } = api.shipment.delivery.getAll.useQuery()
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")

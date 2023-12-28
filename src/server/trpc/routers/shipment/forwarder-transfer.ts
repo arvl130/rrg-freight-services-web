@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { protectedProcedure, router } from "../trpc"
+import { protectedProcedure, router } from "../../trpc"
 import {
   shipments,
   shipmentPackages,
@@ -11,7 +11,7 @@ import { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
 
-export const transferForwarderShipmentRouter = router({
+export const forwarderTransferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const results = await ctx.db
       .select()

@@ -234,7 +234,7 @@ function SelectIncomingShipment({
     status,
     data: incomingShipments,
     error,
-  } = api.incomingShipment.getInTransit.useQuery()
+  } = api.shipment.incoming.getInTransit.useQuery()
 
   if (status === "loading") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
@@ -282,9 +282,9 @@ function MarkAsCompleted({
 
   const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.incomingShipment.updateStatusToCompletedById.useMutation({
+    api.shipment.incoming.updateStatusToCompletedById.useMutation({
       onSuccess: () => {
-        utils.incomingShipment.getInTransit.invalidate()
+        utils.shipment.incoming.getInTransit.invalidate()
         resetSelectedIncomingShipmentId()
       },
     })

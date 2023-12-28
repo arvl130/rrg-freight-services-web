@@ -199,7 +199,7 @@ export default function TransferShipmentsPage() {
     status,
     data: transferShipments,
     error,
-  } = api.transferForwarderShipment.getAll.useQuery(undefined, {
+  } = api.shipment.forwarderTransfer.getAll.useQuery(undefined, {
     enabled: user !== null && role === "ADMIN",
   })
 

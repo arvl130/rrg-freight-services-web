@@ -199,9 +199,9 @@ export function TransferShipmentsCreateModal({
 
   const apiUtils = api.useUtils()
   const { isLoading, mutate } =
-    api.transferForwarderShipment.create.useMutation({
+    api.shipment.forwarderTransfer.create.useMutation({
       onSuccess: () => {
-        apiUtils.transferForwarderShipment.getAll.invalidate()
+        apiUtils.shipment.forwarderTransfer.getAll.invalidate()
         apiUtils.package.getInWarehouse.invalidate()
         apiUtils.package.getAll.invalidate()
         close()

@@ -1,5 +1,5 @@
 import { desc, eq } from "drizzle-orm"
-import { protectedProcedure, router } from "../trpc"
+import { protectedProcedure, router } from "../../trpc"
 import { shipmentLocations } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"

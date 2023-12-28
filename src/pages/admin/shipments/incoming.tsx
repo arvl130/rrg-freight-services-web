@@ -199,7 +199,7 @@ export default function IncomingShipmentsPage() {
     status,
     data: incomingShipments,
     error,
-  } = api.incomingShipment.getAll.useQuery(undefined, {
+  } = api.shipment.incoming.getAll.useQuery(undefined, {
     enabled: user !== null && role === "ADMIN",
   })
 

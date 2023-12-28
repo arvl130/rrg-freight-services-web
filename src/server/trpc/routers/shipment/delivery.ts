@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm"
-import { protectedProcedure, router } from "../trpc"
+import { protectedProcedure, router } from "../../trpc"
 import {
   shipments,
   deliveryShipments,
