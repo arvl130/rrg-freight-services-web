@@ -244,7 +244,7 @@ function DeliveriesTable({
         <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
           <div className="uppercase px-4 py-2 flex gap-1">
             <input type="checkbox" name="" id="" />
-            <span>Delivery ID</span>
+            <span>Shipment ID</span>
           </div>
           <div className="uppercase px-4 py-2">Assigned To</div>
           <div className="uppercase px-4 py-2">Created At</div>
@@ -254,7 +254,7 @@ function DeliveriesTable({
         {selectedTab === "EXPRESS" && (
           <>
             {expressDeliveries.length === 0 ? (
-              <div className="text-center pt-4">No deliveries found.</div>
+              <div className="text-center pt-4">No shipments found.</div>
             ) : (
               <div>
                 {expressDeliveries.map((delivery) => (
@@ -267,7 +267,7 @@ function DeliveriesTable({
         {selectedTab === "STANDARD" && (
           <>
             {standardDeliveries.length === 0 ? (
-              <div className="text-center pt-4">No deliveries found.</div>
+              <div className="text-center pt-4">No shipments found.</div>
             ) : (
               <div>
                 {standardDeliveries.map((delivery) => (
@@ -280,7 +280,7 @@ function DeliveriesTable({
         {selectedTab === "ALL" && (
           <>
             {allDeliveries.length === 0 ? (
-              <div className="text-center pt-4">No deliveries found.</div>
+              <div className="text-center pt-4">No shipments found.</div>
             ) : (
               <div>
                 {allDeliveries.map((delivery) => (

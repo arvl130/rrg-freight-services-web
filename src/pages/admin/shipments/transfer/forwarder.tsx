@@ -170,7 +170,7 @@ function TransferShipmentsTable({
         <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
           <div className="uppercase px-4 py-2 flex gap-1">
             <input type="checkbox" name="" id="" />
-            <span>Transfer Shipment ID</span>
+            <span>Shipment ID</span>
           </div>
           <div className="uppercase px-4 py-2">Sent By</div>
           <div className="uppercase px-4 py-2">Created At</div>
@@ -178,7 +178,7 @@ function TransferShipmentsTable({
         </div>
         {/* Body */}
         {allTransferShipments.length === 0 ? (
-          <div className="text-center pt-4">No transfer shipments found.</div>
+          <div className="text-center pt-4">No shipments found.</div>
         ) : (
           <div>
             {allTransferShipments.map((transferShipment) => (
