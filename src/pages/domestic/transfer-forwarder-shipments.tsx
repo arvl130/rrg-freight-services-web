@@ -4,7 +4,6 @@ import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
-import { TransferShipmentsCreateModal } from "@/components/transfer-shipments/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
@@ -18,7 +17,8 @@ import { DateTime } from "luxon"
 import { NormalizedForwarderTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
 import { DomesticLayout } from "@/layouts/domestic"
-import { TransferShipmentsConfirmTransferModal } from "@/components/transfer-shipments/confirm-transfer-modal"
+import { TransferShipmentsCreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
+import { TransferShipmentsConfirmTransferModal } from "@/components/shipments/transfer/forwarder/confirm-transfer-modal"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)

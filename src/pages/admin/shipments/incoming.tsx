@@ -5,7 +5,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
-import { IncomingShipmentsCreateModal } from "@/components/incoming-shipments/create-modal"
+import { IncomingShipmentsCreateModal } from "@/components/shipments/incoming/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import {

@@ -5,7 +5,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
-import { DeliveryShipmentsCreateModal } from "@/components/delivery-shipments/create-modal"
+import { DeliveryShipmentsCreateModal } from "@/components/shipments/delivery/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
@@ -22,7 +22,7 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { ShipmentStatus } from "@/utils/constants"
-import { DeliveryShipmentsViewLocationsModal } from "@/components/delivery-shipments/view-locations-modal"
+import { DeliveryShipmentsViewLocationsModal } from "@/components/shipments/delivery/view-locations-modal"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
