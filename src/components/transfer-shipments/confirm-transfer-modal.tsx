@@ -12,9 +12,9 @@ export function TransferShipmentsConfirmTransferModal({
 }) {
   const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.transferShipment.confirmTransferById.useMutation({
+    api.transferForwarderShipment.confirmTransferById.useMutation({
       onSuccess: () => {
-        utils.transferShipment.getAll.invalidate()
+        utils.transferForwarderShipment.getAll.invalidate()
         close()
       },
     })

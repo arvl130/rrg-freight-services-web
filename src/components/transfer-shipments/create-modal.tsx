@@ -198,15 +198,16 @@ export function TransferShipmentsCreateModal({
   })
 
   const apiUtils = api.useUtils()
-  const { isLoading, mutate } = api.transferShipment.create.useMutation({
-    onSuccess: () => {
-      apiUtils.transferShipment.getAll.invalidate()
-      apiUtils.package.getInWarehouse.invalidate()
-      apiUtils.package.getAll.invalidate()
-      close()
-      toast.success("Shipment Created")
-    },
-  })
+  const { isLoading, mutate } =
+    api.transferForwarderShipment.create.useMutation({
+      onSuccess: () => {
+        apiUtils.transferForwarderShipment.getAll.invalidate()
+        apiUtils.package.getInWarehouse.invalidate()
+        apiUtils.package.getAll.invalidate()
+        close()
+        toast.success("Shipment Created")
+      },
+    })
 
   useEffect(() => {
     if (!isOpen) {

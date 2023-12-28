@@ -236,7 +236,7 @@ function SelectTransferShipment({
     status,
     data: transferShipments,
     error,
-  } = api.transferShipment.getPreparing.useQuery()
+  } = api.transferForwarderShipment.getPreparing.useQuery()
 
   if (status === "loading") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
@@ -284,9 +284,9 @@ function MarkAsInTransit({
 
   const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.transferShipment.updateStatusToInTransitById.useMutation({
+    api.transferForwarderShipment.updateStatusToInTransitById.useMutation({
       onSuccess: () => {
-        utils.transferShipment.getPreparing.invalidate()
+        utils.transferForwarderShipment.getPreparing.invalidate()
         resetSelectedTransferShipmentId()
       },
     })
