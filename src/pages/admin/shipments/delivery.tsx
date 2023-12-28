@@ -12,7 +12,11 @@ import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
-import { DeliveryShipment, Shipment } from "@/server/db/entities"
+import {
+  DeliveryShipment,
+  NormalizedDeliveryShipment,
+  Shipment,
+} from "@/server/db/entities"
 import { DateTime } from "luxon"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
@@ -61,7 +65,7 @@ function UserDisplayName({ userId }: { userId: string }) {
 function DeliveriesTableItem({
   delivery,
 }: {
-  delivery: Shipment & DeliveryShipment
+  delivery: NormalizedDeliveryShipment
 }) {
   const [visibleModal, setVisibleModal] = useState<
     null | "VIEW_DETAILS" | "VIEW_LOCATIONS"
@@ -133,7 +137,7 @@ function DeliveriesTable({
   deliveries,
   isArchived,
 }: {
-  deliveries: (Shipment & DeliveryShipment)[]
+  deliveries: NormalizedDeliveryShipment[]
   isArchived: boolean
 }) {
   const [selectedTab, setSelectedTab] = useState<

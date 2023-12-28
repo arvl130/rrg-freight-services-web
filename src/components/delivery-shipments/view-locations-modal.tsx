@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog"
-import { DeliveryShipment } from "@/server/db/entities"
+import { NormalizedDeliveryShipment } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { DateTime } from "luxon"
 import { useState } from "react"
@@ -14,7 +14,7 @@ export function DeliveryShipmentsViewLocationsModal({
   isOpen,
   close,
 }: {
-  delivery: DeliveryShipment
+  delivery: NormalizedDeliveryShipment
   isOpen: boolean
   close: () => void
 }) {
@@ -28,7 +28,7 @@ export function DeliveryShipmentsViewLocationsModal({
     data: deliveryLocations,
     error,
   } = api.shipment.location.getByDeliveryId.useQuery({
-    deliveryId: delivery.shipmentId,
+    deliveryId: delivery.id,
   })
 
   return (

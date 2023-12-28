@@ -18,10 +18,14 @@ export const deliveryShipmentRouter = router({
       .from(deliveryShipments)
       .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
 
-    return results.map(({ shipments, delivery_shipments }) => ({
-      ...shipments,
-      ...delivery_shipments,
-    }))
+    return results.map(({ shipments, delivery_shipments }) => {
+      const { shipmentId, ...other } = delivery_shipments
+
+      return {
+        ...shipments,
+        ...other,
+      }
+    })
   }),
   getById: protectedProcedure
     .input(
@@ -32,7 +36,8 @@ export const deliveryShipmentRouter = router({
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
         .select()
-        .from(shipments)
+        .from(deliveryShipments)
+        .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
         .where(eq(shipments.id, input.id))
 
       if (results.length === 0)
@@ -46,7 +51,13 @@ export const deliveryShipmentRouter = router({
           message: "Expected 1 result, but got multiple.",
         })
 
-      return results[0]
+      const { delivery_shipments } = results[0]
+      const { shipmentId, ...other } = delivery_shipments
+
+      return {
+        ...results[0].shipments,
+        ...other,
+      }
     }),
   getPreparing: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db

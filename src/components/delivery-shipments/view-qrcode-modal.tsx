@@ -1,13 +1,13 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import QRCode from "react-qr-code"
-import { DeliveryShipment } from "@/server/db/entities"
+import { NormalizedDeliveryShipment } from "@/server/db/entities"
 
 export function DeliveryShipmentsViewQrCodeModal({
   delivery,
   isOpen,
   close,
 }: {
-  delivery: DeliveryShipment
+  delivery: NormalizedDeliveryShipment
   isOpen: boolean
   close: () => void
 }) {
@@ -25,13 +25,11 @@ export function DeliveryShipmentsViewQrCodeModal({
           <div className="flex flex-col justify-center items-center px-4 py-2">
             <p className="mb-3">Scan the QR Code below to start tracking:</p>
             <QRCode
-              value={delivery.shipmentId.toString()}
+              value={delivery.id.toString()}
               size={256}
               style={{ height: "16rem", width: "16rem" }}
             />
-            <p className="font-semibold mt-1">
-              Delivery ID {delivery.shipmentId}
-            </p>
+            <p className="font-semibold mt-1">Delivery ID {delivery.id}</p>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

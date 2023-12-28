@@ -21,10 +21,14 @@ export const forwarderTransferShipmentRouter = router({
         eq(forwarderTransferShipments.shipmentId, shipments.id),
       )
 
-    return results.map(({ shipments, forwarder_transfer_shipments }) => ({
-      ...shipments,
-      ...forwarder_transfer_shipments,
-    }))
+    return results.map(({ shipments, forwarder_transfer_shipments }) => {
+      const { shipmentId, ...other } = forwarder_transfer_shipments
+
+      return {
+        ...shipments,
+        ...other,
+      }
+    })
   }),
   getById: protectedProcedure
     .input(
@@ -35,7 +39,11 @@ export const forwarderTransferShipmentRouter = router({
     .query(async ({ ctx, input }) => {
       const results = await ctx.db
         .select()
-        .from(shipments)
+        .from(forwarderTransferShipments)
+        .innerJoin(
+          shipments,
+          eq(forwarderTransferShipments.shipmentId, shipments.id),
+        )
         .where(eq(shipments.id, input.id))
 
       if (results.length === 0) return null
@@ -45,7 +53,13 @@ export const forwarderTransferShipmentRouter = router({
           message: "Expected 1 result, but got multiple.",
         })
 
-      return results[0]
+      const { forwarder_transfer_shipments } = results[0]
+      const { shipmentId, ...other } = forwarder_transfer_shipments
+
+      return {
+        ...results[0].shipments,
+        ...other,
+      }
     }),
   getPreparing: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db
