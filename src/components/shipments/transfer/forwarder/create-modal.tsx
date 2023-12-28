@@ -164,7 +164,7 @@ type CreateTransferShipmentFormType = z.infer<
   typeof createTransferShipmentFormSchema
 >
 
-export function TransferShipmentsCreateModal({
+export function ForwarderTransferShipmentsCreateModal({
   isOpen,
   close,
 }: {

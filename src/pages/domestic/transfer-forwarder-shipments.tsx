@@ -17,8 +17,8 @@ import { DateTime } from "luxon"
 import { NormalizedForwarderTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
 import { DomesticLayout } from "@/layouts/domestic"
-import { TransferShipmentsCreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
-import { TransferShipmentsConfirmTransferModal } from "@/components/shipments/transfer/forwarder/confirm-transfer-modal"
+import { ForwarderTransferShipmentsCreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
+import { ForwarderTransferShipmentsConfirmTransferModal } from "@/components/shipments/transfer/forwarder/confirm-transfer-modal"
 
 function PageHeader() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
@@ -38,7 +38,7 @@ function PageHeader() {
           <span>Create Shipment</span>
         </button>
       </div>
-      <TransferShipmentsCreateModal
+      <ForwarderTransferShipmentsCreateModal
         isOpen={isOpenCreateModal}
         close={() => setIsOpenCreateModal(false)}
       />
@@ -122,7 +122,7 @@ function TransferShipmentsTableItem({
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
 
-        <TransferShipmentsConfirmTransferModal
+        <ForwarderTransferShipmentsConfirmTransferModal
           isOpen={visibleModal === "CONFIRM_TRANSFER"}
           close={() => setVisibleModal(null)}
           transferShipmentId={transferShipment.id}

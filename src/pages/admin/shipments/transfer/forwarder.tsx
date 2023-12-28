@@ -5,7 +5,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
-import { TransferShipmentsCreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
+import { ForwarderTransferShipmentsCreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
@@ -38,7 +38,7 @@ function PageHeader() {
           <span>Create Shipment</span>
         </button>
       </div>
-      <TransferShipmentsCreateModal
+      <ForwarderTransferShipmentsCreateModal
         isOpen={isOpenCreateModal}
         close={() => setIsOpenCreateModal(false)}
       />
