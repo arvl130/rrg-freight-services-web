@@ -3,7 +3,7 @@ import { protectedProcedure, router } from "../trpc"
 import {
   shipments,
   shipmentPackages,
-  transferForwarderShipments,
+  forwarderTransferShipments,
   packageStatusLogs,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
@@ -15,15 +15,15 @@ export const transferForwarderShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const results = await ctx.db
       .select()
-      .from(transferForwarderShipments)
+      .from(forwarderTransferShipments)
       .innerJoin(
         shipments,
-        eq(transferForwarderShipments.shipmentId, shipments.id),
+        eq(forwarderTransferShipments.shipmentId, shipments.id),
       )
 
-    return results.map(({ shipments, transfer_forwarder_shipments }) => ({
+    return results.map(({ shipments, forwarder_transfer_shipments }) => ({
       ...shipments,
-      ...transfer_forwarder_shipments,
+      ...forwarder_transfer_shipments,
     }))
   }),
   getById: protectedProcedure
@@ -103,7 +103,7 @@ export const transferForwarderShipmentRouter = router({
       })) as unknown as [ResultSetHeader]
       const shipmentId = result.insertId
 
-      await ctx.db.insert(transferForwarderShipments).values({
+      await ctx.db.insert(forwarderTransferShipments).values({
         shipmentId,
         sentToAgentId: input.sentToAgentId,
         driverId: input.driverId,
@@ -133,10 +133,10 @@ export const transferForwarderShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db
-        .update(transferForwarderShipments)
+        .update(forwarderTransferShipments)
         .set({
           isTransferConfirmed: 1,
         })
-        .where(eq(transferForwarderShipments.shipmentId, input.id))
+        .where(eq(forwarderTransferShipments.shipmentId, input.id))
     }),
 })

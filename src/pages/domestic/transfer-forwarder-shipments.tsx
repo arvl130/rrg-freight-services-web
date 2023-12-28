@@ -15,7 +15,7 @@ import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
-import { Shipment, TransferForwarderShipment } from "@/server/db/entities"
+import { Shipment, ForwarderTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
 import { DomesticLayout } from "@/layouts/domestic"
 import { TransferShipmentsConfirmTransferModal } from "@/components/transfer-shipments/confirm-transfer-modal"
@@ -60,7 +60,7 @@ function UserDisplayName({ userId }: { userId: string }) {
 function TransferShipmentsTableItem({
   transferShipment,
 }: {
-  transferShipment: Shipment & TransferForwarderShipment
+  transferShipment: Shipment & ForwarderTransferShipment
 }) {
   const [visibleModal, setVisibleModal] = useState<
     null | "VIEW_DETAILS" | "CONFIRM_TRANSFER"
@@ -136,7 +136,7 @@ function TransferShipmentsTable({
   transferShipments,
   isArchived,
 }: {
-  transferShipments: (Shipment & TransferForwarderShipment)[]
+  transferShipments: (Shipment & ForwarderTransferShipment)[]
   isArchived: boolean
 }) {
   const allTransferShipments = isArchived

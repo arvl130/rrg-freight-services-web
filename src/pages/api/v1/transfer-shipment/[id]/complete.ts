@@ -4,7 +4,7 @@ import {
   packageStatusLogs,
   shipments,
   shipmentPackages,
-  transferForwarderShipments,
+  forwarderTransferShipments,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { eq } from "drizzle-orm"
@@ -41,8 +41,8 @@ export default async function handler(
 
     const transferShipmentResults = await db
       .select()
-      .from(transferForwarderShipments)
-      .where(eq(transferForwarderShipments.shipmentId, transferShipmentId))
+      .from(forwarderTransferShipments)
+      .where(eq(forwarderTransferShipments.shipmentId, transferShipmentId))
 
     if (transferShipmentResults.length === 0) {
       res.status(404).json({ message: "No such delivery" })
@@ -63,11 +63,11 @@ export default async function handler(
       .where(eq(shipments.id, transferShipmentId))
 
     await db
-      .update(transferForwarderShipments)
+      .update(forwarderTransferShipments)
       .set({
         proofOfTransferImgUrl: imageUrl,
       })
-      .where(eq(transferForwarderShipments.shipmentId, transferShipmentId))
+      .where(eq(forwarderTransferShipments.shipmentId, transferShipmentId))
 
     const transferShipmentPackagesResults = await db
       .select()

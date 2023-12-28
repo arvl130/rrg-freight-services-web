@@ -98,8 +98,8 @@ export const incomingShipments = mysqlTable("incoming_shipments", {
   }).notNull(),
 })
 
-export const transferForwarderShipments = mysqlTable(
-  "transfer_forwarder_shipments",
+export const forwarderTransferShipments = mysqlTable(
+  "forwarder_transfer_shipments",
   {
     shipmentId: bigint("shipment_id", {
       mode: "number",
@@ -118,8 +118,8 @@ export const transferForwarderShipments = mysqlTable(
   },
 )
 
-export const transferWarehouseShipments = mysqlTable(
-  "transfer_warehouse_shipments",
+export const warehouseTransferShipments = mysqlTable(
+  "warehouse_transfer_shipments",
   {
     shipmentId: bigint("shipment_id", {
       mode: "number",
