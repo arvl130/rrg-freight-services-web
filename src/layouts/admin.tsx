@@ -8,6 +8,7 @@ import { UsersThree } from "@phosphor-icons/react/UsersThree"
 import { Motorcycle } from "@phosphor-icons/react/Motorcycle"
 import { Boat } from "@phosphor-icons/react/Boat"
 import { Truck } from "@phosphor-icons/react/Truck"
+import { Warehouse } from "@phosphor-icons/react/Warehouse"
 import { User, getAuth, signOut } from "firebase/auth"
 import Head from "next/head"
 import Image from "next/image"
@@ -35,24 +36,29 @@ export function AdminSideBar() {
           icon={<Gauge size={32} className="text-white " />}
         />
         <SideBarLink
-          name="Shipments"
-          href="/admin/incoming-shipments"
-          icon={<Boat size={32} className="text-white" />}
-        />
-        <SideBarLink
           name="Packages"
           href="/admin/packages"
           icon={<Package size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Deliveries"
-          href="/admin/delivery-shipments"
-          icon={<Motorcycle size={32} className="text-white" />}
+          name="Incoming Shipments"
+          href="/admin/shipments/incoming"
+          icon={<Boat size={32} className="text-white" />}
         />
         <SideBarLink
-          name="Shipments"
-          href="/admin/transfer-forwarder-shipments"
+          name="Forwarder Transfer Shipments"
+          href="/admin/shipments/transfer/forwarder"
           icon={<Truck size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Warehouse Transfer Shipments"
+          href="/admin/shipments/transfer/warehouse"
+          icon={<Warehouse size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Deliveries"
+          href="/admin/shipments/delivery"
+          icon={<Motorcycle size={32} className="text-white" />}
         />
         <SideBarLink
           name="Users"
