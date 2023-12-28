@@ -37,7 +37,7 @@ export function DomesticSideBar() {
         />
         <SideBarLink
           name="Shipments"
-          href="/domestic/transfer-shipments"
+          href="/domestic/transfer-forwarder-shipments"
           icon={<Truck size={32} className="text-white" />}
         />
         <SideBarLink

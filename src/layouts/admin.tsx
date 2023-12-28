@@ -1,10 +1,5 @@
 import { useSession } from "@/utils/auth"
-import { Bell } from "@phosphor-icons/react/Bell"
-import { CaretDown } from "@phosphor-icons/react/CaretDown"
 import { Gauge } from "@phosphor-icons/react/Gauge"
-import { Gear } from "@phosphor-icons/react/Gear"
-import { List } from "@phosphor-icons/react/List"
-import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { Package } from "@phosphor-icons/react/Package"
 import { Scroll } from "@phosphor-icons/react/Scroll"
 import { SignOut } from "@phosphor-icons/react/SignOut"
@@ -56,7 +51,7 @@ export function AdminSideBar() {
         />
         <SideBarLink
           name="Shipments"
-          href="/admin/transfer-shipments"
+          href="/admin/transfer-forwarder-shipments"
           icon={<Truck size={32} className="text-white" />}
         />
         <SideBarLink
