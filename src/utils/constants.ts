@@ -64,7 +64,7 @@ export const SUPPORTED_SHIPMENT_TYPES = [
   "TRANSFER_FORWARDER",
   "DELIVERY",
 ] as const
-export type ShipmentType = (typeof SUPPORTED_VEHICLE_TYPES)[number]
+export type ShipmentType = (typeof SUPPORTED_SHIPMENT_TYPES)[number]
 
 export const SUPPORED_HUB_ROLES = [
   "SENDING",
