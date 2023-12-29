@@ -5,7 +5,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
-import { ForwarderTransferShipmentsCreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
+import { WarehouseTransferShipmentsCreateModal } from "@/components/shipments/transfer/warehouse/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
@@ -16,7 +16,7 @@ import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
-import { NormalizedForwarderTransferShipment } from "@/server/db/entities"
+import { NormalizedWarehouseTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
 
 function PageHeader() {
@@ -38,7 +38,7 @@ function PageHeader() {
           <span>Create Shipment</span>
         </button>
       </div>
-      <ForwarderTransferShipmentsCreateModal
+      <WarehouseTransferShipmentsCreateModal
         isOpen={isOpenCreateModal}
         close={() => setIsOpenCreateModal(false)}
       />
@@ -46,9 +46,9 @@ function PageHeader() {
   )
 }
 
-function UserDisplayName({ userId }: { userId: string }) {
-  const { status, data, error } = api.user.getById.useQuery({
-    id: userId,
+function WarehouseDisplayName({ id }: { id: number }) {
+  const { status, data, error } = api.warehouse.getById.useQuery({
+    id,
   })
 
   if (status === "loading") return <>...</>
@@ -57,10 +57,10 @@ function UserDisplayName({ userId }: { userId: string }) {
   return <>{data?.displayName}</>
 }
 
-function TransferShipmentsTableItem({
-  transferShipment,
+function ShipmentsTableItem({
+  shipment,
 }: {
-  transferShipment: NormalizedForwarderTransferShipment
+  shipment: NormalizedWarehouseTransferShipment
 }) {
   const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
 
@@ -68,13 +68,13 @@ function TransferShipmentsTableItem({
     <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
       <div className="px-4 py-2 flex items-center gap-1">
         <input type="checkbox" name="" id="" />
-        <span>{transferShipment.id}</span>
+        <span>{shipment.id}</span>
       </div>
       <div className="px-4 py-2">
-        <UserDisplayName userId={transferShipment.sentToAgentId} />
+        <WarehouseDisplayName id={shipment.sentToWarehouseId} />
       </div>
       <div className="px-4 py-2">
-        {DateTime.fromJSDate(transferShipment.createdAt).toLocaleString(
+        {DateTime.fromJSDate(shipment.createdAt).toLocaleString(
           DateTime.DATETIME_FULL,
         )}
       </div>
@@ -82,10 +82,10 @@ function TransferShipmentsTableItem({
         <div
           className={`
         w-36 py-0.5 text-white text-center rounded-md
-        ${getColorFromShipmentStatus(transferShipment.status as ShipmentStatus)}
+        ${getColorFromShipmentStatus(shipment.status as ShipmentStatus)}
       `}
         >
-          {transferShipment.status.replaceAll("_", " ")}
+          {shipment.status.replaceAll("_", " ")}
         </div>
 
         <DropdownMenu.Root>
@@ -114,16 +114,16 @@ function TransferShipmentsTableItem({
   )
 }
 
-function TransferShipmentsTable({
-  transferShipments,
+function ShipmentsTable({
+  shipments,
   isArchived,
 }: {
-  transferShipments: NormalizedForwarderTransferShipment[]
+  shipments: NormalizedWarehouseTransferShipment[]
   isArchived: boolean
 }) {
   const allTransferShipments = isArchived
-    ? transferShipments.filter(({ isArchived }) => isArchived)
-    : transferShipments.filter(({ isArchived }) => !isArchived)
+    ? shipments.filter(({ isArchived }) => isArchived)
+    : shipments.filter(({ isArchived }) => !isArchived)
 
   return (
     <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
@@ -172,7 +172,7 @@ function TransferShipmentsTable({
             <input type="checkbox" name="" id="" />
             <span>Shipment ID</span>
           </div>
-          <div className="uppercase px-4 py-2">Sent By</div>
+          <div className="uppercase px-4 py-2">Sent To Warehouse</div>
           <div className="uppercase px-4 py-2">Created At</div>
           <div className="uppercase px-4 py-2">Status</div>
         </div>
@@ -182,9 +182,9 @@ function TransferShipmentsTable({
         ) : (
           <div>
             {allTransferShipments.map((transferShipment) => (
-              <TransferShipmentsTableItem
+              <ShipmentsTableItem
                 key={transferShipment.id}
-                transferShipment={transferShipment}
+                shipment={transferShipment}
               />
             ))}
           </div>
@@ -198,9 +198,9 @@ export default function TransferShipmentsPage() {
   const { user, role } = useSession()
   const {
     status,
-    data: transferShipments,
+    data: shipments,
     error,
-  } = api.shipment.forwarderTransfer.getAll.useQuery(undefined, {
+  } = api.shipment.warehouseTransfer.getAll.useQuery(undefined, {
     enabled: user !== null && role === "ADMIN",
   })
 
@@ -282,8 +282,8 @@ export default function TransferShipmentsPage() {
       {status === "success" && (
         <>
           {
-            <TransferShipmentsTable
-              transferShipments={transferShipments}
+            <ShipmentsTable
+              shipments={shipments}
               isArchived={visibleArchiveStatus === "ARCHIVED"}
             />
           }
