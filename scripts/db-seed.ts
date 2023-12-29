@@ -86,18 +86,12 @@ const newVehicles: NewVehicle[] = [
     id: 4,
     displayName: "Van 1",
     type: "VAN",
-    isExpressAllowed: 0,
-  },
-  {
-    id: 5,
-    displayName: "Motorcycle 1",
-    type: "MOTORCYCLE",
     isExpressAllowed: 1,
   },
   {
-    id: 6,
-    displayName: "Motorcycle 2",
-    type: "MOTORCYCLE",
+    id: 5,
+    displayName: "Van 2",
+    type: "VAN",
     isExpressAllowed: 1,
   },
 ]
