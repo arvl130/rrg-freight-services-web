@@ -130,8 +130,8 @@ export const warehouseTransferShipments = mysqlTable(
     vehicleId: bigint("vehicle_id", {
       mode: "number",
     }).notNull(),
-    sentToWarehouseId: varchar("sent_to_warehouse_id", {
-      length: 28,
+    sentToWarehouseId: bigint("sent_to_warehouse_id", {
+      mode: "number",
     }).notNull(),
   },
 )
