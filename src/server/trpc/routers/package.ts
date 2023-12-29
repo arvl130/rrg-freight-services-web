@@ -362,10 +362,10 @@ export const packageRouter = router({
       status: psl1.status,
     }))
   }),
-  getWithLatestStatusByIncomingShipmentId: protectedProcedure
+  getWithLatestStatusByShipmentId: protectedProcedure
     .input(
       z.object({
-        incomingShipmentId: z.number(),
+        shipmentId: z.number(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -390,83 +390,7 @@ export const packageRouter = router({
         .where(
           and(
             isNull(psl2.id),
-            eq(shipmentPackages.shipmentId, input.incomingShipmentId),
-          ),
-        )
-        .orderBy(packages.id)
-
-      return results.map(({ packages, psl1 }) => ({
-        ...packages,
-        status: psl1.status,
-      }))
-    }),
-  getWithLatestStatusByDeliveryId: protectedProcedure
-    .input(
-      z.object({
-        deliveryId: z.number(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const psl1 = alias(packageStatusLogs, "psl1")
-      const psl2 = alias(packageStatusLogs, "psl2")
-
-      const results = await ctx.db
-        .select()
-        .from(psl1)
-        .leftJoin(
-          psl2,
-          and(
-            eq(psl1.packageId, psl2.packageId),
-            lt(psl1.createdAt, psl2.createdAt),
-          ),
-        )
-        .innerJoin(
-          shipmentPackages,
-          eq(psl1.packageId, shipmentPackages.packageId),
-        )
-        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
-        .where(
-          and(
-            isNull(psl2.id),
-            eq(shipmentPackages.shipmentId, input.deliveryId),
-          ),
-        )
-        .orderBy(packages.id)
-
-      return results.map(({ packages, psl1 }) => ({
-        ...packages,
-        status: psl1.status,
-      }))
-    }),
-  getWithLatestStatusByTransferShipmentId: protectedProcedure
-    .input(
-      z.object({
-        transferShipmentId: z.number(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const psl1 = alias(packageStatusLogs, "psl1")
-      const psl2 = alias(packageStatusLogs, "psl2")
-
-      const results = await ctx.db
-        .select()
-        .from(psl1)
-        .leftJoin(
-          psl2,
-          and(
-            eq(psl1.packageId, psl2.packageId),
-            lt(psl1.createdAt, psl2.createdAt),
-          ),
-        )
-        .innerJoin(
-          shipmentPackages,
-          eq(psl1.packageId, shipmentPackages.packageId),
-        )
-        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
-        .where(
-          and(
-            isNull(psl2.id),
-            eq(shipmentPackages.shipmentId, input.transferShipmentId),
+            eq(shipmentPackages.shipmentId, input.shipmentId),
           ),
         )
         .orderBy(packages.id)

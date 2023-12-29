@@ -12,7 +12,7 @@ import toast from "react-hot-toast"
 import { z } from "zod"
 import { ArrowRight } from "@phosphor-icons/react/ArrowRight"
 import { getAuth } from "firebase/auth"
-import { ScanPackageTab } from "./common"
+import type { ShipmentType } from "@/utils/constants"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z
@@ -97,13 +97,13 @@ function ScanPackageForm({
   )
 }
 
-function PackagesTable({ transferShipmentId }: { transferShipmentId: number }) {
+function PackagesTable({ shipmentId }: { shipmentId: number }) {
   const {
     status,
     data: packages,
     error,
-  } = api.package.getWithLatestStatusByTransferShipmentId.useQuery({
-    transferShipmentId,
+  } = api.package.getWithLatestStatusByShipmentId.useQuery({
+    shipmentId: shipmentId,
   })
 
   const [scannedPackageIds, setScannedPackageIds] = useState<number[]>([])
@@ -111,8 +111,8 @@ function PackagesTable({ transferShipmentId }: { transferShipmentId: number }) {
   const utils = api.useUtils()
   const { isLoading, mutate } = api.packageStatusLog.createMany.useMutation({
     onSuccess: () => {
-      utils.package.getWithLatestStatusByTransferShipmentId.invalidate({
-        transferShipmentId,
+      utils.package.getWithLatestStatusByShipmentId.invalidate({
+        shipmentId: shipmentId,
       })
       utils.package.getAll.invalidate()
       setScannedPackageIds([])
@@ -225,42 +225,35 @@ function PackagesTable({ transferShipmentId }: { transferShipmentId: number }) {
   )
 }
 
-function SelectTransferShipment({
-  selectedTransferShipmentId,
-  setSelectedTransferShipmentId,
+function SelectShipment({
+  selectedShipmentId,
+  setSelectedShipmentId,
 }: {
-  selectedTransferShipmentId: null | number
-  setSelectedTransferShipmentId: (id: null | number) => void
+  selectedShipmentId: null | number
+  setSelectedShipmentId: (id: null | number) => void
 }) {
   const {
     status,
-    data: transferShipments,
+    data: shipments,
     error,
   } = api.shipment.forwarderTransfer.getPreparing.useQuery()
 
   if (status === "loading") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
-  if (transferShipments.length === 0) return <p>No transfer shipments</p>
+  if (shipments.length === 0) return <p>No shipments</p>
 
   return (
     <select
-      value={
-        selectedTransferShipmentId === null
-          ? ""
-          : selectedTransferShipmentId.toString()
-      }
+      value={selectedShipmentId === null ? "" : selectedShipmentId.toString()}
       onChange={(e) => {
-        if (e.currentTarget.value === "") setSelectedTransferShipmentId(null)
-        else setSelectedTransferShipmentId(Number(e.currentTarget.value))
+        if (e.currentTarget.value === "") setSelectedShipmentId(null)
+        else setSelectedShipmentId(Number(e.currentTarget.value))
       }}
     >
       <option value="">Select a shipment ...</option>
-      {transferShipments.map((transferShipment) => (
-        <option
-          key={transferShipment.id}
-          value={transferShipment.id.toString()}
-        >
-          {transferShipment.id}
+      {shipments.map((shipment) => (
+        <option key={shipment.id} value={shipment.id.toString()}>
+          {shipment.id}
         </option>
       ))}
     </select>
@@ -268,18 +261,18 @@ function SelectTransferShipment({
 }
 
 function MarkAsInTransit({
-  transferShipmentId,
-  resetSelectedTransferShipmentId,
+  shipmentId,
+  resetSelectedShipmentId,
 }: {
-  transferShipmentId: number
-  resetSelectedTransferShipmentId: () => void
+  shipmentId: number
+  resetSelectedShipmentId: () => void
 }) {
   const {
     status,
     data: packages,
     error,
-  } = api.package.getWithLatestStatusByTransferShipmentId.useQuery({
-    transferShipmentId,
+  } = api.package.getWithLatestStatusByShipmentId.useQuery({
+    shipmentId: shipmentId,
   })
 
   const utils = api.useUtils()
@@ -287,7 +280,7 @@ function MarkAsInTransit({
     api.shipment.forwarderTransfer.updateStatusToInTransitById.useMutation({
       onSuccess: () => {
         utils.shipment.forwarderTransfer.getPreparing.invalidate()
-        resetSelectedTransferShipmentId()
+        resetSelectedShipmentId()
       },
     })
 
@@ -306,7 +299,7 @@ function MarkAsInTransit({
       className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 text-white px-4 py-2 rounded-lg transition-colors font-medium"
       onClick={() => {
         mutate({
-          id: transferShipmentId,
+          id: shipmentId,
         })
       }}
     >
@@ -315,16 +308,16 @@ function MarkAsInTransit({
   )
 }
 
-export function ScanPackageTransferTab({
+export function ScanPackageForwarderTransferTab({
   selectedTab,
   setSelectedTab,
 }: {
-  selectedTab: ScanPackageTab
-  setSelectedTab: (tab: ScanPackageTab) => void
+  selectedTab: ShipmentType
+  setSelectedTab: (tab: ShipmentType) => void
 }) {
-  const [selectedTransferShipmentId, setSelectedTransferShipmentId] = useState<
-    null | number
-  >(null)
+  const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
+    null,
+  )
 
   return (
     <div className="bg-white rounded-lg shadow-lg px-4 py-2">
@@ -362,38 +355,34 @@ export function ScanPackageTransferTab({
           className={`
               pb-1 font-semibold border-b-4 px-2
               ${
-                selectedTab === "TRANSFER"
+                selectedTab === "TRANSFER_FORWARDER"
                   ? "border-b-4 text-brand-cyan-500 border-brand-cyan-500"
                   : "text-gray-400 border-b-transparent"
               }
             `}
-          onClick={() => setSelectedTab("TRANSFER")}
+          onClick={() => setSelectedTab("TRANSFER_FORWARDER")}
         >
-          Transfer
+          Forwarder Transfer
         </button>
       </div>
       <div className="flex justify-between mb-3">
         <div>
-          <SelectTransferShipment
-            selectedTransferShipmentId={selectedTransferShipmentId}
-            setSelectedTransferShipmentId={setSelectedTransferShipmentId}
+          <SelectShipment
+            selectedShipmentId={selectedShipmentId}
+            setSelectedShipmentId={setSelectedShipmentId}
           />
         </div>
 
         <div>
-          {selectedTransferShipmentId && (
+          {selectedShipmentId && (
             <MarkAsInTransit
-              transferShipmentId={selectedTransferShipmentId}
-              resetSelectedTransferShipmentId={() =>
-                setSelectedTransferShipmentId(null)
-              }
+              shipmentId={selectedShipmentId}
+              resetSelectedShipmentId={() => setSelectedShipmentId(null)}
             />
           )}
         </div>
       </div>
-      {selectedTransferShipmentId && (
-        <PackagesTable transferShipmentId={selectedTransferShipmentId} />
-      )}
+      {selectedShipmentId && <PackagesTable shipmentId={selectedShipmentId} />}
     </div>
   )
 }

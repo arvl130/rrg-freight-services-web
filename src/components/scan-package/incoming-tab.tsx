@@ -12,7 +12,7 @@ import toast from "react-hot-toast"
 import { z } from "zod"
 import { ArrowRight } from "@phosphor-icons/react/ArrowRight"
 import { getAuth } from "firebase/auth"
-import { ScanPackageTab } from "./common"
+import type { ShipmentType } from "@/utils/constants"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z
@@ -97,13 +97,13 @@ function ScanPackageForm({
   )
 }
 
-function PackagesTable({ incomingShipmentId }: { incomingShipmentId: number }) {
+function PackagesTable({ shipmentId }: { shipmentId: number }) {
   const {
     status,
     data: packages,
     error,
-  } = api.package.getWithLatestStatusByIncomingShipmentId.useQuery({
-    incomingShipmentId,
+  } = api.package.getWithLatestStatusByShipmentId.useQuery({
+    shipmentId,
   })
 
   const [scannedPackageIds, setScannedPackageIds] = useState<number[]>([])
@@ -111,8 +111,8 @@ function PackagesTable({ incomingShipmentId }: { incomingShipmentId: number }) {
   const utils = api.useUtils()
   const { isLoading, mutate } = api.packageStatusLog.createMany.useMutation({
     onSuccess: () => {
-      utils.package.getWithLatestStatusByIncomingShipmentId.invalidate({
-        incomingShipmentId,
+      utils.package.getWithLatestStatusByShipmentId.invalidate({
+        shipmentId,
       })
       utils.package.getAll.invalidate()
       setScannedPackageIds([])
@@ -223,42 +223,35 @@ function PackagesTable({ incomingShipmentId }: { incomingShipmentId: number }) {
   )
 }
 
-function SelectIncomingShipment({
-  selectedIncomingShipmentId,
-  setSelectedIncomingShipmentId,
+function SelectShipment({
+  selectedShipmentId,
+  setSelectedShipmentId,
 }: {
-  selectedIncomingShipmentId: null | number
-  setSelectedIncomingShipmentId: (id: null | number) => void
+  selectedShipmentId: null | number
+  setSelectedShipmentId: (id: null | number) => void
 }) {
   const {
     status,
-    data: incomingShipments,
+    data: shipments,
     error,
   } = api.shipment.incoming.getInTransit.useQuery()
 
   if (status === "loading") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
-  if (incomingShipments.length === 0) return <p>No incoming shipments</p>
+  if (shipments.length === 0) return <p>No shipments</p>
 
   return (
     <select
-      value={
-        selectedIncomingShipmentId === null
-          ? ""
-          : selectedIncomingShipmentId.toString()
-      }
+      value={selectedShipmentId === null ? "" : selectedShipmentId.toString()}
       onChange={(e) => {
-        if (e.currentTarget.value === "") setSelectedIncomingShipmentId(null)
-        else setSelectedIncomingShipmentId(Number(e.currentTarget.value))
+        if (e.currentTarget.value === "") setSelectedShipmentId(null)
+        else setSelectedShipmentId(Number(e.currentTarget.value))
       }}
     >
       <option value="">Select a shipment ...</option>
-      {incomingShipments.map((incomingShipment) => (
-        <option
-          key={incomingShipment.id}
-          value={incomingShipment.id.toString()}
-        >
-          {incomingShipment.id}
+      {shipments.map((shipment) => (
+        <option key={shipment.id} value={shipment.id.toString()}>
+          {shipment.id}
         </option>
       ))}
     </select>
@@ -266,18 +259,18 @@ function SelectIncomingShipment({
 }
 
 function MarkAsCompleted({
-  incomingShipmentId,
-  resetSelectedIncomingShipmentId,
+  shipmentId,
+  resetSelectedShipmentId,
 }: {
-  incomingShipmentId: number
-  resetSelectedIncomingShipmentId: () => void
+  shipmentId: number
+  resetSelectedShipmentId: () => void
 }) {
   const {
     status,
     data: packages,
     error,
-  } = api.package.getWithLatestStatusByIncomingShipmentId.useQuery({
-    incomingShipmentId,
+  } = api.package.getWithLatestStatusByShipmentId.useQuery({
+    shipmentId,
   })
 
   const utils = api.useUtils()
@@ -285,7 +278,7 @@ function MarkAsCompleted({
     api.shipment.incoming.updateStatusToCompletedById.useMutation({
       onSuccess: () => {
         utils.shipment.incoming.getInTransit.invalidate()
-        resetSelectedIncomingShipmentId()
+        resetSelectedShipmentId()
       },
     })
 
@@ -304,7 +297,7 @@ function MarkAsCompleted({
       className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 text-white px-4 py-2 rounded-lg transition-colors font-medium"
       onClick={() => {
         mutate({
-          id: incomingShipmentId,
+          id: shipmentId,
         })
       }}
     >
@@ -317,12 +310,12 @@ export function ScanPackageIncomingTab({
   selectedTab,
   setSelectedTab,
 }: {
-  selectedTab: ScanPackageTab
-  setSelectedTab: (tab: ScanPackageTab) => void
+  selectedTab: ShipmentType
+  setSelectedTab: (tab: ShipmentType) => void
 }) {
-  const [selectedIncomingShipmentId, setSelectedIncomingShipmentId] = useState<
-    null | number
-  >(null)
+  const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
+    null,
+  )
 
   return (
     <div className="bg-white rounded-lg shadow-lg px-4 py-2">
@@ -360,38 +353,34 @@ export function ScanPackageIncomingTab({
           className={`
               pb-1 font-semibold border-b-4 px-2
               ${
-                selectedTab === "TRANSFER"
+                selectedTab === "TRANSFER_FORWARDER"
                   ? "border-b-4 text-brand-cyan-500 border-brand-cyan-500"
                   : "text-gray-400 border-b-transparent"
               }
             `}
-          onClick={() => setSelectedTab("TRANSFER")}
+          onClick={() => setSelectedTab("TRANSFER_FORWARDER")}
         >
-          Transfer
+          Forwarder Transfer
         </button>
       </div>
       <div className="flex justify-between mb-3">
         <div>
-          <SelectIncomingShipment
-            selectedIncomingShipmentId={selectedIncomingShipmentId}
-            setSelectedIncomingShipmentId={setSelectedIncomingShipmentId}
+          <SelectShipment
+            selectedShipmentId={selectedShipmentId}
+            setSelectedShipmentId={setSelectedShipmentId}
           />
         </div>
 
         <div>
-          {selectedIncomingShipmentId && (
+          {selectedShipmentId && (
             <MarkAsCompleted
-              incomingShipmentId={selectedIncomingShipmentId}
-              resetSelectedIncomingShipmentId={() =>
-                setSelectedIncomingShipmentId(null)
-              }
+              shipmentId={selectedShipmentId}
+              resetSelectedShipmentId={() => setSelectedShipmentId(null)}
             />
           )}
         </div>
       </div>
-      {selectedIncomingShipmentId && (
-        <PackagesTable incomingShipmentId={selectedIncomingShipmentId} />
-      )}
+      {selectedShipmentId && <PackagesTable shipmentId={selectedShipmentId} />}
     </div>
   )
 }

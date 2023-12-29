@@ -12,7 +12,7 @@ import toast from "react-hot-toast"
 import { z } from "zod"
 import { ArrowRight } from "@phosphor-icons/react/ArrowRight"
 import { getAuth } from "firebase/auth"
-import { ScanPackageTab } from "./common"
+import type { ShipmentType } from "@/utils/constants"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z
@@ -97,13 +97,13 @@ function ScanPackageForm({
   )
 }
 
-function PackagesTable({ deliveryId }: { deliveryId: number }) {
+function PackagesTable({ shipmentId }: { shipmentId: number }) {
   const {
     status,
     data: packages,
     error,
-  } = api.package.getWithLatestStatusByDeliveryId.useQuery({
-    deliveryId,
+  } = api.package.getWithLatestStatusByShipmentId.useQuery({
+    shipmentId,
   })
 
   const [scannedPackageIds, setScannedPackageIds] = useState<number[]>([])
@@ -111,8 +111,8 @@ function PackagesTable({ deliveryId }: { deliveryId: number }) {
   const utils = api.useUtils()
   const { isLoading, mutate } = api.packageStatusLog.createMany.useMutation({
     onSuccess: () => {
-      utils.package.getWithLatestStatusByDeliveryId.invalidate({
-        deliveryId,
+      utils.package.getWithLatestStatusByShipmentId.invalidate({
+        shipmentId,
       })
       utils.package.getAll.invalidate()
       setScannedPackageIds([])
@@ -223,35 +223,35 @@ function PackagesTable({ deliveryId }: { deliveryId: number }) {
   )
 }
 
-function SelectDeliveries({
-  selectedDeliveryId,
-  setSelectedDeliveryId,
+function SelectShipment({
+  selectedShipmentId,
+  setSelectedShipmentId: setSelectedShipmentId,
 }: {
-  selectedDeliveryId: null | number
-  setSelectedDeliveryId: (id: null | number) => void
+  selectedShipmentId: null | number
+  setSelectedShipmentId: (id: null | number) => void
 }) {
   const {
     status,
-    data: deliveries,
+    data: shipments,
     error,
   } = api.shipment.delivery.getPreparing.useQuery()
 
   if (status === "loading") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
-  if (deliveries.length === 0) return <p>No deliveries</p>
+  if (shipments.length === 0) return <p>No shipments</p>
 
   return (
     <select
-      value={selectedDeliveryId === null ? "" : selectedDeliveryId.toString()}
+      value={selectedShipmentId === null ? "" : selectedShipmentId.toString()}
       onChange={(e) => {
-        if (e.currentTarget.value === "") setSelectedDeliveryId(null)
-        else setSelectedDeliveryId(Number(e.currentTarget.value))
+        if (e.currentTarget.value === "") setSelectedShipmentId(null)
+        else setSelectedShipmentId(Number(e.currentTarget.value))
       }}
     >
-      <option value="">Select a delivery ...</option>
-      {deliveries.map((delivery) => (
-        <option key={delivery.id} value={delivery.id.toString()}>
-          {delivery.id}
+      <option value="">Select a shipment ...</option>
+      {shipments.map((shipment) => (
+        <option key={shipment.id} value={shipment.id.toString()}>
+          {shipment.id}
         </option>
       ))}
     </select>
@@ -259,18 +259,18 @@ function SelectDeliveries({
 }
 
 function MarkAsInTransit({
-  deliveryId,
-  resetSelectedDeliveryId,
+  shipmentId,
+  resetSelectedShipmentId,
 }: {
-  deliveryId: number
-  resetSelectedDeliveryId: () => void
+  shipmentId: number
+  resetSelectedShipmentId: () => void
 }) {
   const {
     status,
     data: packages,
     error,
-  } = api.package.getWithLatestStatusByDeliveryId.useQuery({
-    deliveryId,
+  } = api.package.getWithLatestStatusByShipmentId.useQuery({
+    shipmentId,
   })
 
   const utils = api.useUtils()
@@ -278,7 +278,7 @@ function MarkAsInTransit({
     api.shipment.delivery.updateStatusToInTransitById.useMutation({
       onSuccess: () => {
         utils.shipment.delivery.getPreparing.invalidate()
-        resetSelectedDeliveryId()
+        resetSelectedShipmentId()
       },
     })
 
@@ -297,7 +297,7 @@ function MarkAsInTransit({
       className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 text-white px-4 py-2 rounded-lg transition-colors font-medium"
       onClick={() => {
         mutate({
-          id: deliveryId,
+          id: shipmentId,
         })
       }}
     >
@@ -310,10 +310,10 @@ export function ScanPackageDeliveryTab({
   selectedTab,
   setSelectedTab,
 }: {
-  selectedTab: ScanPackageTab
-  setSelectedTab: (tab: ScanPackageTab) => void
+  selectedTab: ShipmentType
+  setSelectedTab: (tab: ShipmentType) => void
 }) {
-  const [selectedDeliveryId, setSelectedDeliveryId] = useState<null | number>(
+  const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
     null,
   )
 
@@ -353,34 +353,34 @@ export function ScanPackageDeliveryTab({
           className={`
               pb-1 font-semibold border-b-4 px-2
               ${
-                selectedTab === "TRANSFER"
+                selectedTab === "TRANSFER_FORWARDER"
                   ? "border-b-4 text-brand-cyan-500 border-brand-cyan-500"
                   : "text-gray-400 border-b-transparent"
               }
             `}
-          onClick={() => setSelectedTab("TRANSFER")}
+          onClick={() => setSelectedTab("TRANSFER_FORWARDER")}
         >
-          Transfer
+          Forwarder Transfer
         </button>
       </div>
       <div className="flex justify-between mb-3">
         <div>
-          <SelectDeliveries
-            selectedDeliveryId={selectedDeliveryId}
-            setSelectedDeliveryId={setSelectedDeliveryId}
+          <SelectShipment
+            selectedShipmentId={selectedShipmentId}
+            setSelectedShipmentId={setSelectedShipmentId}
           />
         </div>
 
         <div>
-          {selectedDeliveryId && (
+          {selectedShipmentId && (
             <MarkAsInTransit
-              deliveryId={selectedDeliveryId}
-              resetSelectedDeliveryId={() => setSelectedDeliveryId(null)}
+              shipmentId={selectedShipmentId}
+              resetSelectedShipmentId={() => setSelectedShipmentId(null)}
             />
           )}
         </div>
       </div>
-      {selectedDeliveryId && <PackagesTable deliveryId={selectedDeliveryId} />}
+      {selectedShipmentId && <PackagesTable shipmentId={selectedShipmentId} />}
     </div>
   )
 }
