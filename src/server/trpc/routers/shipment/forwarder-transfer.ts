@@ -62,16 +62,42 @@ export const forwarderTransferShipmentRouter = router({
       }
     }),
   getPreparing: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db
+    const results = await ctx.db
       .select()
-      .from(shipments)
+      .from(forwarderTransferShipments)
+      .innerJoin(
+        shipments,
+        eq(forwarderTransferShipments.shipmentId, shipments.id),
+      )
       .where(eq(shipments.status, "PREPARING"))
+
+    return results.map(({ shipments, forwarder_transfer_shipments }) => {
+      const { shipmentId, ...other } = forwarder_transfer_shipments
+
+      return {
+        ...shipments,
+        ...other,
+      }
+    })
   }),
   getInTransit: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db
+    const results = await ctx.db
       .select()
-      .from(shipments)
+      .from(forwarderTransferShipments)
+      .innerJoin(
+        shipments,
+        eq(forwarderTransferShipments.shipmentId, shipments.id),
+      )
       .where(eq(shipments.status, "IN_TRANSIT"))
+
+    return results.map(({ shipments, forwarder_transfer_shipments }) => {
+      const { shipmentId, ...other } = forwarder_transfer_shipments
+
+      return {
+        ...shipments,
+        ...other,
+      }
+    })
   }),
   updateStatusToInTransitById: protectedProcedure
     .input(

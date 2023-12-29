@@ -60,10 +60,20 @@ export const deliveryShipmentRouter = router({
       }
     }),
   getPreparing: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db
+    const results = await ctx.db
       .select()
-      .from(shipments)
+      .from(deliveryShipments)
+      .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
       .where(eq(shipments.status, "PREPARING"))
+
+    return results.map(({ shipments, delivery_shipments }) => {
+      const { shipmentId, ...other } = delivery_shipments
+
+      return {
+        ...shipments,
+        ...other,
+      }
+    })
   }),
   updateStatusToInTransitById: protectedProcedure
     .input(
