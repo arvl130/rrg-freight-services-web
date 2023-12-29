@@ -112,8 +112,8 @@ export const forwarderTransferShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const [result] = (await ctx.db.insert(shipments).values({
-        type: "INCOMING",
-        status: "IN_TRANSIT",
+        type: "TRANSFER_FORWARDER",
+        status: "PREPARING",
       })) as unknown as [ResultSetHeader]
       const shipmentId = result.insertId
 
