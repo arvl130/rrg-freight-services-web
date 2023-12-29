@@ -128,7 +128,7 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
         packageIds={packages.map((_package) => _package.id)}
         scannedPackageIds={scannedPackageIds}
         updatedPackageIds={packages
-          .filter((_package) => _package.status === "TRANSFERRING_FORWARDER")
+          .filter((_package) => _package.status === "TRANSFERRING_WAREHOUSE")
           .map((_package) => _package.id)}
         onSubmitValidPackageId={(packageId) =>
           setScannedPackageIds((currScannedPackageIds) => [
@@ -161,10 +161,10 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
               <ArrowRight size={24} />
               <span
                 className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
-                  "TRANSFERRING_FORWARDER",
+                  "TRANSFERRING_WAREHOUSE",
                 )}`}
               >
-                {supportedPackageStatusToHumanized("TRANSFERRING_FORWARDER")}
+                {supportedPackageStatusToHumanized("TRANSFERRING_WAREHOUSE")}
               </span>
             </div>
           ) : (
@@ -205,9 +205,9 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
             const auth = getAuth()
             const newStatusLogs = scannedPackageIds.map((packageId) => ({
               packageId,
-              status: "TRANSFERRING_FORWARDER" as const,
+              status: "TRANSFERRING_WAREHOUSE" as const,
               description: getDescriptionForNewPackageStatusLog(
-                "TRANSFERRING_FORWARDER",
+                "TRANSFERRING_WAREHOUSE",
               ),
               createdAt: new Date(),
               createdById: auth.currentUser!.uid,
@@ -236,7 +236,7 @@ function SelectShipment({
     status,
     data: shipments,
     error,
-  } = api.shipment.forwarderTransfer.getPreparing.useQuery()
+  } = api.shipment.warehouseTransfer.getPreparing.useQuery()
 
   if (status === "loading") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
@@ -277,9 +277,9 @@ function MarkAsInTransit({
 
   const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.shipment.forwarderTransfer.updateStatusToInTransitById.useMutation({
+    api.shipment.warehouseTransfer.updateStatusToInTransitById.useMutation({
       onSuccess: () => {
-        utils.shipment.forwarderTransfer.getPreparing.invalidate()
+        utils.shipment.warehouseTransfer.getPreparing.invalidate()
         resetSelectedShipmentId()
       },
     })
@@ -289,7 +289,7 @@ function MarkAsInTransit({
   if (packages.length === 0) return <p>No packages.</p>
 
   const hasPendingPackages = packages.some(
-    (_package) => _package.status !== "TRANSFERRING_FORWARDER",
+    (_package) => _package.status !== "TRANSFERRING_WAREHOUSE",
   )
 
   return (
@@ -308,7 +308,7 @@ function MarkAsInTransit({
   )
 }
 
-export function ScanPackageForwarderTransferTab({
+export function ScanPackageWarehouseTransferTab({
   selectedTab,
   setSelectedTab,
 }: {

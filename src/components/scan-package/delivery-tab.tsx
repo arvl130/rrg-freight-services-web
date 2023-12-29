@@ -362,6 +362,20 @@ export function ScanPackageDeliveryTab({
         >
           Forwarder Transfer
         </button>
+        <button
+          type="button"
+          className={`
+              pb-1 font-semibold border-b-4 px-2
+              ${
+                selectedTab === "TRANSFER_WAREHOUSE"
+                  ? "border-b-4 text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+          onClick={() => setSelectedTab("TRANSFER_WAREHOUSE")}
+        >
+          Warehouse Transfer
+        </button>
       </div>
       <div className="flex justify-between mb-3">
         <div>
