@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { Package, Vehicle } from "@/server/db/entities"
-import { useSession } from "@/utils/auth"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"
 import {
@@ -14,25 +13,6 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
-
-function ChooseDestinationPanel({
-  isOpenModal,
-  selectedDestinationHubId,
-  onSelectChange,
-}: {
-  isOpenModal: boolean
-  selectedDestinationHubId: null | number
-  onSelectChange: (props: { destinationHubId: null | number }) => void
-}) {
-  const { role } = useSession()
-
-  return (
-    <div>
-      <p className="font-medium text-gray-700 mb-1.5">Select a destination:</p>
-      <div>wip</div>
-    </div>
-  )
-}
 
 function PackagesTableItem({
   selectedPackageIds,
