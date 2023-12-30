@@ -116,5 +116,5 @@ export function getDescriptionForNewShipmentStatusLog(
   return shipmentStatusLogWithDescriptions[shipmentStatus] ?? ""
 }
 
-export const SUPPORTED_VEHICLE_TYPES = ["TRUCK", "VAN", "MOTORCYCLE"] as const
+export const SUPPORTED_VEHICLE_TYPES = ["TRUCK", "VAN"] as const
 export type VehicleType = (typeof SUPPORTED_VEHICLE_TYPES)[number]
