@@ -3,6 +3,7 @@ import { protectedProcedure, router } from "../trpc"
 import { vehicles, shipments, deliveryShipments } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
+import { SUPPORTED_VEHICLE_TYPES, VehicleType } from "@/utils/constants"
 
 export const vehicleRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -56,4 +57,49 @@ export const vehicleRouter = router({
 
     return results.map(({ vehicles }) => vehicles)
   }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        type: z.custom<VehicleType>((val) =>
+          SUPPORTED_VEHICLE_TYPES.includes(val as VehicleType),
+        ),
+        displayName: z.string().min(1).max(255),
+        isExpressAllowed: z.boolean(),
+      }),
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.db.insert(vehicles).values({
+        ...input,
+        isExpressAllowed: input.isExpressAllowed ? 1 : 0,
+      })
+    }),
+  updateById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        type: z.custom<VehicleType>((val) =>
+          SUPPORTED_VEHICLE_TYPES.includes(val as VehicleType),
+        ),
+        displayName: z.string().min(1).max(255),
+        isExpressAllowed: z.boolean(),
+      }),
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.db
+        .update(vehicles)
+        .set({
+          ...input,
+          isExpressAllowed: input.isExpressAllowed ? 1 : 0,
+        })
+        .where(eq(vehicles.id, input.id))
+    }),
+  deleteById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.db.delete(vehicles).where(eq(vehicles.id, input.id))
+    }),
 })

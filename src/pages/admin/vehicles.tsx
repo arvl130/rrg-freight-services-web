@@ -9,24 +9,41 @@ import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 import { Vehicle } from "@/server/db/entities"
-import { getColorFromPackageStatus } from "@/utils/colors"
+import { Plus } from "@phosphor-icons/react/Plus"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { VehiclesCreateModal } from "@/components/vehicles/create-modal"
+import { VehiclesEditModal } from "@/components/vehicles/edit-modal"
+import { VehiclesDeleteModal } from "@/components/vehicles/delete-modal"
 
 function PageHeader() {
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
+
   return (
     <div className="flex justify-between mb-4">
       <h1 className="text-2xl font-black [color:_#00203F] mb-2">Vehicles</h1>
+      <button
+        type="button"
+        className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
+        onClick={() => setIsOpenCreateModal(true)}
+      >
+        <Plus size={16} />
+        <span>New Vehicle</span>
+      </button>
+      <VehiclesCreateModal
+        isOpen={isOpenCreateModal}
+        close={() => setIsOpenCreateModal(false)}
+      />
     </div>
   )
 }
 
 function VehicleTableItem({ vehicle }: { vehicle: Vehicle }) {
-  const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "EDIT_STATUS" | "VIEW_WAYBILL"
-  >(null)
+  const [visibleModal, setVisibleModal] = useState<null | "EDIT" | "DELETE">(
+    null,
+  )
 
   return (
     <>
@@ -48,23 +65,34 @@ function VehicleTableItem({ vehicle }: { vehicle: Vehicle }) {
             </DropdownMenu.Trigger>
 
             <DropdownMenu.Portal>
-              <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm">
+              <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm font-medium">
                 <DropdownMenu.Item
                   className="transition-colors hover:bg-sky-50 px-3 py-2"
-                  onClick={() => setVisibleModal("VIEW_DETAILS")}
+                  onClick={() => setVisibleModal("EDIT")}
                 >
-                  View Details
+                  Edit
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="transition-colors hover:bg-sky-50 px-3 py-2"
-                  onClick={() => setVisibleModal("EDIT_DETAILS")}
+                  onClick={() => setVisibleModal("DELETE")}
                 >
-                  Edit Details
+                  Delete
                 </DropdownMenu.Item>
                 <DropdownMenu.Arrow className="fill-white" />
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
+
+          <VehiclesEditModal
+            id={vehicle.id}
+            close={() => setVisibleModal(null)}
+            isOpen={visibleModal === "EDIT"}
+          />
+          <VehiclesDeleteModal
+            id={vehicle.id}
+            close={() => setVisibleModal(null)}
+            isOpen={visibleModal === "DELETE"}
+          />
         </div>
       </div>
     </>
