@@ -116,7 +116,7 @@ export function VehiclesEditModal({
   return (
     <Dialog.Root open={isOpen}>
       <Dialog.Portal>
-        <Dialog.Overlay className="bg-black/40 fixed inset-0" />
+        <Dialog.Overlay className="bg-black/40 fixed inset-0" onClick={close} />
         <Dialog.Content
           onEscapeKeyDown={close}
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_32rem)] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
