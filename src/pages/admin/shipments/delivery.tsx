@@ -12,11 +12,7 @@ import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
-import {
-  DeliveryShipment,
-  NormalizedDeliveryShipment,
-  Shipment,
-} from "@/server/db/entities"
+import { NormalizedDeliveryShipment } from "@/server/db/entities"
 import { DateTime } from "luxon"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
