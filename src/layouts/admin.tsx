@@ -6,6 +6,7 @@ import { SignOut } from "@phosphor-icons/react/SignOut"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { UsersThree } from "@phosphor-icons/react/UsersThree"
 import { Motorcycle } from "@phosphor-icons/react/Motorcycle"
+import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
 import { Boat } from "@phosphor-icons/react/Boat"
 import { Truck } from "@phosphor-icons/react/Truck"
 import { Warehouse } from "@phosphor-icons/react/Warehouse"
@@ -48,7 +49,7 @@ export function AdminSideBar() {
         <SideBarLink
           name="Forwarder Transfer Shipments"
           href="/admin/shipments/transfer/forwarder"
-          icon={<Truck size={32} className="text-white" />}
+          icon={<ClipboardText size={32} className="text-white" />}
         />
         <SideBarLink
           name="Warehouse Transfer Shipments"
@@ -59,6 +60,11 @@ export function AdminSideBar() {
           name="Deliveries"
           href="/admin/shipments/delivery"
           icon={<Motorcycle size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Vehicles"
+          href="/admin/vehicles"
+          icon={<Truck size={32} className="text-white" />}
         />
         <SideBarLink
           name="Users"
