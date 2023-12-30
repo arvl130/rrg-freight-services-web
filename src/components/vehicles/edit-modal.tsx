@@ -67,7 +67,10 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
       </div>
       <div className="grid mb-3">
         <label className="font-medium">Type</label>
-        <select {...register("type")}>
+        <select
+          className="bg-white px-2 py-2 border border-gray-300"
+          {...register("type")}
+        >
           {SUPPORTED_VEHICLE_TYPES.map((vehicleType) => (
             <option key={vehicleType} value={vehicleType}>
               {vehicleType}
