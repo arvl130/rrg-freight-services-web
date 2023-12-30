@@ -54,7 +54,9 @@ function VehicleTableItem({ vehicle }: { vehicle: Vehicle }) {
         </div>
         <div className="px-4 py-2">{vehicle.displayName}</div>
         <div className="px-4 py-2">{vehicle.type}</div>
-        <div className="px-4 py-2">N/A</div>
+        <div className="px-4 py-2">
+          {vehicle.isExpressAllowed === 1 ? "Yes" : "No"}
+        </div>
         <div className="px-4 py-2 flex items-center gap-2">
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
@@ -155,7 +157,7 @@ function VehiclesTable({
           </div>
           <div className="uppercase px-4 py-2">Display Name</div>
           <div className="uppercase px-4 py-2">Type</div>
-          <div className="uppercase px-4 py-2">Assigned To</div>
+          <div className="uppercase px-4 py-2">Express Allowed</div>
           <div className="uppercase px-4 py-2"></div>
         </div>
         {/* Body */}
