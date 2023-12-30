@@ -55,7 +55,7 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
       )}
     >
       <div className="grid mb-3">
-        <label className="font-medium">Display Name</label>
+        <label className="font-medium mb-1">Display Name</label>
         <input
           type="text"
           className="px-2 py-1 border border-gray-300"
@@ -66,7 +66,7 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
         )}
       </div>
       <div className="grid mb-3">
-        <label className="font-medium">Type</label>
+        <label className="font-medium mb-1">Type</label>
         <select
           className="bg-white px-2 py-2 border border-gray-300"
           {...register("type")}
