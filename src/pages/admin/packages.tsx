@@ -22,7 +22,7 @@ import { PackagesEditStatusModal } from "@/components/packages/edit-status-modal
 function PageHeader() {
   return (
     <div className="flex justify-between mb-4">
-      <h1 className="text-3xl font-black [color:_#00203F] mb-2">Packages</h1>
+      <h1 className="text-2xl font-black [color:_#00203F] mb-2">Packages</h1>
     </div>
   )
 }
