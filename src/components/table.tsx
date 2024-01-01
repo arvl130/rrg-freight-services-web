@@ -1,6 +1,10 @@
 import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { Export } from "@phosphor-icons/react/Export"
 import { ReactNode, useRef } from "react"
+import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
+import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
+import { CaretRight } from "@phosphor-icons/react/CaretRight"
+import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 
 export function Filters({ children }: { children: ReactNode }) {
   return (
@@ -58,6 +62,101 @@ export function Main({ children }: { children: ReactNode }) {
 
 export function Pagination({ children }: { children: ReactNode }) {
   return <div className="flex justify-between mb-3">{children}</div>
+}
+
+export function PaginationButtons({
+  isOnFirstPage,
+  isOnLastPage,
+  pageSize,
+  pageNumber,
+  pageCount,
+  gotoPage,
+  gotoFirstPage,
+  gotoLastPage,
+  gotoNextPage,
+  gotoPreviousPage,
+  updatePageSize,
+}: {
+  pageNumber: number
+  pageSize: number
+  pageCount: number
+  updatePageSize: (pageSize: number) => void
+  gotoPage: (pageNumber: number) => void
+  gotoFirstPage: () => void
+  gotoLastPage: () => void
+  gotoNextPage: () => void
+  gotoPreviousPage: () => void
+  isOnFirstPage: boolean
+  isOnLastPage: boolean
+}) {
+  return (
+    <div className="flex gap-8">
+      <div>
+        Showing{" "}
+        <select
+          className="bg-white border border-gray-300 px-2 py-1 w-16"
+          value={pageSize}
+          onChange={(e) =>
+            updatePageSize(e.currentTarget.value as unknown as number)
+          }
+        >
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">50</option>
+        </select>{" "}
+        entries
+      </div>
+      <div className="flex items-center gap-1 text-sm">
+        <button
+          type="button"
+          className="disabled:text-gray-400"
+          disabled={isOnFirstPage}
+          onClick={gotoFirstPage}
+        >
+          <CaretDoubleLeft size={16} />
+        </button>
+        <button
+          type="button"
+          className="disabled:text-gray-400"
+          disabled={isOnFirstPage}
+          onClick={gotoPreviousPage}
+        >
+          <CaretLeft size={16} />
+        </button>
+
+        {[...Array(pageCount)].map((_, index) => (
+          <button
+            key={index}
+            type="button"
+            disabled={index + 1 === pageNumber}
+            onClick={() => gotoPage(index + 1)}
+            className={
+              "w-6 h-6 disabled:bg-brand-cyan-500 disabled:text-white rounded-md"
+            }
+          >
+            {index + 1}
+          </button>
+        ))}
+
+        <button
+          type="button"
+          className="disabled:text-gray-400"
+          disabled={isOnLastPage}
+          onClick={gotoNextPage}
+        >
+          <CaretRight size={16} />
+        </button>
+        <button
+          type="button"
+          className="disabled:text-gray-400"
+          disabled={isOnLastPage}
+          onClick={gotoLastPage}
+        >
+          <CaretDoubleRight size={16} />
+        </button>
+      </div>
+    </div>
+  )
 }
 
 export function Header({ children }: { children: ReactNode }) {

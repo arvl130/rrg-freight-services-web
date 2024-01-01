@@ -1,10 +1,6 @@
 import { AdminLayout } from "@/layouts/admin"
 import { useSession } from "@/utils/auth"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
-import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
-import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 import { Package } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { useState } from "react"
@@ -18,6 +14,7 @@ import { PackagesEditDetailsModal } from "@/components/packages/edit-details-mod
 import { PackagesEditStatusModal } from "@/components/packages/edit-status-modal"
 import { PackageShippingType } from "@/utils/constants"
 import { PackageStatus } from "@/components/packages/status"
+import { usePaginatedItems } from "@/hooks/paginated-items"
 
 function TableItem({ package: _package }: { package: Package }) {
   const [visibleModal, setVisibleModal] = useState<
@@ -122,14 +119,6 @@ function TableItem({ package: _package }: { package: Package }) {
   )
 }
 
-function filterByCurrentPage(
-  items: Package[],
-  pageNumber: number,
-  pageSize: number,
-) {
-  return items.slice((pageNumber - 1) * pageSize, pageNumber * pageSize)
-}
-
 function filterBySearchTerm(items: Package[], searchTerm: string) {
   return items.filter((_package) =>
     _package.id.toString().toLowerCase().includes(searchTerm),
@@ -160,22 +149,32 @@ function PackagesTable({ packages }: { packages: Package[] }) {
     "EXPRESS" | "STANDARD" | "ALL"
   >("EXPRESS")
 
-  const [pageSize, setPageSize] = useState(10)
-  const [pageNumber, setPageNumber] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
-
-  const pageCount = Math.ceil(packages.length / pageSize)
-  const visiblePackages = filterByCurrentPage(
-    filterBySearchTerm(
-      filterBySelectedTab(
-        filterByArchiveStatus(packages, visibleArchiveStatus === "ARCHIVED"),
-        selectedTab,
-      ),
-      searchTerm,
+  const visiblePackages = filterBySearchTerm(
+    filterBySelectedTab(
+      filterByArchiveStatus(packages, visibleArchiveStatus === "ARCHIVED"),
+      selectedTab,
     ),
+    searchTerm,
+  )
+
+  const {
     pageNumber,
     pageSize,
-  )
+    pageCount,
+    isOnFirstPage,
+    isOnLastPage,
+    paginatedItems,
+    updatePageSize,
+    resetPageNumber,
+    gotoFirstPage,
+    gotoLastPage,
+    gotoPage,
+    gotoNextPage,
+    gotoPreviousPage,
+  } = usePaginatedItems<Package>({
+    items: visiblePackages,
+  })
 
   return (
     <>
@@ -183,7 +182,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
         <div>
           <Table.SearchForm
             updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
-            resetPageNumber={() => setPageNumber(1)}
+            resetPageNumber={resetPageNumber}
           />
         </div>
         <div className="flex gap-3 text-sm">
@@ -262,76 +261,19 @@ function PackagesTable({ packages }: { packages: Package[] }) {
               All
             </button>
           </div>
-          <div className="flex gap-8">
-            <div>
-              Showing{" "}
-              <select
-                className="bg-white border border-gray-300 px-2 py-1 w-16"
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(e.currentTarget.value as unknown as number)
-                  setPageNumber(1)
-                }}
-              >
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="30">50</option>
-              </select>{" "}
-              entries
-            </div>
-            <div className="flex items-center gap-1 text-sm">
-              <button
-                type="button"
-                className="disabled:text-gray-400"
-                disabled={pageNumber === 1}
-                onClick={() => setPageNumber(1)}
-              >
-                <CaretDoubleLeft size={16} />
-              </button>
-              <button
-                type="button"
-                className="disabled:text-gray-400"
-                disabled={pageNumber === 1}
-                onClick={() =>
-                  setPageNumber((currPageNumber) => currPageNumber - 1)
-                }
-              >
-                <CaretLeft size={16} />
-              </button>
-
-              {[...Array(pageCount)].map((_, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  disabled={index + 1 === pageNumber}
-                  onClick={() => setPageNumber(index + 1)}
-                  className={
-                    "w-6 h-6 disabled:bg-brand-cyan-500 disabled:text-white rounded-md"
-                  }
-                >
-                  {index + 1}
-                </button>
-              ))}
-              <button
-                type="button"
-                className="disabled:text-gray-400"
-                disabled={pageNumber === pageCount}
-                onClick={() =>
-                  setPageNumber((currPageNumber) => currPageNumber + 1)
-                }
-              >
-                <CaretRight size={16} />
-              </button>
-              <button
-                type="button"
-                className="disabled:text-gray-400"
-                disabled={pageNumber === pageCount}
-                onClick={() => setPageNumber(pageCount)}
-              >
-                <CaretDoubleRight size={16} />
-              </button>
-            </div>
-          </div>
+          <Table.PaginationButtons
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            pageCount={pageCount}
+            isOnFirstPage={isOnFirstPage}
+            isOnLastPage={isOnLastPage}
+            updatePageSize={updatePageSize}
+            gotoFirstPage={gotoFirstPage}
+            gotoLastPage={gotoLastPage}
+            gotoPage={gotoPage}
+            gotoNextPage={gotoNextPage}
+            gotoPreviousPage={gotoPreviousPage}
+          />
         </Table.Pagination>
         <Table.Content>
           <Table.Header>
@@ -343,11 +285,11 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             <div className="uppercase px-4 py-2">Receiver</div>
             <div className="uppercase px-4 py-2">Status</div>
           </Table.Header>
-          {visiblePackages.length === 0 ? (
+          {paginatedItems.length === 0 ? (
             <div className="text-center pt-4">No packages found.</div>
           ) : (
             <div>
-              {visiblePackages.map((_package) => (
+              {paginatedItems.map((_package) => (
                 <TableItem key={_package.id} package={_package} />
               ))}
             </div>
