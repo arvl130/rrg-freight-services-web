@@ -312,7 +312,9 @@ export default function PackagesPage() {
 
   return (
     <AdminLayout title="Packages">
-      <Page.Header>Packages</Page.Header>
+      <Page.Header>
+        <h1 className="text-2xl font-black [color:_#00203F] mb-2">Packages</h1>
+      </Page.Header>
       {status === "loading" && (
         <div className="flex justify-center pt-4">
           <LoadingSpinner />
