@@ -17,7 +17,7 @@ import { PackagesViewDetailsModal } from "@/components/packages/view-details-mod
 import { PackagesEditDetailsModal } from "@/components/packages/edit-details-modal"
 import { PackagesEditStatusModal } from "@/components/packages/edit-status-modal"
 import { PackageShippingType } from "@/utils/constants"
-import { PackageStatus } from "./package/status"
+import { PackageStatus } from "@/components/packages/status"
 
 function TableItem({ package: _package }: { package: Package }) {
   const [visibleModal, setVisibleModal] = useState<
@@ -162,7 +162,6 @@ function PackagesTable({ packages }: { packages: Package[] }) {
 
   const [pageSize, setPageSize] = useState(10)
   const [pageNumber, setPageNumber] = useState(1)
-
   const [searchTerm, setSearchTerm] = useState("")
 
   const pageCount = Math.ceil(packages.length / pageSize)
