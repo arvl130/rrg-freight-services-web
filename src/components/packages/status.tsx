@@ -1,7 +1,7 @@
 import { api } from "@/utils/api"
 import { getColorFromPackageStatus } from "@/utils/colors"
 
-export function PackageStatus({ packageId }: { packageId: number }) {
+export function PackageStatus({ packageId }: { packageId: string }) {
   const {
     isLoading,
     isError,

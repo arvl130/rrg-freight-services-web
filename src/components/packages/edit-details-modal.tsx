@@ -16,7 +16,7 @@ import { api } from "@/utils/api"
 import toast from "react-hot-toast"
 
 const editFormSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   shippingMode: z.custom<PackageShippingMode>((val) =>
     SUPPORTED_PACKAGE_SHIPPING_MODES.includes(val as PackageShippingMode),
   ),

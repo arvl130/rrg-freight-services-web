@@ -33,10 +33,10 @@ function ScanPackageForm({
   updatedPackageIds,
   onSubmitValidPackageId,
 }: {
-  packageIds: number[]
-  scannedPackageIds: number[]
-  updatedPackageIds: number[]
-  onSubmitValidPackageId: (packageId: number) => void
+  packageIds: string[]
+  scannedPackageIds: string[]
+  updatedPackageIds: string[]
+  onSubmitValidPackageId: (packageId: string) => void
 }) {
   const {
     handleSubmit,
@@ -53,26 +53,26 @@ function ScanPackageForm({
     <form
       className="mb-3"
       onSubmit={handleSubmit((formData) => {
-        if (updatedPackageIds.includes(Number(formData.packageId))) {
+        if (updatedPackageIds.includes(formData.packageId)) {
           toast("Package was updated already.", {
             icon: "⚠️",
           })
           return
         }
 
-        if (scannedPackageIds.includes(Number(formData.packageId))) {
+        if (scannedPackageIds.includes(formData.packageId)) {
           toast("Package was already scanned.", {
             icon: "⚠️",
           })
           return
         }
 
-        if (!packageIds.includes(Number(formData.packageId))) {
+        if (!packageIds.includes(formData.packageId)) {
           toast.error("Unrecognized Package")
           return
         }
 
-        onSubmitValidPackageId(Number(formData.packageId))
+        onSubmitValidPackageId(formData.packageId)
         reset()
       })}
     >
@@ -106,7 +106,7 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
     shipmentId: shipmentId,
   })
 
-  const [scannedPackageIds, setScannedPackageIds] = useState<number[]>([])
+  const [scannedPackageIds, setScannedPackageIds] = useState<string[]>([])
 
   const utils = api.useUtils()
   const { isLoading, mutate } = api.packageStatusLog.createMany.useMutation({

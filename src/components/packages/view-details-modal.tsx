@@ -36,7 +36,7 @@ function TopLayer({ package: _package }: { package: Package }) {
   )
 }
 
-function LogEntries({ packageId }: { packageId: number }) {
+function LogEntries({ packageId }: { packageId: string }) {
   const {
     status,
     data: packageStatusLogs,

@@ -7,7 +7,7 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { z } from "zod"
 
 const inputSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   imageUrl: z.string().url(),
 })
 

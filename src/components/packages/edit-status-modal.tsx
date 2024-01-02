@@ -20,7 +20,7 @@ function StatusLogItem({
   isFirstItem,
   statusLog,
 }: {
-  packageId: number
+  packageId: string
   isOnlyItem: boolean
   isFirstItem: boolean
   statusLog: PackageStatusLog
@@ -96,7 +96,7 @@ function getDateNowInputStr() {
   return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
-function AddStatusLogForm({ packageId }: { packageId: number }) {
+function AddStatusLogForm({ packageId }: { packageId: string }) {
   const { user } = useSession()
   const { status, data: users, error } = api.user.getAll.useQuery()
 

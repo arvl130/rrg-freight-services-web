@@ -55,7 +55,7 @@ export const shipmentPackages = mysqlTable(
     shipmentId: bigint("shipment_id", {
       mode: "number",
     }).notNull(),
-    packageId: bigint("package_id", { mode: "number" }).notNull(),
+    packageId: varchar("package_id", { length: 36 }).notNull(),
   },
   (table) => ({
     pk: primaryKey({
@@ -175,7 +175,7 @@ export const vehicles = mysqlTable("vehicles", {
 })
 
 export const packages = mysqlTable("packages", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  id: varchar("id", { length: 36 }).primaryKey(),
   shippingMode: mysqlEnum(
     "shipping_mode",
     SUPPORTED_PACKAGE_SHIPPING_MODES,
@@ -262,9 +262,7 @@ export const packageStatusLogs = mysqlTable("package_status_logs", {
   })
     .primaryKey()
     .autoincrement(),
-  packageId: bigint("package_id", {
-    mode: "number",
-  }).notNull(),
+  packageId: varchar("package_id", { length: 36 }).notNull(),
   status: mysqlEnum("status", SUPPORTED_PACKAGE_STATUSES).notNull(),
   description: varchar("description", {
     length: 255,

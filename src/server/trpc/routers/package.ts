@@ -25,7 +25,7 @@ export const packageRouter = router({
   getWithStatusLogsById: publicProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -59,7 +59,7 @@ export const packageRouter = router({
   updateById: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         shippingMode: z.custom<PackageShippingMode>((val) =>
           SUPPORTED_PACKAGE_SHIPPING_MODES.includes(val as PackageShippingMode),
         ),
@@ -124,7 +124,7 @@ export const packageRouter = router({
   updatePackageStatusByIds: protectedProcedure
     .input(
       z.object({
-        ids: z.array(z.number()),
+        ids: z.array(z.string()),
         status: z.string(),
       }),
     )
@@ -169,7 +169,7 @@ export const packageRouter = router({
   getByIds: protectedProcedure
     .input(
       z.object({
-        ids: z.array(z.number()),
+        ids: z.array(z.string()),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -185,7 +185,7 @@ export const packageRouter = router({
   getLatestStatus: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -250,6 +250,7 @@ export const packageRouter = router({
       await ctx.db.insert(packages).values(
         input.newPackages.map((newPackage) => ({
           ...newPackage,
+          id: crypto.randomUUID(),
           createdById: ctx.user.uid,
           updatedById: ctx.user.uid,
         })),
@@ -258,7 +259,7 @@ export const packageRouter = router({
   getById: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -316,6 +317,7 @@ export const packageRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(packages).values({
+        id: crypto.randomUUID(),
         shippingMode: input.shippingMode,
         shippingType: input.shippingType,
         receptionMode: input.receptionMode,

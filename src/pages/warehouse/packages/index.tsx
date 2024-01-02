@@ -21,7 +21,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
 
-function PackageStatus({ packageId }: { packageId: number }) {
+function PackageStatus({ packageId }: { packageId: string }) {
   const {
     isLoading,
     isError,

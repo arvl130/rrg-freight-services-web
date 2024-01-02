@@ -19,13 +19,13 @@ function PackagesTableItem({
   package: _package,
   onCheckboxChange,
 }: {
-  selectedPackageIds: number[]
+  selectedPackageIds: string[]
   package: Package
   onCheckboxChange: ({
     isChecked,
   }: {
     isChecked: boolean
-    packageId: number
+    packageId: string
   }) => void
 }) {
   return (
@@ -60,9 +60,9 @@ function ChoosePackageTable({
   onSelectAll,
   onCheckboxChange,
 }: {
-  selectedPackageIds: number[]
-  onSelectAll: (props: { isChecked: boolean; packageIds: number[] }) => void
-  onCheckboxChange: (props: { isChecked: boolean; packageId: number }) => void
+  selectedPackageIds: string[]
+  onSelectAll: (props: { isChecked: boolean; packageIds: string[] }) => void
+  onCheckboxChange: (props: { isChecked: boolean; packageId: string }) => void
 }) {
   const {
     refetch,
@@ -188,7 +188,7 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
     error: errorOfAvailableDrivers,
   } = api.user.getAvailableDrivers.useQuery()
 
-  const [selectedPackageIds, setSelectedPackageIds] = useState<number[]>([])
+  const [selectedPackageIds, setSelectedPackageIds] = useState<string[]>([])
 
   const {
     watch,

@@ -133,7 +133,7 @@ export const forwarderTransferShipmentRouter = router({
         sentToAgentId: z.string().length(28),
         driverId: z.string().length(28),
         vehicleId: z.number(),
-        packageIds: z.number().array(),
+        packageIds: z.string().array(),
       }),
     )
     .mutation(async ({ ctx, input }) => {

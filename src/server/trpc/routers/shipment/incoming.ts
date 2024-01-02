@@ -140,16 +140,17 @@ export const incomingShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const newPackageIds: number[] = []
+      const newPackageIds: string[] = []
       const resend = new Resend(serverEnv.RESEND_API_KEY)
 
       for (const newPackage of input.newPackages) {
-        const [result] = (await ctx.db.insert(packages).values({
+        const packageId = crypto.randomUUID()
+        await ctx.db.insert(packages).values({
           ...newPackage,
+          id: packageId,
           createdById: ctx.user.uid,
           updatedById: ctx.user.uid,
-        })) as unknown as [ResultSetHeader]
-        const packageId = result.insertId
+        })
 
         await ctx.db.insert(packageStatusLogs).values({
           packageId,

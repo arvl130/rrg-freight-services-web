@@ -108,7 +108,7 @@ export const deliveryShipmentRouter = router({
       z.object({
         driverId: z.string().length(28),
         vehicleId: z.number(),
-        packageIds: z.number().array().nonempty(),
+        packageIds: z.string().array().nonempty(),
         isExpress: z.boolean(),
       }),
     )

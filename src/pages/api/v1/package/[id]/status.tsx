@@ -13,7 +13,7 @@ import type { NextApiRequest, NextApiResponse } from "next"
 import { ZodError, z } from "zod"
 
 const inputSchema = z.object({
-  packageId: z.number(),
+  packageId: z.string(),
   status: z.custom<PackageStatus>((val) =>
     SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
   ),

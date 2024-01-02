@@ -32,7 +32,7 @@ function censorWords(words: string) {
   return words.replaceAll(/(?<=\w{2,})\w/g, "*")
 }
 
-function PackageDetailsSections({ packageId }: { packageId: number }) {
+function PackageDetailsSections({ packageId }: { packageId: string }) {
   const {
     status,
     data: _package,
@@ -218,7 +218,7 @@ function HeroSection() {
 }
 
 export default function TrackingPage() {
-  const [selectedPackageId, setSelectedPackageId] = useState<null | number>(
+  const [selectedPackageId, setSelectedPackageId] = useState<null | string>(
     null,
   )
 
@@ -228,9 +228,7 @@ export default function TrackingPage() {
       <Navbar />
       <HeroSection />
       <ChoosePackageForm
-        setSelectedPackageId={(packageId) =>
-          setSelectedPackageId(parseInt(packageId))
-        }
+        setSelectedPackageId={(packageId) => setSelectedPackageId(packageId)}
       />
 
       {selectedPackageId !== null && (

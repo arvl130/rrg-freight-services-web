@@ -14,13 +14,13 @@ function PackagesTableItem({
   package: _package,
   onCheckboxChange,
 }: {
-  selectedPackageIds: number[]
+  selectedPackageIds: string[]
   package: Package
   onCheckboxChange: ({
     isChecked,
   }: {
     isChecked: boolean
-    packageId: number
+    packageId: string
   }) => void
 }) {
   return (
@@ -55,9 +55,9 @@ function ChoosePackageTable({
   onSelectAll,
   onCheckboxChange,
 }: {
-  selectedPackageIds: number[]
-  onSelectAll: (props: { isChecked: boolean; packageIds: number[] }) => void
-  onCheckboxChange: (props: { isChecked: boolean; packageId: number }) => void
+  selectedPackageIds: string[]
+  onSelectAll: (props: { isChecked: boolean; packageIds: string[] }) => void
+  onCheckboxChange: (props: { isChecked: boolean; packageId: string }) => void
 }) {
   const {
     refetch,
@@ -169,7 +169,7 @@ export function WarehouseTransferShipmentsCreateModal({
   isOpen: boolean
   close: () => void
 }) {
-  const [selectedPackageIds, setSelectedPackageIds] = useState<number[]>([])
+  const [selectedPackageIds, setSelectedPackageIds] = useState<string[]>([])
   const {
     status: statusOfWarehouses,
     data: warehouses,

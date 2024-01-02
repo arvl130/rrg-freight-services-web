@@ -23,7 +23,7 @@ function PageHeader() {
   )
 }
 
-function PackageStatus({ packageId }: { packageId: number }) {
+function PackageStatus({ packageId }: { packageId: string }) {
   const {
     isLoading,
     isError,

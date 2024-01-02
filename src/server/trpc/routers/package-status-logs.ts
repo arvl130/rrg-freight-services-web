@@ -38,7 +38,7 @@ export const packageStatusLogRouter = router({
   getByPackageId: protectedProcedure
     .input(
       z.object({
-        packageId: z.number(),
+        packageId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -79,7 +79,7 @@ export const packageStatusLogRouter = router({
   getLatestByPackageId: protectedProcedure
     .input(
       z.object({
-        packageId: z.number(),
+        packageId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -127,7 +127,7 @@ export const packageStatusLogRouter = router({
   create: protectedProcedure
     .input(
       z.object({
-        packageId: z.number(),
+        packageId: z.string(),
         status: z.custom<PackageStatus>((val) =>
           SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
         ),
@@ -144,7 +144,7 @@ export const packageStatusLogRouter = router({
       z.object({
         newStatusLogs: z
           .object({
-            packageId: z.number(),
+            packageId: z.string(),
             status: z.custom<PackageStatus>((val) =>
               SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
             ),

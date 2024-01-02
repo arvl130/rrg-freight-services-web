@@ -133,7 +133,7 @@ export const warehouseTransferShipmentRouter = router({
         driverId: z.string().length(28),
         vehicleId: z.number(),
         sentToWarehouseId: z.number(),
-        packageIds: z.number().array(),
+        packageIds: z.string().array(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
