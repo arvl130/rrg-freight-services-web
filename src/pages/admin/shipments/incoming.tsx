@@ -1,67 +1,23 @@
 import { AdminLayout } from "@/layouts/admin"
-import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
-import { Export } from "@phosphor-icons/react/Export"
-import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
 import { IncomingShipmentsCreateModal } from "@/components/shipments/incoming/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
-import {
-  Shipment,
-  IncomingShipment,
-  NormalizedIncomingShipment,
-} from "@/server/db/entities"
-import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
-import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
+import { NormalizedIncomingShipment } from "@/server/db/entities"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import * as Page from "@/components/page"
+import * as Table from "@/components/table"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import { ShipmentStatus } from "@/utils/constants"
+import { usePaginatedItems } from "@/hooks/paginated-items"
+import { UserDisplayName } from "@/components/users/display-name"
 
-function PageHeader() {
-  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
-
-  return (
-    <div className="flex justify-between mb-4">
-      <h1 className="text-2xl font-black mb-2 [color:_#00203F] flex items-center gap-1">
-        <span>Shipments</span> <CaretRight size={20} />
-        <span>Incoming</span>
-      </h1>
-      <div className="grid">
-        <button
-          type="button"
-          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
-          onClick={() => setIsOpenCreateModal(true)}
-        >
-          <Plus size={16} />
-          <span>Create Shipment</span>
-        </button>
-      </div>
-      <IncomingShipmentsCreateModal
-        isOpen={isOpenCreateModal}
-        close={() => setIsOpenCreateModal(false)}
-      />
-    </div>
-  )
-}
-
-function UserDisplayName({ userId }: { userId: string }) {
-  const { status, data, error } = api.user.getById.useQuery({
-    id: userId,
-  })
-
-  if (status === "loading") return <>...</>
-  if (status === "error") return <>error: {error.message}</>
-
-  return <>{data?.displayName}</>
-}
-
-function IncomingShipmentTableItem({
+function TableItem({
   incomingShipment,
 }: {
   incomingShipment: NormalizedIncomingShipment
@@ -118,83 +74,144 @@ function IncomingShipmentTableItem({
   )
 }
 
+function filterBySearchTerm(
+  items: NormalizedIncomingShipment[],
+  searchTerm: string,
+) {
+  return items.filter((item) =>
+    item.id.toString().toLowerCase().includes(searchTerm),
+  )
+}
+
+function filterByArchiveStatus(
+  items: NormalizedIncomingShipment[],
+  isArchived: boolean,
+) {
+  if (isArchived) return items.filter((_package) => _package.isArchived === 1)
+
+  return items.filter((_package) => _package.isArchived === 0)
+}
+
 function IncomingShipmentsTable({
   incomingShipments,
-  isArchived,
 }: {
   incomingShipments: NormalizedIncomingShipment[]
-  isArchived: boolean
 }) {
-  const allIncomingShipments = isArchived
-    ? incomingShipments.filter(({ isArchived }) => isArchived)
-    : incomingShipments.filter(({ isArchived }) => !isArchived)
+  const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
+    "ARCHIVED" | "NOT_ARCHIVED"
+  >("NOT_ARCHIVED")
+
+  const [searchTerm, setSearchTerm] = useState("")
+  const visiblePackages = filterBySearchTerm(
+    filterByArchiveStatus(
+      incomingShipments,
+      visibleArchiveStatus === "ARCHIVED",
+    ),
+    searchTerm,
+  )
+
+  const {
+    pageNumber,
+    pageSize,
+    pageCount,
+    isOnFirstPage,
+    isOnLastPage,
+    paginatedItems,
+    updatePageSize,
+    resetPageNumber,
+    gotoFirstPage,
+    gotoLastPage,
+    gotoPage,
+    gotoNextPage,
+    gotoPreviousPage,
+  } = usePaginatedItems<NormalizedIncomingShipment>({
+    items: visiblePackages,
+  })
 
   return (
-    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
-      <div className="flex justify-between mb-3">
-        <div className="flex gap-3"></div>
-        <div className="flex gap-8">
+    <>
+      <Table.Filters>
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
           <div>
-            Showing{" "}
-            <select className="bg-white border border-gray-300 px-2 py-1 w-16">
-              <option>All</option>
-            </select>{" "}
-            entries
+            <Table.SearchForm
+              updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
+              resetPageNumber={resetPageNumber}
+            />
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <CaretLeft size={16} />
-            <CaretDoubleLeft size={16} />
+          <div className="flex gap-3 text-sm">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+              <option>Status</option>
+            </select>
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+              <option>Warehouse</option>
+            </select>
+            <select
+              className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+              value={visibleArchiveStatus}
+              onChange={(e) => {
+                if (e.currentTarget.value === "ARCHIVED")
+                  setVisibleArchiveStatus("ARCHIVED")
+                else setVisibleArchiveStatus("NOT_ARCHIVED")
+              }}
+            >
+              <option value="NOT_ARCHIVED">Not Archived</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
             <button
               type="button"
-              className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
+              className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
             >
-              1
+              Clear Filter
             </button>
-            <button type="button" className="text-gray-400">
-              2
-            </button>
-            <button type="button" className="text-gray-400">
-              3
-            </button>
-            <button type="button" className="text-gray-400">
-              4
-            </button>
-            <span className="text-gray-400">...</span>
-            <button type="button" className="text-gray-400">
-              10
-            </button>
-            <CaretRight size={16} />
-            <CaretDoubleRight size={16} />
+          </div>
+          <div className="flex justify-end items-start">
+            <Table.ExportButton />
           </div>
         </div>
-      </div>
-      {/* Table */}
-      <div>
-        {/* Header */}
-        <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
-          <div className="uppercase px-4 py-2 flex gap-1">
-            <input type="checkbox" name="" id="" />
-            <span>Shipment ID</span>
-          </div>
-          <div className="uppercase px-4 py-2">Sent By</div>
-          <div className="uppercase px-4 py-2">Created At</div>
-          <div className="uppercase px-4 py-2">Status</div>
+      </Table.Filters>
+      <Table.Content>
+        <div className="flex justify-end mb-3">
+          <Table.Pagination
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            pageCount={pageCount}
+            isOnFirstPage={isOnFirstPage}
+            isOnLastPage={isOnLastPage}
+            updatePageSize={updatePageSize}
+            gotoFirstPage={gotoFirstPage}
+            gotoLastPage={gotoLastPage}
+            gotoPage={gotoPage}
+            gotoNextPage={gotoNextPage}
+            gotoPreviousPage={gotoPreviousPage}
+          />
         </div>
-        {/* Body */}
-        {allIncomingShipments.length === 0 ? (
-          <div className="text-center pt-4">No shipments found.</div>
-        ) : (
-          <div>
-            {allIncomingShipments.map((incomingShipment) => (
-              <IncomingShipmentTableItem
-                key={incomingShipment.id}
-                incomingShipment={incomingShipment}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+        <div>
+          <Table.Header>
+            <div className="grid grid-cols-4">
+              <div className="uppercase px-4 py-2 flex gap-1">
+                <input type="checkbox" />
+                <span>Package ID</span>
+              </div>
+              <div className="uppercase px-4 py-2">Sender</div>
+              <div className="uppercase px-4 py-2">Receiver</div>
+              <div className="uppercase px-4 py-2">Status</div>
+            </div>
+          </Table.Header>
+          {paginatedItems.length === 0 ? (
+            <div className="text-center pt-4">No packages found.</div>
+          ) : (
+            <div>
+              {paginatedItems.map((incomingShipment) => (
+                <TableItem
+                  key={incomingShipment.id}
+                  incomingShipment={incomingShipment}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </Table.Content>
+    </>
   )
 }
 
@@ -208,71 +225,30 @@ export default function IncomingShipmentsPage() {
     enabled: user !== null && role === "ADMIN",
   })
 
-  const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
-    "ARCHIVED" | "NOT_ARCHIVED"
-  >("NOT_ARCHIVED")
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
 
   return (
     <AdminLayout title="Shipments">
-      <PageHeader />
-      <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
-        <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
-          <input
-            type="text"
-            className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
-            placeholder="Quick search"
-          />
+      <Page.Header>
+        <h1 className="text-2xl font-black mb-2 [color:_#00203F] flex items-center gap-1">
+          <span>Shipments</span> <CaretRight size={20} />
+          <span>Incoming</span>
+        </h1>
+        <div className="grid">
           <button
             type="button"
-            className="text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
+            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
+            onClick={() => setIsOpenCreateModal(true)}
           >
-            <span className="sr-only">Search</span>
-            <MagnifyingGlass size={16} />
+            <Plus size={16} />
+            <span>Create Shipment</span>
           </button>
         </div>
-        <div className="flex gap-3 text-sm">
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Status</option>
-          </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Warehouse</option>
-          </select>
-          <select
-            className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
-            value={visibleArchiveStatus}
-            onChange={(e) => {
-              if (e.currentTarget.value === "ARCHIVED")
-                setVisibleArchiveStatus("ARCHIVED")
-              else setVisibleArchiveStatus("NOT_ARCHIVED")
-            }}
-          >
-            <option value="NOT_ARCHIVED">Not Archived</option>
-            <option value="ARCHIVED">Archived</option>
-          </select>
-          <button
-            type="button"
-            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
-          >
-            Clear Filter
-          </button>
-        </div>
-        <div className="flex gap-3 text-sm">
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium invisible"
-          >
-            <DownloadSimple size={16} />
-            <span>Import</span>
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <Export size={16} />
-            <span>Export</span>
-          </button>
-        </div>
-      </div>
+        <IncomingShipmentsCreateModal
+          isOpen={isOpenCreateModal}
+          close={() => setIsOpenCreateModal(false)}
+        />
+      </Page.Header>
       {status === "loading" && (
         <div className="flex justify-center pt-4">
           <LoadingSpinner />
@@ -284,10 +260,7 @@ export default function IncomingShipmentsPage() {
         </div>
       )}
       {status === "success" && (
-        <IncomingShipmentsTable
-          incomingShipments={incomingShipments}
-          isArchived={visibleArchiveStatus === "ARCHIVED"}
-        />
+        <IncomingShipmentsTable incomingShipments={incomingShipments} />
       )}
     </AdminLayout>
   )

@@ -324,7 +324,11 @@ export default function PackagesPage() {
           <LoadingSpinner />
         </div>
       )}
-      {status === "error" && <>An error occured: {error.message}</>}
+      {status === "error" && (
+        <div className="flex justify-center pt-4">
+          An error occured: {error.message}
+        </div>
+      )}
       {status === "success" && <PackagesTable packages={packages} />}
     </AdminLayout>
   )
