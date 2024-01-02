@@ -179,44 +179,46 @@ function PackagesTable({ packages }: { packages: Package[] }) {
   return (
     <>
       <Table.Filters>
-        <div>
-          <Table.SearchForm
-            updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
-            resetPageNumber={resetPageNumber}
-          />
-        </div>
-        <div className="flex gap-3 text-sm">
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option>Status</option>
-          </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option>Warehouse</option>
-          </select>
-          <select
-            className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
-            value={visibleArchiveStatus}
-            onChange={(e) => {
-              if (e.currentTarget.value === "ARCHIVED")
-                setVisibleArchiveStatus("ARCHIVED")
-              else setVisibleArchiveStatus("NOT_ARCHIVED")
-            }}
-          >
-            <option value="NOT_ARCHIVED">Not Archived</option>
-            <option value="ARCHIVED">Archived</option>
-          </select>
-          <button
-            type="button"
-            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
-          >
-            Clear Filter
-          </button>
-        </div>
-        <div className="flex justify-end items-start">
-          <Table.ExportButton />
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
+          <div>
+            <Table.SearchForm
+              updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
+              resetPageNumber={resetPageNumber}
+            />
+          </div>
+          <div className="flex gap-3 text-sm">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+              <option>Status</option>
+            </select>
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+              <option>Warehouse</option>
+            </select>
+            <select
+              className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+              value={visibleArchiveStatus}
+              onChange={(e) => {
+                if (e.currentTarget.value === "ARCHIVED")
+                  setVisibleArchiveStatus("ARCHIVED")
+                else setVisibleArchiveStatus("NOT_ARCHIVED")
+              }}
+            >
+              <option value="NOT_ARCHIVED">Not Archived</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
+            <button
+              type="button"
+              className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
+            >
+              Clear Filter
+            </button>
+          </div>
+          <div className="flex justify-end items-start">
+            <Table.ExportButton />
+          </div>
         </div>
       </Table.Filters>
-      <Table.Main>
-        <Table.Pagination>
+      <Table.Content>
+        <div className="flex justify-between mb-3">
           <div className="flex gap-3">
             <button
               type="button"
@@ -261,7 +263,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
               All
             </button>
           </div>
-          <Table.PaginationButtons
+          <Table.Pagination
             pageNumber={pageNumber}
             pageSize={pageSize}
             pageCount={pageCount}
@@ -274,16 +276,18 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             gotoNextPage={gotoNextPage}
             gotoPreviousPage={gotoPreviousPage}
           />
-        </Table.Pagination>
-        <Table.Content>
+        </div>
+        <div>
           <Table.Header>
-            <div className="uppercase px-4 py-2 flex gap-1">
-              <input type="checkbox" />
-              <span>Package ID</span>
+            <div className="grid grid-cols-4">
+              <div className="uppercase px-4 py-2 flex gap-1">
+                <input type="checkbox" />
+                <span>Package ID</span>
+              </div>
+              <div className="uppercase px-4 py-2">Sender</div>
+              <div className="uppercase px-4 py-2">Receiver</div>
+              <div className="uppercase px-4 py-2">Status</div>
             </div>
-            <div className="uppercase px-4 py-2">Sender</div>
-            <div className="uppercase px-4 py-2">Receiver</div>
-            <div className="uppercase px-4 py-2">Status</div>
           </Table.Header>
           {paginatedItems.length === 0 ? (
             <div className="text-center pt-4">No packages found.</div>
@@ -294,8 +298,8 @@ function PackagesTable({ packages }: { packages: Package[] }) {
               ))}
             </div>
           )}
-        </Table.Content>
-      </Table.Main>
+        </div>
+      </Table.Content>
     </>
   )
 }

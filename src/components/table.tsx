@@ -8,10 +8,22 @@ import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 
 export function Filters({ children }: { children: ReactNode }) {
   return (
-    <div className="grid grid-cols-[1fr_auto_1fr] gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
+    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
       {children}
     </div>
   )
+}
+
+export function Content({ children }: { children: ReactNode }) {
+  return (
+    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
+      {children}
+    </div>
+  )
+}
+
+export function Header({ children }: { children: ReactNode }) {
+  return <div className="border-y border-gray-300 font-medium">{children}</div>
 }
 
 export function SearchForm({
@@ -52,19 +64,7 @@ export function SearchForm({
   )
 }
 
-export function Main({ children }: { children: ReactNode }) {
-  return (
-    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
-      {children}
-    </div>
-  )
-}
-
-export function Pagination({ children }: { children: ReactNode }) {
-  return <div className="flex justify-between mb-3">{children}</div>
-}
-
-export function PaginationButtons({
+export function Pagination({
   isOnFirstPage,
   isOnLastPage,
   pageSize,
@@ -106,69 +106,59 @@ export function PaginationButtons({
         </select>{" "}
         entries
       </div>
-      <div className="flex items-center gap-1 text-sm">
-        <button
-          type="button"
-          className="disabled:text-gray-400"
-          disabled={isOnFirstPage}
-          onClick={gotoFirstPage}
-        >
-          <CaretDoubleLeft size={16} />
-        </button>
-        <button
-          type="button"
-          className="disabled:text-gray-400"
-          disabled={isOnFirstPage}
-          onClick={gotoPreviousPage}
-        >
-          <CaretLeft size={16} />
-        </button>
-
-        {[...Array(pageCount)].map((_, index) => (
+      {pageCount > 1 && (
+        <div className="flex items-center gap-1 text-sm">
           <button
-            key={index}
             type="button"
-            disabled={index + 1 === pageNumber}
-            onClick={() => gotoPage(index + 1)}
-            className={
-              "w-6 h-6 disabled:bg-brand-cyan-500 disabled:text-white rounded-md"
-            }
+            className="disabled:text-gray-400"
+            disabled={isOnFirstPage}
+            onClick={gotoFirstPage}
           >
-            {index + 1}
+            <CaretDoubleLeft size={16} />
           </button>
-        ))}
+          <button
+            type="button"
+            className="disabled:text-gray-400"
+            disabled={isOnFirstPage}
+            onClick={gotoPreviousPage}
+          >
+            <CaretLeft size={16} />
+          </button>
 
-        <button
-          type="button"
-          className="disabled:text-gray-400"
-          disabled={isOnLastPage}
-          onClick={gotoNextPage}
-        >
-          <CaretRight size={16} />
-        </button>
-        <button
-          type="button"
-          className="disabled:text-gray-400"
-          disabled={isOnLastPage}
-          onClick={gotoLastPage}
-        >
-          <CaretDoubleRight size={16} />
-        </button>
-      </div>
+          {[...Array(pageCount)].map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              disabled={index + 1 === pageNumber}
+              onClick={() => gotoPage(index + 1)}
+              className={
+                "w-6 h-6 disabled:bg-brand-cyan-500 disabled:text-white rounded-md"
+              }
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            type="button"
+            className="disabled:text-gray-400"
+            disabled={pageCount < 2 ? true : isOnLastPage}
+            onClick={gotoNextPage}
+          >
+            <CaretRight size={16} />
+          </button>
+          <button
+            type="button"
+            className="disabled:text-gray-400"
+            disabled={pageCount < 2 ? true : isOnLastPage}
+            onClick={gotoLastPage}
+          >
+            <CaretDoubleRight size={16} />
+          </button>
+        </div>
+      )}
     </div>
   )
-}
-
-export function Header({ children }: { children: ReactNode }) {
-  return (
-    <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
-      {children}
-    </div>
-  )
-}
-
-export function Content({ children }: { children: ReactNode }) {
-  return <div>{children}</div>
 }
 
 export function ExportButton() {
