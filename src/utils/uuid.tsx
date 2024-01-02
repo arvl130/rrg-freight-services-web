@@ -1,3 +1,3 @@
-export function generateAlphaNumericId() {
+export function generateUniqueId() {
   return crypto.randomUUID()
 }

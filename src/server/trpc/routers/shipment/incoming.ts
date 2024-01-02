@@ -21,7 +21,7 @@ import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
 import { Resend } from "resend"
 import { serverEnv } from "@/server/env.mjs"
-import { generateAlphaNumericId } from "@/utils/uuid"
+import { generateUniqueId } from "@/utils/uuid"
 
 export const incomingShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -145,7 +145,7 @@ export const incomingShipmentRouter = router({
       const resend = new Resend(serverEnv.RESEND_API_KEY)
 
       for (const newPackage of input.newPackages) {
-        const packageId = generateAlphaNumericId()
+        const packageId = generateUniqueId()
         await ctx.db.insert(packages).values({
           ...newPackage,
           id: packageId,
