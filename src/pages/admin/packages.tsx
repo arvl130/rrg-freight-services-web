@@ -22,10 +22,15 @@ function TableItem({ package: _package }: { package: Package }) {
   >(null)
 
   return (
-    <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
+    <div className="grid grid-cols-[10rem_repeat(3,_1fr)] border-b border-gray-300 text-sm">
       <div className="px-4 py-2 flex items-center gap-1">
         <input type="checkbox" name="" id="" />
-        <span>{_package.id.toString().padStart(4, "0")}</span>
+        <p
+          className="whitespace-nowrap overflow-hidden text-ellipsis"
+          title={_package.id}
+        >
+          {_package.id}
+        </p>
       </div>
       <div className="px-4 py-2">
         <div>{_package.senderFullName}</div>
@@ -279,7 +284,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
         </div>
         <div>
           <Table.Header>
-            <div className="grid grid-cols-4">
+            <div className="grid grid-cols-[10rem_repeat(3,_1fr)]">
               <div className="uppercase px-4 py-2 flex gap-1">
                 <input type="checkbox" />
                 <span>Package ID</span>
