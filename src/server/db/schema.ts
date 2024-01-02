@@ -171,6 +171,7 @@ export const vehicles = mysqlTable("vehicles", {
     length: 100,
   }).notNull(),
   isExpressAllowed: tinyint("is_express_allowed").notNull(),
+  isArchived: tinyint("is_archived").notNull().default(0),
 })
 
 export const packages = mysqlTable("packages", {

@@ -17,24 +17,20 @@ import { ShipmentStatus } from "@/utils/constants"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { UserDisplayName } from "@/components/users/display-name"
 
-function TableItem({
-  incomingShipment,
-}: {
-  incomingShipment: NormalizedIncomingShipment
-}) {
+function TableItem({ item }: { item: NormalizedIncomingShipment }) {
   const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
 
   return (
     <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
       <div className="px-4 py-2 flex items-center gap-1">
         <input type="checkbox" name="" id="" />
-        <span>{incomingShipment.id}</span>
+        <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <UserDisplayName userId={incomingShipment.sentByAgentId} />
+        <UserDisplayName userId={item.sentByAgentId} />
       </div>
       <div className="px-4 py-2">
-        {DateTime.fromJSDate(incomingShipment.createdAt).toLocaleString(
+        {DateTime.fromJSDate(item.createdAt).toLocaleString(
           DateTime.DATETIME_FULL,
         )}
       </div>
@@ -42,10 +38,10 @@ function TableItem({
         <div
           className={`
         w-36 py-0.5 text-white text-center rounded-md
-        ${getColorFromShipmentStatus(incomingShipment.status as ShipmentStatus)}
+        ${getColorFromShipmentStatus(item.status as ShipmentStatus)}
       `}
         >
-          {incomingShipment.status.replaceAll("_", " ")}
+          {item.status.replaceAll("_", " ")}
         </div>
 
         <DropdownMenu.Root>
@@ -87,26 +83,19 @@ function filterByArchiveStatus(
   items: NormalizedIncomingShipment[],
   isArchived: boolean,
 ) {
-  if (isArchived) return items.filter((_package) => _package.isArchived === 1)
+  if (isArchived) return items.filter((item) => item.isArchived === 1)
 
-  return items.filter((_package) => _package.isArchived === 0)
+  return items.filter((item) => item.isArchived === 0)
 }
 
-function IncomingShipmentsTable({
-  incomingShipments,
-}: {
-  incomingShipments: NormalizedIncomingShipment[]
-}) {
+function ShipmentsTable({ items }: { items: NormalizedIncomingShipment[] }) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")
 
   const [searchTerm, setSearchTerm] = useState("")
-  const visiblePackages = filterBySearchTerm(
-    filterByArchiveStatus(
-      incomingShipments,
-      visibleArchiveStatus === "ARCHIVED",
-    ),
+  const visibleItems = filterBySearchTerm(
+    filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
     searchTerm,
   )
 
@@ -125,7 +114,7 @@ function IncomingShipmentsTable({
     gotoNextPage,
     gotoPreviousPage,
   } = usePaginatedItems<NormalizedIncomingShipment>({
-    items: visiblePackages,
+    items: visibleItems,
   })
 
   return (
@@ -164,7 +153,7 @@ function IncomingShipmentsTable({
               Clear Filter
             </button>
           </div>
-          <div className="flex justify-end items-start">
+          <div className="flex justify-end">
             <Table.ExportButton />
           </div>
         </div>
@@ -202,10 +191,7 @@ function IncomingShipmentsTable({
           ) : (
             <div>
               {paginatedItems.map((incomingShipment) => (
-                <TableItem
-                  key={incomingShipment.id}
-                  incomingShipment={incomingShipment}
-                />
+                <TableItem key={incomingShipment.id} item={incomingShipment} />
               ))}
             </div>
           )}
@@ -219,7 +205,7 @@ export default function IncomingShipmentsPage() {
   const { user, role } = useSession()
   const {
     status,
-    data: incomingShipments,
+    data: items,
     error,
   } = api.shipment.incoming.getAll.useQuery(undefined, {
     enabled: user !== null && role === "ADMIN",
@@ -259,9 +245,7 @@ export default function IncomingShipmentsPage() {
           An error occured: {error.message}
         </div>
       )}
-      {status === "success" && (
-        <IncomingShipmentsTable incomingShipments={incomingShipments} />
-      )}
+      {status === "success" && <ShipmentsTable items={items} />}
     </AdminLayout>
   )
 }

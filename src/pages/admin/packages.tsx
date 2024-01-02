@@ -212,7 +212,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
               Clear Filter
             </button>
           </div>
-          <div className="flex justify-end items-start">
+          <div className="flex justify-end">
             <Table.ExportButton />
           </div>
         </div>

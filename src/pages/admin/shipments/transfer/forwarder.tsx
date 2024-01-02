@@ -1,80 +1,36 @@
 import { AdminLayout } from "@/layouts/admin"
-import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
-import { Export } from "@phosphor-icons/react/Export"
-import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
-import { ForwarderTransferShipmentsCreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
-import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
-import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import * as Page from "@/components/page"
+import * as Table from "@/components/table"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
-import { NormalizedForwarderTransferShipment } from "@/server/db/entities"
+import type { NormalizedForwarderTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
+import { UserDisplayName } from "@/components/users/display-name"
+import { usePaginatedItems } from "@/hooks/paginated-items"
+import { ForwarderTransferShipmentsCreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
 
-function PageHeader() {
-  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
-
-  return (
-    <div className="flex justify-between mb-4">
-      <h1 className="text-2xl font-black mb-2 [color:_#00203F] flex items-center gap-1">
-        <span>Shipments</span> <CaretRight size={20} />
-        <span>Forwarder Transfer</span>
-      </h1>
-      <div className="grid">
-        <button
-          type="button"
-          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
-          onClick={() => setIsOpenCreateModal(true)}
-        >
-          <Plus size={16} />
-          <span>Create Shipment</span>
-        </button>
-      </div>
-      <ForwarderTransferShipmentsCreateModal
-        isOpen={isOpenCreateModal}
-        close={() => setIsOpenCreateModal(false)}
-      />
-    </div>
-  )
-}
-
-function UserDisplayName({ userId }: { userId: string }) {
-  const { status, data, error } = api.user.getById.useQuery({
-    id: userId,
-  })
-
-  if (status === "loading") return <>...</>
-  if (status === "error") return <>error: {error.message}</>
-
-  return <>{data?.displayName}</>
-}
-
-function TransferShipmentsTableItem({
-  transferShipment,
-}: {
-  transferShipment: NormalizedForwarderTransferShipment
-}) {
+function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
   const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
 
   return (
     <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
       <div className="px-4 py-2 flex items-center gap-1">
         <input type="checkbox" name="" id="" />
-        <span>{transferShipment.id}</span>
+        <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <UserDisplayName userId={transferShipment.sentToAgentId} />
+        <UserDisplayName userId={item.sentToAgentId} />
       </div>
       <div className="px-4 py-2">
-        {DateTime.fromJSDate(transferShipment.createdAt).toLocaleString(
+        {DateTime.fromJSDate(item.createdAt).toLocaleString(
           DateTime.DATETIME_FULL,
         )}
       </div>
@@ -82,10 +38,10 @@ function TransferShipmentsTableItem({
         <div
           className={`
         w-36 py-0.5 text-white text-center rounded-md
-        ${getColorFromShipmentStatus(transferShipment.status as ShipmentStatus)}
+        ${getColorFromShipmentStatus(item.status as ShipmentStatus)}
       `}
         >
-          {transferShipment.status.replaceAll("_", " ")}
+          {item.status.replaceAll("_", " ")}
         </div>
 
         <DropdownMenu.Root>
@@ -114,161 +70,175 @@ function TransferShipmentsTableItem({
   )
 }
 
-function TransferShipmentsTable({
-  transferShipments,
-  isArchived,
-}: {
-  transferShipments: NormalizedForwarderTransferShipment[]
-  isArchived: boolean
-}) {
-  const allTransferShipments = isArchived
-    ? transferShipments.filter(({ isArchived }) => isArchived)
-    : transferShipments.filter(({ isArchived }) => !isArchived)
-
-  return (
-    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
-      <div className="flex justify-between mb-3">
-        <div className="flex gap-3"></div>
-        <div className="flex gap-8">
-          <div>
-            Showing{" "}
-            <select className="bg-white border border-gray-300 px-2 py-1 w-16">
-              <option>All</option>
-            </select>{" "}
-            entries
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            <CaretLeft size={16} />
-            <CaretDoubleLeft size={16} />
-            <button
-              type="button"
-              className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
-            >
-              1
-            </button>
-            <button type="button" className="text-gray-400">
-              2
-            </button>
-            <button type="button" className="text-gray-400">
-              3
-            </button>
-            <button type="button" className="text-gray-400">
-              4
-            </button>
-            <span className="text-gray-400">...</span>
-            <button type="button" className="text-gray-400">
-              10
-            </button>
-            <CaretRight size={16} />
-            <CaretDoubleRight size={16} />
-          </div>
-        </div>
-      </div>
-      {/* Table */}
-      <div>
-        {/* Header */}
-        <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
-          <div className="uppercase px-4 py-2 flex gap-1">
-            <input type="checkbox" name="" id="" />
-            <span>Shipment ID</span>
-          </div>
-          <div className="uppercase px-4 py-2">Sent By</div>
-          <div className="uppercase px-4 py-2">Created At</div>
-          <div className="uppercase px-4 py-2">Status</div>
-        </div>
-        {/* Body */}
-        {allTransferShipments.length === 0 ? (
-          <div className="text-center pt-4">No shipments found.</div>
-        ) : (
-          <div>
-            {allTransferShipments.map((transferShipment) => (
-              <TransferShipmentsTableItem
-                key={transferShipment.id}
-                transferShipment={transferShipment}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+function filterBySearchTerm(
+  items: NormalizedForwarderTransferShipment[],
+  searchTerm: string,
+) {
+  return items.filter((item) =>
+    item.id.toString().toLowerCase().includes(searchTerm),
   )
 }
 
-export default function TransferShipmentsPage() {
+function filterByArchiveStatus(
+  items: NormalizedForwarderTransferShipment[],
+  isArchived: boolean,
+) {
+  if (isArchived) return items.filter((item) => item.isArchived === 1)
+
+  return items.filter((item) => item.isArchived === 0)
+}
+
+function ShipmentsTable({
+  items,
+}: {
+  items: NormalizedForwarderTransferShipment[]
+}) {
+  const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
+    "ARCHIVED" | "NOT_ARCHIVED"
+  >("NOT_ARCHIVED")
+
+  const [searchTerm, setSearchTerm] = useState("")
+  const visibleItems = filterBySearchTerm(
+    filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+    searchTerm,
+  )
+
+  const {
+    pageNumber,
+    pageSize,
+    pageCount,
+    isOnFirstPage,
+    isOnLastPage,
+    paginatedItems,
+    updatePageSize,
+    resetPageNumber,
+    gotoFirstPage,
+    gotoLastPage,
+    gotoPage,
+    gotoNextPage,
+    gotoPreviousPage,
+  } = usePaginatedItems<NormalizedForwarderTransferShipment>({
+    items: visibleItems,
+  })
+
+  return (
+    <>
+      <Table.Filters>
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
+          <div>
+            <Table.SearchForm
+              updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
+              resetPageNumber={resetPageNumber}
+            />
+          </div>
+          <div className="flex gap-3 text-sm">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+              <option>Status</option>
+            </select>
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+              <option>Warehouse</option>
+            </select>
+            <select
+              className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+              value={visibleArchiveStatus}
+              onChange={(e) => {
+                if (e.currentTarget.value === "ARCHIVED")
+                  setVisibleArchiveStatus("ARCHIVED")
+                else setVisibleArchiveStatus("NOT_ARCHIVED")
+              }}
+            >
+              <option value="NOT_ARCHIVED">Not Archived</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
+            <button
+              type="button"
+              className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
+            >
+              Clear Filter
+            </button>
+          </div>
+          <div className="flex justify-end">
+            <Table.ExportButton />
+          </div>
+        </div>
+      </Table.Filters>
+      <Table.Content>
+        <div className="flex justify-end mb-3">
+          <Table.Pagination
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            pageCount={pageCount}
+            isOnFirstPage={isOnFirstPage}
+            isOnLastPage={isOnLastPage}
+            updatePageSize={updatePageSize}
+            gotoFirstPage={gotoFirstPage}
+            gotoLastPage={gotoLastPage}
+            gotoPage={gotoPage}
+            gotoNextPage={gotoNextPage}
+            gotoPreviousPage={gotoPreviousPage}
+          />
+        </div>
+        <div>
+          <Table.Header>
+            <div className="grid grid-cols-4">
+              <div className="uppercase px-4 py-2 flex gap-1">
+                <input type="checkbox" />
+                <span>Shipment ID</span>
+              </div>
+              <div className="uppercase px-4 py-2">Sent By</div>
+              <div className="uppercase px-4 py-2">Created At</div>
+              <div className="uppercase px-4 py-2">Status</div>
+            </div>
+          </Table.Header>
+          {paginatedItems.length === 0 ? (
+            <div className="text-center pt-4">No shipments found.</div>
+          ) : (
+            <div>
+              {paginatedItems.map((shipment) => (
+                <TableItem key={shipment.id} item={shipment} />
+              ))}
+            </div>
+          )}
+        </div>
+      </Table.Content>
+    </>
+  )
+}
+
+export default function TransferForwarderShipmentsPage() {
   const { user, role } = useSession()
   const {
     status,
-    data: transferShipments,
+    data: items,
     error,
   } = api.shipment.forwarderTransfer.getAll.useQuery(undefined, {
     enabled: user !== null && role === "ADMIN",
   })
 
-  const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
-    "ARCHIVED" | "NOT_ARCHIVED"
-  >("NOT_ARCHIVED")
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
 
   return (
     <AdminLayout title="Shipments">
-      <PageHeader />
-      <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
-        <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
-          <input
-            type="text"
-            className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
-            placeholder="Quick search"
-          />
+      <Page.Header>
+        <h1 className="text-2xl font-black mb-2 [color:_#00203F] flex items-center gap-1">
+          <span>Shipments</span> <CaretRight size={20} />
+          <span>Forwarder Transfer</span>
+        </h1>
+        <div className="grid">
           <button
             type="button"
-            className="text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
+            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
+            onClick={() => setIsOpenCreateModal(true)}
           >
-            <span className="sr-only">Search</span>
-            <MagnifyingGlass size={16} />
+            <Plus size={16} />
+            <span>Create Shipment</span>
           </button>
         </div>
-        <div className="flex gap-3 text-sm">
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Status</option>
-          </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Warehouse</option>
-          </select>
-          <select
-            className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
-            value={visibleArchiveStatus}
-            onChange={(e) => {
-              if (e.currentTarget.value === "ARCHIVED")
-                setVisibleArchiveStatus("ARCHIVED")
-              else setVisibleArchiveStatus("NOT_ARCHIVED")
-            }}
-          >
-            <option value="NOT_ARCHIVED">Not Archived</option>
-            <option value="ARCHIVED">Archived</option>
-          </select>
-          <button
-            type="button"
-            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
-          >
-            Clear Filter
-          </button>
-        </div>
-        <div className="flex gap-3 text-sm">
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium invisible"
-          >
-            <DownloadSimple size={16} />
-            <span>Import</span>
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <Export size={16} />
-            <span>Export</span>
-          </button>
-        </div>
-      </div>
+        <ForwarderTransferShipmentsCreateModal
+          isOpen={isOpenCreateModal}
+          close={() => setIsOpenCreateModal(false)}
+        />
+      </Page.Header>
       {status === "loading" && (
         <div className="flex justify-center pt-4">
           <LoadingSpinner />
@@ -279,16 +249,7 @@ export default function TransferShipmentsPage() {
           An error occured: {error.message}
         </div>
       )}
-      {status === "success" && (
-        <>
-          {
-            <TransferShipmentsTable
-              transferShipments={transferShipments}
-              isArchived={visibleArchiveStatus === "ARCHIVED"}
-            />
-          }
-        </>
-      )}
+      {status === "success" && <ShipmentsTable items={items} />}
     </AdminLayout>
   )
 }

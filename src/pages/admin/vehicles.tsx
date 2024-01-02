@@ -14,33 +14,14 @@ import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import * as Page from "@/components/page"
+import * as Table from "@/components/table"
 import { VehiclesCreateModal } from "@/components/vehicles/create-modal"
 import { VehiclesEditModal } from "@/components/vehicles/edit-modal"
 import { VehiclesDeleteModal } from "@/components/vehicles/delete-modal"
+import { usePaginatedItems } from "@/hooks/paginated-items"
 
-function PageHeader() {
-  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
-
-  return (
-    <div className="flex justify-between mb-4">
-      <h1 className="text-2xl font-black [color:_#00203F] mb-2">Vehicles</h1>
-      <button
-        type="button"
-        className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
-        onClick={() => setIsOpenCreateModal(true)}
-      >
-        <Plus size={16} />
-        <span>New Vehicle</span>
-      </button>
-      <VehiclesCreateModal
-        isOpen={isOpenCreateModal}
-        close={() => setIsOpenCreateModal(false)}
-      />
-    </div>
-  )
-}
-
-function VehicleTableItem({ vehicle }: { vehicle: Vehicle }) {
+function TableItem({ item }: { item: Vehicle }) {
   const [visibleModal, setVisibleModal] = useState<null | "EDIT" | "DELETE">(
     null,
   )
@@ -50,12 +31,12 @@ function VehicleTableItem({ vehicle }: { vehicle: Vehicle }) {
       <div className="grid grid-cols-5 border-b border-gray-300 text-sm">
         <div className="px-4 py-2 flex items-center gap-1">
           <input type="checkbox" name="" id="" />
-          <span>{vehicle.id}</span>
+          <span>{item.id}</span>
         </div>
-        <div className="px-4 py-2">{vehicle.displayName}</div>
-        <div className="px-4 py-2">{vehicle.type}</div>
+        <div className="px-4 py-2">{item.displayName}</div>
+        <div className="px-4 py-2">{item.type}</div>
         <div className="px-4 py-2">
-          {vehicle.isExpressAllowed === 1 ? "Yes" : "No"}
+          {item.isExpressAllowed === 1 ? "Yes" : "No"}
         </div>
         <div className="px-4 py-2 flex items-center gap-2">
           <DropdownMenu.Root>
@@ -86,12 +67,12 @@ function VehicleTableItem({ vehicle }: { vehicle: Vehicle }) {
           </DropdownMenu.Root>
 
           <VehiclesEditModal
-            id={vehicle.id}
+            id={item.id}
             close={() => setVisibleModal(null)}
             isOpen={visibleModal === "EDIT"}
           />
           <VehiclesDeleteModal
-            id={vehicle.id}
+            id={item.id}
             close={() => setVisibleModal(null)}
             isOpen={visibleModal === "DELETE"}
           />
@@ -101,172 +82,171 @@ function VehicleTableItem({ vehicle }: { vehicle: Vehicle }) {
   )
 }
 
-function VehiclesTable({
-  vehicles,
-  isArchived,
-}: {
-  vehicles: Vehicle[]
-  isArchived: boolean
-}) {
+function filterBySearchTerm(items: Vehicle[], searchTerm: string) {
+  return items.filter((item) =>
+    item.id.toString().toLowerCase().includes(searchTerm),
+  )
+}
+
+function filterByArchiveStatus(items: Vehicle[], isArchived: boolean) {
+  if (isArchived) return items.filter((item) => item.isArchived === 1)
+
+  return items.filter((item) => item.isArchived === 0)
+}
+
+function VehiclesTable({ items }: { items: Vehicle[] }) {
+  const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
+    "ARCHIVED" | "NOT_ARCHIVED"
+  >("NOT_ARCHIVED")
+
+  const [searchTerm, setSearchTerm] = useState("")
+  const visibleItems = filterBySearchTerm(
+    filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+    searchTerm,
+  )
+
+  const {
+    pageNumber,
+    pageSize,
+    pageCount,
+    isOnFirstPage,
+    isOnLastPage,
+    paginatedItems,
+    updatePageSize,
+    resetPageNumber,
+    gotoFirstPage,
+    gotoLastPage,
+    gotoPage,
+    gotoNextPage,
+    gotoPreviousPage,
+  } = usePaginatedItems<Vehicle>({
+    items: visibleItems,
+  })
+
   return (
-    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
-      <div className="flex justify-between mb-3">
-        <div className="flex gap-3"></div>
-        <div className="flex gap-8">
+    <>
+      <Table.Filters>
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
           <div>
-            Showing{" "}
-            <select className="bg-white border border-gray-300 px-2 py-1 w-16">
-              <option>All</option>
-            </select>{" "}
-            entries
+            <Table.SearchForm
+              updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
+              resetPageNumber={resetPageNumber}
+            />
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <CaretLeft size={16} />
-            <CaretDoubleLeft size={16} />
+          <div className="flex gap-3 text-sm">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+              <option>Status</option>
+            </select>
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+              <option>Warehouse</option>
+            </select>
+            <select
+              className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+              value={visibleArchiveStatus}
+              onChange={(e) => {
+                if (e.currentTarget.value === "ARCHIVED")
+                  setVisibleArchiveStatus("ARCHIVED")
+                else setVisibleArchiveStatus("NOT_ARCHIVED")
+              }}
+            >
+              <option value="NOT_ARCHIVED">Not Archived</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
             <button
               type="button"
-              className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
+              className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
             >
-              1
+              Clear Filter
             </button>
-            <button type="button" className="text-gray-400">
-              2
-            </button>
-            <button type="button" className="text-gray-400">
-              3
-            </button>
-            <button type="button" className="text-gray-400">
-              4
-            </button>
-            <span className="text-gray-400">...</span>
-            <button type="button" className="text-gray-400">
-              10
-            </button>
-            <CaretRight size={16} />
-            <CaretDoubleRight size={16} />
+          </div>
+          <div className="flex justify-end">
+            <Table.ExportButton />
           </div>
         </div>
-      </div>
-      {/* Table */}
-      <div>
-        {/* Header */}
-        <div className="grid grid-cols-5 border-y border-gray-300 font-medium">
-          <div className="uppercase px-4 py-2 flex gap-1">
-            <input type="checkbox" name="" id="" />
-            <span>Vehicle ID</span>
-          </div>
-          <div className="uppercase px-4 py-2">Display Name</div>
-          <div className="uppercase px-4 py-2">Type</div>
-          <div className="uppercase px-4 py-2">Express Allowed</div>
-          <div className="uppercase px-4 py-2"></div>
+      </Table.Filters>
+      <Table.Content>
+        <div className="flex justify-end mb-3">
+          <Table.Pagination
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            pageCount={pageCount}
+            isOnFirstPage={isOnFirstPage}
+            isOnLastPage={isOnLastPage}
+            updatePageSize={updatePageSize}
+            gotoFirstPage={gotoFirstPage}
+            gotoLastPage={gotoLastPage}
+            gotoPage={gotoPage}
+            gotoNextPage={gotoNextPage}
+            gotoPreviousPage={gotoPreviousPage}
+          />
         </div>
-        {/* Body */}
-        {vehicles.length === 0 ? (
-          <div className="text-center pt-4">No packages found.</div>
-        ) : (
-          <div>
-            {vehicles.map((vehicle) => (
-              <VehicleTableItem key={vehicle.id} vehicle={vehicle} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+        <div>
+          <Table.Header>
+            <div className="grid grid-cols-5 ">
+              <div className="uppercase px-4 py-2 flex gap-1">
+                <input type="checkbox" name="" id="" />
+                <span>Vehicle ID</span>
+              </div>
+              <div className="uppercase px-4 py-2">Display Name</div>
+              <div className="uppercase px-4 py-2">Type</div>
+              <div className="uppercase px-4 py-2">Express Allowed</div>
+              <div className="uppercase px-4 py-2"></div>
+            </div>
+          </Table.Header>
+          {paginatedItems.length === 0 ? (
+            <div className="text-center pt-4">No vehicle found.</div>
+          ) : (
+            <div>
+              {paginatedItems.map((item) => (
+                <TableItem key={item.id} item={item} />
+              ))}
+            </div>
+          )}
+        </div>
+      </Table.Content>
+    </>
   )
 }
 
 export default function VehiclesPage() {
   const { user, role } = useSession()
   const {
-    isLoading,
-    isError,
+    status,
     data: vehicles,
+    error,
   } = api.vehicle.getAll.useQuery(undefined, {
     enabled: user !== null && role === "ADMIN",
   })
-  const [isOpenImportModal, setIsOpenImportModal] = useState(false)
-  const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
-    "ARCHIVED" | "NOT_ARCHIVED"
-  >("NOT_ARCHIVED")
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
 
   return (
     <AdminLayout title="Packages">
-      <PageHeader />
-      <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
-        <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
-          <input
-            type="text"
-            className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
-            placeholder="Quick search"
-          />
-          <button
-            type="button"
-            className="text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
-          >
-            <span className="sr-only">Search</span>
-            <MagnifyingGlass size={16} />
-          </button>
-        </div>
-        <div className="flex gap-3 text-sm">
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Status</option>
-          </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Warehouse</option>
-          </select>
-          <select
-            className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
-            value={visibleArchiveStatus}
-            onChange={(e) => {
-              if (e.currentTarget.value === "ARCHIVED")
-                setVisibleArchiveStatus("ARCHIVED")
-              else setVisibleArchiveStatus("NOT_ARCHIVED")
-            }}
-          >
-            <option value="NOT_ARCHIVED">Not Archived</option>
-            <option value="ARCHIVED">Archived</option>
-          </select>
-          <button
-            type="button"
-            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
-          >
-            Clear Filter
-          </button>
-        </div>
-        <div className="flex gap-3 text-sm">
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium invisible"
-            onClick={() => setIsOpenImportModal(true)}
-          >
-            <DownloadSimple size={16} />
-            <span>Import</span>
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <Export size={16} />
-            <span>Export</span>
-          </button>
-        </div>
-      </div>
-      {isLoading ? (
+      <Page.Header>
+        <h1 className="text-2xl font-black [color:_#00203F] mb-2">Vehicles</h1>
+        <button
+          type="button"
+          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
+          onClick={() => setIsOpenCreateModal(true)}
+        >
+          <Plus size={16} />
+          <span>New Vehicle</span>
+        </button>
+        <VehiclesCreateModal
+          isOpen={isOpenCreateModal}
+          close={() => setIsOpenCreateModal(false)}
+        />
+      </Page.Header>
+      {status === "loading" && (
         <div className="flex justify-center pt-4">
           <LoadingSpinner />
         </div>
-      ) : (
-        <>
-          {isError ? (
-            <>Error :{"("}</>
-          ) : (
-            <VehiclesTable
-              vehicles={vehicles}
-              isArchived={visibleArchiveStatus === "ARCHIVED"}
-            />
-          )}
-        </>
       )}
+      {status === "error" && (
+        <div className="flex justify-center pt-4">
+          An error occured: {error.message}
+        </div>
+      )}
+      {status === "success" && <VehiclesTable items={vehicles} />}
     </AdminLayout>
   )
 }
