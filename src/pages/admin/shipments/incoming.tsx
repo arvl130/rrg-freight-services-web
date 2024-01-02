@@ -190,7 +190,7 @@ function IncomingShipmentsTable({
             <div className="grid grid-cols-4">
               <div className="uppercase px-4 py-2 flex gap-1">
                 <input type="checkbox" />
-                <span>Package ID</span>
+                <span>Shipment ID</span>
               </div>
               <div className="uppercase px-4 py-2">Sender</div>
               <div className="uppercase px-4 py-2">Receiver</div>
