@@ -17,6 +17,7 @@ import {
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { alias } from "drizzle-orm/mysql-core"
+import { generateAlphaNumericId } from "@/utils/uuid"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -250,7 +251,7 @@ export const packageRouter = router({
       await ctx.db.insert(packages).values(
         input.newPackages.map((newPackage) => ({
           ...newPackage,
-          id: crypto.randomUUID(),
+          id: generateAlphaNumericId(),
           createdById: ctx.user.uid,
           updatedById: ctx.user.uid,
         })),
@@ -317,7 +318,7 @@ export const packageRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(packages).values({
-        id: crypto.randomUUID(),
+        id: generateAlphaNumericId(),
         shippingMode: input.shippingMode,
         shippingType: input.shippingType,
         receptionMode: input.receptionMode,
