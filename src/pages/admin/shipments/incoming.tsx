@@ -68,6 +68,7 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
         </DropdownMenu.Root>
 
         <ViewDetailsModal
+          shipmentId={item.id}
           isOpen={visibleModal === "VIEW_DETAILS"}
           close={() => setVisibleModal(null)}
         />
