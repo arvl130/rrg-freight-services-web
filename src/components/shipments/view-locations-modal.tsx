@@ -1,20 +1,20 @@
 import * as Dialog from "@radix-ui/react-dialog"
-import { NormalizedDeliveryShipment } from "@/server/db/entities"
+import { Shipment } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { DateTime } from "luxon"
 import { useState } from "react"
-import { Map } from "./map/map"
+import { Map } from "./delivery/map/map"
 import { X } from "@phosphor-icons/react/X"
 import { Map as TMap } from "leaflet"
 import { LEAFLET_DEFAULT_ZOOM_LEVEL } from "@/utils/constants"
-import { PathMap } from "./path-map/map"
+import { PathMap } from "./delivery/path-map/map"
 
 export function ViewLocationsModal({
-  delivery,
+  shipment,
   isOpen,
   close,
 }: {
-  delivery: NormalizedDeliveryShipment
+  shipment: Shipment
   isOpen: boolean
   close: () => void
 }) {
@@ -25,10 +25,10 @@ export function ViewLocationsModal({
 
   const {
     status,
-    data: deliveryLocations,
+    data: locations,
     error,
-  } = api.shipment.location.getByDeliveryId.useQuery({
-    deliveryId: delivery.id,
+  } = api.shipment.location.getByShipmentId.useQuery({
+    shipmentId: shipment.id,
   })
 
   return (
@@ -66,7 +66,7 @@ export function ViewLocationsModal({
           )}
           {status === "success" && (
             <div className="grid grid-cols-[20rem_1fr] h-full overflow-y-auto">
-              {deliveryLocations.length === 0 ? (
+              {locations.length === 0 ? (
                 <>
                   <div className="border-r border-gray-300 text-center pt-4 text-gray-500 text-sm">
                     No locations recorded.
@@ -84,7 +84,7 @@ export function ViewLocationsModal({
                       `}
                       onClick={() => {
                         map?.flyTo(
-                          [deliveryLocations[0].lat, deliveryLocations[0].long],
+                          [locations[0].lat, locations[0].long],
                           LEAFLET_DEFAULT_ZOOM_LEVEL,
                         )
                         setSelectedItemIndex(null)
@@ -95,7 +95,7 @@ export function ViewLocationsModal({
                         Draw arrows connecting recorded locations
                       </div>
                     </button>
-                    {deliveryLocations.map((deliveryLocation, index) => (
+                    {locations.map((deliveryLocation, index) => (
                       <button
                         key={deliveryLocation.id}
                         type="button"
@@ -107,8 +107,8 @@ export function ViewLocationsModal({
                           if (selectedItemIndex === index && map !== null) {
                             map.flyTo(
                               [
-                                deliveryLocations[selectedItemIndex].lat,
-                                deliveryLocations[selectedItemIndex].long,
+                                locations[selectedItemIndex].lat,
+                                locations[selectedItemIndex].long,
                               ],
                               LEAFLET_DEFAULT_ZOOM_LEVEL,
                             )
@@ -131,15 +131,15 @@ export function ViewLocationsModal({
                   {selectedItemIndex === null ? (
                     <div className="h-full w-full bg-gray-50">
                       <PathMap
-                        locations={deliveryLocations}
+                        locations={locations}
                         setMap={(map) => setMap(map)}
                       />
                     </div>
                   ) : (
                     <div className="h-full w-full bg-gray-50">
                       <Map
-                        long={deliveryLocations[selectedItemIndex].long}
-                        lat={deliveryLocations[selectedItemIndex].lat}
+                        long={locations[selectedItemIndex].long}
+                        lat={locations[selectedItemIndex].lat}
                         setMap={(map) => setMap(map)}
                       />
                     </div>

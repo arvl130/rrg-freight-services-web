@@ -14,7 +14,7 @@ import * as Table from "@/components/table"
 import { DateTime } from "luxon"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { PackageShippingType, ShipmentStatus } from "@/utils/constants"
-import { ViewLocationsModal } from "@/components/shipments/delivery/view-locations-modal"
+import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { DisplayName } from "@/components/users/display-name"
 import { ViewDetailsModal } from "@/components/shipments/view-details"
@@ -84,7 +84,7 @@ function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
         <ViewLocationsModal
           isOpen={visibleModal === "VIEW_LOCATIONS"}
           close={() => setVisibleModal(null)}
-          delivery={item}
+          shipment={item}
         />
       </div>
     </div>

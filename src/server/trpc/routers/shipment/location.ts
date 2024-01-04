@@ -33,17 +33,17 @@ export const shipmentLocationRouter = router({
 
       return results[0]
     }),
-  getByDeliveryId: protectedProcedure
+  getByShipmentId: protectedProcedure
     .input(
       z.object({
-        deliveryId: z.number(),
+        shipmentId: z.number(),
       }),
     )
     .query(async ({ ctx, input }) => {
       return await ctx.db
         .select()
         .from(shipmentLocations)
-        .where(eq(shipmentLocations.shipmentId, input.deliveryId))
+        .where(eq(shipmentLocations.shipmentId, input.shipmentId))
         .orderBy(desc(shipmentLocations.createdAt))
     }),
 })
