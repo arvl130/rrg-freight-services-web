@@ -16,7 +16,7 @@ import { NormalizedWarehouseTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
 import { DisplayName } from "@/components/warehouse/display-name"
 import { usePaginatedItems } from "@/hooks/paginated-items"
-import { ViewDetailsModal } from "@/components/shipments/view-details"
+import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 
 function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
   const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)

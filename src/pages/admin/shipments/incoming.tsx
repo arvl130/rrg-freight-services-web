@@ -16,7 +16,7 @@ import { DateTime } from "luxon"
 import { ShipmentStatus } from "@/utils/constants"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { DisplayName } from "@/components/users/display-name"
-import { ViewDetailsModal } from "@/components/shipments/view-details"
+import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 
 function TableItem({ item }: { item: NormalizedIncomingShipment }) {
   const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)

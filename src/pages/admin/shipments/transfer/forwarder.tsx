@@ -16,7 +16,7 @@ import { ShipmentStatus } from "@/utils/constants"
 import { DisplayName } from "@/components/users/display-name"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { CreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
-import { ViewDetailsModal } from "@/components/shipments/view-details"
+import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 
 function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
   const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)

@@ -17,7 +17,7 @@ import { PackageShippingType, ShipmentStatus } from "@/utils/constants"
 import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { DisplayName } from "@/components/users/display-name"
-import { ViewDetailsModal } from "@/components/shipments/view-details"
+import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 
 function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
   const [visibleModal, setVisibleModal] = useState<
