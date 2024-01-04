@@ -2,7 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 import QRCode from "react-qr-code"
 import { NormalizedDeliveryShipment } from "@/server/db/entities"
 
-export function DeliveryShipmentsViewQrCodeModal({
+export function ViewQrCodeModal({
   delivery,
   isOpen,
   close,

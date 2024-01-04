@@ -2,7 +2,7 @@ import Image from "next/image"
 import Head from "next/head"
 import Footer from "@/components/footer"
 import { Navbar } from "@/components/navbar"
-import { TrackingVerticalTimeline } from "../components/tracking/timeline"
+import { VerticalTimeline } from "../components/tracking/timeline"
 import { Truck } from "@phosphor-icons/react/Truck"
 import { Path } from "@phosphor-icons/react/Path"
 import { MapPin } from "@phosphor-icons/react/MapPin"
@@ -121,7 +121,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
         </div>
       </section>
 
-      <TrackingVerticalTimeline packageStatusLogs={_package.statusLogs} />
+      <VerticalTimeline packageStatusLogs={_package.statusLogs} />
     </>
   )
 }

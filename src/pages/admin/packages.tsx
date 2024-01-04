@@ -8,12 +8,12 @@ import { LoadingSpinner } from "@/components/spinner"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Table from "@/components/table"
 import * as Page from "@/components/page"
-import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
-import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
-import { PackagesEditDetailsModal } from "@/components/packages/edit-details-modal"
-import { PackagesEditStatusModal } from "@/components/packages/edit-status-modal"
+import { ViewWaybillModal } from "@/components/packages/view-waybill-modal"
+import { ViewDetailsModal } from "@/components/packages/view-details-modal"
+import { EditDetailsModal } from "@/components/packages/edit-details-modal"
+import { EditStatusModal } from "@/components/packages/edit-status-modal"
 import { PackageShippingType } from "@/utils/constants"
-import { PackageStatus } from "@/components/packages/status"
+import { Status } from "@/components/packages/status"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 
 function TableItem({ package: _package }: { package: Package }) {
@@ -57,7 +57,7 @@ function TableItem({ package: _package }: { package: Package }) {
         </div>
       </div>
       <div className="px-4 py-2 flex items-center gap-2">
-        <PackageStatus packageId={_package.id} />
+        <Status packageId={_package.id} />
 
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
@@ -99,22 +99,22 @@ function TableItem({ package: _package }: { package: Package }) {
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
 
-        <PackagesViewDetailsModal
+        <ViewDetailsModal
           package={_package}
           isOpen={visibleModal === "VIEW_DETAILS"}
           close={() => setVisibleModal(null)}
         />
-        <PackagesEditDetailsModal
+        <EditDetailsModal
           package={_package}
           isOpen={visibleModal === "EDIT_DETAILS"}
           close={() => setVisibleModal(null)}
         />
-        <PackagesEditStatusModal
+        <EditStatusModal
           package={_package}
           isOpen={visibleModal === "EDIT_STATUS"}
           close={() => setVisibleModal(null)}
         />
-        <PackagesViewWaybillModal
+        <ViewWaybillModal
           package={_package}
           isOpen={visibleModal === "VIEW_WAYBILL"}
           close={() => setVisibleModal(null)}

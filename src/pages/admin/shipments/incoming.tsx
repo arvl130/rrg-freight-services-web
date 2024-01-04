@@ -2,7 +2,7 @@ import { AdminLayout } from "@/layouts/admin"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
-import { IncomingShipmentsCreateModal } from "@/components/shipments/incoming/create-modal"
+import { CreateModal } from "@/components/shipments/incoming/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { NormalizedIncomingShipment } from "@/server/db/entities"
@@ -15,7 +15,7 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import { ShipmentStatus } from "@/utils/constants"
 import { usePaginatedItems } from "@/hooks/paginated-items"
-import { UserDisplayName } from "@/components/users/display-name"
+import { DisplayName } from "@/components/users/display-name"
 import { ViewDetailsModal } from "@/components/shipments/view-details"
 
 function TableItem({ item }: { item: NormalizedIncomingShipment }) {
@@ -28,7 +28,7 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
         <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <UserDisplayName userId={item.sentByAgentId} />
+        <DisplayName userId={item.sentByAgentId} />
       </div>
       <div className="px-4 py-2">
         {DateTime.fromJSDate(item.createdAt).toLocaleString(
@@ -236,7 +236,7 @@ export default function IncomingShipmentsPage() {
             <span>Create Shipment</span>
           </button>
         </div>
-        <IncomingShipmentsCreateModal
+        <CreateModal
           isOpen={isOpenCreateModal}
           close={() => setIsOpenCreateModal(false)}
         />

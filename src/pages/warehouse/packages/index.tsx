@@ -18,8 +18,8 @@ import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import { PackagesViewWaybillModal } from "@/components/packages/view-waybill-modal"
-import { PackagesViewDetailsModal } from "@/components/packages/view-details-modal"
+import { ViewWaybillModal } from "@/components/packages/view-waybill-modal"
+import { ViewDetailsModal } from "@/components/packages/view-details-modal"
 
 function PackageStatus({ packageId }: { packageId: string }) {
   const {
@@ -337,12 +337,12 @@ function TableItem({ package: _package }: { package: Package }) {
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
 
-          <PackagesViewDetailsModal
+          <ViewDetailsModal
             package={_package}
             isOpen={visibleModal === "VIEW_DETAILS"}
             close={() => setVisibleModal(null)}
           />
-          <PackagesViewWaybillModal
+          <ViewWaybillModal
             package={_package}
             isOpen={visibleModal === "VIEW_WAYBILL"}
             close={() => setVisibleModal(null)}

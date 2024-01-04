@@ -45,7 +45,7 @@ function DeleteForm({
   )
 }
 
-export function VehiclesDeleteModal({
+export function DeleteModal({
   id,
   isOpen,
   close,

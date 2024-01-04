@@ -24,7 +24,7 @@ const updatePasswordFormSchema = z
 
 type UpdatePasswordFormType = z.infer<typeof updatePasswordFormSchema>
 
-export function ProfileUpdatePasswordForm({ user }: { user: User }) {
+export function UpdatePasswordForm({ user }: { user: User }) {
   const [isUpdating, setIsUpdating] = useState(false)
   const {
     reset,

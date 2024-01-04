@@ -5,7 +5,7 @@ import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { X } from "@phosphor-icons/react/X"
 import Image from "next/image"
 
-export function UsersTableItemMenuScreen({
+export function MenuScreen({
   user,
   setSelectedScreen,
   close,

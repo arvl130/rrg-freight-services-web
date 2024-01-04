@@ -83,7 +83,7 @@ function CreateForm({ close }: { close: () => void }) {
   )
 }
 
-export function VehiclesCreateModal({
+export function CreateModal({
   isOpen,
   close,
 }: {

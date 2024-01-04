@@ -4,7 +4,7 @@ import { Key } from "@phosphor-icons/react/Key"
 import Link from "next/link"
 import { useRouter } from "next/router"
 
-export function ProfileSideNav() {
+export function SideNav() {
   const { pathname } = useRouter()
   return (
     <article className="flex flex-col gap-4">

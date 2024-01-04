@@ -1,7 +1,7 @@
 import { api } from "@/utils/api"
 import * as Dialog from "@radix-ui/react-dialog"
 
-export function ForwarderTransferShipmentsConfirmTransferModal({
+export function ConfirmTransferModal({
   isOpen,
   close,
   transferShipmentId,

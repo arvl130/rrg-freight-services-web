@@ -19,7 +19,7 @@ const updateInformationFormSchema = z.object({
 
 type UpdateInformationFormType = z.infer<typeof updateInformationFormSchema>
 
-export function ProfileUpdateInformationForm({ user }: { user: User }) {
+export function UpdateInformationForm({ user }: { user: User }) {
   const { reload } = useSession()
   const {
     reset,

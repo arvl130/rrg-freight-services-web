@@ -22,7 +22,7 @@ const updatePictureFormSchema = z.object({
 
 type UpdatePictureFormType = z.infer<typeof updatePictureFormSchema>
 
-export function ProfileUpdatePictureForm({ user }: { user: User }) {
+export function UpdatePictureForm({ user }: { user: User }) {
   const { reload, role } = useSession()
   const {
     reset,

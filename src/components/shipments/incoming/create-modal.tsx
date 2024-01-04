@@ -383,7 +383,7 @@ function CreatePackagesForm({
   }
 }
 
-export function IncomingShipmentsCreateModal({
+export function CreateModal({
   isOpen,
   close,
 }: {

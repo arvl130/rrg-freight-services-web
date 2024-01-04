@@ -2,7 +2,7 @@ import { AdminLayout } from "@/layouts/admin"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
-import { WarehouseTransferShipmentsCreateModal } from "@/components/shipments/transfer/warehouse/create-modal"
+import { CreateModal } from "@/components/shipments/transfer/warehouse/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
@@ -14,7 +14,7 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import { NormalizedWarehouseTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
-import { WarehouseDisplayName } from "@/components/warehouse/display-name"
+import { DisplayName } from "@/components/warehouse/display-name"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 
 function TableItem({
@@ -31,7 +31,7 @@ function TableItem({
         <span>{shipment.id}</span>
       </div>
       <div className="px-4 py-2">
-        <WarehouseDisplayName id={shipment.sentToWarehouseId} />
+        <DisplayName id={shipment.sentToWarehouseId} />
       </div>
       <div className="px-4 py-2">
         {DateTime.fromJSDate(shipment.createdAt).toLocaleString(
@@ -238,7 +238,7 @@ export default function TransferForwarderShipmentsPage() {
             <span>Create Shipment</span>
           </button>
         </div>
-        <WarehouseTransferShipmentsCreateModal
+        <CreateModal
           isOpen={isOpenCreateModal}
           close={() => setIsOpenCreateModal(false)}
         />

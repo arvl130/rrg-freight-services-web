@@ -162,7 +162,7 @@ const createShipmentFormSchema = z.object({
 
 type CreateShipmentFormSchema = z.infer<typeof createShipmentFormSchema>
 
-export function WarehouseTransferShipmentsCreateModal({
+export function CreateModal({
   isOpen,
   close,
 }: {

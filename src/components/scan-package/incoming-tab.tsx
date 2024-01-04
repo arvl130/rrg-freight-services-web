@@ -306,7 +306,7 @@ function MarkAsCompleted({
   )
 }
 
-export function ScanPackageIncomingTab({
+export function IncomingTab({
   selectedTab,
   setSelectedTab,
 }: {

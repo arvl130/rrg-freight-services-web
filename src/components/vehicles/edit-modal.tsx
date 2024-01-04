@@ -97,7 +97,7 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
   )
 }
 
-export function VehiclesEditModal({
+export function EditModal({
   id,
   isOpen,
   close,

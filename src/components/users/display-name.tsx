@@ -1,6 +1,6 @@
 import { api } from "@/utils/api"
 
-export function UserDisplayName({ userId }: { userId: string }) {
+export function DisplayName({ userId }: { userId: string }) {
   const { status, data, error } = api.user.getById.useQuery({
     id: userId,
   })

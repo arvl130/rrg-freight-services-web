@@ -4,7 +4,7 @@ import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { X } from "@phosphor-icons/react/X"
 import Image from "next/image"
 
-export function UsersTableItemOverviewScreen({
+export function OverviewScreen({
   user,
   goToUpdateInfo,
   goBack,

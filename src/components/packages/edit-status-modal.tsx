@@ -188,7 +188,7 @@ function AddStatusLogForm({ packageId }: { packageId: string }) {
   )
 }
 
-export function PackagesEditStatusModal({
+export function EditStatusModal({
   package: _package,
   isOpen,
   close,

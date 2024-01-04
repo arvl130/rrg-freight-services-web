@@ -16,9 +16,9 @@ import { LoadingSpinner } from "@/components/spinner"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Page from "@/components/page"
 import * as Table from "@/components/table"
-import { VehiclesCreateModal } from "@/components/vehicles/create-modal"
-import { VehiclesEditModal } from "@/components/vehicles/edit-modal"
-import { VehiclesDeleteModal } from "@/components/vehicles/delete-modal"
+import { CreateModal } from "@/components/vehicles/create-modal"
+import { EditModal } from "@/components/vehicles/edit-modal"
+import { DeleteModal } from "@/components/vehicles/delete-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 
 function TableItem({ item }: { item: Vehicle }) {
@@ -66,12 +66,12 @@ function TableItem({ item }: { item: Vehicle }) {
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
 
-          <VehiclesEditModal
+          <EditModal
             id={item.id}
             close={() => setVisibleModal(null)}
             isOpen={visibleModal === "EDIT"}
           />
-          <VehiclesDeleteModal
+          <DeleteModal
             id={item.id}
             close={() => setVisibleModal(null)}
             isOpen={visibleModal === "DELETE"}
@@ -231,7 +231,7 @@ export default function VehiclesPage() {
           <Plus size={16} />
           <span>New Vehicle</span>
         </button>
-        <VehiclesCreateModal
+        <CreateModal
           isOpen={isOpenCreateModal}
           close={() => setIsOpenCreateModal(false)}
         />

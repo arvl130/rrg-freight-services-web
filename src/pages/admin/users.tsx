@@ -13,7 +13,7 @@ import * as Table from "@/components/table"
 import { api } from "@/utils/api"
 import { User } from "@/server/db/entities"
 import { LoadingSpinner } from "@/components/spinner"
-import { UsersTableItem } from "@/components/users/table-item"
+import { TableItem } from "@/components/users/table-item"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { useState } from "react"
 import { SUPPORTED_USER_ROLES, UserRole } from "@/utils/constants"
@@ -192,7 +192,7 @@ function UsersTable({ items }: { items: User[] }) {
           ) : (
             <div>
               {paginatedItems.map((item) => (
-                <UsersTableItem key={item.id} user={item} />
+                <TableItem key={item.id} user={item} />
               ))}
             </div>
           )}

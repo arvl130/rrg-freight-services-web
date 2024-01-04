@@ -1,6 +1,6 @@
 import { api } from "@/utils/api"
 
-export function WarehouseDisplayName({ id }: { id: number }) {
+export function DisplayName({ id }: { id: number }) {
   const { status, data, error } = api.warehouse.getById.useQuery({
     id,
   })

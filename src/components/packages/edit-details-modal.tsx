@@ -48,7 +48,7 @@ const editFormSchema = z.object({
 
 type EditFormType = z.infer<typeof editFormSchema>
 
-export function PackagesEditDetailsModal({
+export function EditDetailsModal({
   package: _package,
   isOpen,
   close,

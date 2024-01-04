@@ -2,7 +2,7 @@ import { AdminLayout } from "@/layouts/admin"
 import { useState } from "react"
 import { useSession } from "@/utils/auth"
 import { Plus } from "@phosphor-icons/react/Plus"
-import { DeliveryShipmentsCreateModal } from "@/components/shipments/delivery/create-modal"
+import { CreateModal } from "@/components/shipments/delivery/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { NormalizedDeliveryShipment } from "@/server/db/entities"
@@ -14,9 +14,9 @@ import * as Table from "@/components/table"
 import { DateTime } from "luxon"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { PackageShippingType, ShipmentStatus } from "@/utils/constants"
-import { DeliveryShipmentsViewLocationsModal } from "@/components/shipments/delivery/view-locations-modal"
+import { ViewLocationsModal } from "@/components/shipments/delivery/view-locations-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
-import { UserDisplayName } from "@/components/users/display-name"
+import { DisplayName } from "@/components/users/display-name"
 
 function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
   const [visibleModal, setVisibleModal] = useState<
@@ -30,7 +30,7 @@ function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
         <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <UserDisplayName userId={item.driverId} />
+        <DisplayName userId={item.driverId} />
       </div>
       <div className="px-4 py-2">
         {DateTime.fromJSDate(item.createdAt).toLocaleString(
@@ -75,7 +75,7 @@ function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
 
-        <DeliveryShipmentsViewLocationsModal
+        <ViewLocationsModal
           isOpen={visibleModal === "VIEW_LOCATIONS"}
           close={() => setVisibleModal(null)}
           delivery={item}
@@ -306,7 +306,7 @@ export default function DeliveriesPage() {
             <span>Create Delivery</span>
           </button>
         </div>
-        <DeliveryShipmentsCreateModal
+        <CreateModal
           isOpen={isOpenCreateModal}
           close={() => setIsOpenCreateModal(false)}
         />

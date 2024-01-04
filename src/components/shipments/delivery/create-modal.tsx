@@ -327,7 +327,7 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
   )
 }
 
-export function DeliveryShipmentsCreateModal({
+export function CreateModal({
   isOpen,
   close,
 }: {

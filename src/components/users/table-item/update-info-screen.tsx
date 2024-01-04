@@ -21,7 +21,7 @@ const updateInformationFormSchema = z.object({
 
 type UpdateInformationFormType = z.infer<typeof updateInformationFormSchema>
 
-export function UsersTableItemUpdateInformationScreen({
+export function UpdateInformationScreen({
   user,
   goBack,
   close,

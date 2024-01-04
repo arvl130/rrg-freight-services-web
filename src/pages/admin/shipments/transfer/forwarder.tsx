@@ -13,9 +13,9 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import type { NormalizedForwarderTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
-import { UserDisplayName } from "@/components/users/display-name"
+import { DisplayName } from "@/components/users/display-name"
 import { usePaginatedItems } from "@/hooks/paginated-items"
-import { ForwarderTransferShipmentsCreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
+import { CreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
 
 function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
   const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
@@ -27,7 +27,7 @@ function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
         <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <UserDisplayName userId={item.sentToAgentId} />
+        <DisplayName userId={item.sentToAgentId} />
       </div>
       <div className="px-4 py-2">
         {DateTime.fromJSDate(item.createdAt).toLocaleString(
@@ -234,7 +234,7 @@ export default function TransferForwarderShipmentsPage() {
             <span>Create Shipment</span>
           </button>
         </div>
-        <ForwarderTransferShipmentsCreateModal
+        <CreateModal
           isOpen={isOpenCreateModal}
           close={() => setIsOpenCreateModal(false)}
         />

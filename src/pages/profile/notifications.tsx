@@ -1,6 +1,6 @@
 import { ToggleLeft } from "@phosphor-icons/react/ToggleLeft"
 import { GenericLayout } from "@/layouts/generic"
-import { ProfileSideNav } from "@/components/profile/sidenav"
+import { SideNav } from "@/components/profile/sidenav"
 
 function RightColumn() {
   return (
@@ -20,7 +20,7 @@ export default function ProfileNotificationsPage() {
     <GenericLayout title={["Profile", "Notifications"]}>
       <main className="pt-2 pb-6">
         <section className="grid grid-cols-[22rem_1fr] gap-6 max-w-4xl mx-auto">
-          <ProfileSideNav />
+          <SideNav />
           <RightColumn />
         </section>
       </main>

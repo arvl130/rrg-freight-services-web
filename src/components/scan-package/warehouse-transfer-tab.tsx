@@ -308,7 +308,7 @@ function MarkAsInTransit({
   )
 }
 
-export function ScanPackageWarehouseTransferTab({
+export function WarehouseTransferTab({
   selectedTab,
   setSelectedTab,
 }: {

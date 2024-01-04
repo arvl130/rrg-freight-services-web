@@ -96,7 +96,7 @@ function LogEntries({ packageId }: { packageId: string }) {
   )
 }
 
-export function PackagesViewDetailsModal({
+export function ViewDetailsModal({
   package: _package,
   isOpen,
   close,

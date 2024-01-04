@@ -24,7 +24,7 @@ const updatePictureFormSchema = z.object({
 
 type UpdatePictureFormType = z.infer<typeof updatePictureFormSchema>
 
-export function UsersTableItemUpdatePhotoScreen({
+export function UpdatePhotoScreen({
   user,
   goBack,
   close,

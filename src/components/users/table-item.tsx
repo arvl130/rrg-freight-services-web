@@ -3,15 +3,15 @@ import { useRef, useState } from "react"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { User } from "@/server/db/entities"
-import { UsersTableItemMenuScreen } from "@/components/users/table-item/menu-screen"
-import { UsersTableItemUpdateInformationScreen } from "@/components/users/table-item/update-info-screen"
+import { MenuScreen } from "@/components/users/table-item/menu-screen"
+import { UpdateInformationScreen } from "@/components/users/table-item/update-info-screen"
 import { UsersTableItemScreen } from "@/utils/constants"
-import { UsersTableItemUpdateRoleScreen } from "@/components/users/table-item/update-role-screen"
-import { UsersTableItemUpdatePhotoScreen } from "@/components/users/table-item/update-photo-screen"
-import { UsersTableItemOverviewScreen } from "@/components/users/table-item/overview-screen"
+import { UpdateRoleScreen } from "@/components/users/table-item/update-role-screen"
+import { UpdatePhotoScreen } from "@/components/users/table-item/update-photo-screen"
+import { OverviewScreen } from "@/components/users/table-item/overview-screen"
 import { supportedRoleToHumanized } from "@/utils/humanize"
 
-export function UsersTableItem({ user }: { user: User }) {
+export function TableItem({ user }: { user: User }) {
   const detailsModal = useRef<null | HTMLDialogElement>(null)
   const [selectedScreen, setSelectedScreen] =
     useState<UsersTableItemScreen>("MENU")
@@ -56,7 +56,7 @@ export function UsersTableItem({ user }: { user: User }) {
         className="bg-white w-[min(calc(100%),_28rem)] mx-auto px-6 pt-7 pb-7 rounded-2xl mt-24"
       >
         {selectedScreen === "MENU" && (
-          <UsersTableItemMenuScreen
+          <MenuScreen
             user={user}
             setSelectedScreen={(selectedScreen) =>
               setSelectedScreen(selectedScreen)
@@ -65,7 +65,7 @@ export function UsersTableItem({ user }: { user: User }) {
           />
         )}
         {selectedScreen === "OVERVIEW" && (
-          <UsersTableItemOverviewScreen
+          <OverviewScreen
             user={user}
             goBack={() => setSelectedScreen("MENU")}
             goToUpdateInfo={() => setSelectedScreen("UPDATE_INFO")}
@@ -73,21 +73,21 @@ export function UsersTableItem({ user }: { user: User }) {
           />
         )}
         {selectedScreen === "UPDATE_INFO" && (
-          <UsersTableItemUpdateInformationScreen
+          <UpdateInformationScreen
             user={user}
             goBack={() => setSelectedScreen("OVERVIEW")}
             close={() => detailsModal.current?.close()}
           />
         )}
         {selectedScreen === "UPDATE_ROLE" && (
-          <UsersTableItemUpdateRoleScreen
+          <UpdateRoleScreen
             user={user}
             goBack={() => setSelectedScreen("MENU")}
             close={() => detailsModal.current?.close()}
           />
         )}
         {selectedScreen === "UPDATE_PHOTO" && (
-          <UsersTableItemUpdatePhotoScreen
+          <UpdatePhotoScreen
             user={user}
             goBack={() => setSelectedScreen("MENU")}
             close={() => detailsModal.current?.close()}

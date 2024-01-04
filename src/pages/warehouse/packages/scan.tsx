@@ -1,10 +1,10 @@
-import { ScanPackageDeliveryTab } from "@/components/scan-package/delivery-tab"
-import { ScanPackageIncomingTab } from "@/components/scan-package/incoming-tab"
-import { ScanPackageForwarderTransferTab } from "@/components/scan-package/forwarder-transfer-tab"
+import { DeliveryTab } from "@/components/scan-package/delivery-tab"
+import { IncomingTab } from "@/components/scan-package/incoming-tab"
+import { ForwarderTransferTab } from "@/components/scan-package/forwarder-transfer-tab"
 import { WarehouseLayout } from "@/layouts/warehouse"
 import { useState } from "react"
 import type { ShipmentType } from "@/utils/constants"
-import { ScanPackageWarehouseTransferTab } from "@/components/scan-package/warehouse-transfer-tab"
+import { WarehouseTransferTab } from "@/components/scan-package/warehouse-transfer-tab"
 
 export default function ScanPackagePage() {
   const [selectedTab, setSelectedTab] = useState<ShipmentType>("INCOMING")
@@ -17,25 +17,25 @@ export default function ScanPackagePage() {
         </h1>
       </div>
       {selectedTab === "INCOMING" && (
-        <ScanPackageIncomingTab
+        <IncomingTab
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
         />
       )}
       {selectedTab === "DELIVERY" && (
-        <ScanPackageDeliveryTab
+        <DeliveryTab
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
         />
       )}
       {selectedTab === "TRANSFER_FORWARDER" && (
-        <ScanPackageForwarderTransferTab
+        <ForwarderTransferTab
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
         />
       )}
       {selectedTab === "TRANSFER_WAREHOUSE" && (
-        <ScanPackageWarehouseTransferTab
+        <WarehouseTransferTab
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
         />

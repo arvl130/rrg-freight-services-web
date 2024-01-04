@@ -308,7 +308,7 @@ function MarkAsInTransit({
   )
 }
 
-export function ScanPackageForwarderTransferTab({
+export function ForwarderTransferTab({
   selectedTab,
   setSelectedTab,
 }: {

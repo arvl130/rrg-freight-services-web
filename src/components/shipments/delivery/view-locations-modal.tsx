@@ -9,7 +9,7 @@ import { Map as TMap } from "leaflet"
 import { LEAFLET_DEFAULT_ZOOM_LEVEL } from "@/utils/constants"
 import { PathMap } from "./path-map/map"
 
-export function DeliveryShipmentsViewLocationsModal({
+export function ViewLocationsModal({
   delivery,
   isOpen,
   close,

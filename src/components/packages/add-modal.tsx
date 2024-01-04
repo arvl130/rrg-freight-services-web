@@ -48,7 +48,7 @@ const createPackageFormSchema = z.object({
 
 type CreatePackageFormType = z.infer<typeof createPackageFormSchema>
 
-export function PackagesAddModal({
+export function AddModal({
   isOpen,
   close,
 }: {

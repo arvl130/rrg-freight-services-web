@@ -23,7 +23,7 @@ const updateRoleFormSchema = z.object({
 
 type UpdateRoleFormType = z.infer<typeof updateRoleFormSchema>
 
-export function UsersTableItemUpdateRoleScreen({
+export function UpdateRoleScreen({
   user,
   goBack,
   close,

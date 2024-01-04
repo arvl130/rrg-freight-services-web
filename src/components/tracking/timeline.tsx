@@ -47,7 +47,7 @@ const TimelineItem = ({
   )
 }
 
-export function TrackingVerticalTimeline({
+export function VerticalTimeline({
   packageStatusLogs,
 }: {
   packageStatusLogs: PackageStatusLog[]

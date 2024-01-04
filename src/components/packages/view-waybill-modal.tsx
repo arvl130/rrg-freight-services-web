@@ -5,7 +5,7 @@ import generatePDF, { Margin } from "react-to-pdf"
 import QRCode from "react-qr-code"
 import { Package } from "@/server/db/entities"
 
-export function PackagesViewWaybillModal({
+export function ViewWaybillModal({
   package: _package,
   isOpen,
   close,
