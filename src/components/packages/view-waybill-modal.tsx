@@ -51,14 +51,11 @@ export function ViewWaybillModal({
                   <QRCode
                     value={_package.id.toString()}
                     size={256}
-                    style={{ height: "80px", width: "80px" }}
+                    style={{ height: "100px", width: "100px" }}
                   />
-                  <p className="text-xs">
-                    {_package.id.toString().padStart(4, "0")}
-                  </p>
                 </div>
               </div>
-              <table className="border border-black w-full">
+              <table className="border border-black w-full mb-2">
                 <tr>
                   <th className="border border-black pb-4">Ship To</th>
                   <td className="border border-black px-2 pb-4" colSpan={3}>
@@ -131,6 +128,15 @@ export function ViewWaybillModal({
                   </td>
                 </tr>
                 <tr>
+                  <th className="border border-black pb-4">Fragile?</th>
+                  <td
+                    className="border border-black text-center px-2 pb-4 text-sm"
+                    colSpan={3}
+                  >
+                    {_package.isFragile === 1 ? "Yes" : "No"}
+                  </td>
+                </tr>
+                <tr>
                   <th className="border border-black pb-4">Weight (KG)</th>
                   <td className="border border-black pb-4 text-center w-[80px]">
                     {_package.weightInKg}
@@ -143,9 +149,6 @@ export function ViewWaybillModal({
                   <td className="border border-black text-center px-2 pb-4 text-sm"></td>
                 </tr>
               </table>
-              <p className="text-center font-semibold py-2">
-                RRG Freight Services
-              </p>
             </div>
           </div>
           <div className="flex justify-between px-4 pb-2">

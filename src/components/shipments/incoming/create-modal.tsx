@@ -128,6 +128,7 @@ const expectedColumns = [
   "Receiver State/",
   "Receiver Country ",
   "Receiver Postal ",
+  "Fragile?",
 ]
 
 const sheetRowSchema = z.object({
@@ -158,6 +159,7 @@ const sheetRowSchema = z.object({
   "Receiver State/Province": z.string().min(1).max(100),
   "Receiver Country Code": z.string().min(1).max(3),
   "Receiver Postal Code": z.number(),
+  "Fragile?": z.union([z.literal("Yes"), z.literal("No")]),
 })
 
 type SheetRow = z.infer<typeof sheetRowSchema>
@@ -224,6 +226,7 @@ function ChooseAgentForm({
             receiverStateOrProvince: newPackage["Receiver State/Province"],
             receiverCountryCode: newPackage["Receiver Country Code"],
             receiverPostalCode: newPackage["Receiver Postal Code"],
+            isFragile: newPackage["Fragile?"] === "Yes",
           })),
         })
       })}
@@ -285,7 +288,7 @@ function CreatePackagesForm({
     return (
       <div className="px-4 grid grid-rows-[1fr_auto] overflow-auto">
         <div className="h-full overflow-auto border border-gray-300">
-          <div className={`grid grid-cols-[repeat(21,_13rem)] font-medium`}>
+          <div className={`grid grid-cols-[repeat(22,_13rem)] font-medium`}>
             {Object.keys(sheetRows[0]).map((key) => (
               <div key={key} className="px-1.5 py-1">
                 {key}
@@ -293,7 +296,7 @@ function CreatePackagesForm({
             ))}
           </div>
           {sheetRows.map((newPackage, index) => (
-            <div key={index} className={`grid grid-cols-[repeat(21,_13rem)]`}>
+            <div key={index} className={`grid grid-cols-[repeat(22,_13rem)]`}>
               {Object.keys(newPackage).map((key) => (
                 <div
                   key={key}
@@ -330,7 +333,7 @@ function CreatePackagesForm({
             its contents.
           </p>
           <div className="h-full overflow-auto border border-gray-300">
-            <div className={`grid grid-cols-[repeat(21,_13rem)] font-medium`}>
+            <div className={`grid grid-cols-[repeat(22,_13rem)] font-medium`}>
               {expectedColumns.map((column) => (
                 <div key={column} className="px-1.5 py-1">
                   {column}
@@ -348,7 +351,7 @@ function CreatePackagesForm({
                   const newPackage = sheetRowsRaw[row as any] as SheetRow
 
                   return (
-                    <div className={`grid grid-cols-[repeat(21,_13rem)]`}>
+                    <div className={`grid grid-cols-[repeat(22,_13rem)]`}>
                       {expectedColumns.map((column) => (
                         <div
                           key={column}

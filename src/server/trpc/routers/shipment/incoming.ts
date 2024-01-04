@@ -136,6 +136,7 @@ export const incomingShipmentRouter = router({
             receiverStateOrProvince: z.string().min(1).max(100),
             receiverCountryCode: z.string().min(1).max(3),
             receiverPostalCode: z.number(),
+            isFragile: z.boolean(),
           })
           .array(),
       }),
@@ -151,6 +152,7 @@ export const incomingShipmentRouter = router({
           id: packageId,
           createdById: ctx.user.uid,
           updatedById: ctx.user.uid,
+          isFragile: newPackage.isFragile ? 1 : 0,
         })
 
         await ctx.db.insert(packageStatusLogs).values({

@@ -243,6 +243,7 @@ export const packageRouter = router({
             receiverStateOrProvince: z.string().min(1).max(100),
             receiverCountryCode: z.string().min(1).max(3),
             receiverPostalCode: z.number(),
+            isFragile: z.boolean(),
           })
           .array(),
       }),
@@ -254,6 +255,7 @@ export const packageRouter = router({
           id: generateUniqueId(),
           createdById: ctx.user.uid,
           updatedById: ctx.user.uid,
+          isFragile: newPackage.isFragile ? 1 : 0,
         })),
       )
     }),
@@ -314,6 +316,7 @@ export const packageRouter = router({
         receiverStateOrProvince: z.string().min(1).max(100),
         receiverCountryCode: z.string().min(1).max(3),
         receiverPostalCode: z.number(),
+        isFragile: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -342,6 +345,7 @@ export const packageRouter = router({
         receiverPostalCode: input.receiverPostalCode,
         createdById: ctx.user.uid,
         updatedById: ctx.user.uid,
+        isFragile: input.isFragile ? 1 : 0,
       })
     }),
   getInWarehouse: protectedProcedure.query(async ({ ctx }) => {

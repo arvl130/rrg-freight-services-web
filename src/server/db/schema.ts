@@ -254,6 +254,7 @@ export const packages = mysqlTable("packages", {
   lastWarehouseId: bigint("last_warehouse_id", {
     mode: "number",
   }),
+  isFragile: tinyint("is_fragile").notNull(),
 })
 
 export const packageStatusLogs = mysqlTable("package_status_logs", {
