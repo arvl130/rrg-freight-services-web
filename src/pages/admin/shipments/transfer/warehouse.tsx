@@ -16,25 +16,22 @@ import { NormalizedWarehouseTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
 import { DisplayName } from "@/components/warehouse/display-name"
 import { usePaginatedItems } from "@/hooks/paginated-items"
+import { ViewDetailsModal } from "@/components/shipments/view-details"
 
-function TableItem({
-  shipment,
-}: {
-  shipment: NormalizedWarehouseTransferShipment
-}) {
+function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
   const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
 
   return (
     <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
       <div className="px-4 py-2 flex items-center gap-1">
         <input type="checkbox" name="" id="" />
-        <span>{shipment.id}</span>
+        <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <DisplayName id={shipment.sentToWarehouseId} />
+        <DisplayName id={item.sentToWarehouseId} />
       </div>
       <div className="px-4 py-2">
-        {DateTime.fromJSDate(shipment.createdAt).toLocaleString(
+        {DateTime.fromJSDate(item.createdAt).toLocaleString(
           DateTime.DATETIME_FULL,
         )}
       </div>
@@ -42,10 +39,10 @@ function TableItem({
         <div
           className={`
         w-36 py-0.5 text-white text-center rounded-md
-        ${getColorFromShipmentStatus(shipment.status as ShipmentStatus)}
+        ${getColorFromShipmentStatus(item.status as ShipmentStatus)}
       `}
         >
-          {shipment.status.replaceAll("_", " ")}
+          {item.status.replaceAll("_", " ")}
         </div>
 
         <DropdownMenu.Root>
@@ -69,6 +66,12 @@ function TableItem({
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
+
+        <ViewDetailsModal
+          shipmentId={item.id}
+          isOpen={visibleModal === "VIEW_DETAILS"}
+          close={() => setVisibleModal(null)}
+        />
       </div>
     </div>
   )
@@ -199,7 +202,7 @@ function ShipmentsTable({
           ) : (
             <div>
               {paginatedItems.map((shipment) => (
-                <TableItem key={shipment.id} shipment={shipment} />
+                <TableItem key={shipment.id} item={shipment} />
               ))}
             </div>
           )}

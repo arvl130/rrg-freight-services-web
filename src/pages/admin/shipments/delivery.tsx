@@ -17,6 +17,7 @@ import { PackageShippingType, ShipmentStatus } from "@/utils/constants"
 import { ViewLocationsModal } from "@/components/shipments/delivery/view-locations-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { DisplayName } from "@/components/users/display-name"
+import { ViewDetailsModal } from "@/components/shipments/view-details"
 
 function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
   const [visibleModal, setVisibleModal] = useState<
@@ -75,6 +76,11 @@ function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
 
+        <ViewDetailsModal
+          shipmentId={item.id}
+          isOpen={visibleModal === "VIEW_DETAILS"}
+          close={() => setVisibleModal(null)}
+        />
         <ViewLocationsModal
           isOpen={visibleModal === "VIEW_LOCATIONS"}
           close={() => setVisibleModal(null)}
