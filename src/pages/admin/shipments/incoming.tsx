@@ -16,6 +16,7 @@ import { DateTime } from "luxon"
 import { ShipmentStatus } from "@/utils/constants"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { UserDisplayName } from "@/components/users/display-name"
+import { ViewDetailsModal } from "@/components/shipments/view-details"
 
 function TableItem({ item }: { item: NormalizedIncomingShipment }) {
   const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
@@ -65,6 +66,11 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
+
+        <ViewDetailsModal
+          isOpen={visibleModal === "VIEW_DETAILS"}
+          close={() => setVisibleModal(null)}
+        />
       </div>
     </div>
   )
