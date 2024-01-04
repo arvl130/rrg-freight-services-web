@@ -17,9 +17,12 @@ import { ShipmentStatus } from "@/utils/constants"
 import { DisplayName } from "@/components/warehouse/display-name"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
+import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
 
 function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
-  const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
+  const [visibleModal, setVisibleModal] = useState<
+    null | "VIEW_DETAILS" | "VIEW_LOCATIONS"
+  >(null)
 
   return (
     <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
@@ -61,6 +64,12 @@ function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
               >
                 View Details
               </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("VIEW_LOCATIONS")}
+              >
+                View Locations
+              </DropdownMenu.Item>
 
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
@@ -71,6 +80,11 @@ function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
           shipmentId={item.id}
           isOpen={visibleModal === "VIEW_DETAILS"}
           close={() => setVisibleModal(null)}
+        />
+        <ViewLocationsModal
+          isOpen={visibleModal === "VIEW_LOCATIONS"}
+          close={() => setVisibleModal(null)}
+          shipment={item}
         />
       </div>
     </div>
