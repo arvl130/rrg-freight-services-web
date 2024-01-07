@@ -5,6 +5,7 @@ import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
+import { utils, writeFileXLSX } from "xlsx"
 
 export function Filters({ children }: { children: ReactNode }) {
   return (
@@ -161,11 +162,37 @@ export function Pagination({
   )
 }
 
-export function ExportButton() {
+export function ExportButton({
+  records,
+}: {
+  records: Record<string, unknown>[]
+}) {
   return (
     <button
       type="button"
-      className="inline-flex text-sm items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
+      className="inline-flex text-sm items-center gap-1 hover:bg-sky-400 bg-sky-500 disabled:bg-sky-300 text-white transition-colors px-6 py-2 font-medium"
+      disabled={records.length === 0}
+      onClick={() => {
+        const formattedRecords = records.map((record) => {
+          const newRecord = {} as Record<string, unknown>
+
+          Object.keys(record).forEach((key) => {
+            const newKeyName = key
+              .replace(/[A-Z]/g, (letter) => ` ${letter.toUpperCase()}`)
+              .toUpperCase()
+
+            newRecord[newKeyName] = record[key]
+          })
+
+          return newRecord
+        })
+
+        const worksheet = utils.json_to_sheet(formattedRecords)
+        const workbook = utils.book_new()
+
+        utils.book_append_sheet(workbook, worksheet, "Sheet 1")
+        writeFileXLSX(workbook, "export.xlsx", { compression: true })
+      }}
     >
       <Export size={16} />
       <span>Export</span>

@@ -158,7 +158,7 @@ function UsersTable({ items }: { items: User[] }) {
               <DownloadSimple size={16} />
               <span>Import</span>
             </button>
-            <Table.ExportButton />
+            <Table.ExportButton records={paginatedItems} />
           </div>
         </div>
       </Table.Filters>

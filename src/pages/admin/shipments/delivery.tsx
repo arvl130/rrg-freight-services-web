@@ -192,7 +192,7 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
             </button>
           </div>
           <div className="flex justify-end">
-            <Table.ExportButton />
+            <Table.ExportButton records={paginatedItems} />
           </div>
         </div>
       </Table.Filters>

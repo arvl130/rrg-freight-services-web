@@ -160,7 +160,7 @@ function VehiclesTable({ items }: { items: Vehicle[] }) {
             </button>
           </div>
           <div className="flex justify-end">
-            <Table.ExportButton />
+            <Table.ExportButton records={paginatedItems} />
           </div>
         </div>
       </Table.Filters>

@@ -177,7 +177,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
     gotoPage,
     gotoNextPage,
     gotoPreviousPage,
-  } = usePaginatedItems<Package>({
+  } = usePaginatedItems({
     items: visiblePackages,
   })
 
@@ -218,7 +218,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             </button>
           </div>
           <div className="flex justify-end">
-            <Table.ExportButton />
+            <Table.ExportButton records={paginatedItems} />
           </div>
         </div>
       </Table.Filters>
