@@ -47,6 +47,35 @@ function HeroSection() {
   )
 }
 
+function TrackSection() {
+  return (
+    <section className="max-w-3xl mx-auto px-6 py-12 sm:grid grid-cols-[minmax(0,_1fr)_minmax(0,_3fr)] gap-12">
+      {/* Track Section */}
+      <div className="hidden sm:flex justify-end">
+        <div className="h-96 w-fit">
+          <PersonCarryingPackageVector />
+        </div>
+      </div>
+      <div className="flex flex-col justify-center font-bold text-center text-3xl sm:text-left">
+        <p className="max-w-md leading-relaxed">
+          Track now your package and ensure your cargo arrives safely and on
+          schedule!
+        </p>
+
+        <div>
+          <Link
+            href="/tracking"
+            className="drop-shadow-lg inline-flex items-center gap-1 bg-red-500 hover:bg-red-400 transition-colors text-white px-6 py-3.5 text-base rounded-full font-bold font-family my-5"
+          >
+            <span>Track Now</span>
+            <Path className="ml-1" size={22} color="#FFFFFF" weight="thin" />
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 const HomePage: FC = () => {
   return (
     <>
@@ -57,33 +86,7 @@ const HomePage: FC = () => {
 
       <main>
         <HeroSection />
-        <section key="section2">
-          {/* Track Section */}
-          <div className="bg-white">
-            <div className=" my-5 flex justify-center	 md:my-10">
-              <div className="hidden sm:flex sm:justify-center sm:items-center h-96">
-                <PersonCarryingPackageVector />
-              </div>
-              <div className="flex flex-col justify-center font-sans font-bold text-center text-2xl md:text-3xl md:leading-normal lg:text-4xl sm:text-left">
-                <p className="sm:p-2">Track now your package and</p>
-                <p className="sm:p-2">ensure your cargo arrives safely</p>
-                <p className="sm:p-2">and on schedule!</p>
-
-                <Link href="/tracking">
-                  <button className="drop-shadow-lg inline-flex items-center bg-red-500 text-white px-6 py-3.5 text-base rounded-full hover:bg-red-800 font-bold font-family my-5">
-                    Track Now{" "}
-                    <Path
-                      className="ml-1"
-                      size={22}
-                      color="#FFFFFF"
-                      weight="thin"
-                    />
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
+        <TrackSection />
 
         <section key="section3">
           {/* Carousel section */}
