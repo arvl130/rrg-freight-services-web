@@ -15,6 +15,7 @@ import { z } from "zod"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import Boxes from "@/components/icons/boxes"
+import BrowsingPhoneVector from "@/components/icons/browsing-phone-vector"
 
 function TrackingPageHead() {
   return (
@@ -208,7 +209,7 @@ function HeroSection() {
         </div>
         <div className="hidden md:flex items-center h-full w-full">
           <div className="w-full max-w-sm mx-auto">
-            <Boxes />
+            <BrowsingPhoneVector />
           </div>
         </div>
       </div>

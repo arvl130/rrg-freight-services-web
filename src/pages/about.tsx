@@ -8,6 +8,7 @@ import { Phone } from "@phosphor-icons/react/dist/icons/Phone"
 import { Envelope } from "@phosphor-icons/react/dist/icons/Envelope"
 import { Clock } from "@phosphor-icons/react/dist/icons/Clock"
 import Globe from "@/components/icons/globe"
+import { GlobePlaneVector } from "@/components/icons/globe-plane-vector"
 
 function HeroSection() {
   return (
@@ -22,7 +23,7 @@ function HeroSection() {
           </div>
           <div className="hidden md:flex items-center h-full w-full">
             <div className="w-full max-w-sm mx-auto">
-              <Globe />
+              <GlobePlaneVector />
             </div>
           </div>
         </div>

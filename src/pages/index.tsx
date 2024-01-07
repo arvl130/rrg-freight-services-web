@@ -16,7 +16,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css"
 import { CaretRight } from "@phosphor-icons/react/dist/icons/CaretRight"
 import { Path } from "@phosphor-icons/react/dist/icons/Path"
 import ShipVector from "@/components/icons/ship-vector"
-import GuyVector from "@/components/icons/guy-vector"
+import { PersonCarryingPackageVector } from "@/components/icons/person-carrying-package-vector"
 
 const images = [
   "/assets/img/home/ship1.jpg",
@@ -61,17 +61,13 @@ const HomePage: FC = () => {
           {/* Track Section */}
           <div className="bg-white">
             <div className=" my-5 flex justify-center	 md:my-10">
-              <div className="hidden sm:flex sm:justify-center sm:items-center">
-                <div>
-                  <GuyVector></GuyVector>
-                </div>
+              <div className="hidden sm:flex sm:justify-center sm:items-center h-96">
+                <PersonCarryingPackageVector />
               </div>
-              <div className="font-sans font-bold text-center text-2xl md:text-3xl md:leading-normal lg:text-4xl sm:text-left">
-                <p className="lg:p-3 sm:p-2">Track now your package and</p>
-                <p className="lg:p-3 sm:p-2">
-                  ensure your cargo arrives safely
-                </p>
-                <p className="lg:p-3 sm:p-2">and on schedule!</p>
+              <div className="flex flex-col justify-center font-sans font-bold text-center text-2xl md:text-3xl md:leading-normal lg:text-4xl sm:text-left">
+                <p className="sm:p-2">Track now your package and</p>
+                <p className="sm:p-2">ensure your cargo arrives safely</p>
+                <p className="sm:p-2">and on schedule!</p>
 
                 <Link href="/tracking">
                   <button className="drop-shadow-lg inline-flex items-center bg-red-500 text-white px-6 py-3.5 text-base rounded-full hover:bg-red-800 font-bold font-family my-5">
