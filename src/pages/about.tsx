@@ -7,8 +7,7 @@ import Link from "next/link"
 import { Phone } from "@phosphor-icons/react/dist/icons/Phone"
 import { Envelope } from "@phosphor-icons/react/dist/icons/Envelope"
 import { Clock } from "@phosphor-icons/react/dist/icons/Clock"
-import Globe from "@/components/icons/globe"
-import { GlobePlaneVector } from "@/components/icons/globe-plane-vector"
+import { GlobePlaneVector } from "@/components/vector/globe-plane"
 
 function HeroSection() {
   return (

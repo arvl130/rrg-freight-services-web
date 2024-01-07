@@ -14,8 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
-import Boxes from "@/components/icons/boxes"
-import BrowsingPhoneVector from "@/components/icons/browsing-phone-vector"
+import { BrowsingPhoneVector } from "@/components/vector/browsing-phone"
 
 function TrackingPageHead() {
   return (

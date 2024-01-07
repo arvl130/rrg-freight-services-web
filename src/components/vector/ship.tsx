@@ -1,6 +1,4 @@
-import React from "react"
-
-function ShipVector() {
+export function ShipVector() {
   return (
     <svg
       className="w-full h-full"
@@ -32,5 +30,3 @@ function ShipVector() {
     </svg>
   )
 }
-
-export default ShipVector

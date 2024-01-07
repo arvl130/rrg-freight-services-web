@@ -15,8 +15,8 @@ import { Carousel } from "react-responsive-carousel"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
 import { CaretRight } from "@phosphor-icons/react/dist/icons/CaretRight"
 import { Path } from "@phosphor-icons/react/dist/icons/Path"
-import ShipVector from "@/components/icons/ship-vector"
-import { PersonCarryingPackageVector } from "@/components/icons/person-carrying-package-vector"
+import { ShipVector } from "@/components/vector/ship"
+import { PersonCarryingPackageVector } from "@/components/vector/person-carrying-package"
 
 const images = [
   "/assets/img/home/ship1.jpg",
