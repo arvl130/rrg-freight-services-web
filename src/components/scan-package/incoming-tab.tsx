@@ -1,9 +1,6 @@
 import { api } from "@/utils/api"
 import { getColorFromPackageStatus } from "@/utils/colors"
-import {
-  REGEX_ONE_OR_MORE_DIGITS,
-  getDescriptionForNewPackageStatusLog,
-} from "@/utils/constants"
+import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState } from "react"
@@ -15,14 +12,9 @@ import { getAuth } from "firebase/auth"
 import type { ShipmentType } from "@/utils/constants"
 
 const scanPackageSchemaFormSchema = z.object({
-  packageId: z
-    .string()
-    .min(1, {
-      message: "Please enter a package ID.",
-    })
-    .regex(REGEX_ONE_OR_MORE_DIGITS, {
-      message: "Only numeric values are accepted.",
-    }),
+  packageId: z.string().min(1, {
+    message: "Please enter a package ID.",
+  }),
 })
 
 type ScanPackageSchemaFormType = z.infer<typeof scanPackageSchemaFormSchema>
