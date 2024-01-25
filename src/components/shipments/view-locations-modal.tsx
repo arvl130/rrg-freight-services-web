@@ -2,7 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 import { Shipment } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { DateTime } from "luxon"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Map } from "./delivery/map/map"
 import { X } from "@phosphor-icons/react/X"
 import { Map as TMap } from "leaflet"
@@ -27,9 +27,14 @@ export function ViewLocationsModal({
     status,
     data: locations,
     error,
-  } = api.shipment.location.getByShipmentId.useQuery({
-    shipmentId: shipment.id,
-  })
+  } = api.shipment.location.getByShipmentId.useQuery(
+    {
+      shipmentId: shipment.id,
+    },
+    {
+      refetchInterval: 5000,
+    },
+  )
 
   return (
     <Dialog.Root open={isOpen}>
