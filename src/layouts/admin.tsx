@@ -6,6 +6,7 @@ import { SignOut } from "@phosphor-icons/react/SignOut"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { UsersThree } from "@phosphor-icons/react/UsersThree"
 import { Motorcycle } from "@phosphor-icons/react/Motorcycle"
+import { Toolbox } from "@phosphor-icons/react/Toolbox"
 import { ClipboardText } from "@phosphor-icons/react/ClipboardText"
 import { Boat } from "@phosphor-icons/react/Boat"
 import { Truck } from "@phosphor-icons/react/Truck"
@@ -23,7 +24,7 @@ export function AdminSideBar() {
 
   return (
     <nav className="bg-brand-cyan-500 flex flex-col justify-between items-center py-3 h-screen sticky top-0 bottom-0">
-      <div className="flex flex-col items-center gap-3 w-full">
+      <div className="flex justify-center items-center h-10 w-full my-2">
         <Image
           src="/assets/img/logos/logo-white-bg.png"
           alt="RRG Freight Services circle logo with white background"
@@ -31,6 +32,8 @@ export function AdminSideBar() {
           width={60}
           className="w-12 h-12 rounded-full"
         />
+      </div>
+      <div className="flex flex-col items-center gap-2 w-full">
         <SideBarLink
           name="Dashboard"
           href="/admin/dashboard"
@@ -40,6 +43,11 @@ export function AdminSideBar() {
           name="Packages"
           href="/admin/packages"
           icon={<Package size={32} className="text-white" />}
+        />
+        <SideBarLink
+          name="Packages Categories"
+          href="/admin/package-categories"
+          icon={<Toolbox size={32} className="text-white" />}
         />
         <SideBarLink
           name="Incoming Shipments"

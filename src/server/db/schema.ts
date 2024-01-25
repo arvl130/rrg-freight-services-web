@@ -174,6 +174,17 @@ export const vehicles = mysqlTable("vehicles", {
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
+export const packageCategories = mysqlTable("package_categories", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  displayName: varchar("display_name", {
+    length: 100,
+  }).notNull(),
+})
+
 export const packages = mysqlTable("packages", {
   id: varchar("id", { length: 36 }).primaryKey(),
   shippingMode: mysqlEnum(
