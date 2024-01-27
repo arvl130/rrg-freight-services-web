@@ -266,6 +266,9 @@ export const packages = mysqlTable("packages", {
     mode: "number",
   }),
   isFragile: tinyint("is_fragile").notNull(),
+  packageCategoryId: bigint("package_category_id", {
+    mode: "number",
+  }),
 })
 
 export const packageStatusLogs = mysqlTable("package_status_logs", {
