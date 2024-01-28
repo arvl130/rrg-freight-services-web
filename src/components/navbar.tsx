@@ -4,7 +4,6 @@ import Image from "next/image"
 import { List } from "@phosphor-icons/react/List"
 import { User } from "@phosphor-icons/react/User"
 import { getUserRoleRedirectPath, useSession } from "@/utils/auth"
-
 function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
 
@@ -47,7 +46,9 @@ function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
             <Link href="/about">About Us</Link>
           </li>
           <li>
-            <Link href="/">Contact Us</Link>
+            <Link href="/#contact-us" passHref>
+              Contact Us
+            </Link>
           </li>
           <li>
             <Link href="/tracking">Track Package</Link>
@@ -84,7 +85,7 @@ function DesktopNav() {
           </Link>
         </li>
         <li>
-          <Link className="text-white py-2" href="/" passHref>
+          <Link className="text-white py-2" href="/#contact-us" passHref>
             Contact Us
           </Link>
         </li>

@@ -231,6 +231,7 @@ const HomePage: FC = () => {
         </section>
 
         <section
+          id="contact-us"
           style={{
             background:
               "linear-gradient(#FFFFFF 5%, #79CFDC 15%, #79CFDC 85%, #FFFFFF 95%)",
