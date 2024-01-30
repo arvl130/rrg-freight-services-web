@@ -38,6 +38,7 @@
     "leaflet-arrowheads": "^1.4.0",
     "luxon": "^3.4.4",
     "mysql2": "^3.6.5",
+    "nanoid": "^5.0.4",
     "next": "14.0.4",
     "postcss": "8.4.32",
     "qrcode": "^1.5.3",
