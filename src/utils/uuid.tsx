@@ -1,3 +1,7 @@
+import { customAlphabet } from "nanoid"
+
+const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const nanoid = customAlphabet(alphabet, 12)
 export function generateUniqueId() {
-  return crypto.randomUUID()
+  return `RRG-${nanoid()}`
 }
