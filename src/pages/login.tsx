@@ -172,6 +172,7 @@ export default function LoginPage() {
                 } catch (e) {
                   if (e instanceof FirebaseError) {
                     if (
+                      e.code === "auth/invalid-credential" ||
                       e.code === "auth/invalid-login-credentials" ||
                       e.code === "auth/wrong-password" ||
                       e.code === "auth/user-not-found"
