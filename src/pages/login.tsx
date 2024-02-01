@@ -15,15 +15,17 @@ import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { SkeletonGenericLayout } from "@/layouts/generic"
 
 const formSchema = z.object({
-  email: z.string().email(),
-  password: z
+  email: z
     .string()
     .min(1, {
-      message: "Please enter your password",
+      message: "Please enter your email.",
     })
-    .min(8, {
-      message: "Your password should be at least 8 characters long",
+    .email({
+      message: "This email has an invalid format.",
     }),
+  password: z.string().min(1, {
+    message: "Please enter your password.",
+  }),
 })
 
 type FormType = z.infer<typeof formSchema>
@@ -246,7 +248,7 @@ export default function LoginPage() {
                   })}
                 />
                 {errors.email && (
-                  <p className="text-red-600 mt-1">{errors.email.message}.</p>
+                  <p className="text-red-600 mt-1">{errors.email.message}</p>
                 )}
               </div>
               <div className="mt-4">
@@ -276,9 +278,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-600 mt-1">
-                    {errors.password.message}.
-                  </p>
+                  <p className="text-red-600 mt-1">{errors.password.message}</p>
                 )}
               </div>
               <div className="text-right mt-1">
