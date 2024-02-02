@@ -23,14 +23,19 @@ export async function notifyByEmail({
 }
 
 export async function notifyBySms({ to, body }: { to: string; body: string }) {
-  await fetch(`${serverEnv.SMS_API_URL}/sms?apiKey=${serverEnv.SMS_API_KEY}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      to,
-      body,
-    }),
-  })
+  if (serverEnv.IS_SMS_ENABLED === "1") {
+    await fetch(
+      `${serverEnv.SMS_API_URL}/sms?apiKey=${serverEnv.SMS_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to,
+          body,
+        }),
+      },
+    )
+  }
 }
