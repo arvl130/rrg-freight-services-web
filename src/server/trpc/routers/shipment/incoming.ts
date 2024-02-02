@@ -19,9 +19,8 @@ import {
 import { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
-import { Resend } from "resend"
-import { serverEnv } from "@/server/env.mjs"
 import { generateUniqueId } from "@/utils/uuid"
+import { notifyByEmail } from "@/server/notification"
 
 export const incomingShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -143,7 +142,6 @@ export const incomingShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const newPackageIds: string[] = []
-      const resend = new Resend(serverEnv.RESEND_API_KEY)
 
       for (const newPackage of input.newPackages) {
         const packageId = generateUniqueId()
@@ -163,23 +161,18 @@ export const incomingShipmentRouter = router({
           createdAt: new Date(),
         })
 
+        await notifyByEmail({
+          to: newPackage.senderEmailAddress,
+          subject: `Your package has been registered`,
+          htmlBody: `<p>Your package with ID ${packageId} has been registered to our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
+        })
+        await notifyByEmail({
+          to: newPackage.receiverEmailAddress,
+          subject: "A package will be sent to you",
+          htmlBody: `<p>A package with ID ${packageId} will be sent to you through our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
+        })
+
         newPackageIds.push(packageId)
-
-        if (serverEnv.IS_EMAIL_ENABLED === "1") {
-          await resend.emails.send({
-            from: `RRG Freight Services Updates <noreply@${serverEnv.MAIL_FROM_URL}>`,
-            to: newPackage.senderEmailAddress,
-            subject: `Your package has been registered`,
-            html: `<p>Your package with ID ${packageId} has been registered to our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
-          })
-
-          await resend.emails.send({
-            from: `RRG Freight Services Updates <noreply@${serverEnv.MAIL_FROM_URL}>`,
-            to: newPackage.receiverEmailAddress,
-            subject: "A package will be sent to you",
-            html: `<p>A package with ID ${packageId} will be sent to you through our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
-          })
-        }
       }
 
       const [result] = (await ctx.db.insert(shipments).values({

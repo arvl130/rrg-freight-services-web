@@ -14,8 +14,7 @@ import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
 import { DateTime } from "luxon"
 import { generateOtp } from "@/utils/uuid"
-import { serverEnv } from "@/server/env.mjs"
-import { Resend } from "resend"
+import { notifyByEmail } from "@/server/notification"
 
 export const deliveryShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -175,15 +174,11 @@ export const deliveryShipmentRouter = router({
             .from(packages)
             .where(eq(packages.id, packageId))
 
-          if (serverEnv.IS_EMAIL_ENABLED === "1") {
-            const resend = new Resend(serverEnv.RESEND_API_KEY)
-            await resend.emails.send({
-              from: `RRG Freight Services Updates <noreply@${serverEnv.MAIL_FROM_URL}>`,
-              to: receiverEmailAddress,
-              subject: `Your package will be delivered soon`,
-              html: `<p>Your package with ID ${packageId} will be delivered soon. Upon receiving, please enter the following code ${code} in our driver app for verification. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
-            })
-          }
+          await notifyByEmail({
+            to: receiverEmailAddress,
+            subject: `Your package will be delivered soon`,
+            htmlBody: `<p>Your package with ID ${packageId} will be delivered soon. Upon receiving, please enter the following code ${code} in our driver app for verification. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
+          })
         }
       })
     }),
