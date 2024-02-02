@@ -14,7 +14,7 @@ import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
 import { DateTime } from "luxon"
 import { generateOtp } from "@/utils/uuid"
-import { notifyByEmail } from "@/server/notification"
+import { notifyByEmail, notifyBySms } from "@/server/notification"
 
 export const deliveryShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -169,7 +169,7 @@ export const deliveryShipmentRouter = router({
             createdAt: new Date(),
           })
 
-          const [{ receiverEmailAddress }] = await tx
+          const [{ receiverEmailAddress, receiverContactNumber }] = await tx
             .select()
             .from(packages)
             .where(eq(packages.id, packageId))
@@ -178,6 +178,11 @@ export const deliveryShipmentRouter = router({
             to: receiverEmailAddress,
             subject: `Your package will be delivered soon`,
             htmlBody: `<p>Your package with ID ${packageId} will be delivered soon. Upon receiving, please enter the following code ${code} in our driver app for verification. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
+          })
+
+          await notifyBySms({
+            to: receiverContactNumber,
+            body: `Your package ${packageId} will be delivered soon. Enter the code ${code} for verification.`,
           })
         }
       })
