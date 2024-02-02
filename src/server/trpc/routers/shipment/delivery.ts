@@ -6,6 +6,7 @@ import {
   shipmentPackages,
   packageStatusLogs,
   shipmentPackageOtps,
+  packages,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -13,6 +14,8 @@ import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
 import { DateTime } from "luxon"
 import { generateOtp } from "@/utils/uuid"
+import { serverEnv } from "@/server/env.mjs"
+import { Resend } from "resend"
 
 export const deliveryShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -130,39 +133,58 @@ export const deliveryShipmentRouter = router({
         })
       }
 
-      const [result] = (await ctx.db.insert(shipments).values({
-        type: "DELIVERY",
-        status: "PREPARING",
-      })) as unknown as [ResultSetHeader]
-      const shipmentId = result.insertId
+      await ctx.db.transaction(async (tx) => {
+        const [result] = (await tx.insert(shipments).values({
+          type: "DELIVERY",
+          status: "PREPARING",
+        })) as unknown as [ResultSetHeader]
+        const shipmentId = result.insertId
 
-      await ctx.db.insert(deliveryShipments).values({
-        shipmentId,
-        driverId: input.driverId,
-        vehicleId: input.vehicleId,
-        isExpress: input.isExpress ? 1 : 0,
+        await tx.insert(deliveryShipments).values({
+          shipmentId,
+          driverId: input.driverId,
+          vehicleId: input.vehicleId,
+          isExpress: input.isExpress ? 1 : 0,
+        })
+
+        for (const packageId of input.packageIds) {
+          await tx.insert(shipmentPackages).values({
+            shipmentId,
+            packageId,
+          })
+
+          const code = generateOtp()
+
+          await tx.insert(shipmentPackageOtps).values({
+            shipmentId,
+            packageId,
+            code,
+            expireAt: otpExpiryDate.toISO(),
+          })
+
+          await tx.insert(packageStatusLogs).values({
+            packageId,
+            createdById: ctx.user.uid,
+            description: getDescriptionForNewPackageStatusLog("SORTING"),
+            status: "SORTING",
+            createdAt: new Date(),
+          })
+
+          const [{ receiverEmailAddress }] = await tx
+            .select()
+            .from(packages)
+            .where(eq(packages.id, packageId))
+
+          if (serverEnv.IS_EMAIL_ENABLED === "1") {
+            const resend = new Resend(serverEnv.RESEND_API_KEY)
+            await resend.emails.send({
+              from: `RRG Freight Services Updates <noreply@${serverEnv.MAIL_FROM_URL}>`,
+              to: receiverEmailAddress,
+              subject: `Your package will be delivered soon`,
+              html: `<p>Your package with ID ${packageId} will be delivered soon. Upon receiving, please enter the following code ${code} in our driver app for verification. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
+            })
+          }
+        }
       })
-
-      for (const packageId of input.packageIds) {
-        await ctx.db.insert(shipmentPackages).values({
-          shipmentId,
-          packageId,
-        })
-
-        await ctx.db.insert(shipmentPackageOtps).values({
-          shipmentId,
-          packageId,
-          code: generateOtp(),
-          expireAt: otpExpiryDate.toISO(),
-        })
-
-        await ctx.db.insert(packageStatusLogs).values({
-          packageId,
-          createdById: ctx.user.uid,
-          description: getDescriptionForNewPackageStatusLog("SORTING"),
-          status: "SORTING",
-          createdAt: new Date(),
-        })
-      }
     }),
 })
