@@ -28,11 +28,20 @@ export default async function handler(
     return
   }
 
-  const { id, imageUrl } = inputSchema.parse({
-    id: Number(req.query.id as string),
+  const parseResult = inputSchema.safeParse({
+    id: req.query.id as string,
     imageUrl: req.body.imageUrl as string,
   })
 
+  if (!parseResult.success) {
+    res.status(400).json({
+      message: "Bad request",
+      error: parseResult.error,
+    })
+    return
+  }
+
+  const { id, imageUrl } = parseResult.data
   const packagesResults = await db
     .select()
     .from(packages)
