@@ -170,24 +170,14 @@ export const incomingShipmentRouter = router({
             from: `noreply@${serverEnv.MAIL_FROM_URL}`,
             to: newPackage.senderEmailAddress,
             subject: `Your package has been registered`,
-            html: `<p>Your package with ID ${packageId
-              .toString()
-              .padStart(
-                4,
-                "0",
-              )} has been registered to our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
+            html: `<p>Your package with ID ${packageId} has been registered to our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
           })
 
           await resend.emails.send({
             from: `noreply@${serverEnv.MAIL_FROM_URL}`,
             to: newPackage.receiverEmailAddress,
             subject: "A package will be sent to you",
-            html: `<p>A package with ID ${packageId
-              .toString()
-              .padStart(
-                4,
-                "0",
-              )} will be sent to you through our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
+            html: `<p>A package with ID ${packageId} will be sent to you through our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
           })
         }
       }
