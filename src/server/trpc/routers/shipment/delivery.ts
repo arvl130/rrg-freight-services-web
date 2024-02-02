@@ -5,11 +5,14 @@ import {
   deliveryShipments,
   shipmentPackages,
   packageStatusLogs,
+  shipmentPackageOtps,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
+import { DateTime } from "luxon"
+import { generateOtp } from "@/utils/uuid"
 
 export const deliveryShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -113,6 +116,20 @@ export const deliveryShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const otpExpiryDate = DateTime.now()
+        .setZone("Asia/Manila")
+        .startOf("day")
+        .plus({
+          day: 2,
+        })
+
+      if (!otpExpiryDate.isValid) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "OTP Expiry Date is invalid",
+        })
+      }
+
       const [result] = (await ctx.db.insert(shipments).values({
         type: "DELIVERY",
         status: "PREPARING",
@@ -130,6 +147,13 @@ export const deliveryShipmentRouter = router({
         await ctx.db.insert(shipmentPackages).values({
           shipmentId,
           packageId,
+        })
+
+        await ctx.db.insert(shipmentPackageOtps).values({
+          shipmentId,
+          packageId,
+          code: generateOtp(),
+          expireAt: otpExpiryDate.toISO(),
         })
 
         await ctx.db.insert(packageStatusLogs).values({

@@ -5,3 +5,7 @@ const nanoid = customAlphabet(alphabet, 12)
 export function generateUniqueId() {
   return `RRG-${nanoid()}`
 }
+
+export function generateOtp() {
+  return Math.floor(Math.random() * 900000) + 100000
+}
