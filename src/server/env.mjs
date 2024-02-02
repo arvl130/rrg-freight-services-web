@@ -11,6 +11,8 @@ export const serverEnv = createEnv({
     RESEND_API_KEY: z.string().min(1),
     MAIL_FROM_URL: z.string().min(1),
     IS_EMAIL_ENABLED: z.union([z.literal("0"), z.literal("1")]),
+    SMS_API_URL: z.string().min(1).url(),
+    SMS_API_KEY: z.string().min(1),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -21,5 +23,7 @@ export const serverEnv = createEnv({
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     MAIL_FROM_URL: process.env.MAIL_FROM_URL,
     IS_EMAIL_ENABLED: process.env.IS_EMAIL_ENABLED,
+    SMS_API_URL: process.env.SMS_API_URL,
+    SMS_API_KEY: process.env.SMS_API_KEY,
   },
 })
