@@ -4,6 +4,7 @@ import {
   packageStatusLogs,
   packages,
   shipmentPackageOtps,
+  shipmentPackages,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { HttpError } from "@/utils/errors"
@@ -137,6 +138,18 @@ export default async function handler(
           proofOfDeliveryImgUrl: imageUrl,
         })
         .where(eq(packages.id, packageId))
+
+      await tx
+        .update(shipmentPackages)
+        .set({
+          status: "COMPLETED" as const,
+        })
+        .where(
+          and(
+            eq(shipmentPackages.shipmentId, shipmentId),
+            eq(shipmentPackages.packageId, packageId),
+          ),
+        )
 
       await tx.insert(packageStatusLogs).values({
         packageId,

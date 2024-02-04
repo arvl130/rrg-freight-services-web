@@ -190,6 +190,7 @@ export const incomingShipmentRouter = router({
         await ctx.db.insert(shipmentPackages).values({
           shipmentId,
           packageId,
+          status: "IN_TRANSIT",
         })
       }
     }),

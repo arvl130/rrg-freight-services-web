@@ -7,7 +7,7 @@ import {
   forwarderTransferShipments,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
-import { eq } from "drizzle-orm"
+import { and, eq, inArray } from "drizzle-orm"
 import type { NextApiRequest, NextApiResponse } from "next"
 import { ZodError, z } from "zod"
 
@@ -74,17 +74,33 @@ export default async function handler(
       .from(shipmentPackages)
       .where(eq(shipmentPackages.shipmentId, transferShipmentId))
 
-    for (const { packageId } of transferShipmentPackagesResults) {
-      await db.insert(packageStatusLogs).values({
+    const newPackageStatusLogs = transferShipmentPackagesResults.map(
+      ({ packageId }) => ({
         packageId,
         createdById: session.user.uid,
         description: getDescriptionForNewPackageStatusLog(
           "TRANSFERRED_FORWARDER",
         ),
-        status: "TRANSFERRED_FORWARDER",
+        status: "TRANSFERRED_FORWARDER" as const,
         createdAt: new Date(),
+      }),
+    )
+
+    await db
+      .update(shipmentPackages)
+      .set({
+        status: "COMPLETED" as const,
       })
-    }
+      .where(
+        and(
+          eq(shipmentPackages.shipmentId, transferShipmentId),
+          inArray(
+            shipmentPackages.packageId,
+            transferShipmentPackagesResults.map(({ packageId }) => packageId),
+          ),
+        ),
+      )
+    await db.insert(packageStatusLogs).values(newPackageStatusLogs)
 
     res.json({
       message: "Transfer shipment status updated",

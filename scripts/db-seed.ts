@@ -7,11 +7,17 @@ import { drizzle } from "drizzle-orm/mysql2"
 import { NewUser, NewVehicle, NewWarehouse } from "@/server/db/entities"
 
 const pool = mysql.createPool({
-  uri: serverEnv.DATABASE_URL,
+  uri:
+    serverEnv.APP_ENV === "production"
+      ? serverEnv.PROD_DATABASE_URL
+      : serverEnv.DEV_DATABASE_URL,
 })
 
 const db = drizzle(pool, {
-  mode: serverEnv.DATABASE_MODE,
+  mode:
+    serverEnv.APP_ENV === "production"
+      ? serverEnv.PROD_DATABASE_MODE
+      : serverEnv.DEV_DATABASE_MODE,
   schema,
 })
 

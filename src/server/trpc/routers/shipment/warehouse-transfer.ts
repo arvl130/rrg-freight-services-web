@@ -154,6 +154,7 @@ export const warehouseTransferShipmentRouter = router({
         await ctx.db.insert(shipmentPackages).values({
           packageId,
           shipmentId,
+          status: "PREPARING",
         })
 
         await ctx.db.insert(packageStatusLogs).values({

@@ -101,15 +101,16 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
   const [scannedPackageIds, setScannedPackageIds] = useState<string[]>([])
 
   const utils = api.useUtils()
-  const { isLoading, mutate } = api.packageStatusLog.createMany.useMutation({
-    onSuccess: () => {
-      utils.package.getWithLatestStatusByShipmentId.invalidate({
-        shipmentId: shipmentId,
-      })
-      utils.package.getAll.invalidate()
-      setScannedPackageIds([])
-    },
-  })
+  const { isLoading, mutate } =
+    api.shipment.package.updateManyToCompletedStatus.useMutation({
+      onSuccess: () => {
+        utils.package.getWithLatestStatusByShipmentId.invalidate({
+          shipmentId: shipmentId,
+        })
+        utils.package.getAll.invalidate()
+        setScannedPackageIds([])
+      },
+    })
 
   if (status === "loading") return <div>Loading ...</div>
   if (status === "error") return <div>Error: {error.message}</div>
@@ -195,18 +196,16 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
           disabled={isLoading || scannedPackageIds.length === 0}
           onClick={() => {
             const auth = getAuth()
-            const newStatusLogs = scannedPackageIds.map((packageId) => ({
-              packageId,
-              status: "TRANSFERRING_WAREHOUSE" as const,
+            mutate({
+              shipmentId,
+              shipmentPackageStatus: "IN_TRANSIT" as const,
+              packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
+              packageStatus: "TRANSFERRING_WAREHOUSE" as const,
               description: getDescriptionForNewPackageStatusLog(
                 "TRANSFERRING_WAREHOUSE",
               ),
               createdAt: new Date(),
               createdById: auth.currentUser!.uid,
-            }))
-
-            mutate({
-              newStatusLogs: [newStatusLogs[0], ...newStatusLogs.slice(1)],
             })
           }}
         >

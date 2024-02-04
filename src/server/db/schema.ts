@@ -8,6 +8,7 @@ import {
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
   SUPPORTED_VEHICLE_TYPES,
   SUPPORTED_SHIPMENT_TYPES,
+  SUPPORTED_SHIPMENT_PACKAGE_STATUSES,
 } from "../../utils/constants"
 import {
   bigint,
@@ -56,6 +57,7 @@ export const shipmentPackages = mysqlTable(
       mode: "number",
     }).notNull(),
     packageId: varchar("package_id", { length: 36 }).notNull(),
+    status: mysqlEnum("status", SUPPORTED_SHIPMENT_PACKAGE_STATUSES).notNull(),
   },
   (table) => ({
     pk: primaryKey({

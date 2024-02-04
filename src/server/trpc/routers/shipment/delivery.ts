@@ -150,6 +150,7 @@ export const deliveryShipmentRouter = router({
           await tx.insert(shipmentPackages).values({
             shipmentId,
             packageId,
+            status: "PREPARING",
           })
 
           const code = generateOtp()
