@@ -167,7 +167,7 @@ function IncomingPackageSummaryTile() {
         <thead>
           <tr>
             <th className="font-light text-sm text-gray-400	">Origin Country</th>
-            <th className="font-light text-sm text-gray-400	">Arrived Date</th>
+            <th className="font-light text-sm text-gray-400	">Completed Date</th>
           </tr>
         </thead>
         <tbody>

@@ -104,7 +104,7 @@ export const deliveryShipmentRouter = router({
       await ctx.db
         .update(shipments)
         .set({
-          status: "ARRIVED",
+          status: "COMPLETED",
         })
         .where(eq(shipments.id, input.id))
     }),

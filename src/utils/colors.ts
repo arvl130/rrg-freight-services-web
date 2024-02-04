@@ -18,7 +18,7 @@ export function getColorFromPackageStatus(status: PackageStatus) {
 const shipmentStatusColors: Record<ShipmentStatus, string> = {
   PREPARING: "bg-pink-500",
   IN_TRANSIT: "bg-blue-500",
-  ARRIVED: "bg-green-500",
+  COMPLETED: "bg-green-500",
   FAILED: "bg-red-500",
 }
 

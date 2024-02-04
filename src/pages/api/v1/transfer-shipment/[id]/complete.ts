@@ -58,7 +58,7 @@ export default async function handler(
     await db
       .update(shipments)
       .set({
-        status: "ARRIVED",
+        status: "COMPLETED",
       })
       .where(eq(shipments.id, transferShipmentId))
 
@@ -90,7 +90,7 @@ export default async function handler(
       message: "Transfer shipment status updated",
       transferShipment: {
         ...transferShipment,
-        status: "ARRIVED",
+        status: "COMPLETED",
       },
     })
   } catch (e) {

@@ -50,7 +50,7 @@ export default async function handler(
     await db
       .update(shipments)
       .set({
-        status: "ARRIVED",
+        status: "COMPLETED",
       })
       .where(eq(shipments.id, deliveryId))
 
@@ -58,7 +58,7 @@ export default async function handler(
       message: "Delivery status updated",
       delivery: {
         ...delivery,
-        status: "ARRIVED",
+        status: "COMPLETED",
       },
     })
   } catch (e) {

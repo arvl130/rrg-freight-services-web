@@ -37,10 +37,19 @@ export const SUPPORTED_PACKAGE_RECEPTION_MODES = [
 export type PackageReceptionMode =
   (typeof SUPPORTED_PACKAGE_RECEPTION_MODES)[number]
 
+export const SUPPORTED_SHIPMENT_PACKAGE_STATUSES = [
+  "PREPARING",
+  "IN_TRANSIT",
+  "COMPLETED",
+  "FAILED",
+] as const
+export type ShipmentPackageStatus =
+  (typeof SUPPORTED_SHIPMENT_PACKAGE_STATUSES)[number]
+
 export const SUPPORTED_SHIPMENT_STATUSES = [
   "PREPARING",
   "IN_TRANSIT",
-  "ARRIVED",
+  "COMPLETED",
   "FAILED",
 ] as const
 export type ShipmentStatus = (typeof SUPPORTED_SHIPMENT_STATUSES)[number]
@@ -48,7 +57,7 @@ export type ShipmentStatus = (typeof SUPPORTED_SHIPMENT_STATUSES)[number]
 const shipmentStatusHumanized: Record<ShipmentStatus, string> = {
   PREPARING: "Preparing",
   IN_TRANSIT: "In Transit",
-  ARRIVED: "Arrived",
+  COMPLETED: "Completed",
   FAILED: "Failed",
 }
 
@@ -106,7 +115,7 @@ export function getDescriptionForNewPackageStatusLog(
 const shipmentStatusLogWithDescriptions: Record<ShipmentStatus, string> = {
   PREPARING: "Shipment is currently being prepared.",
   IN_TRANSIT: "Shipment is currently in transit.",
-  ARRIVED: "Shipment has arrived in its destination.",
+  COMPLETED: "Shipment has succesfully reached its destination.",
   FAILED: "Shipment failed to reach its destination.",
 }
 
