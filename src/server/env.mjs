@@ -3,8 +3,17 @@ import { z } from "zod"
 
 export const serverEnv = createEnv({
   server: {
-    DATABASE_URL: z.string().min(1).url(),
-    DATABASE_MODE: z.union([z.literal("default"), z.literal("planetscale")]),
+    APP_ENV: z.union([z.literal("development"), z.literal("production")]),
+    DEV_DATABASE_URL: z.string().min(1).url(),
+    DEV_DATABASE_MODE: z.union([
+      z.literal("default"),
+      z.literal("planetscale"),
+    ]),
+    PROD_DATABASE_URL: z.string().min(1).url(),
+    PROD_DATABASE_MODE: z.union([
+      z.literal("default"),
+      z.literal("planetscale"),
+    ]),
     FIREBASE_ADMIN_PROJECT_ID: z.string().min(1),
     FIREBASE_ADMIN_PRIVATE_KEY: z.string().min(1),
     FIREBASE_ADMIN_CLIENT_EMAIL: z.string().min(1).email(),
@@ -16,8 +25,11 @@ export const serverEnv = createEnv({
     IS_SMS_ENABLED: z.union([z.literal("0"), z.literal("1")]),
   },
   runtimeEnv: {
-    DATABASE_URL: process.env.DATABASE_URL,
-    DATABASE_MODE: process.env.DATABASE_MODE,
+    APP_ENV: process.env.APP_ENV,
+    DEV_DATABASE_URL: process.env.DEV_DATABASE_URL,
+    DEV_DATABASE_MODE: process.env.DEV_DATABASE_MODE,
+    PROD_DATABASE_URL: process.env.PROD_DATABASE_URL,
+    PROD_DATABASE_MODE: process.env.PROD_DATABASE_MODE,
     FIREBASE_ADMIN_PROJECT_ID: process.env.FIREBASE_ADMIN_PROJECT_ID,
     FIREBASE_ADMIN_PRIVATE_KEY: process.env.FIREBASE_ADMIN_PRIVATE_KEY,
     FIREBASE_ADMIN_CLIENT_EMAIL: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,

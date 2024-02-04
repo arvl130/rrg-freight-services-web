@@ -4,7 +4,10 @@ import { MySql2Database, drizzle } from "drizzle-orm/mysql2"
 import * as schema from "./schema"
 
 const poolConnection = mysql.createPool({
-  uri: serverEnv.DATABASE_URL,
+  uri:
+    serverEnv.APP_ENV === "production"
+      ? serverEnv.PROD_DATABASE_URL
+      : serverEnv.DEV_DATABASE_URL,
 })
 
 const globalForDrizzle = globalThis as unknown as {
@@ -14,7 +17,10 @@ const globalForDrizzle = globalThis as unknown as {
 export const db =
   globalForDrizzle.db ||
   drizzle(poolConnection, {
-    mode: serverEnv.DATABASE_MODE,
+    mode:
+      serverEnv.APP_ENV === "production"
+        ? serverEnv.PROD_DATABASE_MODE
+        : serverEnv.DEV_DATABASE_MODE,
     schema,
   })
 
