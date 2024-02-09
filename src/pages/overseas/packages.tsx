@@ -1,134 +1,245 @@
 import { OverseasLayout } from "@/layouts/overseas"
 import { useSession } from "@/utils/auth"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
-import { Export } from "@phosphor-icons/react/Export"
-import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
-import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
-import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
 import { Package } from "@/server/db/entities"
-import { getColorFromPackageStatus } from "@/utils/colors"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import * as Table from "@/components/table"
+import * as Page from "@/components/page"
 import { ViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { ViewDetailsModal } from "@/components/packages/view-details-modal"
+import { PackageShippingType } from "@/utils/constants"
+import { usePaginatedItems } from "@/hooks/paginated-items"
+import { getColorFromPackageStatus } from "@/utils/colors"
 import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 
-function PageHeader() {
+function TableItem({ package: _package }: { package: Package }) {
+  const [visibleModal, setVisibleModal] = useState<
+    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "EDIT_STATUS" | "VIEW_WAYBILL"
+  >(null)
+
   return (
-    <div className="flex justify-between mb-4">
-      <h1 className="text-3xl font-black [color:_#00203F] mb-2">Packages</h1>
+    <div className="grid grid-cols-[10rem_repeat(3,_1fr)] border-b border-gray-300 text-sm">
+      <div className="px-4 py-2 flex items-center gap-1">
+        <input type="checkbox" name="" id="" />
+        <p
+          className="whitespace-nowrap overflow-hidden text-ellipsis"
+          title={_package.id}
+        >
+          {_package.id}
+        </p>
+      </div>
+      <div className="px-4 py-2">
+        <div>{_package.senderFullName}</div>
+        <div className="text-gray-400">
+          <p>{_package.senderStreetAddress}</p>
+          <p>{_package.senderCity}</p>
+          <p>
+            {_package.senderStateOrProvince} {_package.senderPostalCode}{" "}
+            {_package.senderCountryCode}
+          </p>
+        </div>
+      </div>
+      <div className="px-4 py-2">
+        <div>{_package.receiverFullName}</div>
+        <div className="text-gray-400">
+          <p>{_package.receiverStreetAddress}</p>
+          <p>
+            Brgy. {_package.receiverBarangay}, {_package.receiverCity}
+          </p>
+          <p>
+            {_package.receiverStateOrProvince} {_package.receiverPostalCode}{" "}
+            {_package.receiverCountryCode}
+          </p>
+        </div>
+      </div>
+      <div className="px-4 py-2 flex items-center gap-2">
+        <div
+          className={`
+            w-36 py-0.5 text-white text-center rounded-md
+            ${getColorFromPackageStatus(_package.status)}
+          `}
+        >
+          {supportedPackageStatusToHumanized(_package.status)}
+        </div>
+
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button type="button">
+              <span className="sr-only">Actions</span>
+              <DotsThree size={16} />
+            </button>
+          </DropdownMenu.Trigger>
+
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm">
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("VIEW_DETAILS")}
+              >
+                View Details
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("VIEW_WAYBILL")}
+              >
+                View Waybill
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Arrow className="fill-white" />
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+
+        <ViewDetailsModal
+          package={_package}
+          isOpen={visibleModal === "VIEW_DETAILS"}
+          close={() => setVisibleModal(null)}
+        />
+        <ViewWaybillModal
+          package={_package}
+          isOpen={visibleModal === "VIEW_WAYBILL"}
+          close={() => setVisibleModal(null)}
+        />
+      </div>
     </div>
   )
 }
 
-function PackageTableItem({ package: _package }: { package: Package }) {
-  const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "VIEW_WAYBILL"
-  >(null)
-
-  return (
-    <>
-      <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
-        <div className="px-4 py-2 flex items-center gap-1">
-          <input type="checkbox" name="" id="" />
-          <span>{_package.id}</span>
-        </div>
-        <div className="px-4 py-2">
-          <div>{_package.senderFullName}</div>
-          <div className="text-gray-400">
-            <p>{_package.senderStreetAddress}</p>
-            <p>{_package.senderCity}</p>
-            <p>
-              {_package.senderStateOrProvince} {_package.senderPostalCode}{" "}
-              {_package.senderCountryCode}
-            </p>
-          </div>
-        </div>
-        <div className="px-4 py-2">
-          <div>{_package.receiverFullName}</div>
-          <div className="text-gray-400">
-            <p>{_package.receiverStreetAddress}</p>
-            <p>
-              Brgy. {_package.receiverBarangay}, {_package.receiverCity}
-            </p>
-            <p>
-              {_package.receiverStateOrProvince} {_package.receiverPostalCode}{" "}
-              {_package.receiverCountryCode}
-            </p>
-          </div>
-        </div>
-        <div className="px-4 py-2 flex items-center gap-2">
-          <div
-            className={`
-              w-36 py-0.5 text-white text-center rounded-md
-              ${getColorFromPackageStatus(_package.status)}
-            `}
-          >
-            {supportedPackageStatusToHumanized(_package.status)}
-          </div>
-
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button type="button">
-                <span className="sr-only">Actions</span>
-                <DotsThree size={16} />
-              </button>
-            </DropdownMenu.Trigger>
-
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm">
-                <DropdownMenu.Item
-                  className="transition-colors hover:bg-sky-50 px-3 py-2"
-                  onClick={() => setVisibleModal("VIEW_DETAILS")}
-                >
-                  View Details
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  className="transition-colors hover:bg-sky-50 px-3 py-2"
-                  onClick={() => setVisibleModal("VIEW_WAYBILL")}
-                >
-                  View Waybill
-                </DropdownMenu.Item>
-
-                <DropdownMenu.Arrow className="fill-white" />
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
-
-          <ViewDetailsModal
-            package={_package}
-            isOpen={visibleModal === "VIEW_DETAILS"}
-            close={() => setVisibleModal(null)}
-          />
-          <ViewWaybillModal
-            package={_package}
-            isOpen={visibleModal === "VIEW_WAYBILL"}
-            close={() => setVisibleModal(null)}
-          />
-        </div>
-      </div>
-    </>
+function filterBySearchTerm(items: Package[], searchTerm: string) {
+  return items.filter((_package) =>
+    _package.id.toString().toLowerCase().includes(searchTerm),
   )
 }
 
+function filterBySelectedTab(
+  items: Package[],
+  selectedTab: PackageShippingType | "ALL",
+) {
+  if (selectedTab === "ALL") return items
+
+  return items.filter((_package) => _package.shippingType === selectedTab)
+}
+
+function filterByArchiveStatus(items: Package[], isArchived: boolean) {
+  if (isArchived) return items.filter((_package) => _package.isArchived === 1)
+
+  return items.filter((_package) => _package.isArchived === 0)
+}
+
 function PackagesTable({ packages }: { packages: Package[] }) {
-  const [selectedTab, setSelectedTab] = useState<"ALL" | "ARCHIVED">("ALL")
-  const allPackages = packages.filter((_package) => _package.isArchived === 0)
-  const archivedPackages = packages.filter(
-    (_package) => _package.isArchived === 1,
+  const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
+    "ARCHIVED" | "NOT_ARCHIVED"
+  >("NOT_ARCHIVED")
+
+  const [selectedTab, setSelectedTab] = useState<
+    "EXPRESS" | "STANDARD" | "ALL"
+  >("EXPRESS")
+
+  const [searchTerm, setSearchTerm] = useState("")
+  const visiblePackages = filterBySearchTerm(
+    filterBySelectedTab(
+      filterByArchiveStatus(packages, visibleArchiveStatus === "ARCHIVED"),
+      selectedTab,
+    ),
+    searchTerm,
   )
 
+  const {
+    pageNumber,
+    pageSize,
+    pageCount,
+    isOnFirstPage,
+    isOnLastPage,
+    paginatedItems,
+    updatePageSize,
+    resetPageNumber,
+    gotoFirstPage,
+    gotoLastPage,
+    gotoPage,
+    gotoNextPage,
+    gotoPreviousPage,
+  } = usePaginatedItems({
+    items: visiblePackages,
+  })
+
   return (
-    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
-      <div className="flex justify-between mb-3">
-        <div className="flex gap-6">
-          <button
-            type="button"
-            className={`
+    <>
+      <Table.Filters>
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
+          <div>
+            <Table.SearchForm
+              updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
+              resetPageNumber={resetPageNumber}
+            />
+          </div>
+          <div className="flex gap-3 text-sm">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+              <option>Status</option>
+            </select>
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+              <option>Warehouse</option>
+            </select>
+            <select
+              className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+              value={visibleArchiveStatus}
+              onChange={(e) => {
+                if (e.currentTarget.value === "ARCHIVED")
+                  setVisibleArchiveStatus("ARCHIVED")
+                else setVisibleArchiveStatus("NOT_ARCHIVED")
+              }}
+            >
+              <option value="NOT_ARCHIVED">Not Archived</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
+            <button
+              type="button"
+              className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
+            >
+              Clear Filter
+            </button>
+          </div>
+          <div className="flex justify-end">
+            <Table.ExportButton records={paginatedItems} />
+          </div>
+        </div>
+      </Table.Filters>
+      <Table.Content>
+        <div className="flex justify-between mb-3">
+          <div className="flex gap-3">
+            <button
+              type="button"
+              className={`
+              text-lg pb-1 font-semibold border-b-2
+              ${
+                selectedTab === "EXPRESS"
+                  ? "text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+              onClick={() => setSelectedTab("EXPRESS")}
+            >
+              Express
+            </button>
+            <button
+              type="button"
+              className={`
+              text-lg pb-1 font-semibold border-b-2
+              ${
+                selectedTab === "STANDARD"
+                  ? "text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+              onClick={() => setSelectedTab("STANDARD")}
+            >
+              Standard
+            </button>
+            <button
+              type="button"
+              className={`
               text-lg pb-1 font-semibold border-b-2
               ${
                 selectedTab === "ALL"
@@ -136,167 +247,78 @@ function PackagesTable({ packages }: { packages: Package[] }) {
                   : "text-gray-400 border-b-transparent"
               }
             `}
-            onClick={() => setSelectedTab("ALL")}
-          >
-            All Packages
-          </button>
-          <button
-            type="button"
-            className={`
-              text-lg pb-1 font-semibold border-b-2
-              ${
-                selectedTab === "ARCHIVED"
-                  ? "text-brand-cyan-500 border-brand-cyan-500"
-                  : "text-gray-400 border-b-transparent"
-              }
-            `}
-            onClick={() => setSelectedTab("ARCHIVED")}
-          >
-            Archived Packages
-          </button>
-        </div>
-        <div className="flex gap-8">
-          <div>
-            Showing{" "}
-            <select className="bg-white border border-gray-300 px-2 py-1 w-16">
-              <option>All</option>
-            </select>{" "}
-            entries
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            <CaretLeft size={16} />
-            <CaretDoubleLeft size={16} />
-            <button
-              type="button"
-              className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
+              onClick={() => setSelectedTab("ALL")}
             >
-              1
+              All
             </button>
-            <button type="button" className="text-gray-400">
-              2
-            </button>
-            <button type="button" className="text-gray-400">
-              3
-            </button>
-            <button type="button" className="text-gray-400">
-              4
-            </button>
-            <span className="text-gray-400">...</span>
-            <button type="button" className="text-gray-400">
-              10
-            </button>
-            <CaretRight size={16} />
-            <CaretDoubleRight size={16} />
           </div>
+          <Table.Pagination
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            pageCount={pageCount}
+            isOnFirstPage={isOnFirstPage}
+            isOnLastPage={isOnLastPage}
+            updatePageSize={updatePageSize}
+            gotoFirstPage={gotoFirstPage}
+            gotoLastPage={gotoLastPage}
+            gotoPage={gotoPage}
+            gotoNextPage={gotoNextPage}
+            gotoPreviousPage={gotoPreviousPage}
+          />
         </div>
-      </div>
-      {/* Table */}
-      <div>
-        {/* Header */}
-        <div className="grid grid-cols-4 border-y border-gray-300 font-medium">
-          <div className="uppercase px-4 py-2 flex gap-1">
-            <input type="checkbox" name="" id="" />
-            <span>Product ID</span>
-          </div>
-          <div className="uppercase px-4 py-2">Sender</div>
-          <div className="uppercase px-4 py-2">Receiver</div>
-          <div className="uppercase px-4 py-2">Status</div>
+        <div>
+          <Table.Header>
+            <div className="grid grid-cols-[10rem_repeat(3,_1fr)]">
+              <div className="uppercase px-4 py-2 flex gap-1">
+                <input type="checkbox" />
+                <span>Package ID</span>
+              </div>
+              <div className="uppercase px-4 py-2">Sender</div>
+              <div className="uppercase px-4 py-2">Receiver</div>
+              <div className="uppercase px-4 py-2">Status</div>
+            </div>
+          </Table.Header>
+          {paginatedItems.length === 0 ? (
+            <div className="text-center pt-4">No packages found.</div>
+          ) : (
+            <div>
+              {paginatedItems.map((_package) => (
+                <TableItem key={_package.id} package={_package} />
+              ))}
+            </div>
+          )}
         </div>
-        {/* Body */}
-        {selectedTab === "ALL" ? (
-          <>
-            {allPackages.length === 0 ? (
-              <div className="text-center pt-4">No packages found.</div>
-            ) : (
-              <div>
-                {allPackages.map((_package) => (
-                  <PackageTableItem key={_package.id} package={_package} />
-                ))}
-              </div>
-            )}
-          </>
-        ) : (
-          <>
-            {archivedPackages.length === 0 ? (
-              <div className="text-center pt-4">No packages found.</div>
-            ) : (
-              <div>
-                {archivedPackages.map((_package) => (
-                  <PackageTableItem key={_package.id} package={_package} />
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
+      </Table.Content>
+    </>
   )
 }
 
 export default function PackagesPage() {
   const { user, role } = useSession()
   const {
-    isLoading,
-    isError,
+    status,
     data: packages,
+    error,
   } = api.package.getAll.useQuery(undefined, {
     enabled: user !== null && role === "OVERSEAS_AGENT",
   })
 
   return (
     <OverseasLayout title="Packages">
-      <PageHeader />
-      <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
-        <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
-          <input
-            type="text"
-            className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
-            placeholder="Quick search"
-          />
-          <button
-            type="button"
-            className="text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
-          >
-            <span className="sr-only">Search</span>
-            <MagnifyingGlass size={16} />
-          </button>
-        </div>
-        <div className="flex gap-3 text-sm">
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Status</option>
-          </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Warehouse</option>
-          </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">City</option>
-          </select>
-          <button
-            type="button"
-            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
-          >
-            Clear Filter
-          </button>
-        </div>
-        <div className="flex gap-3 text-sm">
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <Export size={16} />
-            <span>Export</span>
-          </button>
-        </div>
-      </div>
-      {isLoading ? (
+      <Page.Header>
+        <h1 className="text-2xl font-black [color:_#00203F] mb-2">Packages</h1>
+      </Page.Header>
+      {status === "loading" && (
         <div className="flex justify-center pt-4">
           <LoadingSpinner />
         </div>
-      ) : (
-        <>
-          {isError ? <>Error :{"("}</> : <PackagesTable packages={packages} />}
-        </>
       )}
+      {status === "error" && (
+        <div className="flex justify-center pt-4">
+          An error occured: {error.message}
+        </div>
+      )}
+      {status === "success" && <PackagesTable packages={packages} />}
     </OverseasLayout>
   )
 }
