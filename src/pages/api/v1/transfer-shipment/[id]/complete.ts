@@ -5,6 +5,7 @@ import {
   shipments,
   shipmentPackages,
   forwarderTransferShipments,
+  packages,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { and, eq, inArray } from "drizzle-orm"
@@ -98,6 +99,18 @@ export default async function handler(
             shipmentPackages.packageId,
             transferShipmentPackagesResults.map(({ packageId }) => packageId),
           ),
+        ),
+      )
+
+    await db
+      .update(packages)
+      .set({
+        status: "TRANSFERRED_FORWARDER",
+      })
+      .where(
+        inArray(
+          packages.id,
+          transferShipmentPackagesResults.map(({ packageId }) => packageId),
         ),
       )
     await db.insert(packageStatusLogs).values(newPackageStatusLogs)

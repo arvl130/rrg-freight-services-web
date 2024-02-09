@@ -1,13 +1,7 @@
 import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
-import {
-  packages,
-  shipments,
-  shipmentPackages,
-  packageStatusLogs,
-} from "@/server/db/schema"
-import { and, eq, isNull, lt } from "drizzle-orm"
-import { alias } from "drizzle-orm/mysql-core"
+import { packages, shipments, shipmentPackages } from "@/server/db/schema"
+import { eq } from "drizzle-orm"
 import type { NextApiRequest, NextApiResponse } from "next"
 import { ZodError, z } from "zod"
 
@@ -52,29 +46,13 @@ export default async function handler(
       return
     }
 
-    const psl1 = alias(packageStatusLogs, "psl1")
-    const psl2 = alias(packageStatusLogs, "psl2")
-
     const shipmentPackagesResults = await db
       .select()
       .from(shipmentPackages)
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
-      .innerJoin(psl1, eq(packages.id, psl1.packageId))
-      .leftJoin(
-        psl2,
-        and(
-          eq(psl1.packageId, psl2.packageId),
-          lt(psl1.createdAt, psl2.createdAt),
-        ),
-      )
-      .where(and(isNull(psl2.id), eq(shipmentPackages.shipmentId, deliveryId)))
-      .orderBy(packages.id)
 
     const packagesResults = shipmentPackagesResults.map(
-      ({ packages, psl1 }) => ({
-        ...packages,
-        status: psl1.status,
-      }),
+      ({ packages }) => packages,
     )
 
     res.json({

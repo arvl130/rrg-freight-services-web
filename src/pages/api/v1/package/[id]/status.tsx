@@ -57,30 +57,19 @@ export default async function handler(
       return
     }
 
-    const psl1 = alias(packageStatusLogs, "psl1")
-    const psl2 = alias(packageStatusLogs, "psl2")
-    const [
-      {
-        psl1: { status: latestStatus },
-      },
-    ] = await db
-      .select()
-      .from(psl1)
-      .leftJoin(
-        psl2,
-        and(
-          eq(psl1.packageId, psl2.packageId),
-          lt(psl1.createdAt, psl2.createdAt),
-        ),
-      )
-      .where(and(isNull(psl2.id), eq(psl1.packageId, packageId)))
-
-    if (latestStatus === status) {
+    if (packageResults[0].status === status) {
       res.status(400).json({
         message: "Already updated",
       })
       return
     }
+
+    await db
+      .update(packages)
+      .set({
+        status,
+      })
+      .where(eq(packages.id, packageId))
 
     const createdAt = new Date()
     const description = getDescriptionForNewPackageStatusLog(status)

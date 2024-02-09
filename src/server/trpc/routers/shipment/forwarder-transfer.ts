@@ -5,6 +5,7 @@ import {
   shipmentPackages,
   forwarderTransferShipments,
   packageStatusLogs,
+  packages,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
@@ -156,6 +157,13 @@ export const forwarderTransferShipmentRouter = router({
           shipmentId,
           status: "PREPARING",
         })
+
+        await ctx.db
+          .update(packages)
+          .set({
+            status: "SORTING",
+          })
+          .where(eq(packages.id, packageId))
 
         await ctx.db.insert(packageStatusLogs).values({
           packageId,

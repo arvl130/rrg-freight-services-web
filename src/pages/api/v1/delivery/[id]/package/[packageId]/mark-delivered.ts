@@ -151,6 +151,13 @@ export default async function handler(
           ),
         )
 
+      await tx
+        .update(packages)
+        .set({
+          status: "DELIVERED",
+        })
+        .where(eq(shipmentPackages.packageId, packageId))
+
       await tx.insert(packageStatusLogs).values({
         packageId,
         createdById: session.user.uid,

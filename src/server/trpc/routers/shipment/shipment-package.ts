@@ -6,7 +6,11 @@ import {
   SUPPORTED_SHIPMENT_PACKAGE_STATUSES,
   ShipmentPackageStatus,
 } from "@/utils/constants"
-import { packageStatusLogs, shipmentPackages } from "@/server/db/schema"
+import {
+  packageStatusLogs,
+  packages,
+  shipmentPackages,
+} from "@/server/db/schema"
 import { and, eq, inArray } from "drizzle-orm"
 
 export const shipmentPackageRouter = router({
@@ -39,6 +43,12 @@ export const shipmentPackageRouter = router({
 
       await ctx.db.transaction(async (tx) => {
         await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
+        await tx
+          .update(packages)
+          .set({
+            status: input.packageStatus,
+          })
+          .where(inArray(shipmentPackages.packageId, input.packageIds))
         await tx
           .update(shipmentPackages)
           .set({

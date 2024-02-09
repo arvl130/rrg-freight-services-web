@@ -291,6 +291,7 @@ export const packages = mysqlTable("packages", {
   packageCategoryId: bigint("package_category_id", {
     mode: "number",
   }),
+  status: mysqlEnum("status", SUPPORTED_PACKAGE_STATUSES).notNull(),
 })
 
 export const packageStatusLogs = mysqlTable("package_status_logs", {

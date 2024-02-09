@@ -162,6 +162,13 @@ export const deliveryShipmentRouter = router({
             expireAt: otpExpiryDate.toISO(),
           })
 
+          await tx
+            .update(packages)
+            .set({
+              status: "SORTING",
+            })
+            .where(eq(packages.id, packageId))
+
           await tx.insert(packageStatusLogs).values({
             packageId,
             createdById: ctx.user.uid,

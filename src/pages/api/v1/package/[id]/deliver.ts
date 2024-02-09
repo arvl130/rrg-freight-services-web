@@ -62,6 +62,7 @@ export default async function handler(
   await db
     .update(packages)
     .set({
+      status: "DELIVERED",
       proofOfDeliveryImgUrl: imageUrl,
     })
     .where(eq(packages.id, id))

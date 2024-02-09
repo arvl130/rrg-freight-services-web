@@ -151,7 +151,15 @@ export const incomingShipmentRouter = router({
           createdById: ctx.user.uid,
           updatedById: ctx.user.uid,
           isFragile: newPackage.isFragile ? 1 : 0,
+          status: "INCOMING",
         })
+
+        await ctx.db
+          .update(packages)
+          .set({
+            status: "INCOMING",
+          })
+          .where(eq(packages.id, packageId))
 
         await ctx.db.insert(packageStatusLogs).values({
           packageId,
