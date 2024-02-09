@@ -266,4 +266,28 @@ export const packageRouter = router({
       count: value,
     }
   }),
+  getTotalRushPackage: protectedProcedure.query(async ({ ctx }) => {
+    const rushPackageCount = await ctx.db
+      .select({
+        value: count(),
+      })
+      .from(packages)
+      .where(eq(packages.shippingType, "EXPRESS"))
+
+    return {
+      rushPackageCount,
+    }
+  }),
+
+  getTotalPackages: protectedProcedure.query(async ({ ctx }) => {
+    const totalPackagesCount = await ctx.db
+      .select({
+        value: count(),
+      })
+      .from(packages)
+
+    return {
+      totalPackagesCount,
+    }
+  }),
 })

@@ -80,4 +80,16 @@ export const shipmentPackageRouter = router({
       count: value,
     }
   }),
+  getTotalFailedShipment: protectedProcedure.query(async ({ ctx }) => {
+    const failedShipmentShippedCount = await ctx.db
+      .select({
+        value: count(),
+      })
+      .from(shipments)
+      .where(eq(shipments.status, "FAILED"))
+
+    return {
+      failedShipmentShippedCount,
+    }
+  }),
 })
