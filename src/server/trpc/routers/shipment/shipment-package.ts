@@ -48,7 +48,7 @@ export const shipmentPackageRouter = router({
           .set({
             status: input.packageStatus,
           })
-          .where(inArray(shipmentPackages.packageId, input.packageIds))
+          .where(inArray(packages.id, input.packageIds))
         await tx
           .update(shipmentPackages)
           .set({
