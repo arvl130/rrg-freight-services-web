@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { count, eq } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   packageStatusLogs,
@@ -243,4 +243,16 @@ export const packageRouter = router({
 
       return result.map(({ packages }) => packages)
     }),
+  getTotalPackageInWarehouse: protectedProcedure.query(async ({ ctx }) => {
+    const countResult = await ctx.db
+      .select({
+        value: count(),
+      })
+      .from(packageStatusLogs)
+      .where(eq(packageStatusLogs.status, "IN_WAREHOUSE"))
+
+    return {
+      countResult,
+    }
+  }),
 })
