@@ -192,14 +192,13 @@ export const userRouter = router({
 
     return results.map(({ users }) => users)
   }),
-
   getTotalActiveUsers: protectedProcedure.query(async ({ ctx }) => {
     const activeUsersCount = await ctx.db
       .select({
         value: count(),
       })
       .from(users)
-      .where(users.isEnabled)
+      .where(eq(users.isEnabled, 1))
 
     return {
       activeUsersCount,
