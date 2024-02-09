@@ -199,7 +199,7 @@ export const userRouter = router({
         value: count(),
       })
       .from(users)
-      .where(users.isEnabled, true)
+      .where(users.isEnabled)
 
     return {
       activeUsersCount,
