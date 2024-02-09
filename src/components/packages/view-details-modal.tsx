@@ -209,6 +209,12 @@ export function ViewDetailsModal({
                     <p className="text-gray-500 text-sm">
                       {_package.senderContactNumber}
                     </p>
+                    <p className="font-medium mt-2">
+                      Failed Attempts:{" "}
+                      <span className="text-gray-500 text-sm">
+                        {_package.failedAttempts}
+                      </span>
+                    </p>
                   </div>
                 </div>
               </div>
