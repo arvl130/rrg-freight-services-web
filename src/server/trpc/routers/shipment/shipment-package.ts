@@ -10,8 +10,9 @@ import {
   packageStatusLogs,
   packages,
   shipmentPackages,
+  shipments,
 } from "@/server/db/schema"
-import { and, eq, inArray, sql } from "drizzle-orm"
+import { and, count, eq, inArray, sql } from "drizzle-orm"
 
 export const shipmentPackageRouter = router({
   updateManyToCompletedStatus: protectedProcedure
@@ -66,4 +67,17 @@ export const shipmentPackageRouter = router({
           )
       })
     }),
+
+  getTotalShipmentShipped: protectedProcedure.query(async ({ ctx }) => {
+    const shipmentShippedCount = await ctx.db
+      .select({
+        value: count(),
+      })
+      .from(shipments)
+      .where(eq(shipments.status, "COMPLETED"))
+
+    return {
+      shipmentShippedCount,
+    }
+  }),
 })

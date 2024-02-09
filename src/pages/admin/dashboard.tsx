@@ -61,6 +61,11 @@ function ActiveUsersTile() {
 }
 
 function ManifestsShippedTile() {
+  const { data } = api.shipment.package.getTotalShipmentShipped.useQuery()
+
+  const totalShipmentShipped = data
+    ? data.shipmentShippedCount[0]?.value ?? 0
+    : 0
   return (
     <article
       className="
@@ -70,7 +75,7 @@ function ManifestsShippedTile() {
 "
     >
       <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">120</p>
+        <p className="text-4xl font-semibold">{totalShipmentShipped}</p>
         <p>Shipments shipped</p>
       </div>
       <div>
