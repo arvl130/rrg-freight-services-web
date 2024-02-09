@@ -2,7 +2,7 @@ import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
 import { shipments, deliveryShipments, users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
-import { and, eq, inArray, isNull } from "drizzle-orm"
+import { and, count, eq, inArray, isNull } from "drizzle-orm"
 import { updateProfile } from "@/server/auth"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
@@ -191,5 +191,38 @@ export const userRouter = router({
       )
 
     return results.map(({ users }) => users)
+  }),
+  getTotalActiveUsers: protectedProcedure.query(async ({ ctx }) => {
+    const activeUsersCount = await ctx.db
+      .select({
+        value: count(),
+      })
+      .from(users)
+      .where(eq(users.isEnabled, 1))
+
+    return {
+      activeUsersCount,
+    }
+  }),
+
+  getTotalUserStatus: protectedProcedure.query(async ({ ctx }) => {
+    const activeUsersCount = await ctx.db
+      .select({
+        active: count(),
+      })
+      .from(users)
+      .where(eq(users.isEnabled, 1))
+
+    const inactiveUsersCount = await ctx.db
+      .select({
+        inactive: count(),
+      })
+      .from(users)
+      .where(eq(users.isEnabled, 0))
+
+    return {
+      activeUsersCount,
+      inactiveUsersCount,
+    }
   }),
 })

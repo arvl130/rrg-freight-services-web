@@ -8,19 +8,26 @@ import { User } from "@phosphor-icons/react/User"
 import { UsersThree } from "@phosphor-icons/react/UsersThree"
 import { Package } from "@phosphor-icons/react/Package"
 import { Pie, Bar } from "react-chartjs-2"
+import { api } from "@/utils/api"
 
 function PackagesInWarehouseTile() {
+  const { data } = api.package.getTotalPackageInWarehouse.useQuery()
+
+  const totalInWarehouse = data ? data.countResult[0]?.value ?? 0 : 0
+
   return (
     <article
       className="
-  text-[#29727C]
-  grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-  bg-gradient-to-b from-[#79CFDCCC] to-[#79CFDC00]
-"
+        text-[#29727C]
+        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
+        bg-gradient-to-b from-[#79CFDCCC] to-[#79CFDC00]
+      "
     >
       <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">120</p>
-        <p>Packages in-warehouse</p>
+        <>
+          <p className="text-4xl font-semibold">{totalInWarehouse}</p>
+          <p>Packages in-warehouse</p>
+        </>
       </div>
       <div>
         <Package size={96} />
@@ -30,6 +37,10 @@ function PackagesInWarehouseTile() {
 }
 
 function ActiveUsersTile() {
+  const { data } = api.user.getTotalActiveUsers.useQuery()
+
+  const totalActiveUser = data ? data.activeUsersCount[0]?.value ?? 0 : 0
+
   return (
     <article
       className="
@@ -39,7 +50,7 @@ function ActiveUsersTile() {
 "
     >
       <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">120</p>
+        <p className="text-4xl font-semibold">{totalActiveUser}</p>
         <p>Active users</p>
       </div>
       <div>
@@ -50,6 +61,11 @@ function ActiveUsersTile() {
 }
 
 function ManifestsShippedTile() {
+  const { data } = api.shipment.package.getTotalShipmentShipped.useQuery()
+
+  const totalShipmentShipped = data
+    ? data.shipmentShippedCount[0]?.value ?? 0
+    : 0
   return (
     <article
       className="
@@ -59,7 +75,7 @@ function ManifestsShippedTile() {
 "
     >
       <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">120</p>
+        <p className="text-4xl font-semibold">{totalShipmentShipped}</p>
         <p>Shipments shipped</p>
       </div>
       <div>
@@ -126,6 +142,17 @@ function DeliverySummaryTile() {
     "DEC",
   ]
 
+  const { data } = api.packageStatusLog.getDeliverySummary.useQuery()
+
+  const deliverySummaryCount =
+    data && data.deliverySummaryCount ? data.deliverySummaryCount : []
+
+  const countByMonth = deliverySummaryCount.reduce((total, item) => {
+    const month = parseInt(String(item.month), 10) - 1
+    total[month] = item.value
+    return total
+  }, Array(12).fill(0))
+
   return (
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem]">
       <h2 className="font-semibold mb-2">Delivery Summary</h2>
@@ -139,10 +166,9 @@ function DeliverySummaryTile() {
           },
           scales: {
             y: {
-              suggestedMax: 400,
+              suggestedMax: Math.max(...countByMonth) + 100,
               ticks: {
-                // forces step size to be 100 units
-                stepSize: 100,
+                stepSize: 10,
               },
             },
           },
@@ -151,8 +177,8 @@ function DeliverySummaryTile() {
           labels,
           datasets: [
             {
-              label: "Dataset 1",
-              data: [10, 200, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+              label: "Packages",
+              data: countByMonth,
               backgroundColor: "rgba(255, 99, 132, 0.5)",
             },
           ],
@@ -189,6 +215,13 @@ function ManifestSummaryTile() {
 }
 
 function UserStatusTile() {
+  const { data } = api.user.getTotalUserStatus.useQuery()
+
+  const activeUsersCount = data ? data.activeUsersCount[0]?.active ?? 0 : 0
+  const inactiveUsersCount = data
+    ? data.inactiveUsersCount[0]?.inactive ?? 0
+    : 0
+
   return (
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
       <h2 className="font-semibold mb-2">User Status</h2>
@@ -205,7 +238,7 @@ function UserStatusTile() {
           datasets: [
             {
               label: "# of Users",
-              data: [50, 50],
+              data: [activeUsersCount, inactiveUsersCount],
               backgroundColor: [
                 "rgba(112, 48, 160, 1.0)",
                 "rgba(192, 0, 0, 1.0)",
