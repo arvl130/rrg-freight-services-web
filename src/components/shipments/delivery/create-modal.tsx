@@ -111,9 +111,9 @@ function ChoosePackageTable({
         )}
 
         {status === "success" && (
-          <article className="bg-white rounded-lg px-6 py-3 drop-shadow-md h-80">
+          <article className="bg-white rounded-lg px-6 py-3 drop-shadow-md h-80 overflow-auto">
             <div className="mb-2"></div>
-            <div className="text-sm">
+            <div className="text-sm overflow-auto">
               <div className="grid grid-cols-3 font-bold mb-1">
                 <div className=" py-2 flex items-center gap-1">
                   {packages.length === 0 ? (
