@@ -1,6 +1,6 @@
 import { and, eq, isNull, lt, sql } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { packageStatusLogs } from "@/server/db/schema"
+import { packageStatusLogs, packages } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { alias } from "drizzle-orm/mysql-core"
@@ -137,7 +137,15 @@ export const packageStatusLogRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(packageStatusLogs).values(input)
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(packages)
+          .set({
+            status: input.status,
+          })
+          .where(eq(packages.id, input.packageId))
+        await tx.insert(packageStatusLogs).values(input)
+      })
     }),
   createMany: protectedProcedure
     .input(
