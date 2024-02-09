@@ -148,7 +148,7 @@ function DeliverySummaryTile() {
     data && data.deliverySummaryCount ? data.deliverySummaryCount : []
 
   const countByMonth = deliverySummaryCount.reduce((total, item) => {
-    const month = parseInt(item.month, 10) - 1
+    const month = parseInt(String(item.month), 10) - 1
     total[month] = item.value
     return total
   }, Array(12).fill(0))
