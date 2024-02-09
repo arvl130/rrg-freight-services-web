@@ -13,8 +13,9 @@ import { ViewDetailsModal } from "@/components/packages/view-details-modal"
 import { EditDetailsModal } from "@/components/packages/edit-details-modal"
 import { EditStatusModal } from "@/components/packages/edit-status-modal"
 import { PackageShippingType } from "@/utils/constants"
-import { Status } from "@/components/packages/status"
 import { usePaginatedItems } from "@/hooks/paginated-items"
+import { getColorFromPackageStatus } from "@/utils/colors"
+import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 
 function TableItem({ package: _package }: { package: Package }) {
   const [visibleModal, setVisibleModal] = useState<
@@ -57,7 +58,14 @@ function TableItem({ package: _package }: { package: Package }) {
         </div>
       </div>
       <div className="px-4 py-2 flex items-center gap-2">
-        <Status packageId={_package.id} />
+        <div
+          className={`
+            w-36 py-0.5 text-white text-center rounded-md
+            ${getColorFromPackageStatus(_package.status)}
+          `}
+        >
+          {supportedPackageStatusToHumanized(_package.status)}
+        </div>
 
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>

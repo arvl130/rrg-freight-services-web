@@ -1,5 +1,4 @@
-import { DomesticLayout, SkeletonDomesticLayout } from "@/layouts/domestic"
-import { useSession } from "@/utils/auth"
+import { DomesticLayout } from "@/layouts/domestic"
 import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { Export } from "@phosphor-icons/react/Export"
@@ -13,65 +12,12 @@ import { getColorFromPackageStatus } from "@/utils/colors"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
+import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 
 function PageHeader() {
   return (
     <div className="flex justify-between mb-6">
       <h1 className="text-3xl font-black [color:_#00203F]">Packages</h1>
-    </div>
-  )
-}
-
-function PackageStatus({ packageId }: { packageId: string }) {
-  const {
-    isLoading,
-    isError,
-    data: packageStatusLog,
-  } = api.package.getLatestStatus.useQuery({
-    id: packageId,
-  })
-
-  if (isLoading)
-    return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        ...
-      </div>
-    )
-
-  if (isError)
-    return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        error
-      </div>
-    )
-
-  if (packageStatusLog === null)
-    return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        n/a
-      </div>
-    )
-
-  return (
-    <div
-      className={`
-      w-36 py-0.5 text-white text-center rounded-md
-      ${getColorFromPackageStatus(packageStatusLog.status)}
-  `}
-    >
-      {packageStatusLog.status.replaceAll("_", " ")}
     </div>
   )
 }
@@ -109,7 +55,15 @@ function PackageTableItem({ package: _package }: { package: Package }) {
           </div>
         </div>
         <div className="px-4 py-2 flex items-center gap-2">
-          <PackageStatus packageId={_package.id} />
+          <div
+            className={`
+            w-36 py-0.5 text-white text-center rounded-md
+            ${getColorFromPackageStatus(_package.status)}
+          `}
+          >
+            {supportedPackageStatusToHumanized(_package.status)}
+          </div>
+
           <button type="button">
             <span className="sr-only">Actions</span>
             <DotsThree size={16} />

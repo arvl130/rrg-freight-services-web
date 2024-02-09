@@ -1,8 +1,6 @@
 import React from "react"
-import { useEffect } from "react"
 import { WarehouseLayout } from "@/layouts/warehouse"
 import { useSession } from "@/utils/auth"
-import { Plus } from "@phosphor-icons/react/Plus"
 import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
 import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
 import { Export } from "@phosphor-icons/react/Export"
@@ -20,60 +18,7 @@ import { LoadingSpinner } from "@/components/spinner"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { ViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { ViewDetailsModal } from "@/components/packages/view-details-modal"
-
-function PackageStatus({ packageId }: { packageId: string }) {
-  const {
-    isLoading,
-    isError,
-    data: packageStatusLog,
-  } = api.package.getLatestStatus.useQuery({
-    id: packageId,
-  })
-
-  if (isLoading)
-    return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        ...
-      </div>
-    )
-
-  if (isError)
-    return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        error
-      </div>
-    )
-
-  if (packageStatusLog === null)
-    return (
-      <div
-        className="
-  w-36 py-0.5 text-white text-center rounded-md
-  "
-      >
-        n/a
-      </div>
-    )
-
-  return (
-    <div
-      style={{ fontSize: "12px" }}
-      className={`w-36 py-0.5 text-white text-center rounded-md
-    ${getColorFromPackageStatus(packageStatusLog.status)}
-  `}
-    >
-      {packageStatusLog.status.replaceAll("_", " ")}
-    </div>
-  )
-}
+import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 
 function SearchBar() {
   return (
@@ -306,7 +251,14 @@ function TableItem({ package: _package }: { package: Package }) {
           </div>
         </td>
         <td>
-          <PackageStatus packageId={_package.id} />
+          <div
+            className={`
+              w-36 py-0.5 text-white text-center rounded-md
+              ${getColorFromPackageStatus(_package.status)}
+            `}
+          >
+            {supportedPackageStatusToHumanized(_package.status)}
+          </div>
         </td>
         <td>
           <DropdownMenu.Root>

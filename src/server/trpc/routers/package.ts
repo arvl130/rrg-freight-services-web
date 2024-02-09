@@ -139,28 +139,6 @@ export const packageRouter = router({
           .where(inArray(packages.id, input.ids))
       }
     }),
-  getLatestStatus: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const results = await ctx.db
-        .select()
-        .from(packageStatusLogs)
-        .where(eq(packageStatusLogs.packageId, input.id))
-
-      if (results.length === 0) return null
-
-      let latestStatus = results[0]
-      for (const result of results) {
-        if (result.createdAt.getTime() > latestStatus.createdAt.getTime())
-          latestStatus = result
-      }
-
-      return latestStatus
-    }),
   createMany: protectedProcedure
     .input(
       z.object({
