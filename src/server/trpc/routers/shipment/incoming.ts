@@ -141,65 +141,67 @@ export const incomingShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const newPackageIds: string[] = []
+      const newPackages = input.newPackages.map((newPackage) => ({
+        ...newPackage,
+        id: generateUniqueId(),
+        createdById: ctx.user.uid,
+        updatedById: ctx.user.uid,
+        isFragile: newPackage.isFragile ? 1 : 0,
+        status: "INCOMING" as const,
+      }))
 
-      for (const newPackage of input.newPackages) {
-        const packageId = generateUniqueId()
-        await ctx.db.insert(packages).values({
-          ...newPackage,
-          id: packageId,
-          createdById: ctx.user.uid,
-          updatedById: ctx.user.uid,
-          isFragile: newPackage.isFragile ? 1 : 0,
-          status: "INCOMING",
-        })
+      const createdAt = new Date()
+      const newPackageStatusLogs = newPackages.map(({ id }) => ({
+        packageId: id,
+        createdById: ctx.user.uid,
+        description: getDescriptionForNewPackageStatusLog("INCOMING"),
+        status: "INCOMING" as const,
+        createdAt,
+      }))
 
-        await ctx.db
-          .update(packages)
-          .set({
-            status: "INCOMING",
-          })
-          .where(eq(packages.id, packageId))
+      const packageSenderEmailNotifications = newPackages.map(
+        ({ senderEmailAddress, id }) =>
+          notifyByEmail({
+            to: senderEmailAddress,
+            subject: `Your package has been registered`,
+            htmlBody: `<p>Your package with ID ${id} has been registered to our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
+          }),
+      )
 
-        await ctx.db.insert(packageStatusLogs).values({
-          packageId,
-          createdById: ctx.user.uid,
-          description: getDescriptionForNewPackageStatusLog("INCOMING"),
-          status: "INCOMING",
-          createdAt: new Date(),
-        })
+      const packageReceiverEmailNotifications = newPackages.map(
+        ({ receiverEmailAddress, id }) =>
+          notifyByEmail({
+            to: receiverEmailAddress,
+            subject: "A package will be sent to you",
+            htmlBody: `<p>A package with ID ${id} will be sent to you through our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
+          }),
+      )
 
-        await notifyByEmail({
-          to: newPackage.senderEmailAddress,
-          subject: `Your package has been registered`,
-          htmlBody: `<p>Your package with ID ${packageId} has been registered to our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
-        })
-        await notifyByEmail({
-          to: newPackage.receiverEmailAddress,
-          subject: "A package will be sent to you",
-          htmlBody: `<p>A package with ID ${packageId} will be sent to you through our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
-        })
+      await ctx.db.transaction(async (tx) => {
+        await tx.insert(packages).values(newPackages)
+        await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
 
-        newPackageIds.push(packageId)
-      }
-
-      const [result] = (await ctx.db.insert(shipments).values({
-        type: "INCOMING",
-        status: "IN_TRANSIT",
-      })) as unknown as [ResultSetHeader]
-      const shipmentId = result.insertId
-
-      await ctx.db.insert(incomingShipments).values({
-        shipmentId,
-        sentByAgentId: input.sentByAgentId,
-      })
-
-      for (const packageId of newPackageIds) {
-        await ctx.db.insert(shipmentPackages).values({
-          shipmentId,
-          packageId,
+        const [{ insertId: shipmentId }] = (await tx.insert(shipments).values({
+          type: "INCOMING",
           status: "IN_TRANSIT",
+        })) as unknown as [ResultSetHeader]
+
+        await tx.insert(incomingShipments).values({
+          shipmentId,
+          sentByAgentId: input.sentByAgentId,
         })
-      }
+
+        const newShipmentPackages = newPackages.map(({ id }) => ({
+          shipmentId,
+          packageId: id,
+          status: "IN_TRANSIT" as const,
+        }))
+
+        await tx.insert(shipmentPackages).values(newShipmentPackages)
+        await Promise.all([
+          ...packageSenderEmailNotifications,
+          ...packageReceiverEmailNotifications,
+        ])
+      })
     }),
 })
