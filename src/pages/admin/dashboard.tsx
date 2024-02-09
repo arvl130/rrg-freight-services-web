@@ -37,6 +37,10 @@ function PackagesInWarehouseTile() {
 }
 
 function ActiveUsersTile() {
+  const { data } = api.user.getTotalActiveUsers.useQuery()
+
+  const totalActiveUser = data ? data.activeUsersCount[0]?.value ?? 0 : 0
+
   return (
     <article
       className="
@@ -46,7 +50,7 @@ function ActiveUsersTile() {
 "
     >
       <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">120</p>
+        <p className="text-4xl font-semibold">{totalActiveUser}</p>
         <p>Active users</p>
       </div>
       <div>
