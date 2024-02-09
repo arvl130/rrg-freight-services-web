@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { count, eq } from "drizzle-orm"
 import { protectedProcedure, router } from "../../trpc"
 import {
   shipments,
@@ -11,10 +11,11 @@ import {
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
-import { ResultSetHeader } from "mysql2"
+import { ResultSetHeader, raw } from "mysql2"
 import { DateTime } from "luxon"
 import { generateOtp } from "@/utils/uuid"
 import { notifyByEmail, notifyBySms } from "@/server/notification"
+import { MySqlColumn } from "drizzle-orm/mysql-core"
 
 export const deliveryShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {

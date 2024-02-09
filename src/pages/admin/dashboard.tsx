@@ -142,6 +142,17 @@ function DeliverySummaryTile() {
     "DEC",
   ]
 
+  const { data } = api.packageStatusLog.getDeliverySummary.useQuery()
+
+  const deliverySummaryCount =
+    data && data.deliverySummaryCount ? data.deliverySummaryCount : []
+
+  const countByMonth = deliverySummaryCount.reduce((total, item) => {
+    const month = parseInt(item.month, 10) - 1
+    total[month] = item.value
+    return total
+  }, Array(12).fill(0))
+
   return (
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem]">
       <h2 className="font-semibold mb-2">Delivery Summary</h2>
@@ -155,10 +166,9 @@ function DeliverySummaryTile() {
           },
           scales: {
             y: {
-              suggestedMax: 400,
+              suggestedMax: Math.max(...countByMonth) + 100,
               ticks: {
-                // forces step size to be 100 units
-                stepSize: 100,
+                stepSize: 10,
               },
             },
           },
@@ -167,8 +177,8 @@ function DeliverySummaryTile() {
           labels,
           datasets: [
             {
-              label: "Data",
-              data: [10, 200, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+              label: "Packages",
+              data: countByMonth,
               backgroundColor: "rgba(255, 99, 132, 0.5)",
             },
           ],

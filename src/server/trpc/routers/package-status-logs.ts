@@ -1,4 +1,4 @@
-import { and, eq, isNull, lt, sql } from "drizzle-orm"
+import { and, count, eq, isNull, lt, sql } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
 import { packageStatusLogs } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
@@ -170,4 +170,30 @@ export const packageStatusLogRouter = router({
         .delete(packageStatusLogs)
         .where(eq(packageStatusLogs.id, input.id))
     }),
+
+  getDeliverySummary: protectedProcedure.query(async ({ ctx }) => {
+    const currentYear = new Date().getFullYear()
+
+    const deliverySummaryCount = await ctx.db
+      .select({
+        value: count(),
+        year: sql`YEAR(${packageStatusLogs.createdAt})`,
+        month: sql`MONTH(${packageStatusLogs.createdAt})`,
+      })
+      .from(packageStatusLogs)
+      .where(
+        and(
+          eq(packageStatusLogs.status, "DELIVERED"),
+          eq(sql`YEAR(${packageStatusLogs.createdAt})`, currentYear),
+        ),
+      )
+      .groupBy(
+        sql`YEAR(${packageStatusLogs.createdAt})`,
+        sql`MONTH(${packageStatusLogs.createdAt})`,
+      )
+
+    return {
+      deliverySummaryCount,
+    }
+  }),
 })
