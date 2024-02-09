@@ -80,6 +80,22 @@ export const deliveryShipmentRouter = router({
       }
     })
   }),
+  getInTransit: protectedProcedure.query(async ({ ctx }) => {
+    const results = await ctx.db
+      .select()
+      .from(deliveryShipments)
+      .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
+      .where(eq(shipments.status, "IN_TRANSIT"))
+
+    return results.map(({ shipments, delivery_shipments }) => {
+      const { shipmentId, ...other } = delivery_shipments
+
+      return {
+        ...shipments,
+        ...other,
+      }
+    })
+  }),
   updateStatusToInTransitById: protectedProcedure
     .input(
       z.object({

@@ -11,7 +11,7 @@ import {
   packages,
   shipmentPackages,
 } from "@/server/db/schema"
-import { and, eq, inArray } from "drizzle-orm"
+import { and, eq, inArray, sql } from "drizzle-orm"
 
 export const shipmentPackageRouter = router({
   updateManyToCompletedStatus: protectedProcedure
@@ -30,6 +30,7 @@ export const shipmentPackageRouter = router({
         description: z.string(),
         createdAt: z.date(),
         createdById: z.string().length(28),
+        isFailedAttempt: z.boolean().default(false),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -47,6 +48,9 @@ export const shipmentPackageRouter = router({
           .update(packages)
           .set({
             status: input.packageStatus,
+            failedAttempts: input.isFailedAttempt
+              ? sql`${packages.failedAttempts} + 1`
+              : undefined,
           })
           .where(inArray(packages.id, input.packageIds))
         await tx

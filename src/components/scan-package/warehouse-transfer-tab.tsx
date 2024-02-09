@@ -303,8 +303,8 @@ export function WarehouseTransferTab({
   selectedTab,
   setSelectedTab,
 }: {
-  selectedTab: ShipmentType
-  setSelectedTab: (tab: ShipmentType) => void
+  selectedTab: ShipmentType | "INCOMPLETE_DELIVERY"
+  setSelectedTab: (tab: ShipmentType | "INCOMPLETE_DELIVERY") => void
 }) {
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
     null,
@@ -340,6 +340,20 @@ export function WarehouseTransferTab({
           onClick={() => setSelectedTab("DELIVERY")}
         >
           Delivery
+        </button>
+        <button
+          type="button"
+          className={`
+              pb-1 font-semibold border-b-4 px-2
+              ${
+                selectedTab === "INCOMPLETE_DELIVERY"
+                  ? "border-b-4 text-brand-cyan-500 border-brand-cyan-500"
+                  : "text-gray-400 border-b-transparent"
+              }
+            `}
+          onClick={() => setSelectedTab("INCOMPLETE_DELIVERY")}
+        >
+          Incomplete Delivery
         </button>
         <button
           type="button"

@@ -5,9 +5,12 @@ import { WarehouseLayout } from "@/layouts/warehouse"
 import { useState } from "react"
 import type { ShipmentType } from "@/utils/constants"
 import { WarehouseTransferTab } from "@/components/scan-package/warehouse-transfer-tab"
+import { IncompleteDeliveryTab } from "@/components/scan-package/incomplete-delivery"
 
 export default function ScanPackagePage() {
-  const [selectedTab, setSelectedTab] = useState<ShipmentType>("INCOMING")
+  const [selectedTab, setSelectedTab] = useState<
+    ShipmentType | "INCOMPLETE_DELIVERY"
+  >("INCOMING")
 
   return (
     <WarehouseLayout title="Scan Package">
@@ -24,6 +27,12 @@ export default function ScanPackagePage() {
       )}
       {selectedTab === "DELIVERY" && (
         <DeliveryTab
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+        />
+      )}
+      {selectedTab === "INCOMPLETE_DELIVERY" && (
+        <IncompleteDeliveryTab
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
         />

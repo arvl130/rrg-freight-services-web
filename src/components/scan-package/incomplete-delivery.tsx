@@ -121,7 +121,7 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
         packageIds={packages.map((_package) => _package.id)}
         scannedPackageIds={scannedPackageIds}
         updatedPackageIds={packages
-          .filter((_package) => _package.status === "DELIVERING")
+          .filter((_package) => _package.status === "IN_WAREHOUSE")
           .map((_package) => _package.id)}
         onSubmitValidPackageId={(packageId) =>
           setScannedPackageIds((currScannedPackageIds) => [
@@ -154,10 +154,10 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
               <ArrowRight size={24} />
               <span
                 className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
-                  "DELIVERING",
+                  "IN_WAREHOUSE",
                 )}`}
               >
-                {supportedPackageStatusToHumanized("DELIVERING")}
+                {supportedPackageStatusToHumanized("IN_WAREHOUSE")}
               </span>
             </div>
           ) : (
@@ -198,12 +198,13 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
             const auth = getAuth()
             mutate({
               shipmentId,
-              shipmentPackageStatus: "IN_TRANSIT" as const,
+              shipmentPackageStatus: "COMPLETED" as const,
               packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
-              packageStatus: "DELIVERING" as const,
-              description: getDescriptionForNewPackageStatusLog("DELIVERING"),
+              packageStatus: "IN_WAREHOUSE" as const,
+              description: getDescriptionForNewPackageStatusLog("IN_WAREHOUSE"),
               createdAt: new Date(),
               createdById: auth.currentUser!.uid,
+              isFailedAttempt: true,
             })
           }}
         >
@@ -225,7 +226,7 @@ function SelectShipment({
     status,
     data: shipments,
     error,
-  } = api.shipment.delivery.getPreparing.useQuery()
+  } = api.shipment.delivery.getInTransit.useQuery()
 
   if (status === "loading") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
@@ -249,7 +250,7 @@ function SelectShipment({
   )
 }
 
-function MarkAsInTransit({
+function MarkAsComplete({
   shipmentId,
   resetSelectedShipmentId,
 }: {
@@ -266,9 +267,9 @@ function MarkAsInTransit({
 
   const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.shipment.delivery.updateStatusToInTransitById.useMutation({
+    api.shipment.delivery.updateStatusToCompletedById.useMutation({
       onSuccess: () => {
-        utils.shipment.delivery.getPreparing.invalidate()
+        utils.shipment.delivery.getInTransit.invalidate()
         resetSelectedShipmentId()
       },
     })
@@ -277,14 +278,15 @@ function MarkAsInTransit({
   if (status === "error") return <p>Error {error.message}</p>
   if (packages.length === 0) return <p>No packages.</p>
 
-  const hasPendingPackages = packages.some(
-    (_package) => _package.status !== "DELIVERING",
+  const hasOutOfWarehouseOrUndeliveredPackages = packages.some(
+    (_package) =>
+      _package.status !== "IN_WAREHOUSE" && _package.status !== "DELIVERED",
   )
 
   return (
     <button
       type="button"
-      disabled={isLoading || hasPendingPackages}
+      disabled={isLoading || hasOutOfWarehouseOrUndeliveredPackages}
       className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 text-white px-4 py-2 rounded-lg transition-colors font-medium"
       onClick={() => {
         mutate({
@@ -292,12 +294,12 @@ function MarkAsInTransit({
         })
       }}
     >
-      Mark as In Transit
+      Mark as Complete
     </button>
   )
 }
 
-export function DeliveryTab({
+export function IncompleteDeliveryTab({
   selectedTab,
   setSelectedTab,
 }: {
@@ -392,7 +394,7 @@ export function DeliveryTab({
 
         <div>
           {selectedShipmentId && (
-            <MarkAsInTransit
+            <MarkAsComplete
               shipmentId={selectedShipmentId}
               resetSelectedShipmentId={() => setSelectedShipmentId(null)}
             />
