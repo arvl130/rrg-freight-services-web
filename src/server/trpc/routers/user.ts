@@ -204,4 +204,25 @@ export const userRouter = router({
       activeUsersCount,
     }
   }),
+
+  getTotalUserStatus: protectedProcedure.query(async ({ ctx }) => {
+    const activeUsersCount = await ctx.db
+      .select({
+        active: count(),
+      })
+      .from(users)
+      .where(eq(users.isEnabled, 1))
+
+    const inactiveUsersCount = await ctx.db
+      .select({
+        inactive: count(),
+      })
+      .from(users)
+      .where(eq(users.isEnabled, 0))
+
+    return {
+      activeUsersCount,
+      inactiveUsersCount,
+    }
+  }),
 })

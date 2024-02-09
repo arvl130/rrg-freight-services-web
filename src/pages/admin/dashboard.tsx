@@ -167,7 +167,7 @@ function DeliverySummaryTile() {
           labels,
           datasets: [
             {
-              label: "Dataset 1",
+              label: "Data",
               data: [10, 200, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
               backgroundColor: "rgba(255, 99, 132, 0.5)",
             },
@@ -205,6 +205,13 @@ function ManifestSummaryTile() {
 }
 
 function UserStatusTile() {
+  const { data } = api.user.getTotalUserStatus.useQuery()
+
+  const activeUsersCount = data ? data.activeUsersCount[0]?.active ?? 0 : 0
+  const inactiveUsersCount = data
+    ? data.inactiveUsersCount[0]?.inactive ?? 0
+    : 0
+
   return (
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
       <h2 className="font-semibold mb-2">User Status</h2>
@@ -221,7 +228,7 @@ function UserStatusTile() {
           datasets: [
             {
               label: "# of Users",
-              data: [50, 50],
+              data: [activeUsersCount, inactiveUsersCount],
               backgroundColor: [
                 "rgba(112, 48, 160, 1.0)",
                 "rgba(192, 0, 0, 1.0)",

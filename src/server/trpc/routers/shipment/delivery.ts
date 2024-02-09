@@ -211,4 +211,52 @@ export const deliveryShipmentRouter = router({
         }
       })
     }),
+
+  getDeliverySummary: protectedProcedure.query(async ({ ctx }) => {
+    const results = await ctx.db
+      .select()
+      .from(deliveryShipments)
+      .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
+      .innerJoin(
+        shipmentPackages,
+        eq(deliveryShipments.shipmentId, shipmentPackages.shipmentId),
+      )
+      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+      .where(eq(shipments.type, "DELIVERY"))
+      .groupBy(deliveryShipments.shipmentId)
+      .select(
+        ctx.db.raw("COUNT(DISTINCT packages.id) as totalPackages"),
+        ctx.db.raw(
+          'SUM(CASE WHEN shipments.status = "PREPARING" THEN 1 ELSE 0 END) as preparingCount',
+        ),
+        ctx.db.raw(
+          'SUM(CASE WHEN shipments.status = "IN_TRANSIT" THEN 1 ELSE 0 END) as inTransitCount',
+        ),
+        ctx.db.raw(
+          'SUM(CASE WHEN shipments.status = "COMPLETED" THEN 1 ELSE 0 END) as completedCount',
+        ),
+      )
+
+    return results.map(
+      ({
+        shipments,
+        delivery_shipments,
+        totalPackages,
+        preparingCount,
+        inTransitCount,
+        completedCount,
+      }) => {
+        const { shipmentId, ...other } = delivery_shipments
+
+        return {
+          ...shipments,
+          ...other,
+          totalPackages,
+          preparingCount,
+          inTransitCount,
+          completedCount,
+        }
+      },
+    )
+  }),
 })
