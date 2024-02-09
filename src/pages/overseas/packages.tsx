@@ -17,7 +17,7 @@ import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 
 function TableItem({ package: _package }: { package: Package }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "EDIT_STATUS" | "VIEW_WAYBILL"
+    null | "VIEW_DETAILS" | "VIEW_WAYBILL"
   >(null)
 
   return (
