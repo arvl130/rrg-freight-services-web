@@ -23,11 +23,13 @@ function ScanPackageForm({
   packageIds,
   scannedPackageIds,
   updatedPackageIds,
+  deliveredPackageIds,
   onSubmitValidPackageId,
 }: {
   packageIds: string[]
   scannedPackageIds: string[]
   updatedPackageIds: string[]
+  deliveredPackageIds: string[]
   onSubmitValidPackageId: (packageId: string) => void
 }) {
   const {
@@ -56,6 +58,13 @@ function ScanPackageForm({
     <form
       className="mb-3"
       onSubmit={handleSubmit((formData) => {
+        if (deliveredPackageIds.includes(formData.packageId)) {
+          toast("Delivered packages cannot be returned to the warehouse.", {
+            icon: "❌",
+          })
+          return
+        }
+
         if (updatedPackageIds.includes(formData.packageId)) {
           toast("Package was updated already.", {
             icon: "⚠️",
@@ -132,6 +141,9 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
         scannedPackageIds={scannedPackageIds}
         updatedPackageIds={packages
           .filter((_package) => _package.status === "IN_WAREHOUSE")
+          .map((_package) => _package.id)}
+        deliveredPackageIds={packages
+          .filter((_package) => _package.status === "DELIVERED")
           .map((_package) => _package.id)}
         onSubmitValidPackageId={(packageId) =>
           setScannedPackageIds((currScannedPackageIds) => [
