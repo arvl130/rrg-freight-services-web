@@ -69,7 +69,7 @@ export const shipmentPackageRouter = router({
     }),
 
   getTotalShipmentShipped: protectedProcedure.query(async ({ ctx }) => {
-    const shipmentShippedCount = await ctx.db
+    const [{ value }] = await ctx.db
       .select({
         value: count(),
       })
@@ -77,7 +77,7 @@ export const shipmentPackageRouter = router({
       .where(eq(shipments.status, "COMPLETED"))
 
     return {
-      shipmentShippedCount,
+      count: value,
     }
   }),
 })

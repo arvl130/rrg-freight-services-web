@@ -11,9 +11,7 @@ import { Pie, Bar } from "react-chartjs-2"
 import { api } from "@/utils/api"
 
 function PackagesInWarehouseTile() {
-  const { data } = api.package.getTotalPackageInWarehouse.useQuery()
-
-  const totalInWarehouse = data ? data.countResult[0]?.value ?? 0 : 0
+  const { status, data } = api.package.getTotalPackageInWarehouse.useQuery()
 
   return (
     <article
@@ -25,7 +23,11 @@ function PackagesInWarehouseTile() {
     >
       <div className="flex flex-col justify-center items-start">
         <>
-          <p className="text-4xl font-semibold">{totalInWarehouse}</p>
+          <p className="text-4xl font-semibold">
+            {status === "loading" && <>...</>}
+            {status === "error" && <>error</>}
+            {status === "success" && <>{data.count}</>}
+          </p>
           <p>Packages in-warehouse</p>
         </>
       </div>
@@ -37,9 +39,7 @@ function PackagesInWarehouseTile() {
 }
 
 function ActiveUsersTile() {
-  const { data } = api.user.getTotalActiveUsers.useQuery()
-
-  const totalActiveUser = data ? data.activeUsersCount[0]?.value ?? 0 : 0
+  const { status, data } = api.user.getTotalActiveUsers.useQuery()
 
   return (
     <article
@@ -50,7 +50,11 @@ function ActiveUsersTile() {
 "
     >
       <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">{totalActiveUser}</p>
+        <p className="text-4xl font-semibold">
+          {status === "loading" && <>...</>}
+          {status === "error" && <>error</>}
+          {status === "success" && <>{data.count}</>}
+        </p>
         <p>Active users</p>
       </div>
       <div>
@@ -61,11 +65,9 @@ function ActiveUsersTile() {
 }
 
 function ManifestsShippedTile() {
-  const { data } = api.shipment.package.getTotalShipmentShipped.useQuery()
+  const { status, data } =
+    api.shipment.package.getTotalShipmentShipped.useQuery()
 
-  const totalShipmentShipped = data
-    ? data.shipmentShippedCount[0]?.value ?? 0
-    : 0
   return (
     <article
       className="
@@ -75,7 +77,11 @@ function ManifestsShippedTile() {
 "
     >
       <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">{totalShipmentShipped}</p>
+        <p className="text-4xl font-semibold">
+          {status === "loading" && <>...</>}
+          {status === "error" && <>error</>}
+          {status === "success" && <>{data.count}</>}
+        </p>
         <p>Shipments shipped</p>
       </div>
       <div>
