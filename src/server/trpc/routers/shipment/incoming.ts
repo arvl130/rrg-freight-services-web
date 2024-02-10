@@ -160,21 +160,19 @@ export const incomingShipmentRouter = router({
       }))
 
       const packageSenderEmailNotifications = newPackages.map(
-        ({ senderEmailAddress, id }) =>
-          notifyByEmail({
-            to: senderEmailAddress,
-            subject: `Your package has been registered`,
-            htmlBody: `<p>Your package with ID ${id} has been registered to our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
-          }),
+        ({ senderEmailAddress, id }) => ({
+          to: senderEmailAddress,
+          subject: `Your package has been registered`,
+          htmlBody: `<p>Your package with ID ${id} has been registered to our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
+        }),
       )
 
       const packageReceiverEmailNotifications = newPackages.map(
-        ({ receiverEmailAddress, id }) =>
-          notifyByEmail({
-            to: receiverEmailAddress,
-            subject: "A package will be sent to you",
-            htmlBody: `<p>A package with ID ${id} will be sent to you through our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
-          }),
+        ({ receiverEmailAddress, id }) => ({
+          to: receiverEmailAddress,
+          subject: "A package will be sent to you",
+          htmlBody: `<p>A package with ID ${id} will be sent to you through our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
+        }),
       )
 
       await ctx.db.transaction(async (tx) => {
@@ -199,8 +197,8 @@ export const incomingShipmentRouter = router({
 
         await tx.insert(shipmentPackages).values(newShipmentPackages)
         await Promise.all([
-          ...packageSenderEmailNotifications,
-          ...packageReceiverEmailNotifications,
+          ...packageSenderEmailNotifications.map((e) => notifyByEmail(e)),
+          ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
         ])
       })
     }),
