@@ -1,4 +1,4 @@
-import { count, eq } from "drizzle-orm"
+import { and, count, eq, lt } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   packageStatusLogs,
@@ -226,6 +226,17 @@ export const packageRouter = router({
       .select()
       .from(packages)
       .where(eq(packages.status, "IN_WAREHOUSE"))
+  }),
+  getInWarehouseAndCanBeDelivered: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select()
+      .from(packages)
+      .where(
+        and(
+          eq(packages.status, "IN_WAREHOUSE"),
+          lt(packages.failedAttempts, 3),
+        ),
+      )
   }),
   getWithLatestStatusByShipmentId: protectedProcedure
     .input(
