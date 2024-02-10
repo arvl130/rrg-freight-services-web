@@ -105,7 +105,6 @@ export default async function handler(
           and(
             eq(shipmentPackageOtps.shipmentId, shipmentId),
             eq(shipmentPackageOtps.packageId, packageId),
-            eq(shipmentPackageOtps.code, code),
             eq(shipmentPackageOtps.isValid, 1),
             gt(shipmentPackageOtps.expireAt, date.toISO()),
           ),
