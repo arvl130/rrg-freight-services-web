@@ -3,7 +3,7 @@ import { getColorFromPackageStatus } from "@/utils/colors"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
@@ -34,12 +34,20 @@ function ScanPackageForm({
     handleSubmit,
     register,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm<ScanPackageSchemaFormType>({
     mode: "onSubmit",
     reValidateMode: "onSubmit",
     resolver: zodResolver(scanPackageSchemaFormSchema),
   })
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset({
+        packageId: "",
+      })
+    }
+  }, [isSubmitSuccessful, reset])
 
   return (
     <form
@@ -65,7 +73,6 @@ function ScanPackageForm({
         }
 
         onSubmitValidPackageId(formData.packageId)
-        reset()
       })}
     >
       <div className="grid grid-cols-[1fr_auto] gap-3">
