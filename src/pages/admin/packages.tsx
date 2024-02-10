@@ -134,7 +134,7 @@ function TableItem({ package: _package }: { package: Package }) {
 
 function filterBySearchTerm(items: Package[], searchTerm: string) {
   return items.filter((_package) =>
-    _package.id.toString().toLowerCase().includes(searchTerm),
+    _package.id.toString().toLowerCase().includes(searchTerm.toLowerCase()),
   )
 }
 
