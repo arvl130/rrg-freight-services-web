@@ -5,6 +5,7 @@ import {
   shipmentPackageOtps,
   deliveryShipments,
 } from "@/server/db/schema"
+import { notifyByEmail, notifyBySms } from "@/server/notification"
 import { HttpError } from "@/utils/errors"
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -54,13 +55,17 @@ export default async function handler(
         validationError: parseResult.error,
       })
 
-    const date = DateTime.now().setZone("Asia/Manila")
+    const date = DateTime.now().setZone("Asia/Manila").plus({
+      minutes: 5,
+    })
+
     if (!date.isValid)
       throw new HttpError({
         message: "Current date is invalid.",
         statusCode: HTTP_STATUS_SERVER_ERROR,
       })
 
+    const expireAt = date.toISO()
     const { shipmentId, packageId } = parseResult.data
 
     await db.transaction(async (tx) => {
@@ -98,12 +103,28 @@ export default async function handler(
           statusCode: HTTP_STATUS_SERVER_ERROR,
         })
 
+      const code = generateOtp()
+      const [{ id, receiverEmailAddress, receiverContactNumber }] =
+        packagesResults
+
       await tx.insert(shipmentPackageOtps).values({
         shipmentId,
         packageId,
-        code: generateOtp(),
-        expireAt: date.toISO(),
+        code,
+        expireAt,
       })
+
+      await Promise.all([
+        notifyByEmail({
+          to: receiverEmailAddress,
+          subject: `Your package will be delivered soon`,
+          htmlBody: `<p>Your package with ID ${id} will be delivered soon. Upon receiving, please enter the following code ${code} in our driver app for verification. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
+        }),
+        notifyBySms({
+          to: receiverContactNumber,
+          body: `Your package ${id} will be delivered soon. Enter the code ${code} for verification.`,
+        }),
+      ])
     })
 
     res.json({
