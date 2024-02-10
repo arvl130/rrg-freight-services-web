@@ -1,4 +1,4 @@
-import { count, eq } from "drizzle-orm"
+import { and, eq, inArray, lt } from "drizzle-orm"
 import { protectedProcedure, router } from "../../trpc"
 import {
   shipments,
@@ -15,7 +15,6 @@ import { ResultSetHeader, raw } from "mysql2"
 import { DateTime } from "luxon"
 import { generateOtp } from "@/utils/uuid"
 import { notifyByEmail, notifyBySms } from "@/server/notification"
-import { MySqlColumn } from "drizzle-orm/mysql-core"
 
 export const deliveryShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -145,16 +144,60 @@ export const deliveryShipmentRouter = router({
       if (!otpExpiryDate.isValid) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "OTP Expiry Date is invalid",
+          message: "OTP Expiry Date is invalid.",
         })
       }
 
+      const newPackageStatusLogs = input.packageIds.map((packageId) => ({
+        packageId,
+        createdById: ctx.user.uid,
+        description: getDescriptionForNewPackageStatusLog("SORTING"),
+        status: "SORTING" as const,
+        createdAt: new Date(),
+      }))
+
       await ctx.db.transaction(async (tx) => {
-        const [result] = (await tx.insert(shipments).values({
+        const packageResults = await tx
+          .select()
+          .from(packages)
+          .where(
+            and(
+              inArray(packages.id, input.packageIds),
+              lt(packages.failedAttempts, 3),
+            ),
+          )
+
+        if (packageResults.length !== input.packageIds.length) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "One or more package IDs are invalid.",
+          })
+        }
+
+        const packageResultsWithOtp = packageResults.map((_package) => ({
+          ..._package,
+          otp: generateOtp(),
+        }))
+
+        const packageReceiverEmailNotifications = packageResultsWithOtp.map(
+          ({ id, receiverEmailAddress, otp }) => ({
+            to: receiverEmailAddress,
+            subject: `Your package will be delivered soon`,
+            htmlBody: `<p>Your package with ID ${id} will be delivered soon. Upon receiving, please enter the following code ${otp} in our driver app for verification. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
+          }),
+        )
+
+        const packageReceiverSmsNotifications = packageResultsWithOtp.map(
+          ({ id, receiverContactNumber, otp }) => ({
+            to: receiverContactNumber,
+            body: `Your package ${id} will be delivered soon. Enter the code ${otp} for verification.`,
+          }),
+        )
+
+        const [{ insertId: shipmentId }] = (await tx.insert(shipments).values({
           type: "DELIVERY",
           status: "PREPARING",
         })) as unknown as [ResultSetHeader]
-        const shipmentId = result.insertId
 
         await tx.insert(deliveryShipments).values({
           shipmentId,
@@ -163,53 +206,34 @@ export const deliveryShipmentRouter = router({
           isExpress: input.isExpress ? 1 : 0,
         })
 
-        for (const packageId of input.packageIds) {
-          await tx.insert(shipmentPackages).values({
-            shipmentId,
-            packageId,
-            status: "PREPARING",
-          })
+        const newShipmentPackages = input.packageIds.map((packageId) => ({
+          shipmentId,
+          packageId,
+          status: "PREPARING" as const,
+        }))
 
-          const code = generateOtp()
-
-          await tx.insert(shipmentPackageOtps).values({
+        const newShipmentPackageOtps = packageResultsWithOtp.map(
+          ({ id, otp }) => ({
             shipmentId,
-            packageId,
-            code,
+            packageId: id,
+            code: otp,
             expireAt: otpExpiryDate.toISO(),
-          })
+          }),
+        )
 
-          await tx
-            .update(packages)
-            .set({
-              status: "SORTING",
-            })
-            .where(eq(packages.id, packageId))
-
-          await tx.insert(packageStatusLogs).values({
-            packageId,
-            createdById: ctx.user.uid,
-            description: getDescriptionForNewPackageStatusLog("SORTING"),
+        await tx.insert(shipmentPackages).values(newShipmentPackages)
+        await tx.insert(shipmentPackageOtps).values(newShipmentPackageOtps)
+        await tx
+          .update(packages)
+          .set({
             status: "SORTING",
-            createdAt: new Date(),
           })
-
-          const [{ receiverEmailAddress, receiverContactNumber }] = await tx
-            .select()
-            .from(packages)
-            .where(eq(packages.id, packageId))
-
-          await notifyByEmail({
-            to: receiverEmailAddress,
-            subject: `Your package will be delivered soon`,
-            htmlBody: `<p>Your package with ID ${packageId} will be delivered soon. Upon receiving, please enter the following code ${code} in our driver app for verification. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${packageId}">here</a> to track your package.</p>`,
-          })
-
-          await notifyBySms({
-            to: receiverContactNumber,
-            body: `Your package ${packageId} will be delivered soon. Enter the code ${code} for verification.`,
-          })
-        }
+          .where(inArray(packages.id, input.packageIds))
+        await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
+        await Promise.all([
+          ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
+          ...packageReceiverSmsNotifications.map((s) => notifyBySms(s)),
+        ])
       })
     }),
 })
