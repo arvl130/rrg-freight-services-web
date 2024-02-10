@@ -50,6 +50,7 @@ export default async function handler(
       .select()
       .from(shipmentPackages)
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+      .where(eq(shipmentPackages.shipmentId, deliveryId))
 
     const packagesResults = shipmentPackagesResults.map(
       ({ packages }) => packages,

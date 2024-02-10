@@ -96,7 +96,7 @@ export default async function handler(
         })
       }
 
-      await db
+      await tx
         .update(shipmentPackageOtps)
         .set({
           isValid: 0,
@@ -156,7 +156,7 @@ export default async function handler(
         .set({
           status: "DELIVERED",
         })
-        .where(eq(shipmentPackages.packageId, packageId))
+        .where(eq(packages.id, packageId))
 
       await tx.insert(packageStatusLogs).values({
         packageId,
