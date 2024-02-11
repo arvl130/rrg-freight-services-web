@@ -1,4 +1,3 @@
-import Head from "next/head"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CarouselSection } from "./carousel-section"
@@ -10,9 +9,7 @@ import { TrackSection } from "./track-section"
 export default function HomePage() {
   return (
     <>
-      <Head>
-        <title>Homepage &#x2013; RRG Freight Services</title>
-      </Head>
+      <title>Homepage &#x2013; RRG Freight Services</title>
       <Navbar />
       <main>
         <HeroSection />

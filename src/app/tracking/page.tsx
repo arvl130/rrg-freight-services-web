@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import Head from "next/head"
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import { VerticalTimeline } from "./timeline"
@@ -20,13 +19,13 @@ import { BrowsingPhoneVector } from "@/components/vector/browsing-phone"
 
 function TrackingPageHead() {
   return (
-    <Head>
+    <>
       <title>Tracking &#x2013; RRG Freight Services</title>
       <meta
         name="description"
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
-    </Head>
+    </>
   )
 }
 

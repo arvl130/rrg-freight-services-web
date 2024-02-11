@@ -1,6 +1,5 @@
 "use client"
 
-import Head from "next/head"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import Image from "next/image"
@@ -37,13 +36,11 @@ function HeroSection() {
 export default function AboutUsPage() {
   return (
     <>
-      <Head>
-        <title>About Us &#x2013; RRG Freight Services</title>
-        <meta
-          name="description"
-          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-        />
-      </Head>
+      <title>About Us &#x2013; RRG Freight Services</title>
+      <meta
+        name="description"
+        content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+      />
       <Navbar />
       <main>
         <HeroSection />

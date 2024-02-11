@@ -14,7 +14,6 @@ import { Boat } from "@phosphor-icons/react/Boat"
 import { Truck } from "@phosphor-icons/react/Truck"
 import { Warehouse } from "@phosphor-icons/react/Warehouse"
 import { User, getAuth, signOut } from "firebase/auth"
-import Head from "next/head"
 import Image from "next/image"
 import { ReactNode, useState } from "react"
 import { LoginPageHead } from "@/app/login/login-page-head"
@@ -158,13 +157,11 @@ export function AdminLayout({ title, children }: LayoutProps) {
   if (isLoading)
     return (
       <>
-        <Head>
-          <title>RRG Freight Services</title>
-          <meta
-            name="description"
-            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-          />
-        </Head>
+        <title>RRG Freight Services</title>
+        <meta
+          name="description"
+          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+        />
         <main className="min-h-screen bg-brand-cyan-100"></main>
       </>
     )
@@ -180,26 +177,22 @@ export function AdminLayout({ title, children }: LayoutProps) {
   if (role !== "ADMIN")
     return (
       <>
-        <Head>
-          <title>Dashboard &#x2013; RRG Freight Services</title>
-          <meta
-            name="description"
-            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-          />
-        </Head>
+        <title>Dashboard &#x2013; RRG Freight Services</title>
+        <meta
+          name="description"
+          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+        />
         <SkeletonGenericLayout />
       </>
     )
 
   return (
     <>
-      <Head>
-        <title>{titleContent}</title>
-        <meta
-          name="description"
-          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-        />
-      </Head>
+      <title>{titleContent}</title>
+      <meta
+        name="description"
+        content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+      />
       <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
         <AdminSideBar />
         <div className="bg-brand-cyan-100 px-6 py-4">

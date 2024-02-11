@@ -1,6 +1,5 @@
 "use client"
 
-import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
@@ -66,13 +65,11 @@ export default function LoginPage() {
   if (isLoading)
     return (
       <>
-        <Head>
-          <title>RRG Freight Services</title>
-          <meta
-            name="description"
-            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-          />
-        </Head>
+        <title>RRG Freight Services</title>
+        <meta
+          name="description"
+          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+        />
         <main className="min-h-screen bg-brand-cyan-100"></main>
       </>
     )
@@ -80,13 +77,11 @@ export default function LoginPage() {
   if (user !== null)
     return (
       <>
-        <Head>
-          <title>Dashboard &#x2013; RRG Freight Services</title>
-          <meta
-            name="description"
-            content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-          />
-        </Head>
+        <title>Dashboard &#x2013; RRG Freight Services</title>
+        <meta
+          name="description"
+          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+        />
         <SkeletonGenericLayout />
       </>
     )
