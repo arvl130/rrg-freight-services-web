@@ -2,7 +2,7 @@
 
 import { AdminLayout } from "@/layouts/admin"
 import { useState } from "react"
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 import { Plus } from "@phosphor-icons/react/Plus"
 import { CreateModal } from "@/components/shipments/incoming/create-modal"
 import { api } from "@/utils/api"

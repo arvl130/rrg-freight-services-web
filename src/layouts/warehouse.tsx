@@ -1,4 +1,4 @@
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 import { Gauge } from "@phosphor-icons/react/Gauge"
 import { Package } from "@phosphor-icons/react/Package"
 import { SignOut } from "@phosphor-icons/react/SignOut"

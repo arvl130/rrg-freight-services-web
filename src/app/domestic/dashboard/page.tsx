@@ -1,7 +1,7 @@
 "use client"
 
 import { DomesticLayout } from "@/layouts/domestic"
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 
 function ManifestSummaryTile() {

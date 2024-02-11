@@ -1,5 +1,5 @@
 import { User } from "@/server/db/entities"
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"

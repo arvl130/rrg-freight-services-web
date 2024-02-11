@@ -1,5 +1,5 @@
 import type { User } from "@/server/db/entities"
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { useState } from "react"

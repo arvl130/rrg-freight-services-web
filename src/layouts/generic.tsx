@@ -1,4 +1,4 @@
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 import { User } from "firebase/auth"
 import Head from "next/head"
 import { ReactNode } from "react"

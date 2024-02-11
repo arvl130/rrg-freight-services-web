@@ -1,7 +1,7 @@
 "use client"
 
 import { WarehouseLayout } from "@/layouts/warehouse"
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 import { ArrowClockwise } from "@phosphor-icons/react/ArrowClockwise"
 import { ArrowsOutLineHorizontal } from "@phosphor-icons/react/ArrowsOutLineHorizontal"
 import { CalendarBlank } from "@phosphor-icons/react/CalendarBlank"

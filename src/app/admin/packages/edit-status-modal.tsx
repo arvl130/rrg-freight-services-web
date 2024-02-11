@@ -12,7 +12,7 @@ import {
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 
 function StatusLogItem({
   packageId,

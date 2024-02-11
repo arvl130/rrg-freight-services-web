@@ -1,7 +1,7 @@
 "use client"
 
 import { OverseasLayout } from "@/layouts/overseas"
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { Package } from "@/server/db/entities"
 import { api } from "@/utils/api"

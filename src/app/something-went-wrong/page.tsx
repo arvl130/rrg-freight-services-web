@@ -1,6 +1,6 @@
 "use client"
 
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 import { getAuth, signOut } from "firebase/auth"
 
 export default function SomethingWentWrongPage() {

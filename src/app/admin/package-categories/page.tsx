@@ -1,7 +1,7 @@
 "use client"
 
 import { AdminLayout } from "@/layouts/admin"
-import { useSession } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { PackageCategory } from "@/server/db/entities"
 import { Plus } from "@phosphor-icons/react/Plus"

@@ -5,7 +5,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { List } from "@phosphor-icons/react/List"
 import { User } from "@phosphor-icons/react/User"
-import { getUserRoleRedirectPath, useSession } from "@/utils/auth"
+import { getUserRoleRedirectPath } from "@/utils/auth"
+import { useSession } from "@/hooks/session"
 
 function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
