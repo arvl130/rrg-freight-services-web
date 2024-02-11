@@ -11,6 +11,15 @@ import { UsersThree } from "@phosphor-icons/react/UsersThree"
 import { Package } from "@phosphor-icons/react/Package"
 import { Pie, Bar } from "react-chartjs-2"
 import { api } from "@/utils/api"
+import {
+  Chart as ChartJS,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+} from "chart.js"
+
+ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement)
 
 function PackagesInWarehouseTile() {
   const { status, data } = api.package.getTotalPackageInWarehouse.useQuery()
