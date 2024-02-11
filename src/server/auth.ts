@@ -46,6 +46,7 @@ export async function getServerSessionFromNextRequest({
   req,
 }: {
   req: GetServerSidePropsContext["req"]
+  res: GetServerSidePropsContext["res"]
 }) {
   const { authorization } = req.headers
   if (!authorization) return null
