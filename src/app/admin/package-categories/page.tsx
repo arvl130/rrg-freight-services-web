@@ -11,9 +11,9 @@ import { LoadingSpinner } from "@/components/spinner"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Page from "@/components/page"
 import * as Table from "@/components/table"
-import { CreateModal } from "@/components/package-categories/create-modal"
-import { EditModal } from "@/components/package-categories/edit-modal"
-import { DeleteModal } from "@/components/package-categories/delete-modal"
+import { CreateModal } from "./create-modal"
+import { EditModal } from "./edit-modal"
+import { DeleteModal } from "./delete-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 
 function TableItem({ item }: { item: PackageCategory }) {

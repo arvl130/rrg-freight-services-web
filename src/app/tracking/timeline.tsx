@@ -1,16 +1,16 @@
-import { Truck } from "@phosphor-icons/react/Truck"
-import { DropboxLogo } from "@phosphor-icons/react/DropboxLogo"
-import { Package } from "@phosphor-icons/react/Package"
-import { PackageStatusLog } from "@/server/db/entities"
+import type { PackageStatusLog } from "@/server/db/entities"
+import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
+import { DropboxLogo } from "@phosphor-icons/react/dist/ssr/DropboxLogo"
+import { Package } from "@phosphor-icons/react/dist/ssr/Package"
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
+import { Moped } from "@phosphor-icons/react/dist/ssr/Moped"
 import { DateTime } from "luxon"
-import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
-import { Moped } from "@phosphor-icons/react/Moped"
 
-const TimelineItem = ({
+function TimelineItem({
   packageStatusLog,
 }: {
   packageStatusLog: PackageStatusLog
-}) => {
+}) {
   return (
     <div className="flex items-center mb-4">
       <div className="flex-shrink-0 w-10 h-10 rounded-full outline black flex items-center justify-center p-2">

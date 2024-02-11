@@ -3,7 +3,7 @@
 import { GenericLayout } from "@/layouts/generic"
 import { User } from "firebase/auth"
 import { SideNav } from "../sidenav"
-import { api } from "@/app/api"
+import { api } from "@/utils/api"
 import { UpdatePictureForm } from "./update-picture-form"
 import { UpdateInformationForm } from "./update-profile-info-form"
 

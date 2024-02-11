@@ -1,13 +1,13 @@
 "use client"
 
-import { DeliveryTab } from "@/components/scan-package/delivery-tab"
-import { IncomingTab } from "@/components/scan-package/incoming-tab"
-import { ForwarderTransferTab } from "@/components/scan-package/forwarder-transfer-tab"
+import type { ShipmentType } from "@/utils/constants"
 import { WarehouseLayout } from "@/layouts/warehouse"
 import { useState } from "react"
-import type { ShipmentType } from "@/utils/constants"
-import { WarehouseTransferTab } from "@/components/scan-package/warehouse-transfer-tab"
-import { IncompleteDeliveryTab } from "@/components/scan-package/incomplete-delivery"
+import { DeliveryTab } from "./delivery-tab"
+import { IncomingTab } from "./incoming-tab"
+import { ForwarderTransferTab } from "./forwarder-transfer-tab"
+import { WarehouseTransferTab } from "./warehouse-transfer-tab"
+import { IncompleteDeliveryTab } from "./incomplete-delivery-tab"
 
 export default function ScanPackagePage() {
   const [selectedTab, setSelectedTab] = useState<

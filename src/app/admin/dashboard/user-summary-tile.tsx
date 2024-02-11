@@ -8,7 +8,7 @@ import {
   LinearScale,
   BarElement,
 } from "chart.js"
-import { api } from "@/app/api"
+import { api } from "@/utils/api"
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement)
 

@@ -1,11 +1,11 @@
 import Head from "next/head"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { CarouselSection } from "@/components/home/carousel-section"
-import { TestimonialSection } from "@/components/home/testimonial-section"
-import { ContactSection } from "@/components/home/contact-section"
-import { HeroSection } from "@/components/home/hero-section"
-import { TrackSection } from "@/components/home/track-section"
+import { CarouselSection } from "./carousel-section"
+import { TestimonialSection } from "./testimonial-section"
+import { ContactSection } from "./contact-section"
+import { HeroSection } from "./hero-section"
+import { TrackSection } from "./track-section"
 
 export default function HomePage() {
   return (

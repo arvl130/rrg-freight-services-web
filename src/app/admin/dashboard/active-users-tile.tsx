@@ -1,6 +1,6 @@
 "use client"
 
-import { api } from "@/app/api"
+import { api } from "@/utils/api"
 import { UsersThree } from "@phosphor-icons/react/UsersThree"
 
 export function ActiveUsersTile() {

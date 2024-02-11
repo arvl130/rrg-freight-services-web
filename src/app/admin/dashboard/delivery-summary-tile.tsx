@@ -1,6 +1,6 @@
 "use client"
 
-import { api } from "@/app/api"
+import { api } from "@/utils/api"
 import { Bar } from "react-chartjs-2"
 
 export function DeliverySummaryTile() {

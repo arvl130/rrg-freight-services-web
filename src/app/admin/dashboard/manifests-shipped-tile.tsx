@@ -1,6 +1,6 @@
 "use client"
 
-import { api } from "@/app/api"
+import { api } from "@/utils/api"
 import { Article } from "@phosphor-icons/react/Article"
 
 export function ManifestsShippedTile() {

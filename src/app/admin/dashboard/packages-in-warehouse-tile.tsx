@@ -1,6 +1,6 @@
 "use client"
 
-import { api } from "@/app/api"
+import { api } from "@/utils/api"
 import { Package } from "@phosphor-icons/react/Package"
 
 export function PackagesInWarehouseTile() {

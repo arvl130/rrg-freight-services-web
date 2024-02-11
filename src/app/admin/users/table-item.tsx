@@ -1,15 +1,15 @@
+import type { User } from "@/server/db/entities"
 import Image from "next/image"
 import { useRef, useState } from "react"
 import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
-import { User } from "@/server/db/entities"
-import { MenuScreen } from "@/components/users/table-item/menu-screen"
-import { UpdateInformationScreen } from "@/components/users/table-item/update-info-screen"
 import { UsersTableItemScreen } from "@/utils/constants"
-import { UpdateRoleScreen } from "@/components/users/table-item/update-role-screen"
-import { UpdatePhotoScreen } from "@/components/users/table-item/update-photo-screen"
-import { OverviewScreen } from "@/components/users/table-item/overview-screen"
 import { supportedRoleToHumanized } from "@/utils/humanize"
+import { MenuScreen } from "./menu-screen"
+import { UpdateInformationScreen } from "./update-info-screen"
+import { UpdateRoleScreen } from "./update-role-screen"
+import { UpdatePhotoScreen } from "./update-photo-screen"
+import { OverviewScreen } from "./overview-screen"
 
 export function TableItem({ user }: { user: User }) {
   const detailsModal = useRef<null | HTMLDialogElement>(null)

@@ -3,7 +3,7 @@ import { useSession } from "@/utils/auth"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { api } from "@/app/api"
+import { api } from "@/utils/api"
 
 const updateInformationFormSchema = z.object({
   displayName: z.string().min(1).max(100),
