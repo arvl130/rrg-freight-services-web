@@ -1,11 +1,11 @@
 import { initTRPC, TRPCError } from "@trpc/server"
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
-import { getServerSessionFetch } from "../auth"
+import { getServerSessionFromFetchRequest } from "../auth"
 import { db } from "../db/client"
 import SuperJSON from "superjson"
 
 export async function createContext({ req }: FetchCreateContextFnOptions) {
-  const session = await getServerSessionFetch({ req })
+  const session = await getServerSessionFromFetchRequest({ req })
 
   return {
     user: session?.user,

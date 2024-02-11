@@ -1,4 +1,4 @@
-import { getServerSession } from "@/server/auth"
+import { getServerSessionFromNextRequest } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { NormalizedDeliveryShipment } from "@/server/db/entities"
 import { deliveryShipments, shipments } from "@/server/db/schema"
@@ -24,7 +24,7 @@ export default async function handler(
     return
   }
 
-  const session = await getServerSession({ req, res })
+  const session = await getServerSessionFromNextRequest({ req, res })
   if (session === null) {
     res.status(401).json({ message: "Unauthorized" })
     return

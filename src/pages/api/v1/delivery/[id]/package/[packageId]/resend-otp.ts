@@ -1,4 +1,4 @@
-import { getServerSession } from "@/server/auth"
+import { getServerSessionFromNextRequest } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packages,
@@ -36,7 +36,7 @@ export default async function handler(
         statusCode: HTTP_STATUS_METHOD_NOT_ALLOWED,
       })
 
-    const session = await getServerSession({ req, res })
+    const session = await getServerSessionFromNextRequest({ req, res })
     if (session === null)
       throw new HttpError({
         message: "Unauthorized.",

@@ -2,6 +2,7 @@ import { getApps, getApp, initializeApp, cert } from "firebase-admin/app"
 import { UserRecord, getAuth } from "firebase-admin/auth"
 import { GetServerSidePropsContext } from "next"
 import { serverEnv } from "./env.mjs"
+import { headers } from "next/headers"
 
 const {
   FIREBASE_ADMIN_PROJECT_ID,
@@ -41,11 +42,10 @@ export async function updateProfile(
   })
 }
 
-export async function getServerSession({
+export async function getServerSessionFromNextRequest({
   req,
 }: {
   req: GetServerSidePropsContext["req"]
-  res: GetServerSidePropsContext["res"]
 }) {
   const { authorization } = req.headers
   if (!authorization) return null
@@ -65,7 +65,11 @@ export async function getServerSession({
   }
 }
 
-export async function getServerSessionFetch({ req }: { req: Request }) {
+export async function getServerSessionFromFetchRequest({
+  req,
+}: {
+  req: Request
+}) {
   const authorization = req.headers.get("Authorization")
   if (!authorization) return null
 
