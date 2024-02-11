@@ -20,7 +20,7 @@ export default async function handler(
     return
   }
 
-  const session = await getServerSessionFromNextRequest({ req, res })
+  const session = await getServerSessionFromNextRequest({ req })
   if (session === null) {
     res.status(401).json({ message: "Unauthorized" })
     return

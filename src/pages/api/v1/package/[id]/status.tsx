@@ -6,8 +6,7 @@ import {
   getDescriptionForNewPackageStatusLog,
   SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"
-import { and, eq, isNull, lt } from "drizzle-orm"
-import { alias } from "drizzle-orm/mysql-core"
+import { eq } from "drizzle-orm"
 import { ResultSetHeader } from "mysql2"
 import type { NextApiRequest, NextApiResponse } from "next"
 import { ZodError, z } from "zod"
@@ -31,7 +30,7 @@ export default async function handler(
   }
 
   try {
-    const session = await getServerSessionFromNextRequest({ req, res })
+    const session = await getServerSessionFromNextRequest({ req })
     if (session === null) {
       res.status(401).json({ message: "Unauthorized" })
       return

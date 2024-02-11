@@ -16,7 +16,7 @@ const getLocationsSchema = z.object({
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const session = await getServerSessionFromNextRequest({ req, res })
+    const session = await getServerSessionFromNextRequest({ req })
     if (session === null) {
       res.status(401).json({ message: "Unauthorized" })
       return
@@ -75,7 +75,7 @@ const newLocationSchema = z.object({
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const session = await getServerSessionFromNextRequest({ req, res })
+    const session = await getServerSessionFromNextRequest({ req })
     if (session === null) {
       res.status(401).json({ message: "Unauthorized" })
       return

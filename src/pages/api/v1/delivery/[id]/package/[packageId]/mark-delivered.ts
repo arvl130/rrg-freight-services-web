@@ -38,7 +38,7 @@ export default async function handler(
         statusCode: HTTP_STATUS_METHOD_NOT_ALLOWED,
       })
 
-    const session = await getServerSessionFromNextRequest({ req, res })
+    const session = await getServerSessionFromNextRequest({ req })
     if (session === null)
       throw new HttpError({
         message: "Unauthorized.",
