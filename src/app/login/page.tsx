@@ -1,3 +1,5 @@
+"use client"
+
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
@@ -8,11 +10,12 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { FirebaseError } from "firebase/app"
 import { getUserRoleRedirectPath, useSession } from "@/utils/auth"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { Eye } from "@phosphor-icons/react/Eye"
 import { EyeSlash } from "@phosphor-icons/react/EyeSlash"
 import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
 import { SkeletonGenericLayout } from "@/layouts/generic"
+import { LoginPageHead } from "./login-page-head"
 
 const formSchema = z.object({
   email: z
@@ -30,33 +33,11 @@ const formSchema = z.object({
 
 type FormType = z.infer<typeof formSchema>
 
-export function LoginPageHead() {
-  return (
-    <Head>
-      <title>Login &#x2013; RRG Freight Services</title>
-      <meta
-        name="description"
-        content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-      />
-    </Head>
-  )
-}
-
-export function SkeletonLoginPage() {
-  return (
-    <main className="min-h-screen grid grid-cols-2">
-      <div className="bg-cyan-600"></div>
-      <div className="bg-brand-cyan-450"></div>
-    </main>
-  )
-}
-
 export default function LoginPage() {
   const { user, role, isLoading } = useSession()
   const router = useRouter()
 
   useEffect(() => {
-    if (!router.isReady) return
     if (isLoading) return
     if (user === null) return
 

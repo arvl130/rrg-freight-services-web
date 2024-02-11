@@ -10,7 +10,8 @@ import Image from "next/image"
 import { ReactNode, useState } from "react"
 import { SideBarLink } from "@/components/sidebar-link"
 import { SkeletonGenericLayout, GenericHeader } from "./generic"
-import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
+import { LoginPageHead } from "@/app/login/login-page-head"
+import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
 
 export function DomesticSideBar() {
   const [isSigningOut, setIsSigningOut] = useState(false)

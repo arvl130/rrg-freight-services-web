@@ -14,7 +14,8 @@ import { UserCircle } from "@phosphor-icons/react/UserCircle"
 import { CaretDown } from "@phosphor-icons/react/CaretDown"
 import { UserRole } from "@/utils/constants"
 import Image from "next/image"
-import { LoginPageHead, SkeletonLoginPage } from "@/pages/login"
+import { LoginPageHead } from "@/app/login/login-page-head"
+import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
 
 export function SkeletonGenericLayout() {
   return (

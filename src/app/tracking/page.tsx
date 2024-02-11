@@ -1,8 +1,10 @@
+"use client"
+
 import Image from "next/image"
 import Head from "next/head"
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
-import { VerticalTimeline } from "../components/tracking/timeline"
+import { VerticalTimeline } from "../../components/tracking/timeline"
 import { Truck } from "@phosphor-icons/react/Truck"
 import { Path } from "@phosphor-icons/react/Path"
 import { MapPin } from "@phosphor-icons/react/MapPin"
@@ -139,7 +141,7 @@ const choosePackageFormSchema = z.object({
 
 type ChoosePackageFormType = z.infer<typeof choosePackageFormSchema>
 
-export function ChoosePackageForm({
+function ChoosePackageForm({
   setSelectedPackageId,
 }: {
   setSelectedPackageId: (packageId: string) => void

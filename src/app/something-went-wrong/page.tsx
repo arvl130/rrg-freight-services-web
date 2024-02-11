@@ -1,3 +1,5 @@
+"use client"
+
 import { useSession } from "@/utils/auth"
 import { getAuth, signOut } from "firebase/auth"
 
