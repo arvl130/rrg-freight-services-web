@@ -1,11 +1,14 @@
-import { useState, useEffect, FC } from "react"
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { List } from "@phosphor-icons/react/List"
 import { User } from "@phosphor-icons/react/User"
 import { getUserRoleRedirectPath, useSession } from "@/utils/auth"
+
 function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
     <div className="md:hidden relative h-full text-white">
@@ -75,7 +78,7 @@ function DesktopNav() {
 
       <ul className="text-white flex gap-6">
         <li>
-          <Link className="  py-2" href="/" passHref>
+          <Link className="py-2" href="/" passHref>
             Home
           </Link>
         </li>
@@ -119,7 +122,7 @@ function DesktopNav() {
 }
 
 export function Navbar() {
-  const [hasScrolled, setHasScrolled] = useState<boolean>(false)
+  const [hasScrolled, setHasScrolled] = useState(false)
 
   useEffect(() => {
     function handleScroll() {

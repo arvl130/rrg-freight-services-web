@@ -1,6 +1,6 @@
 import Head from "next/head"
 import { Navbar } from "@/components/navbar"
-import Footer from "@/components/footer"
+import { Footer } from "@/components/footer"
 import Image from "next/image"
 import { Path } from "@phosphor-icons/react/dist/icons/Path"
 import Link from "next/link"

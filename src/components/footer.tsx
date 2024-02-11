@@ -1,11 +1,10 @@
-import { FC } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { EnvelopeSimple } from "@phosphor-icons/react/EnvelopeSimple"
-import { FacebookLogo } from "@phosphor-icons/react/FacebookLogo"
-import { TwitterLogo } from "@phosphor-icons/react/TwitterLogo"
+import { EnvelopeSimple } from "@phosphor-icons/react/dist/ssr/EnvelopeSimple"
+import { FacebookLogo } from "@phosphor-icons/react/dist/ssr/FacebookLogo"
+import { TwitterLogo } from "@phosphor-icons/react/dist/ssr/TwitterLogo"
 
-const Footer: FC = () => {
+export function Footer() {
   return (
     <footer className="bg-[#acdee2]">
       <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-10">
@@ -115,5 +114,3 @@ const Footer: FC = () => {
     </footer>
   )
 }
-
-export default Footer

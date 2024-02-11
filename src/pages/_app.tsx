@@ -34,14 +34,22 @@ ChartJS.register(
 export default api.withTRPC(({ Component, pageProps }: AppProps) => {
   return (
     <AuthProvider>
-      <style jsx global>
-        {`
-          :root {
-            --font-dm-sans: ${dmSans.style.fontFamily};
-          }
-        `}
-      </style>
-      <div className={`${dmSans.variable} font-sans text-brand-black`}>
+      {process.env.NODE_ENV === "development" ? (
+        <style jsx global>
+          {`
+            @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400;1,9..40,500;1,9..40,600;1,9..40,700;1,9..40,800;1,9..40,900&display=swap");
+          `}
+        </style>
+      ) : (
+        <style jsx global>
+          {`
+            :root {
+              --font-dm-sans: ${dmSans.style.fontFamily};
+            }
+          `}
+        </style>
+      )}
+      <div className="text-brand-black">
         <Toaster position="top-center" />
         <Component {...pageProps} />
       </div>

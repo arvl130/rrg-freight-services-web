@@ -31,7 +31,12 @@ const config: Config = {
         "brand-teal": "#a4d8d8",
       },
       fontFamily: {
-        sans: ["var(--font-dm-sans)", ...fontFamily.sans],
+        sans: [
+          process.env.NODE_ENV === "development"
+            ? "DM Sans"
+            : "var(--font-dm-sans)",
+          ...fontFamily.sans,
+        ],
       },
     },
   },

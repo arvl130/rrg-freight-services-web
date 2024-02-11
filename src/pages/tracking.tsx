@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Head from "next/head"
-import Footer from "@/components/footer"
+import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import { VerticalTimeline } from "../components/tracking/timeline"
 import { Truck } from "@phosphor-icons/react/Truck"

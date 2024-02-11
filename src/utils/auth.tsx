@@ -1,6 +1,8 @@
+"use client"
+
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { getAuth, onAuthStateChanged, User } from "firebase/auth"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import {
   createContext,
   ReactNode,
@@ -135,7 +137,6 @@ export function useSession(
   const router = useRouter()
 
   useEffect(() => {
-    if (!router.isReady) return
     if (session.isLoading) return
 
     // If a session is required, but there is no session user,
