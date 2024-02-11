@@ -1,7 +1,7 @@
 "use client"
 
 import { AuthContext } from "@/providers/auth"
-import { getUserRoleRedirectPath } from "@/utils/auth"
+import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { SUPPORTED_USER_ROLES, type UserRole } from "@/utils/constants"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect } from "react"
