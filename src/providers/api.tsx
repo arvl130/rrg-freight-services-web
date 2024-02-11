@@ -1,8 +1,6 @@
-"use client"
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactNode, useState } from "react"
-import { api } from "./api"
+import { api } from "@/app/api"
 import { httpBatchLink } from "@trpc/client"
 import { getBaseUrl } from "@/utils/base-url"
 import { getAuth, getIdToken } from "firebase/auth"

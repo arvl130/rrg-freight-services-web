@@ -1,6 +1,6 @@
 import "@/styles/globals.css"
 import { api } from "@/utils/api"
-import { AuthProvider } from "@/utils/auth"
+import { AuthProvider } from "@/providers/auth"
 import { Toaster } from "react-hot-toast"
 import type { AppProps } from "next/app"
 import { DM_Sans } from "next/font/google"
