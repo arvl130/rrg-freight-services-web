@@ -1,6 +1,8 @@
+"use client"
+
 import { GenericLayout } from "@/layouts/generic"
-import { SideNav } from "@/components/profile/sidenav"
-import { UpdatePasswordForm } from "@/components/profile/update-password-form"
+import { SideNav } from "@/app/profile/sidenav"
+import { UpdatePasswordForm } from "./update-password-form"
 
 export default function ProfilePasswordPage() {
   return (

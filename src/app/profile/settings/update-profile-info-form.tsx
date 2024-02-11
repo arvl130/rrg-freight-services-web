@@ -1,9 +1,9 @@
-import { User } from "@/server/db/entities"
+import type { User } from "@/server/db/entities"
 import { useSession } from "@/utils/auth"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { api } from "@/utils/api"
+import { api } from "@/app/api"
 
 const updateInformationFormSchema = z.object({
   displayName: z.string().min(1).max(100),

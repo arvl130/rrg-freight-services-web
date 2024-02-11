@@ -1,11 +1,14 @@
+"use client"
+
 import { BellRinging } from "@phosphor-icons/react/BellRinging"
 import { UserCircleGear } from "@phosphor-icons/react/UserCircleGear"
 import { Key } from "@phosphor-icons/react/Key"
 import Link from "next/link"
-import { useRouter } from "next/router"
+import { usePathname } from "next/navigation"
 
 export function SideNav() {
-  const { pathname } = useRouter()
+  const pathname = usePathname()
+
   return (
     <article className="flex flex-col gap-4">
       <Link href={"/profile/settings"}>

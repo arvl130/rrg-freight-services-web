@@ -1,9 +1,11 @@
+"use client"
+
 import { GenericLayout } from "@/layouts/generic"
 import { User } from "firebase/auth"
-import { SideNav } from "@/components/profile/sidenav"
-import { api } from "@/utils/api"
-import { UpdatePictureForm } from "@/components/profile/update-picture-form"
-import { UpdateInformationForm } from "@/components/profile/update-profile-info-form"
+import { SideNav } from "../sidenav"
+import { api } from "@/app/api"
+import { UpdatePictureForm } from "./update-picture-form"
+import { UpdateInformationForm } from "./update-profile-info-form"
 
 function RightColumn({ user }: { user: User }) {
   const { isLoading, isError, data } = api.user.getById.useQuery({

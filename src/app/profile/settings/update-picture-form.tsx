@@ -1,4 +1,4 @@
-import { User } from "@/server/db/entities"
+import type { User } from "@/server/db/entities"
 import { useSession } from "@/utils/auth"
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
@@ -7,7 +7,7 @@ import Image from "next/image"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { api } from "@/utils/api"
+import { api } from "@/app/api"
 
 const updatePictureFormSchema = z.object({
   imageFiles: z.custom<FileList>(

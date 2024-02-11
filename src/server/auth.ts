@@ -64,3 +64,22 @@ export async function getServerSession({
     return null
   }
 }
+
+export async function getServerSessionFetch({ req }: { req: Request }) {
+  const authorization = req.headers.get("Authorization")
+  if (!authorization) return null
+
+  try {
+    const idToken = authorization.split(" ")[1]
+    const token = await auth.verifyIdToken(idToken)
+    const user = await auth.getUser(token.uid)
+
+    return {
+      user,
+      token,
+    }
+  } catch {
+    // If verification fails, then we have no session.
+    return null
+  }
+}
