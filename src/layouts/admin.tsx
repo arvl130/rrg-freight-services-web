@@ -1,3 +1,5 @@
+"use client"
+
 import { useSession } from "@/utils/auth"
 import { Gauge } from "@phosphor-icons/react/Gauge"
 import { Package } from "@phosphor-icons/react/Package"

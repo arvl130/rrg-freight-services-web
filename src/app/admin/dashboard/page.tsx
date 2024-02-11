@@ -1,106 +1,14 @@
-"use client"
-
 import { AdminLayout } from "@/layouts/admin"
-import { ArrowClockwise } from "@phosphor-icons/react/ArrowClockwise"
-import { Article } from "@phosphor-icons/react/Article"
-import { CalendarBlank } from "@phosphor-icons/react/CalendarBlank"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { FunnelSimple } from "@phosphor-icons/react/FunnelSimple"
-import { User } from "@phosphor-icons/react/User"
-import { UsersThree } from "@phosphor-icons/react/UsersThree"
-import { Package } from "@phosphor-icons/react/Package"
-import { Pie, Bar } from "react-chartjs-2"
-import { api } from "@/utils/api"
-import {
-  Chart as ChartJS,
-  ArcElement,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-} from "chart.js"
-
-ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement)
-
-function PackagesInWarehouseTile() {
-  const { status, data } = api.package.getTotalPackageInWarehouse.useQuery()
-
-  return (
-    <article
-      className="
-        text-[#29727C]
-        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-        bg-gradient-to-b from-[#79CFDCCC] to-[#79CFDC00]
-      "
-    >
-      <div className="flex flex-col justify-center items-start">
-        <>
-          <p className="text-4xl font-semibold">
-            {status === "loading" && <>...</>}
-            {status === "error" && <>error</>}
-            {status === "success" && <>{data.count}</>}
-          </p>
-          <p>Packages in-warehouse</p>
-        </>
-      </div>
-      <div>
-        <Package size={96} />
-      </div>
-    </article>
-  )
-}
-
-function ActiveUsersTile() {
-  const { status, data } = api.user.getTotalActiveUsers.useQuery()
-
-  return (
-    <article
-      className="
-  text-[#C61717]
-  grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-  bg-gradient-to-b from-[#ED5959CC] to-[#ED595900]
-"
-    >
-      <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">
-          {status === "loading" && <>...</>}
-          {status === "error" && <>error</>}
-          {status === "success" && <>{data.count}</>}
-        </p>
-        <p>Active users</p>
-      </div>
-      <div>
-        <UsersThree size={96} />
-      </div>
-    </article>
-  )
-}
-
-function ManifestsShippedTile() {
-  const { status, data } =
-    api.shipment.package.getTotalShipmentShipped.useQuery()
-
-  return (
-    <article
-      className="
-        text-[#AC873C]
-        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-        bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]
-      "
-    >
-      <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">
-          {status === "loading" && <>...</>}
-          {status === "error" && <>error</>}
-          {status === "success" && <>{data.count}</>}
-        </p>
-        <p>Shipments shipped</p>
-      </div>
-      <div>
-        <Article size={96} />
-      </div>
-    </article>
-  )
-}
+import { ArrowClockwise } from "@phosphor-icons/react/dist/ssr/ArrowClockwise"
+import { CalendarBlank } from "@phosphor-icons/react/dist/ssr/CalendarBlank"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { FunnelSimple } from "@phosphor-icons/react/dist/ssr/FunnelSimple"
+import { User } from "@phosphor-icons/react/dist/ssr/User"
+import { PackagesInWarehouseTile } from "./packages-in-warehouse-tile"
+import { ActiveUsersTile } from "./active-users-tile"
+import { ManifestsShippedTile } from "./manifests-shipped-tile"
+import { DeliverySummaryTile } from "./delivery-summary-tile"
+import { UserStatusTile } from "./user-summary-tile"
 
 function RecentActivityTile() {
   return (
@@ -143,68 +51,6 @@ function RecentActivityTile() {
   )
 }
 
-function DeliverySummaryTile() {
-  const labels = [
-    "JAN",
-    "FEB",
-    "MAR",
-    "APR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DEC",
-  ]
-
-  const { data } = api.packageStatusLog.getDeliverySummary.useQuery()
-
-  const deliverySummaryCount =
-    data && data.deliverySummaryCount ? data.deliverySummaryCount : []
-
-  const countByMonth = deliverySummaryCount.reduce((total, item) => {
-    const month = parseInt(String(item.month), 10) - 1
-    total[month] = item.value
-    return total
-  }, Array(12).fill(0))
-
-  return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem]">
-      <h2 className="font-semibold mb-2">Delivery Summary</h2>
-      <Bar
-        options={{
-          responsive: true,
-          plugins: {
-            legend: {
-              position: "bottom",
-            },
-          },
-          scales: {
-            y: {
-              suggestedMax: Math.max(...countByMonth) + 100,
-              ticks: {
-                stepSize: 10,
-              },
-            },
-          },
-        }}
-        data={{
-          labels,
-          datasets: [
-            {
-              label: "Packages",
-              data: countByMonth,
-              backgroundColor: "rgba(255, 99, 132, 0.5)",
-            },
-          ],
-        }}
-      />
-    </article>
-  )
-}
-
 function ManifestSummaryTile() {
   return (
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
@@ -227,43 +73,6 @@ function ManifestSummaryTile() {
           <div>Col 5</div>
         </div>
       </div>
-    </article>
-  )
-}
-
-function UserStatusTile() {
-  const { data } = api.user.getTotalUserStatus.useQuery()
-
-  const activeUsersCount = data ? data.activeUsersCount[0]?.active ?? 0 : 0
-  const inactiveUsersCount = data
-    ? data.inactiveUsersCount[0]?.inactive ?? 0
-    : 0
-
-  return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
-      <h2 className="font-semibold mb-2">User Status</h2>
-      <Pie
-        options={{
-          plugins: {
-            legend: {
-              position: "bottom",
-            },
-          },
-        }}
-        data={{
-          labels: ["Active", "Inactive"],
-          datasets: [
-            {
-              label: "# of Users",
-              data: [activeUsersCount, inactiveUsersCount],
-              backgroundColor: [
-                "rgba(112, 48, 160, 1.0)",
-                "rgba(192, 0, 0, 1.0)",
-              ],
-            },
-          ],
-        }}
-      />
     </article>
   )
 }
