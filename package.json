@@ -52,6 +52,7 @@
     "react-responsive-carousel": "^3.2.23",
     "react-to-pdf": "^1.0.1",
     "resend": "^2.0.0",
+    "sharp": "^0.33.2",
     "superjson": "^2.2.1",
     "tailwindcss": "3.4.0",
     "typescript": "5.3.3",
