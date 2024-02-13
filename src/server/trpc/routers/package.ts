@@ -1,4 +1,4 @@
-import { and, count, eq, lt, sql, join } from "drizzle-orm"
+import { and, count, eq, lt, sql } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   packageStatusLogs,
