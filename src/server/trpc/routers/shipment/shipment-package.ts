@@ -11,6 +11,7 @@ import {
   packages,
   shipmentPackages,
   shipments,
+  incomingShipments,
 } from "@/server/db/schema"
 import { and, count, eq, inArray, sql } from "drizzle-orm"
 
@@ -81,15 +82,18 @@ export const shipmentPackageRouter = router({
     }
   }),
   getTotalFailedShipment: protectedProcedure.query(async ({ ctx }) => {
-    const failedShipmentShippedCount = await ctx.db
-      .select({
-        value: count(),
-      })
-      .from(shipments)
-      .where(eq(shipments.status, "FAILED"))
-
+    const [{ value }] = await ctx.db
+      .select({ value: count() })
+      .from(incomingShipments)
+      .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
+      .where(
+        and(
+          eq(incomingShipments.sentByAgentId, incomingShipments.sentByAgentId),
+          eq(shipments.status, "FAILED"),
+        ),
+      )
     return {
-      failedShipmentShippedCount,
+      count: value,
     }
   }),
 })

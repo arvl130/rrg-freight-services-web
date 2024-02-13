@@ -1,9 +1,10 @@
-import { and, count, eq, lt } from "drizzle-orm"
+import { and, count, eq, lt, sql, join } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   packageStatusLogs,
   packages,
   shipmentPackages,
+  incomingShipments,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -19,6 +20,7 @@ import {
   SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"
 import { generateUniqueId } from "@/utils/uuid"
+import { MySql2Database } from "drizzle-orm/mysql2"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -267,27 +269,43 @@ export const packageRouter = router({
     }
   }),
   getTotalRushPackage: protectedProcedure.query(async ({ ctx }) => {
-    const rushPackageCount = await ctx.db
-      .select({
-        value: count(),
-      })
-      .from(packages)
-      .where(eq(packages.shippingType, "EXPRESS"))
-
+    const [{ value }] = await ctx.db
+      .select({ value: count() })
+      .from(incomingShipments)
+      .innerJoin(
+        shipmentPackages,
+        eq(incomingShipments.shipmentId, shipmentPackages.shipmentId),
+      )
+      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+      .where(
+        and(
+          eq(incomingShipments.sentByAgentId, incomingShipments.sentByAgentId),
+          eq(shipmentPackages.shipmentId, shipmentPackages.shipmentId),
+          eq(packages.shippingType, "EXPRESS"),
+        ),
+      )
     return {
-      rushPackageCount,
+      count: value,
     }
   }),
-
   getTotalPackages: protectedProcedure.query(async ({ ctx }) => {
-    const totalPackagesCount = await ctx.db
-      .select({
-        value: count(),
-      })
-      .from(packages)
-
+    const [{ value }] = await ctx.db
+      .select({ value: count() })
+      .from(incomingShipments)
+      .innerJoin(
+        shipmentPackages,
+        eq(incomingShipments.shipmentId, shipmentPackages.shipmentId),
+      )
+      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+      .where(
+        and(
+          eq(incomingShipments.sentByAgentId, incomingShipments.sentByAgentId),
+          eq(shipmentPackages.shipmentId, shipmentPackages.shipmentId),
+          eq(packages.id, packages.id),
+        ),
+      )
     return {
-      totalPackagesCount,
+      count: value,
     }
   }),
 })

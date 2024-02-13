@@ -6,6 +6,8 @@ import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { File } from "@phosphor-icons/react/File"
 import { Package } from "@phosphor-icons/react/Package"
 import { UserCircle } from "@phosphor-icons/react/UserCircle"
+import { api } from "@/utils/api"
+import { count } from "drizzle-orm"
 
 const shipments = [
   {
@@ -52,18 +54,18 @@ const shipments = [
   },
 ]
 
-function ClusterTile() {
+function TotalRushPackageTile() {
+  const { status, data } = api.package.getTotalRushPackage.useQuery()
+
   return (
-    <article
-      className="
-  text-[#29727C]
-  grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-  bg-gradient-to-b from-[#79CFDCCC] to-[#79CFDC00]
-"
-    >
+    <article className="text-[#29727C] grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg bg-gradient-to-b from-[#79CFDCCC] to-[#79CFDC00]">
       <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">120</p>
-        <p>Cluster</p>
+        <p className="text-4xl font-semibold">
+          {status === "loading" && <>...</>}
+          {status === "error" && <>error</>}
+          {status === "success" && <>{data.count}</>}
+        </p>
+        <p>Total Rush Package</p>
       </div>
       <div>
         <Package size={96} />
@@ -71,8 +73,9 @@ function ClusterTile() {
     </article>
   )
 }
+function TotalPackageTile() {
+  const { status, data } = api.package.getTotalPackages.useQuery()
 
-function PackagesTile() {
   return (
     <article
       className="
@@ -82,8 +85,12 @@ function PackagesTile() {
 "
     >
       <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">120</p>
-        <p>Packages</p>
+        <p className="text-4xl font-semibold">
+          {status === "loading" && <>...</>}
+          {status === "error" && <>error</>}
+          {status === "success" && <>{data.count}</>}
+        </p>
+        <p>Total Package</p>
       </div>
       <div>
         <Package size={96} />
@@ -92,7 +99,9 @@ function PackagesTile() {
   )
 }
 
-function ManifestsTile() {
+function TotalUnsendShipmentTile() {
+  const { status, data } =
+    api.shipment.package.getTotalFailedShipment.useQuery()
   return (
     <article
       className="
@@ -102,8 +111,12 @@ function ManifestsTile() {
 "
     >
       <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">120</p>
-        <p>Manifests</p>
+        <p className="text-4xl font-semibold">
+          {status === "loading" && <>...</>}
+          {status === "error" && <>error</>}
+          {status === "success" && <>{data.count}</>}
+        </p>
+        <p>Total Unsend Shipment</p>
       </div>
       <div>
         <Article size={96} />
@@ -363,9 +376,9 @@ export default function DashboardPage() {
       <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
       <section className="mb-6">
         <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
-          <ClusterTile />
-          <PackagesTile />
-          <ManifestsTile />
+          <TotalRushPackageTile />
+          <TotalPackageTile />
+          <TotalUnsendShipmentTile />
         </div>
       </section>
       <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
