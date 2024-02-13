@@ -17,7 +17,7 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import { ShipmentStatus } from "@/utils/constants"
 import { usePaginatedItems } from "@/hooks/paginated-items"
-import { DisplayName } from "@/components/users/display-name"
+import { UserDisplayName } from "@/components/user-display-name"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 
 function TableItem({ item }: { item: NormalizedIncomingShipment }) {
@@ -30,7 +30,7 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
         <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <DisplayName userId={item.sentByAgentId} />
+        <UserDisplayName userId={item.sentByAgentId} />
       </div>
       <div className="px-4 py-2">
         {DateTime.fromJSDate(item.createdAt).toLocaleString(

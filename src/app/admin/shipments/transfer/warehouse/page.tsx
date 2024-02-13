@@ -16,7 +16,7 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import { NormalizedWarehouseTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
-import { DisplayName } from "@/components/warehouse/display-name"
+import { WarehouseDisplayName } from "@/components/warehouse-display-name"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
@@ -33,7 +33,7 @@ function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
         <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <DisplayName id={item.sentToWarehouseId} />
+        <WarehouseDisplayName id={item.sentToWarehouseId} />
       </div>
       <div className="px-4 py-2">
         {DateTime.fromJSDate(item.createdAt).toLocaleString(

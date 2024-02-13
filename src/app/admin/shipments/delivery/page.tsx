@@ -18,7 +18,7 @@ import { DotsThree } from "@phosphor-icons/react/DotsThree"
 import { PackageShippingType, ShipmentStatus } from "@/utils/constants"
 import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
-import { DisplayName } from "@/components/users/display-name"
+import { UserDisplayName } from "@/components/user-display-name"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 
 function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
@@ -33,7 +33,7 @@ function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
         <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <DisplayName userId={item.driverId} />
+        <UserDisplayName userId={item.driverId} />
       </div>
       <div className="px-4 py-2">
         {DateTime.fromJSDate(item.createdAt).toLocaleString(
