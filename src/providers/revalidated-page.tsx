@@ -1,6 +1,6 @@
 "use client"
 
-import { revalidatePath } from "@/actions/revalidated-path"
+import { revalidatePath } from "@/actions/revalidate-path"
 import { usePathname } from "next/navigation"
 import {
   ReactNode,
