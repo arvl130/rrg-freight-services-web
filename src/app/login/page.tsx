@@ -95,6 +95,7 @@ export default function LoginPage() {
             <Image
               src="/assets/img/login/right-bg.png"
               alt="Ship, truck, and plane on a globe"
+              className="w-[500px] h-80"
               width={500}
               height={320}
             />
@@ -108,6 +109,7 @@ export default function LoginPage() {
                 <Image
                   src="/assets/img/logos/logo-with-name.png"
                   alt="RRG Freight Services logo with its name on the right"
+                  className="w-[168px] h-[60px]"
                   width={168}
                   height={60}
                 />
