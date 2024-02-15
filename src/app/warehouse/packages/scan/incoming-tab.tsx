@@ -10,6 +10,7 @@ import { z } from "zod"
 import { ArrowRight } from "@phosphor-icons/react/ArrowRight"
 import { getAuth } from "firebase/auth"
 import type { ShipmentType } from "@/utils/constants"
+import { Package, PackageCategory } from "@/server/db/entities"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
@@ -21,14 +22,14 @@ type ScanPackageSchemaFormType = z.infer<typeof scanPackageSchemaFormSchema>
 
 function ScanPackageForm({
   packageIds,
-  scannedPackageIds,
+  scannedPackages,
   updatedPackageIds,
-  onSubmitValidPackageId,
+  onSubmitValidPackage,
 }: {
   packageIds: string[]
-  scannedPackageIds: string[]
+  scannedPackages: SelectedPackage[]
   updatedPackageIds: string[]
-  onSubmitValidPackageId: (packageId: string) => void
+  onSubmitValidPackage: (prop: SelectedPackage) => void
 }) {
   const {
     handleSubmit,
@@ -60,7 +61,7 @@ function ScanPackageForm({
           return
         }
 
-        if (scannedPackageIds.includes(formData.packageId)) {
+        if (scannedPackages.some(({ id }) => id === formData.packageId)) {
           toast("Package was already scanned.", {
             icon: "⚠️",
           })
@@ -72,7 +73,10 @@ function ScanPackageForm({
           return
         }
 
-        onSubmitValidPackageId(formData.packageId)
+        onSubmitValidPackage({
+          id: formData.packageId,
+          categoryId: null,
+        })
       })}
     >
       <div className="grid grid-cols-[1fr_auto] gap-3">
@@ -96,117 +100,196 @@ function ScanPackageForm({
   )
 }
 
+type SelectedPackage = {
+  id: string
+  categoryId: number | null
+}
+
+type ValidSelectedPackage = {
+  id: string
+  categoryId: number
+}
+
+function TableItem(props: {
+  item: Package
+  isScanned: boolean
+  isUpdatingStatus: boolean
+  packageCategories: PackageCategory[]
+  setSelectedPackage: (props: SelectedPackage) => void
+  undoScan: () => void
+}) {
+  return (
+    <div key={props.item.id} className="grid grid-cols-5 mb-1">
+      <div>{props.item.id}</div>
+      <div>
+        <div>{props.item.receiverFullName}</div>
+      </div>
+      {props.isScanned ? (
+        <div className="flex items-center gap-2 text-sm">
+          <span
+            className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
+              props.item.status,
+            )}`}
+          >
+            {supportedPackageStatusToHumanized(props.item.status)}
+          </span>
+          <ArrowRight size={24} />
+          <span
+            className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
+              "IN_WAREHOUSE",
+            )}`}
+          >
+            {supportedPackageStatusToHumanized("IN_WAREHOUSE")}
+          </span>
+        </div>
+      ) : (
+        <div className="text-sm">
+          <span
+            className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
+              props.item.status,
+            )}`}
+          >
+            {supportedPackageStatusToHumanized(props.item.status)}
+          </span>
+        </div>
+      )}
+      <div>
+        {props.isScanned && (
+          <select
+            onChange={(e) => {
+              if (e.currentTarget.value === "")
+                props.setSelectedPackage({
+                  id: props.item.id,
+                  categoryId: null,
+                })
+              else
+                props.setSelectedPackage({
+                  id: props.item.id,
+                  categoryId: Number(e.currentTarget.value),
+                })
+            }}
+          >
+            <option value="">Select a category ...</option>
+            {props.packageCategories.map(({ id, displayName }) => (
+              <option key={id} value={id}>
+                {displayName}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+      <div>
+        {props.isScanned && (
+          <button
+            type="button"
+            className="font-medium bg-red-500 hover:bg-red-400 disabled:bg-red-300 text-white transition-colors px-2 py-1 rounded-md"
+            disabled={props.isUpdatingStatus}
+            onClick={props.undoScan}
+          >
+            Undo Scan
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function PackagesTable({ shipmentId }: { shipmentId: number }) {
-  const {
-    status,
-    data: packages,
-    error,
-  } = api.package.getWithLatestStatusByShipmentId.useQuery({
+  const packagesQuery = api.package.getWithLatestStatusByShipmentId.useQuery({
     shipmentId,
   })
-
-  const [scannedPackageIds, setScannedPackageIds] = useState<string[]>([])
+  const packageCategoriesQuery = api.packageCategories.getAll.useQuery()
+  const [scannedPackages, setScannedPackages] = useState<SelectedPackage[]>([])
 
   const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.shipment.package.updateManyToCompletedStatus.useMutation({
+    api.shipment.package.updateManyToCompletedStatusWithCategory.useMutation({
       onSuccess: () => {
         utils.package.getWithLatestStatusByShipmentId.invalidate({
           shipmentId,
         })
         utils.package.getAll.invalidate()
-        setScannedPackageIds([])
+        setScannedPackages([])
       },
     })
 
-  if (status === "loading") return <div>Loading ...</div>
-  if (status === "error") return <div>Error: {error.message}</div>
+  if (packagesQuery.status === "loading") return <div>Loading ...</div>
+  if (packagesQuery.status === "error")
+    return <div>Error: {packagesQuery.error.message}</div>
+
+  if (packageCategoriesQuery.status === "loading") return <div>Loading ...</div>
+  if (packageCategoriesQuery.status === "error")
+    return <div>Error: {packageCategoriesQuery.error.message}</div>
 
   return (
     <div>
       <ScanPackageForm
-        packageIds={packages.map((_package) => _package.id)}
-        scannedPackageIds={scannedPackageIds}
-        updatedPackageIds={packages
+        packageIds={packagesQuery.data.map((_package) => _package.id)}
+        scannedPackages={scannedPackages}
+        updatedPackageIds={packagesQuery.data
           .filter((_package) => _package.status === "IN_WAREHOUSE")
           .map((_package) => _package.id)}
-        onSubmitValidPackageId={(packageId) =>
-          setScannedPackageIds((currScannedPackageIds) => [
-            ...currScannedPackageIds,
-            packageId,
+        onSubmitValidPackage={(props) =>
+          setScannedPackages((currScannedPackages) => [
+            ...currScannedPackages,
+            props,
           ])
         }
       />
-      <div className="grid grid-cols-4 font-medium">
+      <div className="grid grid-cols-5 font-medium">
         <div>Package ID</div>
         <div>Receiver</div>
         <div>Status</div>
+        <div>Category</div>
         <div>Actions</div>
       </div>
-      {packages.map((_package) => (
-        <div key={_package.id} className="grid grid-cols-4 mb-1">
-          <div>{_package.id}</div>
-          <div>
-            <div>{_package.receiverFullName}</div>
-          </div>
-          {scannedPackageIds.includes(_package.id) ? (
-            <div className="flex items-center gap-2 text-sm">
-              <span
-                className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
-                  _package.status,
-                )}`}
-              >
-                {supportedPackageStatusToHumanized(_package.status)}
-              </span>
-              <ArrowRight size={24} />
-              <span
-                className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
-                  "IN_WAREHOUSE",
-                )}`}
-              >
-                {supportedPackageStatusToHumanized("IN_WAREHOUSE")}
-              </span>
-            </div>
-          ) : (
-            <div className="text-sm">
-              <span
-                className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
-                  _package.status,
-                )}`}
-              >
-                {supportedPackageStatusToHumanized(_package.status)}
-              </span>
-            </div>
-          )}
-          <div>
-            {scannedPackageIds.includes(_package.id) && (
-              <button
-                type="button"
-                className="font-medium bg-red-500 hover:bg-red-400 disabled:bg-red-300 text-white transition-colors px-2 py-1 rounded-md"
-                disabled={isLoading}
-                onClick={() => {
-                  setScannedPackageIds((currScannedPackageIds) =>
-                    currScannedPackageIds.filter((id) => id !== _package.id),
-                  )
-                }}
-              >
-                Undo Scan
-              </button>
-            )}
-          </div>
-        </div>
+      {packagesQuery.data.map((_package) => (
+        <TableItem
+          key={_package.id}
+          item={_package}
+          isScanned={scannedPackages.some(({ id }) => id === _package.id)}
+          isUpdatingStatus={isLoading}
+          packageCategories={packageCategoriesQuery.data}
+          setSelectedPackage={(props) => {
+            setScannedPackages((currScannedPackages) => [
+              ...currScannedPackages.filter(({ id }) => id !== props.id),
+              props,
+            ])
+          }}
+          undoScan={() => {
+            setScannedPackages((currScannedPackages) =>
+              currScannedPackages.filter(({ id }) => id !== _package.id),
+            )
+          }}
+        />
       ))}
       <div className="flex justify-end">
         <button
           type="button"
           className="font-medium bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 text-white transition-colors px-4 py-2 rounded-md"
-          disabled={isLoading || scannedPackageIds.length === 0}
+          disabled={isLoading || scannedPackages.length === 0}
           onClick={() => {
             const auth = getAuth()
+            const scannedPackagesNonNull =
+              scannedPackages.filter<ValidSelectedPackage>(
+                (props): props is ValidSelectedPackage =>
+                  props.categoryId !== null,
+              )
+
+            if (scannedPackages.length !== scannedPackagesNonNull.length) {
+              toast("One or more packages has an invalid category.", {
+                icon: "⚠️",
+              })
+              return
+            }
+
             mutate({
               shipmentId,
               shipmentPackageStatus: "COMPLETED" as const,
-              packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
+              packages: [
+                scannedPackagesNonNull[0],
+                ...scannedPackagesNonNull.slice(1),
+              ],
               packageStatus: "IN_WAREHOUSE" as const,
               description: getDescriptionForNewPackageStatusLog("IN_WAREHOUSE"),
               createdAt: new Date(),
