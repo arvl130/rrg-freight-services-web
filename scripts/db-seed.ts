@@ -4,7 +4,12 @@ import { seedEnv } from "./env.mjs"
 import * as schema from "@/server/db/schema"
 import mysql from "mysql2/promise"
 import { drizzle } from "drizzle-orm/mysql2"
-import { NewUser, NewVehicle, NewWarehouse } from "@/server/db/entities"
+import {
+  NewPackageCategory,
+  NewUser,
+  NewVehicle,
+  NewWarehouse,
+} from "@/server/db/entities"
 
 const pool = mysql.createPool({
   uri:
@@ -113,9 +118,25 @@ const newVehicles: NewVehicle[] = [
   },
 ]
 
+const newPackageCategories: NewPackageCategory[] = [
+  {
+    id: 1,
+    displayName: "Category 1",
+  },
+  {
+    id: 2,
+    displayName: "Category 2",
+  },
+  {
+    id: 3,
+    displayName: "Category 3",
+  },
+]
+
 await db.insert(schema.users).values(newUsers)
 await db.insert(schema.vehicles).values(newVehicles)
 await db.insert(schema.warehouses).values(newWarehouses)
+await db.insert(schema.packageCategories).values(newPackageCategories)
 
 await pool
   .end()
