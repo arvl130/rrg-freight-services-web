@@ -89,52 +89,30 @@ export default function LoginPage() {
   return (
     <>
       <LoginPageHead />
-      <main className="min-h-screen bg-brand-cyan-100 px-3 py-24 pb-3 relative">
+      <main className="min-h-screen bg-brand-cyan-450 px-3 py-24 pb-3 relative">
         <div className="absolute inset-0 h-full sm:grid grid-cols-2 hidden">
-          <div className="bg-cyan-600">
+          <div className="flex justify-center items-end">
             <Image
-              src="/assets/img/login/left-bg.png"
-              alt="Shipping port"
-              className="h-full w-full object-cover"
-              width={600}
-              height={800}
+              src="/assets/img/login/right-bg.png"
+              alt="Ship, truck, and plane on a globe"
+              width={500}
+              height={320}
             />
           </div>
-          <div className="grid grid-rows-[8rem_1fr] bg-brand-cyan-450">
-            <div className="flex justify-end pt-12 pr-12">
-              <Image
-                src="/assets/img/logos/logo-with-name.png"
-                alt="RRG Freight Services logo with its name on the right"
-                className="w-56 h-20"
-                width={224}
-                height={80}
-              />
-            </div>
-
-            <div className="flex justify-end items-end">
-              <Image
-                src="/assets/img/login/right-bg.png"
-                alt="Ship, truck, and plane on a globe"
-                className="w-[90%] object-contain object-right-bottom"
-                width={600}
-                height={384}
-              />
-            </div>
-          </div>
+          <div></div>
         </div>
-        <section className="max-w-md mx-auto bg-white px-4 py-3 rounded-md shadow-lg relative">
-          <div className="px-4 sm:px-8 pb-8">
+        <section className="max-w-[26rem] mx-auto bg-white px-4 py-3 rounded-md shadow-lg relative">
+          <div className="px-3 sm:px-6 pb-8">
             <div className="pb-6 pt-10">
               <div className="flex justify-center mb-2">
                 <Image
-                  alt="RRG Freight Services logo"
-                  src="/assets/img/logos/logo.png"
-                  className="w-24 h-24"
-                  width={96}
-                  height={96}
+                  src="/assets/img/logos/logo-with-name.png"
+                  alt="RRG Freight Services logo with its name on the right"
+                  width={168}
+                  height={60}
                 />
               </div>
-              <p className="text-center text-xl font-semibold">
+              <p className="text-center font-semibold">
                 Enter Your Credentials
               </p>
             </div>
@@ -216,23 +194,25 @@ export default function LoginPage() {
               })}
             >
               <div>
+                <label className="font-medium block mb-1">Email</label>
                 <input
                   type="text"
-                  placeholder="Email"
                   className="text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
                   {...register("email", {
                     onChange: () => setSignInError(null),
                   })}
                 />
                 {errors.email && (
-                  <p className="text-red-600 mt-1">{errors.email.message}</p>
+                  <p className="text-red-600 mt-1 text-sm">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
               <div className="mt-4">
+                <label className="font-medium block mb-1">Password</label>
                 <div className="relative">
                   <input
                     type={isPasswordVisible ? "text" : "password"}
-                    placeholder="Password"
                     className="text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
                     {...register("password", {
                       onChange: () => setSignInError(null),
@@ -255,7 +235,9 @@ export default function LoginPage() {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-600 mt-1">{errors.password.message}</p>
+                  <p className="text-red-600 mt-1 text-sm">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
               <div className="text-right mt-1">
