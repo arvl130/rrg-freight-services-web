@@ -88,7 +88,7 @@ export const shipmentPackageRouter = router({
       .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
       .where(
         and(
-          eq(incomingShipments.sentByAgentId, incomingShipments.sentByAgentId),
+          eq(incomingShipments.sentByAgentId, ctx.user.uid),
           eq(shipments.status, "FAILED"),
         ),
       )

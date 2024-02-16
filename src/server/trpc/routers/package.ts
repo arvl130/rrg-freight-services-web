@@ -279,7 +279,7 @@ export const packageRouter = router({
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .where(
         and(
-          eq(incomingShipments.sentByAgentId, incomingShipments.sentByAgentId),
+          eq(incomingShipments.sentByAgentId, ctx.user.uid),
           eq(shipmentPackages.shipmentId, shipmentPackages.shipmentId),
           eq(packages.shippingType, "EXPRESS"),
         ),
@@ -299,7 +299,7 @@ export const packageRouter = router({
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .where(
         and(
-          eq(incomingShipments.sentByAgentId, incomingShipments.sentByAgentId),
+          eq(incomingShipments.sentByAgentId, ctx.user.uid),
           eq(shipmentPackages.shipmentId, shipmentPackages.shipmentId),
           eq(packages.id, packages.id),
         ),
