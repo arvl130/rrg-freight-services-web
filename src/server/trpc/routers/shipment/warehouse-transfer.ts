@@ -6,6 +6,9 @@ import {
   warehouseTransferShipments,
   packageStatusLogs,
   packages,
+  warehouses,
+  users,
+  vehicles,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
@@ -70,16 +73,38 @@ export const warehouseTransferShipmentRouter = router({
         shipments,
         eq(warehouseTransferShipments.shipmentId, shipments.id),
       )
+      .innerJoin(
+        warehouses,
+        eq(warehouseTransferShipments.sentToWarehouseId, warehouses.id),
+      )
+      .innerJoin(users, eq(warehouseTransferShipments.driverId, users.id))
+      .innerJoin(
+        vehicles,
+        eq(warehouseTransferShipments.vehicleId, vehicles.id),
+      )
       .where(eq(shipments.status, "PREPARING"))
 
-    return results.map(({ shipments, warehouse_transfer_shipments }) => {
-      const { shipmentId, ...other } = warehouse_transfer_shipments
+    return results.map(
+      ({
+        shipments,
+        warehouse_transfer_shipments,
+        warehouses,
+        users,
+        vehicles,
+      }) => {
+        const { shipmentId, ...other } = warehouse_transfer_shipments
 
-      return {
-        ...shipments,
-        ...other,
-      }
-    })
+        return {
+          ...shipments,
+          ...other,
+          warehouseDisplayName: warehouses.displayName,
+          driverDisplayName: users.displayName,
+          driverContactNumber: users.contactNumber,
+          vehicleDisplayName: vehicles.displayName,
+          vehicleType: vehicles.type,
+        }
+      },
+    )
   }),
   getInTransit: protectedProcedure.query(async ({ ctx }) => {
     const results = await ctx.db

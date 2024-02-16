@@ -6,6 +6,7 @@ import {
   incomingShipments,
   packageStatusLogs,
   packages,
+  users,
 } from "@/server/db/schema"
 import {
   PackageReceptionMode,
@@ -71,14 +72,16 @@ export const incomingShipmentRouter = router({
       .select()
       .from(incomingShipments)
       .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
+      .innerJoin(users, eq(incomingShipments.sentByAgentId, users.id))
       .where(eq(shipments.status, "IN_TRANSIT"))
 
-    return results.map(({ shipments, incoming_shipments }) => {
+    return results.map(({ shipments, incoming_shipments, users }) => {
       const { shipmentId, ...other } = incoming_shipments
 
       return {
         ...shipments,
         ...other,
+        agentDisplayName: users.displayName,
       }
     })
   }),

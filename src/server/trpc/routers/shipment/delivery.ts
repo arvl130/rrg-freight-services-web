@@ -7,6 +7,8 @@ import {
   packageStatusLogs,
   shipmentPackageOtps,
   packages,
+  users,
+  vehicles,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -69,14 +71,20 @@ export const deliveryShipmentRouter = router({
       .select()
       .from(deliveryShipments)
       .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
+      .innerJoin(users, eq(deliveryShipments.driverId, users.id))
+      .innerJoin(vehicles, eq(deliveryShipments.vehicleId, vehicles.id))
       .where(eq(shipments.status, "PREPARING"))
 
-    return results.map(({ shipments, delivery_shipments }) => {
+    return results.map(({ shipments, delivery_shipments, users, vehicles }) => {
       const { shipmentId, ...other } = delivery_shipments
 
       return {
         ...shipments,
         ...other,
+        driverDisplayName: users.displayName,
+        driverContactNumber: users.contactNumber,
+        vehicleDisplayName: vehicles.displayName,
+        vehicleType: vehicles.type,
       }
     })
   }),
@@ -85,14 +93,20 @@ export const deliveryShipmentRouter = router({
       .select()
       .from(deliveryShipments)
       .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
+      .innerJoin(users, eq(deliveryShipments.driverId, users.id))
+      .innerJoin(vehicles, eq(deliveryShipments.vehicleId, vehicles.id))
       .where(eq(shipments.status, "IN_TRANSIT"))
 
-    return results.map(({ shipments, delivery_shipments }) => {
+    return results.map(({ shipments, delivery_shipments, users, vehicles }) => {
       const { shipmentId, ...other } = delivery_shipments
 
       return {
         ...shipments,
         ...other,
+        driverDisplayName: users.displayName,
+        driverContactNumber: users.contactNumber,
+        vehicleDisplayName: vehicles.displayName,
+        vehicleType: vehicles.type,
       }
     })
   }),
