@@ -1,7 +1,7 @@
 import type { User } from "@/server/db/entities"
 import { useSession } from "@/hooks/session"
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
-import { UserCircle } from "@phosphor-icons/react/UserCircle"
+import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { useState } from "react"
 import Image from "next/image"
 import { z } from "zod"

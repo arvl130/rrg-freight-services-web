@@ -2,7 +2,7 @@
 
 import { DomesticLayout } from "@/layouts/domestic"
 import { useSession } from "@/hooks/session"
-import { DotsThree } from "@phosphor-icons/react/DotsThree"
+import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import { Package } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { useState } from "react"

@@ -1,11 +1,11 @@
 "use client"
 
 import { OverseasLayout } from "@/layouts/overseas"
-import { Article } from "@phosphor-icons/react/Article"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { File } from "@phosphor-icons/react/File"
-import { Package } from "@phosphor-icons/react/Package"
-import { UserCircle } from "@phosphor-icons/react/UserCircle"
+import { Article } from "@phosphor-icons/react/dist/ssr/Article"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { File } from "@phosphor-icons/react/dist/ssr/File"
+import { Package } from "@phosphor-icons/react/dist/ssr/Package"
+import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 
 const shipments = [
   {

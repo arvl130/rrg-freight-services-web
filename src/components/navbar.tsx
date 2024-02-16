@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { List } from "@phosphor-icons/react/List"
-import { User } from "@phosphor-icons/react/User"
+import { List } from "@phosphor-icons/react/dist/ssr/List"
+import { User } from "@phosphor-icons/react/dist/ssr/User"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { useSession } from "@/hooks/session"
 

@@ -2,9 +2,9 @@
 
 import { AdminLayout } from "@/layouts/admin"
 import { useSession } from "@/hooks/session"
-import { DotsThree } from "@phosphor-icons/react/DotsThree"
+import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import { PackageCategory } from "@/server/db/entities"
-import { Plus } from "@phosphor-icons/react/Plus"
+import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"

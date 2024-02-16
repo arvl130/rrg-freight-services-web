@@ -1,8 +1,8 @@
 "use client"
 
-import { BellRinging } from "@phosphor-icons/react/BellRinging"
-import { UserCircleGear } from "@phosphor-icons/react/UserCircleGear"
-import { Key } from "@phosphor-icons/react/Key"
+import { BellRinging } from "@phosphor-icons/react/dist/ssr/BellRinging"
+import { UserCircleGear } from "@phosphor-icons/react/dist/ssr/UserCircleGear"
+import { Key } from "@phosphor-icons/react/dist/ssr/Key"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 

@@ -2,7 +2,7 @@
 
 import { AdminLayout } from "@/layouts/admin"
 import { useSession } from "@/hooks/session"
-import { Plus } from "@phosphor-icons/react/Plus"
+import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
@@ -14,7 +14,7 @@ import { EditModal } from "./edit-modal"
 import { DeleteModal } from "./delete-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { Vehicle } from "@/server/db/entities"
-import { DotsThree } from "@phosphor-icons/react/DotsThree"
+import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 
 function TableItem({ item }: { item: Vehicle }) {
   const [visibleModal, setVisibleModal] = useState<null | "EDIT" | "DELETE">(

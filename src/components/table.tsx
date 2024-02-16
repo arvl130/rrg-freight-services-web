@@ -1,10 +1,10 @@
-import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
-import { Export } from "@phosphor-icons/react/Export"
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
+import { Export } from "@phosphor-icons/react/dist/ssr/Export"
 import { ReactNode, useRef } from "react"
-import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
-import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
+import { CaretDoubleLeft } from "@phosphor-icons/react/dist/ssr/CaretDoubleLeft"
+import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { CaretDoubleRight } from "@phosphor-icons/react/dist/ssr/CaretDoubleRight"
 import { utils, writeFileXLSX } from "xlsx"
 
 export function Filters({ children }: { children: ReactNode }) {

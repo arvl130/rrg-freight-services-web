@@ -1,7 +1,7 @@
 import { api } from "@/utils/api"
 import { SUPPORTED_VEHICLE_TYPES, VehicleType } from "@/utils/constants"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { X } from "@phosphor-icons/react/X"
+import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"
 import { z } from "zod"

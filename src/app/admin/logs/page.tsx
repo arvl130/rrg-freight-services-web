@@ -1,15 +1,15 @@
 "use client"
 
 import { AdminLayout } from "@/layouts/admin"
-import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
-import { DotsThree } from "@phosphor-icons/react/DotsThree"
-import { Export } from "@phosphor-icons/react/Export"
-import { UserCircle } from "@phosphor-icons/react/UserCircle"
-import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
-import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
-import { CaretDoubleLeft } from "@phosphor-icons/react/CaretDoubleLeft"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { CaretDoubleRight } from "@phosphor-icons/react/CaretDoubleRight"
+import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple"
+import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
+import { Export } from "@phosphor-icons/react/dist/ssr/Export"
+import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
+import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
+import { CaretDoubleLeft } from "@phosphor-icons/react/dist/ssr/CaretDoubleLeft"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { CaretDoubleRight } from "@phosphor-icons/react/dist/ssr/CaretDoubleRight"
 
 function PageHeader() {
   return (

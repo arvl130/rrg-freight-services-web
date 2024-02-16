@@ -1,6 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog"
-import { X } from "@phosphor-icons/react/X"
-import { ArrowsClockwise } from "@phosphor-icons/react/ArrowsClockwise"
+import { X } from "@phosphor-icons/react/dist/ssr/X"
+import { ArrowsClockwise } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise"
 import { api } from "@/utils/api"
 import { getColorFromPackageStatus } from "@/utils/colors"
 import { supportedPackageStatusToHumanized } from "@/utils/humanize"

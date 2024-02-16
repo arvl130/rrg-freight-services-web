@@ -2,13 +2,13 @@
 
 import { WarehouseLayout } from "@/layouts/warehouse"
 import { useSession } from "@/hooks/session"
-import { ArrowClockwise } from "@phosphor-icons/react/ArrowClockwise"
-import { ArrowsOutLineHorizontal } from "@phosphor-icons/react/ArrowsOutLineHorizontal"
-import { CalendarBlank } from "@phosphor-icons/react/CalendarBlank"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { FunnelSimple } from "@phosphor-icons/react/FunnelSimple"
-import { ArrowsInLineHorizontal } from "@phosphor-icons/react/ArrowsInLineHorizontal"
-import { Package } from "@phosphor-icons/react/Package"
+import { ArrowClockwise } from "@phosphor-icons/react/dist/ssr/ArrowClockwise"
+import { ArrowsOutLineHorizontal } from "@phosphor-icons/react/dist/ssr/ArrowsOutLineHorizontal"
+import { CalendarBlank } from "@phosphor-icons/react/dist/ssr/CalendarBlank"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { FunnelSimple } from "@phosphor-icons/react/dist/ssr/FunnelSimple"
+import { ArrowsInLineHorizontal } from "@phosphor-icons/react/dist/ssr/ArrowsInLineHorizontal"
+import { Package } from "@phosphor-icons/react/dist/ssr/Package"
 
 function WarehousePackagesTile() {
   return (
