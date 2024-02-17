@@ -164,4 +164,16 @@ export const shipmentPackageRouter = router({
       count: value,
     }
   }),
+  getTotalArrivingShipment: protectedProcedure.query(async ({ ctx }) => {
+    const [{ value }] = await ctx.db
+      .select({
+        value: count(),
+      })
+      .from(shipments)
+      .where(eq(shipments.status, "IN_TRANSIT"))
+
+    return {
+      count: value,
+    }
+  }),
 })

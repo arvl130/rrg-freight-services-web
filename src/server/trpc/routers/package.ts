@@ -1,6 +1,7 @@
 import { and, count, eq, lt, sql } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
+  forwarderTransferShipments,
   packageStatusLogs,
   packages,
   shipmentPackages,
@@ -296,6 +297,21 @@ export const packageRouter = router({
       )
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .where(and(eq(incomingShipments.sentByAgentId, ctx.user.uid)))
+    return {
+      count: value,
+    }
+  }),
+
+  getTotalPackagesForwarder: protectedProcedure.query(async ({ ctx }) => {
+    const [{ value }] = await ctx.db
+      .select({ value: count() })
+      .from(forwarderTransferShipments)
+      .innerJoin(
+        shipmentPackages,
+        eq(forwarderTransferShipments.shipmentId, shipmentPackages.shipmentId),
+      )
+      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+      .where(eq(forwarderTransferShipments.sentToAgentId, ctx.user.uid))
     return {
       count: value,
     }

@@ -2,7 +2,11 @@
 
 import { DomesticLayout } from "@/layouts/domestic"
 import { useSession } from "@/hooks/session"
+
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { api } from "@/utils/api"
+import { Package } from "@phosphor-icons/react/dist/icons/Package"
+import { Article } from "@phosphor-icons/react/dist/icons/Article"
 
 function ManifestSummaryTile() {
   return (
@@ -56,11 +60,61 @@ function ManifestHistoryTile() {
   )
 }
 
+function TotalPackageTile() {
+  const { status, data } = api.package.getTotalPackagesForwarder.useQuery()
+
+  return (
+    <article
+      className="
+  text-[#C61717]
+  grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
+  bg-gradient-to-b from-[#ED5959CC] to-[#ED595900]
+"
+    >
+      <div className="flex flex-col justify-center items-start">
+        <p className="text-4xl font-semibold">
+          {status === "loading" && <>...</>}
+          {status === "error" && <>error</>}
+          {status === "success" && <>{data.count}</>}
+        </p>
+        <p>Total Package</p>
+      </div>
+      <div>
+        <Package size={96} />
+      </div>
+    </article>
+  )
+}
+
+function TotalArrivingShipmentTile() {
+  const { status, data } =
+    api.shipment.package.getTotalArrivingShipment.useQuery()
+  return (
+    <article
+      className=" text-[#AC873C]
+      grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
+      bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]"
+    >
+      <div className="flex flex-col justify-center items-start">
+        <p className="text-4xl font-semibold"></p>
+        <p className="text-4xl font-semibold">
+          {status === "loading" && <>...</>}
+          {status === "error" && <>error</>}
+          {status === "success" && <>{data.count}</>}
+        </p>
+        <p>Total Arriving Shipment</p>
+      </div>
+      <div>
+        <Article size={96} />
+      </div>
+    </article>
+  )
+}
+
 interface CalendarWidgetProps {
   year: number
   month: string
 }
-
 function CalendarWidgetTile({ year, month }: CalendarWidgetProps) {
   function generateCalendarContent() {
     const daysInMonth = 31
@@ -118,6 +172,12 @@ export default function DashboardPage() {
     <DomesticLayout title="Dashboard">
       <>
         <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
+        <section className="mb-6">
+          <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
+            <TotalPackageTile />
+            <TotalArrivingShipmentTile />
+          </div>
+        </section>
         <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
           <ManifestSummaryTile />
           <CalendarWidgetTile year={2023} month="October" />
