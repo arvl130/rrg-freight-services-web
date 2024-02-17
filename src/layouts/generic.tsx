@@ -18,7 +18,7 @@ import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
 
 export function SkeletonGenericLayout() {
   return (
-    <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+    <div className="grid grid-cols-[16rem_minmax(0,_1fr)]">
       <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
       <main className="bg-brand-cyan-100"></main>
     </div>
@@ -144,7 +144,7 @@ export function GenericLayout({ title, children }: LayoutProps) {
         name="description"
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
-      <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+      <div className="grid grid-cols-[16rem_minmax(0,_1fr)]">
         <GenericSidebar />
         <div className="bg-brand-cyan-100 px-6 py-4">
           <GenericHeader user={user} />

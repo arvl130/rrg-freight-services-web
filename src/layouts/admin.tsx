@@ -4,7 +4,6 @@ import { useSession } from "@/hooks/session"
 import { Gauge } from "@phosphor-icons/react/dist/ssr/Gauge"
 import { Package } from "@phosphor-icons/react/dist/ssr/Package"
 import { Scroll } from "@phosphor-icons/react/dist/ssr/Scroll"
-import { SignOut } from "@phosphor-icons/react/dist/ssr/SignOut"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { UsersThree } from "@phosphor-icons/react/dist/ssr/UsersThree"
 import { Motorcycle } from "@phosphor-icons/react/dist/ssr/Motorcycle"
@@ -13,110 +12,227 @@ import { ClipboardText } from "@phosphor-icons/react/dist/ssr/ClipboardText"
 import { Boat } from "@phosphor-icons/react/dist/ssr/Boat"
 import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
 import { Warehouse } from "@phosphor-icons/react/dist/ssr/Warehouse"
-import { User, getAuth, signOut } from "firebase/auth"
+import { ChartDonut } from "@phosphor-icons/react/dist/ssr/ChartDonut"
+import { User } from "firebase/auth"
 import Image from "next/image"
 import { ReactNode, useState } from "react"
 import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
-import { SideBarLink } from "@/components/sidebar-link"
 import { GenericHeader, SkeletonGenericLayout } from "./generic"
+import * as Accordion from "@radix-ui/react-accordion"
+import { File } from "@phosphor-icons/react/dist/ssr/File"
+import { usePathname } from "next/navigation"
+import { SidebarLink } from "@/components/sidebar-link"
+import { AccordionLink } from "@/components/accordion-link"
+import { LogoutButton } from "@/components/logout-button"
+
+function getDefaultValue(pathname: string) {
+  if (["/admin/packages", "/admin/package-categories"].includes(pathname)) {
+    return ["package-management"]
+  }
+
+  if (
+    [
+      "/admin/shipments/incoming",
+      "/admin/shipments/delivery",
+      "/admin/shipments/transfer/forwarder",
+      "/admin/shipments/transfer/warehouse",
+    ].includes(pathname)
+  ) {
+    return ["shipment-management"]
+  }
+
+  if (["/admin/vehicles"].includes(pathname)) {
+    return ["asset-management"]
+  }
+
+  if (["/admin/logs"].includes(pathname)) {
+    return ["record-management"]
+  }
+
+  return []
+}
 
 export function AdminSideBar() {
   const [isSigningOut, setIsSigningOut] = useState(false)
+  const pathname = usePathname()
+  const defaultValue = pathname === null ? [] : getDefaultValue(pathname)
 
   return (
-    <nav className="bg-brand-cyan-500 flex flex-col justify-between items-center py-3 h-screen sticky top-0 bottom-0">
-      <div className="flex justify-center items-center h-10 w-full my-2">
+    <nav className="bg-brand-cyan-500 grid grid-rows-[auto_1fr_auto] py-3 h-screen sticky top-0 bottom-0">
+      <div className="flex justify-center items-center w-full mt-2 mb-5">
         <Image
-          src="/assets/img/logos/logo-white-bg.png"
+          src="/assets/img/logos/logo-header.png"
           alt="RRG Freight Services circle logo with white background"
-          height={60}
-          width={60}
-          className="w-12 h-12 rounded-full"
+          width={160}
+          height={58}
         />
       </div>
-      <div className="flex flex-col items-center gap-2 w-full">
-        <SideBarLink
-          name="Dashboard"
-          href="/admin/dashboard"
-          icon={<Gauge size={32} className="text-white " />}
-        />
-        <SideBarLink
-          name="Packages"
-          href="/admin/packages"
-          icon={<Package size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Packages Categories"
-          href="/admin/package-categories"
-          icon={<Toolbox size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Incoming Shipments"
-          href="/admin/shipments/incoming"
-          icon={<Boat size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Forwarder Transfer Shipments"
-          href="/admin/shipments/transfer/forwarder"
-          icon={<ClipboardText size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Warehouse Transfer Shipments"
-          href="/admin/shipments/transfer/warehouse"
-          icon={<Warehouse size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Deliveries"
-          href="/admin/shipments/delivery"
-          icon={<Motorcycle size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Vehicles"
-          href="/admin/vehicles"
-          icon={<Truck size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Users"
-          href="/admin/users"
-          icon={<UsersThree size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Logs"
-          href="/admin/logs"
-          icon={<Scroll size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Profile"
-          href="/profile/settings"
-          otherRouteNames={[
-            "/profile/notifications",
-            "/profile/change-password",
-          ]}
-          icon={<UserCircle size={32} className="text-white" />}
-        />
+      <div className="flex flex-col w-full overflow-auto">
+        <Accordion.Root type="multiple" defaultValue={defaultValue}>
+          <SidebarLink
+            icon={<Gauge size={24} />}
+            name="Dashboard"
+            href="/admin/dashboard"
+          />
+          <Accordion.Item value="package-management">
+            <Accordion.Header
+              className={`
+                flex items-center
+                gap-2 px-4 h-10 w-full
+                transition-colors duration-200 font-semibold
+                ${
+                  pathname === null
+                    ? "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
+                    : `${
+                        [
+                          "/admin/packages",
+                          "/admin/package-categories",
+                        ].includes(pathname)
+                          ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
+                          : "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
+                      }`
+                }
+              `}
+            >
+              <Package size={24} />
+              <Accordion.Trigger>Package Management</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content className="[background-color:_#6BB6C1]">
+              <AccordionLink
+                icon={<Package size={24} />}
+                name="Packages"
+                href="/admin/packages"
+              />
+              <AccordionLink
+                icon={<Toolbox size={24} />}
+                name="Packages Categories"
+                href="/admin/package-categories"
+              />
+            </Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item value="shipment-management">
+            <Accordion.Header
+              className={`
+                flex items-center
+                gap-2 px-4 h-10 w-full
+                transition-colors duration-200 font-semibold
+                ${
+                  pathname === null
+                    ? "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
+                    : `${
+                        [
+                          "/admin/shipments/incoming",
+                          "/admin/shipments/delivery",
+                          "/admin/shipments/transfer/forwarder",
+                          "/admin/shipments/transfer/warehouse",
+                        ].includes(pathname)
+                          ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
+                          : "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
+                      }`
+                }
+              `}
+            >
+              <Boat size={24} />
+              <Accordion.Trigger>Shipment Management</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content className="[background-color:_#6BB6C1]">
+              <AccordionLink
+                icon={<Boat size={24} />}
+                name="Incoming"
+                href="/admin/shipments/incoming"
+              />
+              <AccordionLink
+                icon={<Motorcycle size={24} />}
+                name="Deliveries"
+                href="/admin/shipments/delivery"
+              />
+              <AccordionLink
+                icon={<ClipboardText size={24} />}
+                name="Forwarder Transfer"
+                href="/admin/shipments/transfer/forwarder"
+              />
+              <AccordionLink
+                icon={<Warehouse size={24} />}
+                name="Warehouse Transfer"
+                href="/admin/shipments/transfer/warehouse"
+              />
+            </Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item value="asset-management">
+            <Accordion.Header
+              className={`
+                flex items-center
+                gap-2 px-4 h-10 w-full
+                transition-colors duration-200 font-semibold
+                ${
+                  pathname === null
+                    ? "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
+                    : `${
+                        ["/admin/vehicles"].includes(pathname)
+                          ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
+                          : "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
+                      }`
+                }
+              `}
+            >
+              <ChartDonut size={24} />
+              <Accordion.Trigger>Asset Management</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content className="[background-color:_#6BB6C1]">
+              <AccordionLink
+                icon={<Truck size={24} />}
+                name="Vehicles"
+                href="/admin/vehicles"
+              />
+            </Accordion.Content>
+          </Accordion.Item>
+          <Accordion.Item value="record-management">
+            <Accordion.Header
+              className={`
+                flex items-center
+                gap-2 px-4 h-10 w-full
+                transition-colors duration-200 font-semibold
+                ${
+                  pathname === null
+                    ? "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
+                    : `${
+                        ["/admin/logs"].includes(pathname)
+                          ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
+                          : "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
+                      }`
+                }
+              `}
+            >
+              <File size={24} />
+              <Accordion.Trigger>Record Management</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content className="[background-color:_#6BB6C1]">
+              <AccordionLink
+                icon={<Scroll size={24} />}
+                name="Activity Logs"
+                href="/admin/logs"
+              />
+            </Accordion.Content>
+          </Accordion.Item>
+          <SidebarLink
+            icon={<UsersThree size={24} />}
+            name="Users"
+            href="/admin/users"
+          />
+          <SidebarLink
+            icon={<UserCircle size={24} />}
+            name="Profile"
+            href="/profile/settings"
+            otherRouteNames={[
+              "/profile/notifications",
+              "/profile/change-password",
+            ]}
+          />
+        </Accordion.Root>
       </div>
       <div className="w-full">
-        <button
-          type="button"
-          className="flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200"
-          disabled={isSigningOut}
-          onClick={async () => {
-            setIsSigningOut(true)
-            try {
-              const auth = getAuth()
-              await signOut(auth)
-            } finally {
-              setIsSigningOut(false)
-            }
-          }}
-        >
-          <span className="sr-only">Logout</span>
-          <SignOut
-            size={32}
-            className={isSigningOut ? "text-sky-200" : "text-white"}
-          />
-        </button>
+        <LogoutButton />
       </div>
     </nav>
   )
@@ -193,7 +309,7 @@ export function AdminLayout({ title, children }: LayoutProps) {
         name="description"
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
-      <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+      <div className="grid grid-cols-[16rem_minmax(0,_1fr)]">
         <AdminSideBar />
         <div className="bg-brand-cyan-100 px-6 py-4">
           <GenericHeader user={user} />
