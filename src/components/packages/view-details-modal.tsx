@@ -22,11 +22,16 @@ function TopLayer({ package: _package }: { package: Package }) {
     <div className="grid grid-cols-3 px-16 py-3 [background-color:_#54BCCC] text-white">
       <div>
         <p className="font-medium">Shipped via</p>
-        <p>{_package.shippingMode}</p>
+        <p>
+          {_package.shippingMode === "SEA" ? <>Sea Cargo</> : <>Air Cargo</>}
+        </p>
       </div>
       <div>
         <p className="font-medium">Status</p>
-        <p>{status === "success" && statusLog.status.replaceAll("_", " ")}</p>
+        <p className="capitalize">
+          {status === "success" &&
+            statusLog.status.toLowerCase().replaceAll("_", " ")}
+        </p>
       </div>
       <div>
         <p className="font-medium">Estimated Delivery</p>
