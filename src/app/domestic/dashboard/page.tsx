@@ -2,12 +2,10 @@
 
 import { DomesticLayout } from "@/layouts/domestic"
 import { useSession } from "@/hooks/session"
-
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { api } from "@/utils/api"
 import { Package } from "@phosphor-icons/react/dist/icons/Package"
 import { Article } from "@phosphor-icons/react/dist/icons/Article"
-
 function ManifestSummaryTile() {
   return (
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
@@ -115,6 +113,7 @@ interface CalendarWidgetProps {
   year: number
   month: string
 }
+
 function CalendarWidgetTile({ year, month }: CalendarWidgetProps) {
   function generateCalendarContent() {
     const daysInMonth = 31
@@ -171,22 +170,24 @@ export default function DashboardPage() {
   return (
     <DomesticLayout title="Dashboard">
       <>
-        <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
-        <section className="mb-6">
-          <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
-            <TotalPackageTile />
-            <TotalArrivingShipmentTile />
-          </div>
-        </section>
-        <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
-          <ManifestSummaryTile />
-          <CalendarWidgetTile year={2023} month="October" />
-        </section>
-        <section className="grid grid-cols-[50rem_1fr] gap-x-6 [color:_#404040]">
-          <ManifestHistoryTile />
-          <RecentNotificationTile />
-        </section>
+      <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
+      <section className="mb-6">
+        <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
+        <TotalPackageTile />
+          <TotalArrivingShipmentTile />
+        </div>
+      </section>
+      <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
+        <ManifestSummaryTile />
+        <CalendarWidgetTile year={2023} month="October" />
+      </section>
+      <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
+        <ManifestHistoryTile />
+        <RecentNotificationTile />
+      </section>
       </>
     </DomesticLayout>
   )
 }
+
+
