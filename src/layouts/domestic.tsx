@@ -1,24 +1,19 @@
 import { useSession } from "@/hooks/session"
 import { Gauge } from "@phosphor-icons/react/dist/ssr/Gauge"
 import { Package } from "@phosphor-icons/react/dist/ssr/Package"
-import { SignOut } from "@phosphor-icons/react/dist/ssr/SignOut"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
-import { getAuth, signOut, User } from "firebase/auth"
+import { User } from "firebase/auth"
 import Image from "next/image"
-import { ReactNode, useState } from "react"
+import { ReactNode } from "react"
 import { SkeletonGenericLayout, GenericHeader } from "./generic"
 import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
-import Link from "next/link"
 import * as Accordion from "@radix-ui/react-accordion"
-import { usePathname } from "next/navigation"
 import { SidebarLink } from "@/components/sidebar-link"
 import { LogoutButton } from "@/components/logout-button"
 
 export function DomesticSideBar() {
-  const [isSigningOut, setIsSigningOut] = useState(false)
-
   return (
     <nav className="bg-brand-cyan-500 grid grid-rows-[auto_1fr_auto] py-3 h-screen sticky top-0 bottom-0">
       <div className="flex justify-center items-center w-full mt-2 mb-5">

@@ -15,7 +15,7 @@ import { Warehouse } from "@phosphor-icons/react/dist/ssr/Warehouse"
 import { ChartDonut } from "@phosphor-icons/react/dist/ssr/ChartDonut"
 import { User } from "firebase/auth"
 import Image from "next/image"
-import { ReactNode, useState } from "react"
+import { ReactNode } from "react"
 import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
 import { GenericHeader, SkeletonGenericLayout } from "./generic"
@@ -54,7 +54,6 @@ function getDefaultValue(pathname: string) {
 }
 
 export function AdminSideBar() {
-  const [isSigningOut, setIsSigningOut] = useState(false)
   const pathname = usePathname()
   const defaultValue = pathname === null ? [] : getDefaultValue(pathname)
 
