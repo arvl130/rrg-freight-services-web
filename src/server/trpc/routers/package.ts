@@ -324,7 +324,6 @@ export const packageRouter = router({
       )
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .where(eq(forwarderTransferShipments.sentToAgentId, ctx.user.uid))
-
     return {
       count: value,
     }
