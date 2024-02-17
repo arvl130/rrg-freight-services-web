@@ -1,14 +1,14 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import { Package } from "@/server/db/entities"
-import { X } from "@phosphor-icons/react/X"
+import { X } from "@phosphor-icons/react/dist/ssr/X"
 import { api } from "@/utils/api"
-import { Package as PhosphorIconPackage } from "@phosphor-icons/react/Package"
-import { MapPinLine } from "@phosphor-icons/react/MapPinLine"
-import { Truck } from "@phosphor-icons/react/Truck"
-import { Path } from "@phosphor-icons/react/Path"
-import { CaretDown } from "@phosphor-icons/react/CaretDown"
-import { CaretUp } from "@phosphor-icons/react/CaretUp"
-import { Check } from "@phosphor-icons/react/Check"
+import { Package as PhosphorIconPackage } from "@phosphor-icons/react/dist/ssr/Package"
+import { MapPinLine } from "@phosphor-icons/react/dist/ssr/MapPinLine"
+import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
+import { Path } from "@phosphor-icons/react/dist/ssr/Path"
+import { CaretDown } from "@phosphor-icons/react/dist/ssr/CaretDown"
+import { CaretUp } from "@phosphor-icons/react/dist/ssr/CaretUp"
+import { Check } from "@phosphor-icons/react/dist/ssr/Check"
 import { useState } from "react"
 import { DateTime } from "luxon"
 
@@ -22,15 +22,33 @@ function TopLayer({ package: _package }: { package: Package }) {
     <div className="grid grid-cols-3 px-16 py-3 [background-color:_#54BCCC] text-white">
       <div>
         <p className="font-medium">Shipped via</p>
-        <p>{_package.shippingMode}</p>
+        <p>
+          {_package.shippingMode === "SEA" ? <>Sea Cargo</> : <>Air Cargo</>}
+        </p>
       </div>
       <div>
         <p className="font-medium">Status</p>
-        <p>{status === "success" && statusLog.status.replaceAll("_", " ")}</p>
+        <p className="capitalize">
+          {status === "success" &&
+            statusLog.status.toLowerCase().replaceAll("_", " ")}
+        </p>
       </div>
       <div>
         <p className="font-medium">Estimated Delivery</p>
-        <p>N/A</p>
+        <p>
+          {_package.status === "INCOMING" && <>30-45 days</>}
+
+          {_package.status === "IN_WAREHOUSE" && <>2-3 days</>}
+          {_package.status === "SORTING" && <>2-3 days</>}
+
+          {_package.status === "DELIVERING" && <>2-3 days</>}
+          {_package.status === "DELIVERED" && <>N/A</>}
+
+          {_package.status === "TRANSFERRING_FORWARDER" && <>N/A</>}
+          {_package.status === "TRANSFERRED_FORWARDER" && <>N/A</>}
+
+          {_package.status === "TRANSFERRING_WAREHOUSE" && <>4-5 days</>}
+        </p>
       </div>
     </div>
   )

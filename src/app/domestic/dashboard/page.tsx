@@ -2,7 +2,7 @@
 
 import { DomesticLayout } from "@/layouts/domestic"
 import { useSession } from "@/hooks/session"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 
 function ManifestSummaryTile() {
   return (

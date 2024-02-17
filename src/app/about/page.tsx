@@ -3,11 +3,11 @@
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import Image from "next/image"
-import { Path } from "@phosphor-icons/react/dist/icons/Path"
+import { Path } from "@phosphor-icons/react/dist/ssr/Path"
 import Link from "next/link"
-import { Phone } from "@phosphor-icons/react/dist/icons/Phone"
-import { Envelope } from "@phosphor-icons/react/dist/icons/Envelope"
-import { Clock } from "@phosphor-icons/react/dist/icons/Clock"
+import { Phone } from "@phosphor-icons/react/dist/ssr/Phone"
+import { Envelope } from "@phosphor-icons/react/dist/ssr/Envelope"
+import { Clock } from "@phosphor-icons/react/dist/ssr/Clock"
 import { GlobePlaneVector } from "@/components/vector/globe-plane"
 
 function HeroSection() {

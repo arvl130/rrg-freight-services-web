@@ -3,7 +3,7 @@
 import "react-responsive-carousel/lib/styles/carousel.min.css"
 import Image from "next/image"
 import { Carousel } from "react-responsive-carousel"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import Link from "next/link"
 
 const images = [

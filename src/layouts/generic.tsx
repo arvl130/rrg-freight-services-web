@@ -5,12 +5,12 @@ import { AdminSideBar } from "./admin"
 import { WarehouseSideBar } from "./warehouse"
 import { DomesticSideBar } from "./domestic"
 import { OverseasSideBar } from "./overseas"
-import { List } from "@phosphor-icons/react/List"
-import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
-import { Gear } from "@phosphor-icons/react/Gear"
-import { Bell } from "@phosphor-icons/react/Bell"
-import { UserCircle } from "@phosphor-icons/react/UserCircle"
-import { CaretDown } from "@phosphor-icons/react/CaretDown"
+import { List } from "@phosphor-icons/react/dist/ssr/List"
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
+import { Gear } from "@phosphor-icons/react/dist/ssr/Gear"
+import { Bell } from "@phosphor-icons/react/dist/ssr/Bell"
+import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
+import { CaretDown } from "@phosphor-icons/react/dist/ssr/CaretDown"
 import { UserRole } from "@/utils/constants"
 import Image from "next/image"
 import { LoginPageHead } from "@/app/login/login-page-head"
@@ -18,7 +18,7 @@ import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
 
 export function SkeletonGenericLayout() {
   return (
-    <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+    <div className="grid grid-cols-[16rem_minmax(0,_1fr)]">
       <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
       <main className="bg-brand-cyan-100"></main>
     </div>
@@ -144,7 +144,7 @@ export function GenericLayout({ title, children }: LayoutProps) {
         name="description"
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
-      <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+      <div className="grid grid-cols-[16rem_minmax(0,_1fr)]">
         <GenericSidebar />
         <div className="bg-brand-cyan-100 px-6 py-4">
           <GenericHeader user={user} />

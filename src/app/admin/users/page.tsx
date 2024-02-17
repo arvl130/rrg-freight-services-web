@@ -2,8 +2,8 @@
 
 import { AdminLayout } from "@/layouts/admin"
 import { useSession } from "@/hooks/session"
-import { Plus } from "@phosphor-icons/react/Plus"
-import { DownloadSimple } from "@phosphor-icons/react/DownloadSimple"
+import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
+import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple"
 import * as Table from "@/components/table"
 import { api } from "@/utils/api"
 import { User } from "@/server/db/entities"

@@ -4,8 +4,8 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
-import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
-import { X } from "@phosphor-icons/react/X"
+import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
+import { X } from "@phosphor-icons/react/dist/ssr/X"
 
 const updateInformationFormSchema = z.object({
   displayName: z.string().min(1).max(100),

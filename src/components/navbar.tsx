@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { List } from "@phosphor-icons/react/List"
-import { User } from "@phosphor-icons/react/User"
+import { List } from "@phosphor-icons/react/dist/ssr/List"
+import { User } from "@phosphor-icons/react/dist/ssr/User"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { useSession } from "@/hooks/session"
 
@@ -64,7 +64,7 @@ function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
 }
 
 function DesktopNav() {
-  const { isLoading, role } = useSession()
+  const { isLoading, user, role } = useSession()
 
   return (
     <div className="hidden md:flex max-w-6xl mx-auto px-6 h-full justify-between items-center text-white font-semibold">
@@ -108,15 +108,26 @@ function DesktopNav() {
           />
         </div>
       ) : (
-        <Link
-          href={getUserRoleRedirectPath(role)}
-          className="flex items-center text-white"
-        >
-          <User
-            size={30}
-            className="text-xl font-bold focus:outline-none text-white"
-          />
-        </Link>
+        <>
+          {user === null ? (
+            <Link href="/login" className="flex items-center text-white">
+              <User
+                size={30}
+                className="text-xl font-bold focus:outline-none text-white"
+              />
+            </Link>
+          ) : (
+            <Link
+              href={getUserRoleRedirectPath(role)}
+              className="flex items-center text-white"
+            >
+              <User
+                size={30}
+                className="text-xl font-bold focus:outline-none text-white"
+              />
+            </Link>
+          )}
+        </>
       )}
     </div>
   )

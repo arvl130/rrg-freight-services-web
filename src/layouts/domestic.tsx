@@ -1,72 +1,59 @@
 import { useSession } from "@/hooks/session"
-import { Gauge } from "@phosphor-icons/react/Gauge"
-import { Package } from "@phosphor-icons/react/Package"
-import { SignOut } from "@phosphor-icons/react/SignOut"
-import { UserCircle } from "@phosphor-icons/react/UserCircle"
-import { Truck } from "@phosphor-icons/react/Truck"
-import { getAuth, signOut, User } from "firebase/auth"
+import { Gauge } from "@phosphor-icons/react/dist/ssr/Gauge"
+import { Package } from "@phosphor-icons/react/dist/ssr/Package"
+import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
+import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
+import { User } from "firebase/auth"
 import Image from "next/image"
-import { ReactNode, useState } from "react"
-import { SideBarLink } from "@/components/sidebar-link"
+import { ReactNode } from "react"
 import { SkeletonGenericLayout, GenericHeader } from "./generic"
 import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
+import * as Accordion from "@radix-ui/react-accordion"
+import { SidebarLink } from "@/components/sidebar-link"
+import { LogoutButton } from "@/components/logout-button"
 
 export function DomesticSideBar() {
-  const [isSigningOut, setIsSigningOut] = useState(false)
-
   return (
-    <nav className="bg-brand-cyan-500 flex flex-col justify-between items-center py-3 h-screen sticky top-0 bottom-0">
-      <div className="flex flex-col items-center gap-3 w-full">
+    <nav className="bg-brand-cyan-500 grid grid-rows-[auto_1fr_auto] py-3 h-screen sticky top-0 bottom-0">
+      <div className="flex justify-center items-center w-full mt-2 mb-5">
         <Image
-          src="/assets/img/logos/logo-white-bg.png"
+          src="/assets/img/logos/logo-header.png"
           alt="RRG Freight Services circle logo with white background"
-          height={60}
-          width={60}
-          className="w-12 h-12 rounded-full"
-        />
-        <SideBarLink
-          name="Dashboard"
-          href="/domestic/dashboard"
-          icon={<Gauge size={32} className="text-white " />}
-        />
-        <SideBarLink
-          name="Packages"
-          href="/domestic/packages"
-          icon={<Package size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Shipments"
-          href="/domestic/transfer-forwarder-shipments"
-          icon={<Truck size={32} className="text-white" />}
-        />
-        <SideBarLink
-          name="Profile"
-          href="/profile/settings"
-          icon={<UserCircle size={32} className="text-white" />}
+          width={160}
+          height={58}
         />
       </div>
-      <div className="w-full">
-        <button
-          type="button"
-          className="flex justify-center items-center h-10 w-full hover:bg-sky-200 transition duration-200"
-          disabled={isSigningOut}
-          onClick={async () => {
-            setIsSigningOut(true)
-            try {
-              const auth = getAuth()
-              await signOut(auth)
-            } finally {
-              setIsSigningOut(false)
-            }
-          }}
-        >
-          <span className="sr-only">Logout</span>
-          <SignOut
-            size={32}
-            className={isSigningOut ? "text-sky-200" : "text-white"}
+      <div className="flex flex-col w-full overflow-auto">
+        <Accordion.Root type="multiple">
+          <SidebarLink
+            icon={<Gauge size={24} />}
+            name="Dashboard"
+            href="/domestic/dashboard"
           />
-        </button>
+          <SidebarLink
+            icon={<Package size={24} />}
+            name="Packages"
+            href="/domestic/packages"
+          />
+          <SidebarLink
+            icon={<Truck size={24} />}
+            name="Shipments"
+            href="/domestic/transfer-forwarder-shipments"
+          />
+          <SidebarLink
+            icon={<UserCircle size={24} />}
+            name="Profile"
+            href="/profile/settings"
+            otherRouteNames={[
+              "/profile/notifications",
+              "/profile/change-password",
+            ]}
+          />
+        </Accordion.Root>
+      </div>
+      <div className="w-full">
+        <LogoutButton />
       </div>
     </nav>
   )
@@ -152,7 +139,7 @@ export function DomesticLayout({ title, children }: LayoutProps) {
         name="description"
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
-      <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
+      <div className="grid grid-cols-[16rem_minmax(0,_1fr)]">
         <DomesticSideBar />
         <div className="bg-brand-cyan-100 px-6 py-4">
           <GenericHeader user={user} />

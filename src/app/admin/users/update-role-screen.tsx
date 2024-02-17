@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import { UserRole, SUPPORTED_USER_ROLES } from "@/utils/constants"
-import { CaretLeft } from "@phosphor-icons/react/CaretLeft"
-import { X } from "@phosphor-icons/react/X"
+import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
+import { X } from "@phosphor-icons/react/dist/ssr/X"
 import { supportedRoleToHumanized } from "@/utils/humanize"
 
 const updateRoleFormSchema = z.object({

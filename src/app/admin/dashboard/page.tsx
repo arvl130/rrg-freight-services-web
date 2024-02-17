@@ -1,14 +1,22 @@
 import { AdminLayout } from "@/layouts/admin"
-import { ArrowClockwise } from "@phosphor-icons/react/dist/ssr/ArrowClockwise"
 import { CalendarBlank } from "@phosphor-icons/react/dist/ssr/CalendarBlank"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { FunnelSimple } from "@phosphor-icons/react/dist/ssr/FunnelSimple"
 import { User } from "@phosphor-icons/react/dist/ssr/User"
-import { PackagesInWarehouseTile } from "./packages-in-warehouse-tile"
-import { ActiveUsersTile } from "./active-users-tile"
-import { ManifestsShippedTile } from "./manifests-shipped-tile"
+import {
+  PackagesInWarehouseTile,
+  SkeletonPackagesInWarehouseTile,
+} from "./packages-in-warehouse-tile"
+import { ActiveUsersTile, SkeletonActiveUsersTile } from "./active-users-tile"
+import {
+  ManifestsShippedTile,
+  SkeletonManifestsShippedTile,
+} from "./manifests-shipped-tile"
 import { DeliverySummaryTile } from "./delivery-summary-tile"
 import { UserStatusTile } from "./user-summary-tile"
+import { RefreshButton } from "./refresh-button"
+import { RevalidatedPageProvider } from "@/providers/revalidated-page"
+import { RevalidatedPageBoundary } from "@/components/revalidated-page-boundary"
 
 function RecentActivityTile() {
   return (
@@ -81,41 +89,47 @@ export default function DashboardPage() {
   return (
     <AdminLayout title="Dashboard">
       <h1 className="text-2xl font-black [color:_#00203F] mb-4">Dashboard</h1>
-      <section className="mb-6">
-        <div className="mb-4 flex justify-end gap-3">
-          <div className="flex text-sm">
-            <input
-              type="date"
-              className="rounded-l-md border-y border-l border-gray-300 pl-2"
-            />
-            <span className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-r-md">
-              <CalendarBlank size={24} />
-            </span>
+      <RevalidatedPageProvider>
+        <section className="mb-6">
+          <div className="mb-4 flex justify-end gap-3">
+            <div className="flex text-sm">
+              <input
+                type="date"
+                className="rounded-l-md border-y border-l border-gray-300 pl-2"
+              />
+              <span className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-r-md">
+                <CalendarBlank size={24} />
+              </span>
+            </div>
+
+            <RefreshButton />
+
+            <button
+              type="button"
+              className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-md"
+            >
+              <span className="sr-only">Filter</span>
+              <FunnelSimple size={24} />
+            </button>
           </div>
 
-          <button
-            type="button"
-            className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-md"
-          >
-            <span className="sr-only">Refresh</span>
-            <ArrowClockwise size={24} />
-          </button>
-
-          <button
-            type="button"
-            className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-md"
-          >
-            <span className="sr-only">Filter</span>
-            <FunnelSimple size={24} />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
-          <PackagesInWarehouseTile />
-          <ActiveUsersTile />
-          <ManifestsShippedTile />
-        </div>
-      </section>
+          <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
+            <RevalidatedPageBoundary
+              fallback={<SkeletonPackagesInWarehouseTile />}
+            >
+              <PackagesInWarehouseTile />
+            </RevalidatedPageBoundary>
+            <RevalidatedPageBoundary fallback={<SkeletonActiveUsersTile />}>
+              <ActiveUsersTile />
+            </RevalidatedPageBoundary>
+            <RevalidatedPageBoundary
+              fallback={<SkeletonManifestsShippedTile />}
+            >
+              <ManifestsShippedTile />
+            </RevalidatedPageBoundary>
+          </div>
+        </section>
+      </RevalidatedPageProvider>
 
       <section className="grid grid-cols-[24rem_1fr] gap-x-6 [color:_#404040] mb-6">
         <RecentActivityTile />

@@ -3,12 +3,12 @@
 import { AdminLayout } from "@/layouts/admin"
 import { useState } from "react"
 import { useSession } from "@/hooks/session"
-import { Plus } from "@phosphor-icons/react/Plus"
+import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
 import { CreateModal } from "./create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { DotsThree } from "@phosphor-icons/react/DotsThree"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Page from "@/components/page"
 import * as Table from "@/components/table"
@@ -16,7 +16,7 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import { NormalizedWarehouseTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
-import { DisplayName } from "@/components/warehouse/display-name"
+import { WarehouseDisplayName } from "@/components/warehouse-display-name"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
@@ -33,7 +33,7 @@ function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
         <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <DisplayName id={item.sentToWarehouseId} />
+        <WarehouseDisplayName id={item.sentToWarehouseId} />
       </div>
       <div className="px-4 py-2">
         {DateTime.fromJSDate(item.createdAt).toLocaleString(

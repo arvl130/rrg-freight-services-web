@@ -2,7 +2,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ReactNode } from "react"
 
-export function SidebarLink({
+export function AccordionLink({
   href,
   name,
   icon,
@@ -22,17 +22,15 @@ export function SidebarLink({
     <Link
       href={href}
       className={`
-        flex items-center
-        gap-2 px-4 h-10 w-full
-        transition duration-200 font-semibold
+        flex items-center gap-2 px-4 h-10 w-full transition duration-200 font-semibold
         ${
           pathname === null
-            ? "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
+            ? "text-white hover:[background-color:_#B5DCDC] hover:[color:_#5C929A]"
             : `
                 ${
                   matchingRouteNames.includes(pathname)
-                    ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
-                    : "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
+                    ? "[background-color:_#B5DCDC] [color:_#5C929A]"
+                    : "text-white hover:[background-color:_#B5DCDC] hover:[color:_#5C929A]"
                 }
               `
         }

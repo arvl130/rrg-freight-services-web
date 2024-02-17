@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { Package, Vehicle } from "@/server/db/entities"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"

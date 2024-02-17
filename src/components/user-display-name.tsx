@@ -1,8 +1,8 @@
 import { api } from "@/utils/api"
 
-export function DisplayName({ id }: { id: number }) {
-  const { status, data, error } = api.warehouse.getById.useQuery({
-    id,
+export function UserDisplayName({ userId }: { userId: string }) {
+  const { status, data, error } = api.user.getById.useQuery({
+    id: userId,
   })
 
   if (status === "loading") return <>...</>

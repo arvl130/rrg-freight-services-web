@@ -4,11 +4,11 @@ import Image from "next/image"
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import { VerticalTimeline } from "./timeline"
-import { Truck } from "@phosphor-icons/react/Truck"
-import { Path } from "@phosphor-icons/react/Path"
-import { MapPin } from "@phosphor-icons/react/MapPin"
-import { CheckCircle } from "@phosphor-icons/react/CheckCircle"
-import { Package } from "@phosphor-icons/react/Package"
+import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
+import { Path } from "@phosphor-icons/react/dist/ssr/Path"
+import { MapPin } from "@phosphor-icons/react/dist/ssr/MapPin"
+import { CheckCircle } from "@phosphor-icons/react/dist/ssr/CheckCircle"
+import { Package } from "@phosphor-icons/react/dist/ssr/Package"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -38,9 +38,14 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
     status,
     data: _package,
     error,
-  } = api.package.getWithStatusLogsById.useQuery({
-    id: packageId,
-  })
+  } = api.package.getWithStatusLogsById.useQuery(
+    {
+      id: packageId,
+    },
+    {
+      retry: false,
+    },
+  )
 
   if (status === "loading")
     return (
@@ -54,9 +59,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
     return (
       <>
         <div className="flex justify-center py-10">
-          <h2 className="text-[25px] text-red font-semibold">
-            Package Not Found!
-          </h2>
+          <p className="text-xl text-red font-semibold">Package not found.</p>
         </div>
       </>
     )
@@ -128,14 +131,9 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
 }
 
 const choosePackageFormSchema = z.object({
-  packageId: z
-    .string()
-    .min(1, {
-      message: "Please enter a tracking number",
-    })
-    .regex(/^\d+$/, {
-      message: "Please enter a valid tracking number",
-    }),
+  packageId: z.string().min(1, {
+    message: "Please enter a tracking number",
+  }),
 })
 
 type ChoosePackageFormType = z.infer<typeof choosePackageFormSchema>

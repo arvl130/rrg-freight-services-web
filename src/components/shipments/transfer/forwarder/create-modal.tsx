@@ -1,4 +1,4 @@
-import { MagnifyingGlass } from "@phosphor-icons/react/MagnifyingGlass"
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { Package } from "@/server/db/entities"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useEffect, useState } from "react"

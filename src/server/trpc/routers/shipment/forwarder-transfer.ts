@@ -6,11 +6,14 @@ import {
   forwarderTransferShipments,
   packageStatusLogs,
   packages,
+  users,
+  vehicles,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
+import { alias } from "drizzle-orm/mysql-core"
 
 export const forwarderTransferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -63,6 +66,8 @@ export const forwarderTransferShipmentRouter = router({
       }
     }),
   getPreparing: protectedProcedure.query(async ({ ctx }) => {
+    const agentUsers = alias(users, "agent_users")
+    const driverUsers = alias(users, "driver_users")
     const results = await ctx.db
       .select()
       .from(forwarderTransferShipments)
@@ -70,16 +75,41 @@ export const forwarderTransferShipmentRouter = router({
         shipments,
         eq(forwarderTransferShipments.shipmentId, shipments.id),
       )
+      .innerJoin(
+        agentUsers,
+        eq(forwarderTransferShipments.sentToAgentId, agentUsers.id),
+      )
+      .innerJoin(
+        driverUsers,
+        eq(forwarderTransferShipments.driverId, driverUsers.id),
+      )
+      .innerJoin(
+        vehicles,
+        eq(forwarderTransferShipments.vehicleId, vehicles.id),
+      )
       .where(eq(shipments.status, "PREPARING"))
 
-    return results.map(({ shipments, forwarder_transfer_shipments }) => {
-      const { shipmentId, ...other } = forwarder_transfer_shipments
+    return results.map(
+      ({
+        shipments,
+        forwarder_transfer_shipments,
+        agent_users,
+        driver_users,
+        vehicles,
+      }) => {
+        const { shipmentId, ...other } = forwarder_transfer_shipments
 
-      return {
-        ...shipments,
-        ...other,
-      }
-    })
+        return {
+          ...shipments,
+          ...other,
+          agentDisplayName: agent_users.displayName,
+          driverDisplayName: driver_users.displayName,
+          driverContactNumber: driver_users.contactNumber,
+          vehicleDisplayName: vehicles.displayName,
+          vehicleType: vehicles.type,
+        }
+      },
+    )
   }),
   getInTransit: protectedProcedure.query(async ({ ctx }) => {
     const results = await ctx.db

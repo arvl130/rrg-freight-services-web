@@ -3,11 +3,11 @@
 import { AdminLayout } from "@/layouts/admin"
 import { useState } from "react"
 import { useSession } from "@/hooks/session"
-import { Plus } from "@phosphor-icons/react/Plus"
+import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { DotsThree } from "@phosphor-icons/react/DotsThree"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Page from "@/components/page"
 import * as Table from "@/components/table"
@@ -15,7 +15,7 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import type { NormalizedForwarderTransferShipment } from "@/server/db/entities"
 import { ShipmentStatus } from "@/utils/constants"
-import { DisplayName } from "@/components/users/display-name"
+import { UserDisplayName } from "@/components/user-display-name"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { CreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
@@ -33,7 +33,7 @@ function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
         <span>{item.id}</span>
       </div>
       <div className="px-4 py-2">
-        <DisplayName userId={item.sentToAgentId} />
+        <UserDisplayName userId={item.sentToAgentId} />
       </div>
       <div className="px-4 py-2">
         {DateTime.fromJSDate(item.createdAt).toLocaleString(
