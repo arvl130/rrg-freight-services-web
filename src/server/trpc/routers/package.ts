@@ -1,9 +1,10 @@
-import { and, count, eq, lt } from "drizzle-orm"
+import { and, count, eq, lt, sql } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   packageStatusLogs,
   packages,
   shipmentPackages,
+  incomingShipments,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -262,6 +263,39 @@ export const packageRouter = router({
       .from(packages)
       .where(eq(packages.status, "IN_WAREHOUSE"))
 
+    return {
+      count: value,
+    }
+  }),
+  getTotalRushPackage: protectedProcedure.query(async ({ ctx }) => {
+    const [{ value }] = await ctx.db
+      .select({ value: count() })
+      .from(incomingShipments)
+      .innerJoin(
+        shipmentPackages,
+        eq(incomingShipments.shipmentId, shipmentPackages.shipmentId),
+      )
+      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+      .where(
+        and(
+          eq(incomingShipments.sentByAgentId, ctx.user.uid),
+          eq(packages.shippingType, "EXPRESS"),
+        ),
+      )
+    return {
+      count: value,
+    }
+  }),
+  getTotalPackages: protectedProcedure.query(async ({ ctx }) => {
+    const [{ value }] = await ctx.db
+      .select({ value: count() })
+      .from(incomingShipments)
+      .innerJoin(
+        shipmentPackages,
+        eq(incomingShipments.shipmentId, shipmentPackages.shipmentId),
+      )
+      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+      .where(and(eq(incomingShipments.sentByAgentId, ctx.user.uid)))
     return {
       count: value,
     }
