@@ -20,7 +20,6 @@ import {
   SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"
 import { generateUniqueId } from "@/utils/uuid"
-import { MySql2Database } from "drizzle-orm/mysql2"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -280,7 +279,6 @@ export const packageRouter = router({
       .where(
         and(
           eq(incomingShipments.sentByAgentId, ctx.user.uid),
-          eq(shipmentPackages.shipmentId, shipmentPackages.shipmentId),
           eq(packages.shippingType, "EXPRESS"),
         ),
       )
@@ -297,13 +295,7 @@ export const packageRouter = router({
         eq(incomingShipments.shipmentId, shipmentPackages.shipmentId),
       )
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
-      .where(
-        and(
-          eq(incomingShipments.sentByAgentId, ctx.user.uid),
-          eq(shipmentPackages.shipmentId, shipmentPackages.shipmentId),
-          eq(packages.id, packages.id),
-        ),
-      )
+      .where(and(eq(incomingShipments.sentByAgentId, ctx.user.uid)))
     return {
       count: value,
     }
