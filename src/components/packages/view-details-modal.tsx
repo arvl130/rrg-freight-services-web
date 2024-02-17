@@ -30,7 +30,20 @@ function TopLayer({ package: _package }: { package: Package }) {
       </div>
       <div>
         <p className="font-medium">Estimated Delivery</p>
-        <p>N/A</p>
+        <p>
+          {_package.status === "INCOMING" && <>30-45 days</>}
+
+          {_package.status === "IN_WAREHOUSE" && <>2-3 days</>}
+          {_package.status === "SORTING" && <>2-3 days</>}
+
+          {_package.status === "DELIVERING" && <>2-3 days</>}
+          {_package.status === "DELIVERED" && <>N/A</>}
+
+          {_package.status === "TRANSFERRING_FORWARDER" && <>N/A</>}
+          {_package.status === "TRANSFERRED_FORWARDER" && <>N/A</>}
+
+          {_package.status === "TRANSFERRING_WAREHOUSE" && <>4-5 days</>}
+        </p>
       </div>
     </div>
   )
