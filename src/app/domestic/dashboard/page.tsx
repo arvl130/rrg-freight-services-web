@@ -170,24 +170,22 @@ export default function DashboardPage() {
   return (
     <DomesticLayout title="Dashboard">
       <>
-      <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
-      <section className="mb-6">
-        <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
-        <TotalPackageTile />
-          <TotalArrivingShipmentTile />
-        </div>
-      </section>
-      <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
-        <ManifestSummaryTile />
-        <CalendarWidgetTile year={2023} month="October" />
-      </section>
-      <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
-        <ManifestHistoryTile />
-        <RecentNotificationTile />
-      </section>
+        <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
+        <section className="mb-6">
+          <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
+            <TotalPackageTile />
+            <TotalArrivingShipmentTile />
+          </div>
+        </section>
+        <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
+          <ManifestSummaryTile />
+          <CalendarWidgetTile year={2023} month="October" />
+        </section>
+        <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
+          <ManifestHistoryTile />
+          <RecentNotificationTile />
+        </section>
       </>
     </DomesticLayout>
   )
 }
-
-
