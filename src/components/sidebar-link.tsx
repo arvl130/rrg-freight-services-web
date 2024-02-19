@@ -17,6 +17,8 @@ export function SidebarLink({
   const matchingRouteNames = Array.isArray(otherRouteNames)
     ? [...new Set([href, ...otherRouteNames])]
     : [href]
+  const hasActiveRoute =
+    pathname === null ? false : matchingRouteNames.includes(pathname)
 
   return (
     <Link
@@ -26,15 +28,9 @@ export function SidebarLink({
         gap-2 px-4 h-10 w-full
         transition duration-200 font-semibold
         ${
-          pathname === null
-            ? "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
-            : `
-                ${
-                  matchingRouteNames.includes(pathname)
-                    ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
-                    : "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
-                }
-              `
+          hasActiveRoute
+            ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
+            : "text-white hover:bg-sky-200"
         }
       `}
     >

@@ -15,7 +15,7 @@ import { LogoutButton } from "@/components/logout-button"
 
 export function DomesticSideBar() {
   return (
-    <nav className="bg-brand-cyan-500 grid grid-rows-[auto_1fr_auto] py-3 h-screen sticky top-0 bottom-0">
+    <nav className="text-sm bg-brand-cyan-500 grid grid-rows-[auto_1fr_auto] py-3 h-screen sticky top-0 bottom-0">
       <div className="flex justify-center items-center w-full mt-2 mb-5">
         <Image
           src="/assets/img/logos/logo-header.png"

@@ -25,6 +25,7 @@ import { usePathname } from "next/navigation"
 import { SidebarLink } from "@/components/sidebar-link"
 import { AccordionLink } from "@/components/accordion-link"
 import { LogoutButton } from "@/components/logout-button"
+import { SidebarAccordionTrigger } from "@/components/sidebar-accordion-trigger"
 
 function getDefaultValue(pathname: string) {
   if (["/admin/packages", "/admin/package-categories"].includes(pathname)) {
@@ -58,7 +59,7 @@ export function AdminSideBar() {
   const defaultValue = pathname === null ? [] : getDefaultValue(pathname)
 
   return (
-    <nav className="bg-brand-cyan-500 grid grid-rows-[auto_1fr_auto] py-3 h-screen sticky top-0 bottom-0">
+    <nav className="text-sm bg-brand-cyan-500 grid grid-rows-[auto_1fr_auto] py-3 h-screen sticky top-0 bottom-0">
       <div className="flex justify-center items-center w-full mt-2 mb-5">
         <Image
           src="/assets/img/logos/logo-header.png"
@@ -75,27 +76,16 @@ export function AdminSideBar() {
             href="/admin/dashboard"
           />
           <Accordion.Item value="package-management">
-            <Accordion.Header
-              className={`
-                flex items-center
-                gap-2 px-4 h-10 w-full
-                transition-colors duration-200 font-semibold
-                ${
-                  pathname === null
-                    ? "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
-                    : `${
-                        [
-                          "/admin/packages",
-                          "/admin/package-categories",
-                        ].includes(pathname)
-                          ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
-                          : "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
-                      }`
-                }
-              `}
-            >
-              <Package size={24} />
-              <Accordion.Trigger>Package Management</Accordion.Trigger>
+            <Accordion.Header>
+              <SidebarAccordionTrigger
+                matchingRouteNames={[
+                  "/admin/packages",
+                  "/admin/package-categories",
+                ]}
+              >
+                <Package size={24} />
+                <span>Package Management</span>
+              </SidebarAccordionTrigger>
             </Accordion.Header>
             <Accordion.Content className="[background-color:_#6BB6C1]">
               <AccordionLink
@@ -111,29 +101,18 @@ export function AdminSideBar() {
             </Accordion.Content>
           </Accordion.Item>
           <Accordion.Item value="shipment-management">
-            <Accordion.Header
-              className={`
-                flex items-center
-                gap-2 px-4 h-10 w-full
-                transition-colors duration-200 font-semibold
-                ${
-                  pathname === null
-                    ? "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
-                    : `${
-                        [
-                          "/admin/shipments/incoming",
-                          "/admin/shipments/delivery",
-                          "/admin/shipments/transfer/forwarder",
-                          "/admin/shipments/transfer/warehouse",
-                        ].includes(pathname)
-                          ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
-                          : "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
-                      }`
-                }
-              `}
-            >
-              <Boat size={24} />
-              <Accordion.Trigger>Shipment Management</Accordion.Trigger>
+            <Accordion.Header>
+              <SidebarAccordionTrigger
+                matchingRouteNames={[
+                  "/admin/shipments/incoming",
+                  "/admin/shipments/delivery",
+                  "/admin/shipments/transfer/forwarder",
+                  "/admin/shipments/transfer/warehouse",
+                ]}
+              >
+                <Boat size={24} />
+                <span>Shipment Management</span>
+              </SidebarAccordionTrigger>
             </Accordion.Header>
             <Accordion.Content className="[background-color:_#6BB6C1]">
               <AccordionLink
@@ -159,24 +138,11 @@ export function AdminSideBar() {
             </Accordion.Content>
           </Accordion.Item>
           <Accordion.Item value="asset-management">
-            <Accordion.Header
-              className={`
-                flex items-center
-                gap-2 px-4 h-10 w-full
-                transition-colors duration-200 font-semibold
-                ${
-                  pathname === null
-                    ? "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
-                    : `${
-                        ["/admin/vehicles"].includes(pathname)
-                          ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
-                          : "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
-                      }`
-                }
-              `}
-            >
-              <ChartDonut size={24} />
-              <Accordion.Trigger>Asset Management</Accordion.Trigger>
+            <Accordion.Header>
+              <SidebarAccordionTrigger matchingRouteNames={["/admin/vehicles"]}>
+                <ChartDonut size={24} />
+                <span>Asset Management</span>
+              </SidebarAccordionTrigger>
             </Accordion.Header>
             <Accordion.Content className="[background-color:_#6BB6C1]">
               <AccordionLink
@@ -187,24 +153,18 @@ export function AdminSideBar() {
             </Accordion.Content>
           </Accordion.Item>
           <Accordion.Item value="record-management">
-            <Accordion.Header
-              className={`
-                flex items-center
-                gap-2 px-4 h-10 w-full
-                transition-colors duration-200 font-semibold
-                ${
-                  pathname === null
-                    ? "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
-                    : `${
-                        ["/admin/logs"].includes(pathname)
-                          ? "[background-color:_#EFF8F8] [color:_#79CFDC]"
-                          : "text-white hover:[background-color:_#EFF8F8] hover:[color:_#79CFDC]"
-                      }`
-                }
-              `}
-            >
-              <File size={24} />
-              <Accordion.Trigger>Record Management</Accordion.Trigger>
+            <Accordion.Header>
+              <SidebarAccordionTrigger
+                matchingRouteNames={[
+                  "/admin/shipments/incoming",
+                  "/admin/shipments/delivery",
+                  "/admin/shipments/transfer/forwarder",
+                  "/admin/shipments/transfer/warehouse",
+                ]}
+              >
+                <File size={24} />
+                <span>Record Management</span>
+              </SidebarAccordionTrigger>
             </Accordion.Header>
             <Accordion.Content className="[background-color:_#6BB6C1]">
               <AccordionLink
