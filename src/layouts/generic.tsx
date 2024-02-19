@@ -15,6 +15,7 @@ import { UserRole } from "@/utils/constants"
 import Image from "next/image"
 import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
+import { DriverSideBar } from "@/app/driver/auth"
 
 export function SkeletonGenericLayout() {
   return (
@@ -32,6 +33,7 @@ function GenericSidebar() {
   if (role === "WAREHOUSE") return <WarehouseSideBar />
   if (role === "DOMESTIC_AGENT") return <DomesticSideBar />
   if (role === "OVERSEAS_AGENT") return <OverseasSideBar />
+  if (role === "DRIVER") return <DriverSideBar />
 
   return (
     <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
