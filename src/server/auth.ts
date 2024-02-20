@@ -1,8 +1,8 @@
 import { getApps, getApp, initializeApp, cert } from "firebase-admin/app"
-import { UserRecord, getAuth } from "firebase-admin/auth"
+import { CreateRequest, UserRecord, getAuth } from "firebase-admin/auth"
 import { GetServerSidePropsContext } from "next"
 import { serverEnv } from "./env.mjs"
-import { headers } from "next/headers"
+import { UserRole } from "@/utils/constants"
 
 const {
   FIREBASE_ADMIN_PROJECT_ID,
@@ -22,6 +22,22 @@ const app =
     : getApp()
 
 const auth = getAuth(app)
+
+export function getUserByEmail(email: string) {
+  return auth.getUserByEmail(email)
+}
+
+export async function createUser(props: {
+  options: CreateRequest
+  role: UserRole
+}) {
+  const userRecord = await auth.createUser(props.options)
+  auth.setCustomUserClaims(userRecord.uid, {
+    role: props.role,
+  })
+
+  return userRecord
+}
 
 export async function updateProfile(
   user: UserRecord,

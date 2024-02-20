@@ -4,6 +4,7 @@ import { AdminLayout } from "@/layouts/admin"
 import { useSession } from "@/hooks/session"
 import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
 import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple"
+import * as Page from "@/components/page"
 import * as Table from "@/components/table"
 import { api } from "@/utils/api"
 import { User } from "@/server/db/entities"
@@ -13,23 +14,7 @@ import { usePaginatedItems } from "@/hooks/paginated-items"
 import { useState } from "react"
 import { SUPPORTED_USER_ROLES, UserRole } from "@/utils/constants"
 import { supportedRoleToHumanized } from "@/utils/humanize"
-
-function PageHeader() {
-  return (
-    <div className="flex justify-between mb-4">
-      <h1 className="text-2xl font-black [color:_#00203F] mb-2">Users</h1>
-      <div>
-        <button
-          type="button"
-          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-        >
-          <Plus size={16} />
-          <span>Add User</span>
-        </button>
-      </div>
-    </div>
-  )
-}
+import { CreateModal } from "./create-modal"
 
 function filterBySearchTerm(items: User[], searchTerm: string) {
   return items.filter((item) =>
@@ -113,9 +98,6 @@ function UsersTable({ items }: { items: User[] }) {
                   {supportedRoleToHumanized(role)}
                 </option>
               ))}
-            </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-              <option value="">All Permissions</option>
             </select>
             <select
               className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
@@ -207,9 +189,29 @@ export default function UsersPage() {
     enabled: user !== null && role === "ADMIN",
   })
 
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
+
   return (
     <AdminLayout title="Users">
-      <PageHeader />
+      <Page.Header>
+        <h1 className="text-2xl font-black mb-2 [color:_#00203F] flex items-center gap-1">
+          Users
+        </h1>
+        <div className="grid">
+          <button
+            type="button"
+            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
+            onClick={() => setIsOpenCreateModal(true)}
+          >
+            <Plus size={16} />
+            <span>Create User</span>
+          </button>
+        </div>
+        <CreateModal
+          isOpen={isOpenCreateModal}
+          close={() => setIsOpenCreateModal(false)}
+        />
+      </Page.Header>
       {isLoading ? (
         <div className="flex justify-center pt-4">
           <LoadingSpinner />

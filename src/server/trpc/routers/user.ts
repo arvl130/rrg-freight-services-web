@@ -2,8 +2,8 @@ import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
 import { shipments, deliveryShipments, users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
-import { and, count, eq, inArray, isNull } from "drizzle-orm"
-import { updateProfile } from "@/server/auth"
+import { and, count, eq, inArray, isNull, like } from "drizzle-orm"
+import { createUser, getUserByEmail, updateProfile } from "@/server/auth"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
 import {
@@ -52,6 +52,65 @@ export const userRouter = router({
         })
 
       return results[0]
+    }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        displayName: z.string().min(1),
+        contactNumber: z.string().min(1),
+        emailAddress: z.string().min(1).max(100).email(),
+        password: z.string().min(8),
+        gender: z.custom<Gender>((val) =>
+          SUPPORTED_GENDERS.includes(val as Gender),
+        ),
+        role: z.custom<UserRole>((val) =>
+          SUPPORTED_USER_ROLES.includes(val as UserRole),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const userFromFirebase = await getUserByEmail(input.emailAddress)
+        if (userFromFirebase) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "A user with this email already exists.",
+          })
+        }
+      } catch {
+        // Firebase will throw an error if no user is found,
+        // which we can ignore because this is what we want.
+      }
+
+      const usersFromDb = await ctx.db
+        .select()
+        .from(users)
+        .where(like(users.emailAddress, `%${input.emailAddress}%`))
+
+      if (usersFromDb.length !== 0) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "A user with this email already exists.",
+        })
+      }
+
+      const userRecord = await createUser({
+        options: {
+          displayName: input.displayName,
+          email: input.emailAddress,
+          password: input.password,
+        },
+        role: input.role,
+      })
+
+      await ctx.db.insert(users).values({
+        id: userRecord.uid,
+        displayName: input.displayName,
+        contactNumber: input.contactNumber,
+        emailAddress: input.emailAddress,
+        gender: input.gender,
+        role: input.role,
+      })
     }),
   createDetails: protectedProcedure
     .input(
