@@ -19,7 +19,7 @@ import {
 } from "@/utils/constants"
 import { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
-import { eq } from "drizzle-orm"
+import { and, count, eq } from "drizzle-orm"
 import { generateUniqueId } from "@/utils/uuid"
 import { notifyByEmail } from "@/server/notification"
 
@@ -84,6 +84,22 @@ export const incomingShipmentRouter = router({
         agentDisplayName: users.displayName,
       }
     })
+  }),
+  getTotalInTransitSentByAgentId: protectedProcedure.query(async ({ ctx }) => {
+    const [{ value }] = await ctx.db
+      .select({ value: count() })
+      .from(incomingShipments)
+      .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
+      .where(
+        and(
+          eq(incomingShipments.sentByAgentId, ctx.user.uid),
+          eq(shipments.status, "IN_TRANSIT"),
+        ),
+      )
+
+    return {
+      count: value,
+    }
   }),
   updateStatusToCompletedById: protectedProcedure
     .input(

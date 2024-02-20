@@ -268,41 +268,44 @@ export const packageRouter = router({
       count: value,
     }
   }),
-  getTotalRushPackage: protectedProcedure.query(async ({ ctx }) => {
-    const [{ value }] = await ctx.db
-      .select({ value: count() })
-      .from(incomingShipments)
-      .innerJoin(
-        shipmentPackages,
-        eq(incomingShipments.shipmentId, shipmentPackages.shipmentId),
-      )
-      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
-      .where(
-        and(
-          eq(incomingShipments.sentByAgentId, ctx.user.uid),
-          eq(packages.shippingType, "EXPRESS"),
-        ),
-      )
-    return {
-      count: value,
-    }
-  }),
-  getTotalPackages: protectedProcedure.query(async ({ ctx }) => {
-    const [{ value }] = await ctx.db
-      .select({ value: count() })
-      .from(incomingShipments)
-      .innerJoin(
-        shipmentPackages,
-        eq(incomingShipments.shipmentId, shipmentPackages.shipmentId),
-      )
-      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
-      .where(and(eq(incomingShipments.sentByAgentId, ctx.user.uid)))
-    return {
-      count: value,
-    }
-  }),
-
-  getTotalPackagesForwarder: protectedProcedure.query(async ({ ctx }) => {
+  getTotalIncomingRushPackageSentByAgentId: protectedProcedure.query(
+    async ({ ctx }) => {
+      const [{ value }] = await ctx.db
+        .select({ value: count() })
+        .from(incomingShipments)
+        .innerJoin(
+          shipmentPackages,
+          eq(incomingShipments.shipmentId, shipmentPackages.shipmentId),
+        )
+        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+        .where(
+          and(
+            eq(incomingShipments.sentByAgentId, ctx.user.uid),
+            eq(packages.shippingType, "EXPRESS"),
+          ),
+        )
+      return {
+        count: value,
+      }
+    },
+  ),
+  getTotalIncomingPackagesSentByAgentId: protectedProcedure.query(
+    async ({ ctx }) => {
+      const [{ value }] = await ctx.db
+        .select({ value: count() })
+        .from(incomingShipments)
+        .innerJoin(
+          shipmentPackages,
+          eq(incomingShipments.shipmentId, shipmentPackages.shipmentId),
+        )
+        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+        .where(eq(incomingShipments.sentByAgentId, ctx.user.uid))
+      return {
+        count: value,
+      }
+    },
+  ),
+  getTotalPackagesSentToAgentId: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db
       .select({ value: count() })
       .from(forwarderTransferShipments)
@@ -312,6 +315,7 @@ export const packageRouter = router({
       )
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .where(eq(forwarderTransferShipments.sentToAgentId, ctx.user.uid))
+
     return {
       count: value,
     }

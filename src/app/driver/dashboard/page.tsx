@@ -54,7 +54,8 @@ const shipments = [
 ]
 
 function TotalRushPackageTile() {
-  const { status, data } = api.package.getTotalRushPackage.useQuery()
+  const { status, data } =
+    api.package.getTotalIncomingRushPackageSentByAgentId.useQuery()
 
   return (
     <article className="text-[#29727C] grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg bg-gradient-to-b from-[#79CFDCCC] to-[#79CFDC00]">
@@ -73,7 +74,8 @@ function TotalRushPackageTile() {
   )
 }
 function TotalPackageTile() {
-  const { status, data } = api.package.getTotalPackages.useQuery()
+  const { status, data } =
+    api.package.getTotalIncomingPackagesSentByAgentId.useQuery()
 
   return (
     <article
@@ -100,7 +102,7 @@ function TotalPackageTile() {
 
 function TotalUnsendShipmentTile() {
   const { status, data } =
-    api.shipment.package.getTotalFailedShipment.useQuery()
+    api.shipment.package.getTotalInTransitIncomingShipmentsSentByAgentId.useQuery()
   return (
     <article
       className="

@@ -55,7 +55,8 @@ const shipments = [
 ]
 
 function TotalRushPackageTile() {
-  const { status, data } = api.package.getTotalRushPackage.useQuery()
+  const { status, data } =
+    api.package.getTotalIncomingRushPackageSentByAgentId.useQuery()
 
   return (
     <article className="text-[#29727C] grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg bg-gradient-to-b from-[#79CFDCCC] to-[#79CFDC00]">
@@ -74,15 +75,16 @@ function TotalRushPackageTile() {
   )
 }
 function TotalPackageTile() {
-  const { status, data } = api.package.getTotalPackages.useQuery()
+  const { status, data } =
+    api.package.getTotalIncomingPackagesSentByAgentId.useQuery()
 
   return (
     <article
       className="
-  text-[#C61717]
-  grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-  bg-gradient-to-b from-[#ED5959CC] to-[#ED595900]
-"
+        text-[#C61717]
+        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
+        bg-gradient-to-b from-[#ED5959CC] to-[#ED595900]
+      "
     >
       <div className="flex flex-col justify-center items-start">
         <p className="text-4xl font-semibold">
@@ -101,14 +103,15 @@ function TotalPackageTile() {
 
 function TotalUnsendShipmentTile() {
   const { status, data } =
-    api.shipment.package.getTotalFailedShipment.useQuery()
+    api.shipment.incoming.getTotalInTransitSentByAgentId.useQuery()
+
   return (
     <article
       className="
-  text-[#AC873C]
-  grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-  bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]
-"
+        text-[#AC873C]
+        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
+        bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]
+      "
     >
       <div className="flex flex-col justify-center items-start">
         <p className="text-4xl font-semibold">
