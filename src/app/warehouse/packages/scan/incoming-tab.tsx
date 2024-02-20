@@ -11,7 +11,7 @@ import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight"
 import { getAuth } from "firebase/auth"
 import type { ShipmentType } from "@/utils/constants"
 import { Package, PackageCategory } from "@/server/db/entities"
-import { TabSelector } from "./tab-selector"
+import { SelectedTab, TabSelector } from "./tab-selector"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
@@ -431,8 +431,8 @@ export function IncomingTab({
   selectedTab,
   setSelectedTab,
 }: {
-  selectedTab: ShipmentType | "INCOMPLETE_DELIVERY"
-  setSelectedTab: (tab: ShipmentType | "INCOMPLETE_DELIVERY") => void
+  selectedTab: SelectedTab
+  setSelectedTab: (tab: SelectedTab) => void
 }) {
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
     null,

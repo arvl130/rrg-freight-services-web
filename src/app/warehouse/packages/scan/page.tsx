@@ -8,11 +8,11 @@ import { IncomingTab } from "./incoming-tab"
 import { ForwarderTransferTab } from "./forwarder-transfer-tab"
 import { WarehouseTransferTab } from "./warehouse-transfer-tab"
 import { IncompleteDeliveryTab } from "./incomplete-delivery-tab"
+import { SelectedTab } from "./tab-selector"
+import { WarehouseTransferReceivingTab } from "./warehouse-transfer-receiving-tab"
 
 export default function ScanPackagePage() {
-  const [selectedTab, setSelectedTab] = useState<
-    ShipmentType | "INCOMPLETE_DELIVERY"
-  >("INCOMING")
+  const [selectedTab, setSelectedTab] = useState<SelectedTab>("INCOMING")
 
   return (
     <WarehouseLayout title="Scan Package">
@@ -47,6 +47,12 @@ export default function ScanPackagePage() {
       )}
       {selectedTab === "TRANSFER_WAREHOUSE" && (
         <WarehouseTransferTab
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+        />
+      )}
+      {selectedTab === "TRANSFER_WAREHOUSE_RECEIVING" && (
+        <WarehouseTransferReceivingTab
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
         />

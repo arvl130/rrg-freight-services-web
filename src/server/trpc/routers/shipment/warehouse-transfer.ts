@@ -114,16 +114,23 @@ export const warehouseTransferShipmentRouter = router({
         shipments,
         eq(warehouseTransferShipments.shipmentId, shipments.id),
       )
+      .innerJoin(
+        warehouses,
+        eq(warehouseTransferShipments.sentToWarehouseId, warehouses.id),
+      )
       .where(eq(shipments.status, "IN_TRANSIT"))
 
-    return results.map(({ shipments, warehouse_transfer_shipments }) => {
-      const { shipmentId, ...other } = warehouse_transfer_shipments
+    return results.map(
+      ({ shipments, warehouse_transfer_shipments, warehouses }) => {
+        const { shipmentId, ...other } = warehouse_transfer_shipments
 
-      return {
-        ...shipments,
-        ...other,
-      }
-    })
+        return {
+          ...shipments,
+          ...other,
+          warehouseDisplayName: warehouses.displayName,
+        }
+      },
+    )
   }),
   updateStatusToInTransitById: protectedProcedure
     .input(

@@ -1,6 +1,9 @@
 import { ShipmentType } from "@/utils/constants"
 
-type SelectedTab = ShipmentType | "INCOMPLETE_DELIVERY"
+export type SelectedTab =
+  | ShipmentType
+  | "INCOMPLETE_DELIVERY"
+  | "TRANSFER_WAREHOUSE_RECEIVING"
 
 export function TabSelector(props: {
   selectedTab: SelectedTab
@@ -77,6 +80,20 @@ export function TabSelector(props: {
         onClick={() => props.onSelectTab("TRANSFER_WAREHOUSE")}
       >
         Warehouse Transfer
+      </button>
+      <button
+        type="button"
+        className={`
+        pb-1 font-semibold border-b-4 px-2
+        ${
+          props.selectedTab === "TRANSFER_WAREHOUSE_RECEIVING"
+            ? "border-b-4 text-brand-cyan-500 border-brand-cyan-500"
+            : "text-gray-400 border-b-transparent"
+        }
+      `}
+        onClick={() => props.onSelectTab("TRANSFER_WAREHOUSE_RECEIVING")}
+      >
+        Warehouse Transfer (Receiving)
       </button>
     </div>
   )
