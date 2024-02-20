@@ -1,4 +1,7 @@
-import { getServerSessionFromNextRequest } from "@/server/auth"
+import {
+  getServerSessionFromFetchRequest,
+  getServerSessionFromNextRequest,
+} from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packages,
@@ -9,7 +12,6 @@ import { notifyByEmail, notifyBySms } from "@/server/notification"
 import { HttpError } from "@/utils/errors"
 import {
   HTTP_STATUS_BAD_REQUEST,
-  HTTP_STATUS_METHOD_NOT_ALLOWED,
   HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_SERVER_ERROR,
   HTTP_STATUS_UNAUTHORIZED,
@@ -17,7 +19,6 @@ import {
 import { generateOtp } from "@/utils/uuid"
 import { eq } from "drizzle-orm"
 import { DateTime } from "luxon"
-import type { NextApiRequest, NextApiResponse } from "next"
 import { z } from "zod"
 
 const getLocationsSchema = z.object({
@@ -25,18 +26,12 @@ const getLocationsSchema = z.object({
   packageId: z.string(),
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
+export async function GET(
+  req: Request,
+  ctx: { params: { id: string; packageId: string } },
 ) {
   try {
-    if (req.method !== "GET")
-      throw new HttpError({
-        message: "Method not allowed.",
-        statusCode: HTTP_STATUS_METHOD_NOT_ALLOWED,
-      })
-
-    const session = await getServerSessionFromNextRequest({ req })
+    const session = await getServerSessionFromFetchRequest({ req })
     if (session === null)
       throw new HttpError({
         message: "Unauthorized.",
@@ -44,8 +39,8 @@ export default async function handler(
       })
 
     const parseResult = getLocationsSchema.safeParse({
-      shipmentId: Number(req.query.id as string),
-      packageId: req.query.packageId as string,
+      shipmentId: Number(ctx.params.id),
+      packageId: ctx.params.packageId,
     })
 
     if (!parseResult.success)
@@ -127,23 +122,40 @@ export default async function handler(
       ])
     })
 
-    res.json({
+    return Response.json({
       message: "New OTP created.",
     })
   } catch (e) {
     if (e instanceof HttpError) {
-      res.status(e.statusCode).json({
-        message: e.message,
-        errors: e.validationError ? e.validationError : undefined,
-      })
-    } else if (e instanceof Error) {
-      res.status(500).json({
-        message: e.message,
-      })
-    } else {
-      res.status(500).json({
-        message: "Unknown error occured.",
-      })
+      return Response.json(
+        {
+          message: e.message,
+          errors: e.validationError ? e.validationError : undefined,
+        },
+        {
+          status: e.statusCode,
+        },
+      )
     }
+
+    if (e instanceof Error) {
+      return Response.json(
+        {
+          message: e.message,
+        },
+        {
+          status: 500,
+        },
+      )
+    }
+
+    return Response.json(
+      {
+        message: "Unknown error occured.",
+      },
+      {
+        status: 500,
+      },
+    )
   }
 }

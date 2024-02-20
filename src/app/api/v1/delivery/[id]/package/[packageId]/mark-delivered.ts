@@ -1,4 +1,7 @@
-import { getServerSessionFromNextRequest } from "@/server/auth"
+import {
+  getServerSessionFromFetchRequest,
+  getServerSessionFromNextRequest,
+} from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packageStatusLogs,
@@ -27,29 +30,24 @@ const inputSchema = z.object({
   code: z.number(),
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
+export async function POST(
+  req: Request,
+  ctx: { params: { id: string; packageId: string } },
 ) {
   try {
-    if (req.method !== "POST")
-      throw new HttpError({
-        message: "Method not allowed.",
-        statusCode: HTTP_STATUS_METHOD_NOT_ALLOWED,
-      })
-
-    const session = await getServerSessionFromNextRequest({ req })
+    const session = await getServerSessionFromFetchRequest({ req })
     if (session === null)
       throw new HttpError({
         message: "Unauthorized.",
         statusCode: HTTP_STATUS_UNAUTHORIZED,
       })
 
+    const body = await req.json()
     const parseResult = inputSchema.safeParse({
-      shipmentId: Number(req.query.id as string),
-      packageId: req.query.packageId as string,
-      imageUrl: req.body.imageUrl as string,
-      code: Number(req.body.code as string),
+      shipmentId: Number(ctx.params.id),
+      packageId: ctx.params.packageId,
+      imageUrl: body.imageUrl,
+      code: Number(body.code),
     })
 
     if (!parseResult.success)
@@ -164,7 +162,7 @@ export default async function handler(
         status: "DELIVERED",
       })
 
-      res.json({
+      return Response.json({
         message: "Package marked as delivered.",
         package: {
           ..._package,
@@ -174,18 +172,35 @@ export default async function handler(
     })
   } catch (e) {
     if (e instanceof HttpError) {
-      res.status(e.statusCode).json({
-        message: e.message,
-        errors: e.validationError ? e.validationError : undefined,
-      })
-    } else if (e instanceof Error) {
-      res.status(500).json({
-        message: e.message,
-      })
-    } else {
-      res.status(500).json({
-        message: "Unknown error occured.",
-      })
+      return Response.json(
+        {
+          message: e.message,
+          errors: e.validationError ? e.validationError : undefined,
+        },
+        {
+          status: e.statusCode,
+        },
+      )
     }
+
+    if (e instanceof Error) {
+      return Response.json(
+        {
+          message: e.message,
+        },
+        {
+          status: 500,
+        },
+      )
+    }
+
+    return Response.json(
+      {
+        message: "Unknown error occured.",
+      },
+      {
+        status: 500,
+      },
+    )
   }
 }

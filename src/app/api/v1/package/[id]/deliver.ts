@@ -1,9 +1,8 @@
-import { getServerSessionFromNextRequest } from "@/server/auth"
+import { getServerSessionFromFetchRequest } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packageStatusLogs, packages } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { eq } from "drizzle-orm"
-import { NextApiRequest, NextApiResponse } from "next"
 import { z } from "zod"
 
 const inputSchema = z.object({
@@ -11,34 +10,33 @@ const inputSchema = z.object({
   imageUrl: z.string().url(),
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  if (req.method !== "POST") {
-    res.status(405).json({
-      message: "Unsupported method",
-    })
-    return
-  }
-
-  const session = await getServerSessionFromNextRequest({ req })
+export async function POST(req: Request, ctx: { params: { id: string } }) {
+  const session = await getServerSessionFromFetchRequest({ req })
   if (session === null) {
-    res.status(401).json({ message: "Unauthorized" })
-    return
+    return Response.json(
+      { message: "Unauthorized" },
+      {
+        status: 401,
+      },
+    )
   }
 
+  const body = await req.json()
   const parseResult = inputSchema.safeParse({
-    id: req.query.id as string,
-    imageUrl: req.body.imageUrl as string,
+    id: ctx.params.id,
+    imageUrl: body.imageUrl,
   })
 
   if (!parseResult.success) {
-    res.status(400).json({
-      message: "Bad request",
-      error: parseResult.error,
-    })
-    return
+    return Response.json(
+      {
+        message: "Bad request",
+        error: parseResult.error,
+      },
+      {
+        status: 400,
+      },
+    )
   }
 
   const { id, imageUrl } = parseResult.data
@@ -48,13 +46,21 @@ export default async function handler(
     .where(eq(packages.id, id))
 
   if (packagesResults.length === 0) {
-    res.status(404).json({ message: "No such delivery" })
-    return
+    return Response.json(
+      { message: "No such delivery" },
+      {
+        status: 404,
+      },
+    )
   }
 
   if (packagesResults.length > 1) {
-    res.status(412).json({ message: "Expected 1 result, but got more" })
-    return
+    return Response.json(
+      { message: "Expected 1 result, but got more" },
+      {
+        status: 412,
+      },
+    )
   }
 
   const [_package] = packagesResults
@@ -74,7 +80,7 @@ export default async function handler(
     status: "DELIVERED",
   })
 
-  res.json({
+  return Response.json({
     message: "Package retrieved",
     package: {
       ..._package,

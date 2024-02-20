@@ -1,34 +1,30 @@
-import { getServerSessionFromNextRequest } from "@/server/auth"
+import {
+  getServerSessionFromFetchRequest,
+  getServerSessionFromNextRequest,
+} from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packages, shipments, shipmentPackages } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
-import type { NextApiRequest, NextApiResponse } from "next"
 import { ZodError, z } from "zod"
 
 const getLocationsSchema = z.object({
   transferShipmentId: z.number(),
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  if (req.method !== "GET") {
-    res.status(405).json({
-      message: "Unsupported method",
-    })
-    return
-  }
-
+export async function GET(req: Request, ctx: { params: { id: string } }) {
   try {
-    const session = await getServerSessionFromNextRequest({ req })
+    const session = await getServerSessionFromFetchRequest({ req })
     if (session === null) {
-      res.status(401).json({ message: "Unauthorized" })
-      return
+      return Response.json(
+        { message: "Unauthorized" },
+        {
+          status: 401,
+        },
+      )
     }
 
     const { transferShipmentId } = getLocationsSchema.parse({
-      transferShipmentId: parseInt(req.query.id as string),
+      transferShipmentId: Number(ctx.params.id),
     })
 
     const transferShipmentsResults = await db
@@ -37,13 +33,21 @@ export default async function handler(
       .where(eq(shipments.id, transferShipmentId))
 
     if (transferShipmentsResults.length === 0) {
-      res.status(404).json({ message: "No such transfer shipment" })
-      return
+      return Response.json(
+        { message: "No such transfer shipment" },
+        {
+          status: 404,
+        },
+      )
     }
 
     if (transferShipmentsResults.length > 1) {
-      res.status(412).json({ message: "Expected 1 result, but got more" })
-      return
+      return Response.json(
+        { message: "Expected 1 result, but got more" },
+        {
+          status: 412,
+        },
+      )
     }
 
     const transferShipmentPackagesResults = await db
@@ -56,21 +60,31 @@ export default async function handler(
       ({ packages }) => packages,
     )
 
-    res.json({
+    return Response.json({
       message: "Transfer shipment packages retrieved",
       packages: packagesResults,
     })
   } catch (e) {
     if (e instanceof ZodError) {
-      res.status(400).json({
-        message: "Invalid input",
-        error: e.flatten(),
-      })
+      return Response.json(
+        {
+          message: "Invalid input",
+          error: e.flatten(),
+        },
+        {
+          status: 400,
+        },
+      )
     } else {
-      res.status(500).json({
-        message: "Unknown error occured",
-        error: e,
-      })
+      return Response.json(
+        {
+          message: "Unknown error occured",
+          error: e,
+        },
+        {
+          status: 500,
+        },
+      )
     }
   }
 }
