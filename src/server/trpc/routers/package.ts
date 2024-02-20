@@ -21,6 +21,7 @@ import {
   SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"
 import { generateUniqueId } from "@/utils/uuid"
+import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -230,7 +231,7 @@ export const packageRouter = router({
       .where(eq(packages.status, "IN_WAREHOUSE"))
   }),
   getInWarehouseAndCanBeDelivered: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db
+    const results = await ctx.db
       .select()
       .from(packages)
       .where(
@@ -239,6 +240,12 @@ export const packageRouter = router({
           lt(packages.failedAttempts, 3),
         ),
       )
+
+    return results.filter((_package) =>
+      DELIVERABLE_PROVINCES_IN_PH.includes(
+        _package.receiverStateOrProvince.trim().toUpperCase(),
+      ),
+    )
   }),
   getWithLatestStatusByShipmentId: protectedProcedure
     .input(
