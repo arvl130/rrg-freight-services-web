@@ -92,7 +92,7 @@ function InTransitShipmentsTile() {
           {status === "error" && <>error</>}
           {status === "success" && <>{data.count}</>}
         </p>
-        <p>Total Package</p>
+        <p>In Transit Shipments</p>
       </div>
       <div>
         <Package size={96} />
@@ -119,7 +119,7 @@ function CompletedShipmentsTile() {
           {status === "error" && <>error</>}
           {status === "success" && <>{data.count}</>}
         </p>
-        <p>Total Unsend Shipment</p>
+        <p>Completed Shipments</p>
       </div>
       <div>
         <Article size={96} />
