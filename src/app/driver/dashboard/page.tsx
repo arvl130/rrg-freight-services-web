@@ -102,7 +102,8 @@ function TotalPackageTile() {
 
 function TotalUnsendShipmentTile() {
   const { status, data } =
-    api.shipment.package.getTotalInTransitIncomingShipmentsSentByAgentId.useQuery()
+    api.shipment.incoming.getTotalInTransitSentByAgentId.useQuery()
+
   return (
     <article
       className="
