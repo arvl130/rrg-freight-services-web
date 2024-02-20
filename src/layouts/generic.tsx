@@ -1,6 +1,6 @@
 import { useSession } from "@/hooks/session"
 import { User } from "firebase/auth"
-import { ReactNode } from "react"
+import { ReactNode, useState } from "react"
 import { AdminSideBar } from "./admin"
 import { WarehouseSideBar } from "./warehouse"
 import { DomesticSideBar } from "./domestic"
@@ -16,6 +16,7 @@ import Image from "next/image"
 import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
 import { DriverSideBar } from "@/app/driver/auth"
+import { GlobalSearchModal } from "@/components/global-search-modal"
 
 export function SkeletonGenericLayout() {
   return (
@@ -41,18 +42,22 @@ function GenericSidebar() {
 }
 
 export function GenericHeader({ user }: { user: User }) {
+  const [isOpenSearchModal, setIsOpenSearchModal] = useState(false)
+
   return (
     <header className="flex justify-between bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-4">
       <div className="flex items-center gap-3 rounded-md">
         <div>
           <List size={24} />
         </div>
-        <div className="relative">
-          <input
-            type="text"
-            className="text-sm w-full pl-8 pr-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-          />
-          <MagnifyingGlass className="absolute left-3 top-3" />
+        <div>
+          <button
+            type="button"
+            className="block text-sm w-56 px-4 py-2 text-gray-700 bg-white border border-gray-300"
+            onClick={() => setIsOpenSearchModal(true)}
+          >
+            <MagnifyingGlass />
+          </button>
         </div>
       </div>
       <div className="flex">
@@ -85,6 +90,11 @@ export function GenericHeader({ user }: { user: User }) {
           </button>
         </div>
       </div>
+
+      <GlobalSearchModal
+        isOpen={isOpenSearchModal}
+        close={() => setIsOpenSearchModal(false)}
+      />
     </header>
   )
 }
