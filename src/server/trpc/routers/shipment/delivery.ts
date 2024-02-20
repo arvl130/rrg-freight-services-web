@@ -1,4 +1,4 @@
-import { and, eq, inArray, lt } from "drizzle-orm"
+import { and, count, eq, inArray, lt } from "drizzle-orm"
 import { protectedProcedure, router } from "../../trpc"
 import {
   shipments,
@@ -110,6 +110,102 @@ export const deliveryShipmentRouter = router({
       }
     })
   }),
+  getTotalAssignedToDriverId: protectedProcedure.query(async ({ ctx }) => {
+    const [{ value }] = await ctx.db
+      .select({
+        value: count(),
+      })
+      .from(deliveryShipments)
+      .where(eq(deliveryShipments.driverId, ctx.user.uid))
+
+    return {
+      count: value,
+    }
+  }),
+  getTotalCompletedAssignedToDriverId: protectedProcedure.query(
+    async ({ ctx }) => {
+      const [{ value }] = await ctx.db
+        .select({
+          value: count(),
+        })
+        .from(deliveryShipments)
+        .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
+
+        .where(
+          and(
+            eq(deliveryShipments.driverId, ctx.user.uid),
+            eq(shipments.status, "COMPLETED"),
+          ),
+        )
+
+      return {
+        count: value,
+      }
+    },
+  ),
+  getTotalFailedAssignedToDriverId: protectedProcedure.query(
+    async ({ ctx }) => {
+      const [{ value }] = await ctx.db
+        .select({
+          value: count(),
+        })
+        .from(deliveryShipments)
+        .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
+
+        .where(
+          and(
+            eq(deliveryShipments.driverId, ctx.user.uid),
+            eq(shipments.status, "FAILED"),
+          ),
+        )
+
+      return {
+        count: value,
+      }
+    },
+  ),
+  getTotalInTransitAssignedToDriverId: protectedProcedure.query(
+    async ({ ctx }) => {
+      const [{ value }] = await ctx.db
+        .select({
+          value: count(),
+        })
+        .from(deliveryShipments)
+        .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
+
+        .where(
+          and(
+            eq(deliveryShipments.driverId, ctx.user.uid),
+            eq(shipments.status, "IN_TRANSIT"),
+          ),
+        )
+
+      return {
+        count: value,
+      }
+    },
+  ),
+  getTotalPreparingAssignedToDriverId: protectedProcedure.query(
+    async ({ ctx }) => {
+      const [{ value }] = await ctx.db
+        .select({
+          value: count(),
+        })
+        .from(deliveryShipments)
+        .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
+
+        .where(
+          and(
+            eq(deliveryShipments.driverId, ctx.user.uid),
+            eq(shipments.status, "PREPARING"),
+          ),
+        )
+
+      return {
+        count: value,
+      }
+    },
+  ),
   updateStatusToInTransitById: protectedProcedure
     .input(
       z.object({

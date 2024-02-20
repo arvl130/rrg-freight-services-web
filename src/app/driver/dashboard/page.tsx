@@ -16,46 +16,46 @@ const shipments = [
     date: "Oct 12,2023",
   },
   {
-    clusterId: 1000000,
+    clusterId: 1000001,
     sender: "John Doe",
     receiver: "John Dela Cruz",
     date: "Oct 13,2023",
   },
   {
-    clusterId: 1000000,
+    clusterId: 1000002,
     sender: "John Doe",
     receiver: "John Dela Cruz",
     date: "Oct 14,2023",
   },
   {
-    clusterId: 1000000,
+    clusterId: 1000003,
     sender: "John Doe",
     receiver: "John Dela Cruz",
     date: "Oct 15,2023",
   },
   {
-    clusterId: 1000000,
+    clusterId: 1000004,
     sender: "John Doe",
     receiver: "John Dela Cruz",
     date: "Oct 16,2023",
   },
   {
-    clusterId: 1000000,
+    clusterId: 1000005,
     sender: "John Doe",
     receiver: "John Dela Cruz",
     date: "Oct 17,2023",
   },
   {
-    clusterId: 1000000,
+    clusterId: 1000006,
     sender: "John Doe",
     receiver: "John Dela Cruz",
     date: "Oct 18,2023",
   },
 ]
 
-function TotalRushPackageTile() {
+function PendingShipmentsTile() {
   const { status, data } =
-    api.package.getTotalIncomingRushPackageSentByAgentId.useQuery()
+    api.shipment.delivery.getTotalPreparingAssignedToDriverId.useQuery()
 
   return (
     <article className="text-[#29727C] grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg bg-gradient-to-b from-[#79CFDCCC] to-[#79CFDC00]">
@@ -65,7 +65,7 @@ function TotalRushPackageTile() {
           {status === "error" && <>error</>}
           {status === "success" && <>{data.count}</>}
         </p>
-        <p>Total Rush Package</p>
+        <p>Pending Shipments</p>
       </div>
       <div>
         <Package size={96} />
@@ -73,9 +73,10 @@ function TotalRushPackageTile() {
     </article>
   )
 }
-function TotalPackageTile() {
+
+function InTransitShipmentsTile() {
   const { status, data } =
-    api.package.getTotalIncomingPackagesSentByAgentId.useQuery()
+    api.shipment.delivery.getTotalInTransitAssignedToDriverId.useQuery()
 
   return (
     <article
@@ -100,17 +101,17 @@ function TotalPackageTile() {
   )
 }
 
-function TotalUnsendShipmentTile() {
+function CompletedShipmentsTile() {
   const { status, data } =
-    api.shipment.incoming.getTotalInTransitSentByAgentId.useQuery()
+    api.shipment.delivery.getTotalCompletedAssignedToDriverId.useQuery()
 
   return (
     <article
       className="
-  text-[#AC873C]
-  grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-  bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]
-"
+        text-[#AC873C]
+        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
+        bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]
+      "
     >
       <div className="flex flex-col justify-center items-start">
         <p className="text-4xl font-semibold">
@@ -378,9 +379,9 @@ export default function DashboardPage() {
       <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
       <section className="mb-6">
         <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
-          <TotalRushPackageTile />
-          <TotalPackageTile />
-          <TotalUnsendShipmentTile />
+          <PendingShipmentsTile />
+          <InTransitShipmentsTile />
+          <CompletedShipmentsTile />
         </div>
       </section>
       <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
