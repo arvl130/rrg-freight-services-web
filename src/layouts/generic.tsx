@@ -17,6 +17,7 @@ import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
 import { DriverSideBar } from "@/app/driver/auth"
 import { GlobalSearchModal } from "@/components/global-search-modal"
+import Link from "next/link"
 
 export function SkeletonGenericLayout() {
   return (
@@ -61,13 +62,19 @@ export function GenericHeader({ user }: { user: User }) {
         </div>
       </div>
       <div className="flex">
-        <div className="px-2 flex text-gray-400">
-          <button type="button" className="px-2">
+        <div className="px-2 flex items-center text-gray-400">
+          <Link
+            href="/profile/settings"
+            className="px-2 hover:text-gray-300 transition-colors duration-200"
+          >
             <Gear size={24} />
-          </button>
-          <button type="button" className="px-2">
+          </Link>
+          <Link
+            href="/profile/notifications"
+            className="px-2 hover:text-gray-300 transition-colors duration-200"
+          >
             <Bell size={24} />
-          </button>
+          </Link>
           <button
             type="button"
             className="px-2 py-2 whitespace-nowrap flex gap-2 items-center text-sm w-40 text-gray-700"
@@ -83,10 +90,13 @@ export function GenericHeader({ user }: { user: User }) {
                 className="rounded-full h-6"
               />
             )}
-            <div className="flex items-center gap-2">
+            <Link
+              className="flex items-center gap-2 hover:text-gray-400 transition-colors duration-200"
+              href="/profile/settings"
+            >
               <span>{user.displayName}</span>
               <CaretDown size={12} />
-            </div>
+            </Link>
           </button>
         </div>
       </div>
