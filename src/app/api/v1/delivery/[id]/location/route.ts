@@ -5,7 +5,7 @@ import {
 import { db } from "@/server/db/client"
 import { shipments, shipmentLocations } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
-import { ResultSetHeader } from "mysql2"
+import type { ResultSetHeader } from "mysql2"
 import { ZodError, z } from "zod"
 
 const getLocationsSchema = z.object({

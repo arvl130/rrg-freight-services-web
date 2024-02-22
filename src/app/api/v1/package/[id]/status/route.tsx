@@ -4,13 +4,14 @@ import {
 } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packageStatusLogs, packages } from "@/server/db/schema"
+import type {
+  PackageStatus} from "@/utils/constants";
 import {
-  PackageStatus,
   getDescriptionForNewPackageStatusLog,
   SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"
 import { eq } from "drizzle-orm"
-import { ResultSetHeader } from "mysql2"
+import type { ResultSetHeader } from "mysql2"
 import { ZodError, z } from "zod"
 
 const inputSchema = z.object({

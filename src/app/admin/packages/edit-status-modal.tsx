@@ -1,11 +1,12 @@
 import * as Dialog from "@radix-ui/react-dialog"
-import { Package, PackageStatusLog } from "@/server/db/entities"
+import type { Package, PackageStatusLog } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { getColorFromPackageStatus } from "@/utils/colors"
 import { TrashSimple } from "@phosphor-icons/react/dist/ssr/TrashSimple"
 import { DateTime } from "luxon"
+import type {
+  PackageStatus} from "@/utils/constants";
 import {
-  PackageStatus,
   getDescriptionForNewPackageStatusLog,
   SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"

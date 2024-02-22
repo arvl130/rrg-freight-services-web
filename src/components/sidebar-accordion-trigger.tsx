@@ -2,7 +2,7 @@
 
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { usePathname } from "next/navigation"
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 import { AccordionTrigger } from "@radix-ui/react-accordion"
 
 export function SidebarAccordionTrigger(props: {

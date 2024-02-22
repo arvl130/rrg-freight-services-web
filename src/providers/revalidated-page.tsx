@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "@/server/actions/revalidate-path"
 import { usePathname } from "next/navigation"
+import type {
+  ReactNode} from "react";
 import {
-  ReactNode,
   createContext,
   useEffect,
   useState,

@@ -1,7 +1,7 @@
 "use client"
 
 import { GenericLayout } from "@/layouts/generic"
-import { User } from "firebase/auth"
+import type { User } from "firebase/auth"
 import { SideNav } from "../sidenav"
 import { api } from "@/utils/api"
 import { UpdatePictureForm } from "./update-picture-form"

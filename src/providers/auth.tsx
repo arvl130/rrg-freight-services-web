@@ -1,8 +1,9 @@
-import { UserRole } from "@/utils/constants"
+import type { UserRole } from "@/utils/constants"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
-import { ReactNode, useState } from "react"
+import type { ReactNode} from "react";
+import { useState } from "react"
 import { getApp, getApps, initializeApp } from "firebase/app"
-import { User } from "firebase/auth"
+import type { User } from "firebase/auth"
 import { createContext, useEffect } from "react"
 
 const firebaseConfig = {

@@ -11,7 +11,7 @@ import {
   vehicles,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
-import { ResultSetHeader } from "mysql2"
+import type { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
 

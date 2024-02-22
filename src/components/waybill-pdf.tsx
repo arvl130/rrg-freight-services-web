@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React from "react"
-import { Package } from "@/server/db/entities"
+import type { Package } from "@/server/db/entities"
 import QRCode from "qrcode"
 
 import {

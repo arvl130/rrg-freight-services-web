@@ -2,19 +2,21 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"
 import { ZodError, z } from "zod"
-import { utils, read, WorkBook } from "xlsx"
+import type { WorkBook } from "xlsx";
+import { utils, read } from "xlsx"
 import { useEffect, useState } from "react"
-import {
+import type {
   PackageReceptionMode,
   PackageShippingMode,
-  PackageShippingType,
+  PackageShippingType} from "@/utils/constants";
+import {
   SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
-import { User } from "@/server/db/entities"
+import type { User } from "@/server/db/entities"
 
 const selectFileFormSchema = z.object({
   sheetFiles: z.custom<FileList>(

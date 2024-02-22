@@ -13,7 +13,7 @@ import { CreateModal } from "./create-modal"
 import { EditModal } from "./edit-modal"
 import { DeleteModal } from "./delete-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
-import { Vehicle } from "@/server/db/entities"
+import type { Vehicle } from "@/server/db/entities"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 
 function TableItem({ item }: { item: Vehicle }) {

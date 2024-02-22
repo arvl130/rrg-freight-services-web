@@ -1,5 +1,5 @@
 import { initTRPC, TRPCError } from "@trpc/server"
-import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
+import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
 import { getServerSessionFromFetchRequest } from "../auth"
 import { db } from "../db/client"
 import SuperJSON from "superjson"

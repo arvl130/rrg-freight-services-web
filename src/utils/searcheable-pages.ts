@@ -1,4 +1,4 @@
-import { UserRole } from "./constants"
+import type { UserRole } from "./constants"
 
 const adminPages = [
   {

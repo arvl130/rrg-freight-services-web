@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog"
-import { Package } from "@/server/db/entities"
+import type { Package } from "@/server/db/entities"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import { api } from "@/utils/api"
 import { Package as PhosphorIconPackage } from "@phosphor-icons/react/dist/ssr/Package"

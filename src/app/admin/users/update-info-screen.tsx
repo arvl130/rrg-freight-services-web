@@ -1,4 +1,4 @@
-import { User } from "@/server/db/entities"
+import type { User } from "@/server/db/entities"
 import { useSession } from "@/hooks/session"
 import { z } from "zod"
 import { useForm } from "react-hook-form"

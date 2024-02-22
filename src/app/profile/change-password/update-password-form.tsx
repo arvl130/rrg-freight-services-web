@@ -1,9 +1,10 @@
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import type {
+  User} from "firebase/auth";
 import {
   EmailAuthProvider,
-  User,
   reauthenticateWithCredential,
   updatePassword,
 } from "firebase/auth"

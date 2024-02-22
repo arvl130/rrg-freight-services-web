@@ -8,7 +8,7 @@ import { IncomingTab } from "./incoming-tab"
 import { ForwarderTransferTab } from "./forwarder-transfer-tab"
 import { WarehouseTransferTab } from "./warehouse-transfer-tab"
 import { IncompleteDeliveryTab } from "./incomplete-delivery-tab"
-import { SelectedTab } from "./tab-selector"
+import type { SelectedTab } from "./tab-selector"
 import { WarehouseTransferReceivingTab } from "./warehouse-transfer-receiving-tab"
 
 export default function ScanPackagePage() {

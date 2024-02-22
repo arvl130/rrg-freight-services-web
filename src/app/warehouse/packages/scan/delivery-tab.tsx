@@ -10,7 +10,8 @@ import { z } from "zod"
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight"
 import { getAuth } from "firebase/auth"
 import type { ShipmentType } from "@/utils/constants"
-import { SelectedTab, TabSelector } from "./tab-selector"
+import type { SelectedTab} from "./tab-selector";
+import { TabSelector } from "./tab-selector"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {

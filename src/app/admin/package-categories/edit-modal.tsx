@@ -1,4 +1,4 @@
-import { PackageCategory } from "@/server/db/entities"
+import type { PackageCategory } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { X } from "@phosphor-icons/react/dist/ssr/X"

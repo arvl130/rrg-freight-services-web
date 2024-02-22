@@ -1,8 +1,9 @@
 import { getApps, getApp, initializeApp, cert } from "firebase-admin/app"
-import { CreateRequest, UserRecord, getAuth } from "firebase-admin/auth"
-import { GetServerSidePropsContext } from "next"
+import type { CreateRequest, UserRecord } from "firebase-admin/auth"
+import { getAuth } from "firebase-admin/auth"
+import type { GetServerSidePropsContext } from "next"
 import { serverEnv } from "./env.mjs"
-import { UserRole } from "@/utils/constants"
+import type { UserRole } from "@/utils/constants"
 
 const {
   FIREBASE_ADMIN_PROJECT_ID,

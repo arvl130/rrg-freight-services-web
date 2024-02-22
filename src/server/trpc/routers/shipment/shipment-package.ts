@@ -1,10 +1,11 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../../trpc"
-import {
+import type {
   PackageStatus,
+  ShipmentPackageStatus} from "@/utils/constants";
+import {
   SUPPORTED_PACKAGE_STATUSES,
-  SUPPORTED_SHIPMENT_PACKAGE_STATUSES,
-  ShipmentPackageStatus,
+  SUPPORTED_SHIPMENT_PACKAGE_STATUSES
 } from "@/utils/constants"
 import {
   packageStatusLogs,

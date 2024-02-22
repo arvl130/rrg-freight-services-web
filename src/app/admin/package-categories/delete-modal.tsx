@@ -1,4 +1,4 @@
-import { PackageCategory } from "@/server/db/entities"
+import type { PackageCategory } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"

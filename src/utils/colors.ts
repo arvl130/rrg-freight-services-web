@@ -1,4 +1,4 @@
-import { PackageStatus, ShipmentStatus } from "./constants"
+import type { PackageStatus, ShipmentStatus } from "./constants"
 
 const packageStatusColors: Record<PackageStatus, string> = {
   INCOMING: "bg-blue-500",

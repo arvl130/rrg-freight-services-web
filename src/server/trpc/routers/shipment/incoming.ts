@@ -8,16 +8,17 @@ import {
   packages,
   users,
 } from "@/server/db/schema"
-import {
+import type {
   PackageReceptionMode,
   PackageShippingMode,
-  PackageShippingType,
+  PackageShippingType} from "@/utils/constants";
+import {
   getDescriptionForNewPackageStatusLog,
   SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
-import { ResultSetHeader } from "mysql2"
+import type { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
 import { and, count, eq } from "drizzle-orm"
 import { generateUniqueId } from "@/utils/uuid"

@@ -1,7 +1,7 @@
 "use client"
 
 import { useRevalidatedPageBoundary } from "@/hooks/revalidated-page-boundary"
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 
 export function RevalidatedPageBoundary(props: {
   children: ReactNode

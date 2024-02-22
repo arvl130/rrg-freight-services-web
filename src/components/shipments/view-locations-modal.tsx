@@ -1,11 +1,11 @@
 import * as Dialog from "@radix-ui/react-dialog"
-import { Shipment } from "@/server/db/entities"
+import type { Shipment } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { DateTime } from "luxon"
 import { useState } from "react"
 import { Map } from "./map/map"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
-import { Map as TMap } from "leaflet"
+import type { Map as TMap } from "leaflet"
 import { LEAFLET_DEFAULT_ZOOM_LEVEL } from "@/utils/constants"
 import { PathMap } from "./path-map/map"
 

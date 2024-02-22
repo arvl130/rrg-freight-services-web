@@ -1,6 +1,7 @@
 import mysql from "mysql2/promise"
 import { serverEnv } from "../env.mjs"
-import { MySql2Database, drizzle } from "drizzle-orm/mysql2"
+import type { MySql2Database} from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/mysql2"
 import * as schema from "./schema"
 
 const poolConnection = mysql.createPool({

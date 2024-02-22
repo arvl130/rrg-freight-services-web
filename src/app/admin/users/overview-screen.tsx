@@ -1,4 +1,4 @@
-import { User } from "@/server/db/entities"
+import type { User } from "@/server/db/entities"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { X } from "@phosphor-icons/react/dist/ssr/X"

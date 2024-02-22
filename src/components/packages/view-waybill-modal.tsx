@@ -2,7 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 import Image from "next/image"
 import { useRef, useState } from "react"
 import QRCode from "react-qr-code"
-import { Package } from "@/server/db/entities"
+import type { Package } from "@/server/db/entities"
 import { PDFDownloadLink } from "@react-pdf/renderer"
 import WaybillPdf from "../waybill-pdf"
 

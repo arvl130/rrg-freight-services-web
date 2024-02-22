@@ -6,9 +6,10 @@ import { and, count, eq, inArray, isNull, like } from "drizzle-orm"
 import { createUser, getUserByEmail, updateProfile } from "@/server/auth"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
-import {
+import type {
   Gender,
-  UserRole,
+  UserRole} from "@/utils/constants";
+import {
   SUPPORTED_GENDERS,
   SUPPORTED_USER_ROLES,
 } from "@/utils/constants"

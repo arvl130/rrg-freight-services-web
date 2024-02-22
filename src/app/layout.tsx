@@ -2,7 +2,7 @@ import "@/styles/globals.css"
 import { Fonts } from "./fonts"
 import { Toaster } from "react-hot-toast"
 import { Providers } from "@/providers/providers"
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 
 export const metadata = {
   title: "Next.js",

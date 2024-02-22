@@ -1,9 +1,10 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"
+import type {
+  Gender,
+  UserRole} from "@/utils/constants";
 import {
   SUPPORTED_GENDERS,
-  Gender,
-  UserRole,
   SUPPORTED_USER_ROLES,
 } from "@/utils/constants"
 import { z } from "zod"

@@ -3,7 +3,6 @@
 import { AdminLayout } from "@/layouts/admin"
 import { useSession } from "@/hooks/session"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
-import { PackageCategory } from "@/server/db/entities"
 import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
 import { api } from "@/utils/api"
 import { useState } from "react"
@@ -15,6 +14,7 @@ import { CreateModal } from "./create-modal"
 import { EditModal } from "./edit-modal"
 import { DeleteModal } from "./delete-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
+import type { PackageCategory } from "@/server/db/entities"
 
 function TableItem({ item }: { item: PackageCategory }) {
   const [visibleModal, setVisibleModal] = useState<null | "EDIT" | "DELETE">(

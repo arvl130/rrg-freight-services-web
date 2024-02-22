@@ -2,13 +2,14 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import * as Dialog from "@radix-ui/react-dialog"
 import { api } from "@/utils/api"
-import {
+import type {
   PackageShippingMode,
   PackageShippingType,
+  PackageReceptionMode} from "@/utils/constants";
+import {
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
   SUPPORTED_PACKAGE_RECEPTION_MODES,
-  PackageReceptionMode,
   REGEX_ONE_OR_MORE_DIGITS,
 } from "@/utils/constants"
 import { countryCodeToName, supportedCountryCodes } from "@/utils/country-code"

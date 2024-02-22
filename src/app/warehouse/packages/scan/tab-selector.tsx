@@ -1,4 +1,4 @@
-import { ShipmentType } from "@/utils/constants"
+import type { ShipmentType } from "@/utils/constants"
 
 export type SelectedTab =
   | ShipmentType

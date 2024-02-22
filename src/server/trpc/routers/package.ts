@@ -10,11 +10,12 @@ import {
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { inArray } from "drizzle-orm"
-import {
+import type {
   PackageReceptionMode,
   PackageShippingMode,
   PackageShippingType,
-  PackageStatus,
+  PackageStatus} from "@/utils/constants";
+import {
   SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
