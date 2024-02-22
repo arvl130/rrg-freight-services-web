@@ -50,7 +50,7 @@ export async function GET(req: Request) {
       and(
         eq(shipments.status, "IN_TRANSIT"),
         eq(shipmentPackages.status, "IN_TRANSIT"),
-        eq(deliveryShipments.driverId, "Y09QbsnjLZPKDUi481LMl3vyzLf1"),
+        eq(deliveryShipments.driverId, session.user.uid),
       ),
     )
 
