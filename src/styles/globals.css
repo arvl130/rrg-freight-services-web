@@ -14,3 +14,20 @@ input::-ms-reveal {
 .AccordionTrigger[data-state="open"] > .AccordionChevron {
   transform: rotate(90deg);
 }
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255, 255, 255) rgb(121, 207, 220);
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 25px;
+}
