@@ -10,11 +10,40 @@ import {
 } from "@/server/db/schema"
 import { eq, and } from "drizzle-orm"
 
+type Coordinates = [
+  {
+    lat: number
+    lon: number
+  },
+]
+
+async function Convert(addressList: string[]) {
+  const coordinates = [{}] as Coordinates
+
+  for (const address of addressList) {
+    const response = await fetch(
+      `${
+        process.env.GEOAPIFY_URL + encodeURI(address)
+      }&limit=1&format=json&apiKey=${process.env.GEOAPIFY_API}`,
+      {
+        method: "GET",
+      },
+    )
+
+    const json = await response.json()
+    console.log(json)
+    coordinates.push({ lat: json.results[0].lat, lon: json.results[0].lon })
+  }
+
+  return coordinates
+}
+
 export async function GET(req: Request) {
   const session = await getServerSessionFromFetchRequest({ req })
   if (session === null) {
     return Response.json({ message: "Unauthorized" }, { status: 401 })
   }
+
   const deliveryResults = await db
     .select()
     .from(shipmentPackages)
@@ -33,23 +62,27 @@ export async function GET(req: Request) {
     )
 
   try {
-    const pending = deliveryResults.filter((item) => {
-      if (item.shipment_packages.status === "IN_TRANSIT") {
-        return true
-      } else {
-        return false
-      }
-    })
+    const pending = deliveryResults.filter(
+      (item: { shipment_packages: { status: string } }) => {
+        if (item.shipment_packages.status === "IN_TRANSIT") {
+          return true
+        } else {
+          return false
+        }
+      },
+    )
 
-    const complete = deliveryResults.filter((item) => {
-      if (item.shipment_packages.status === "COMPLETED") {
-        return true
-      } else {
-        return false
-      }
-    })
+    const complete = deliveryResults.filter(
+      (item: { shipment_packages: { status: string } }) => {
+        if (item.shipment_packages.status === "COMPLETED") {
+          return true
+        } else {
+          return false
+        }
+      },
+    )
 
-    const packageAddresses = deliveryResults.map((item) => {
+    const packageAddresses = deliveryResults.map((item: { packages: any }) => {
       const addressList = item.packages
       const address =
         addressList.receiverStreetAddress +
@@ -63,11 +96,13 @@ export async function GET(req: Request) {
       return address
     })
 
+    const coordinates = await Convert([...new Set(packageAddresses)])
+
     return Response.json({
       total: deliveryResults.length,
       completePackagesCount: complete.length,
       pendingPackagesCount: pending.length,
-      packageAddresses: [...new Set(packageAddresses)],
+      packageCoordinates: coordinates,
       message: "Statistics retrieved",
     })
   } catch (e) {}
