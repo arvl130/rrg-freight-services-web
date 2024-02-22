@@ -1,5 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next"
 import { getServerSessionFromFetchRequest } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
@@ -8,34 +6,29 @@ import {
   deliveryShipments,
   packages,
 } from "@/server/db/schema"
+import { serverEnv } from "@/server/env.mjs"
 import { eq, and } from "drizzle-orm"
 
-type Coordinates = [
-  {
-    lat: number
-    lon: number
-  },
-]
+type Coordinates = {
+  lat: number
+  lon: number
+}
 
-async function Convert(addressList: string[]) {
-  const coordinates = [{}] as Coordinates
-
-  for (const address of addressList) {
+async function getCoordinatesFromAddresses(
+  addresses: string[],
+): Promise<Coordinates[]> {
+  const coordinatesPromises = addresses.map(async (address) => {
     const response = await fetch(
-      `${
-        process.env.GEOAPIFY_URL + encodeURI(address)
-      }&limit=1&format=json&apiKey=${process.env.GEOAPIFY_API}`,
-      {
-        method: "GET",
-      },
+      `${serverEnv.GEOAPIFY_API_URL}${encodeURI(
+        address,
+      )}&limit=1&format=json&apiKey=${serverEnv.GEOAPIFY_API_KEY}`,
     )
 
-    const json = await response.json()
-    console.log(json)
-    coordinates.push({ lat: json.results[0].lat, lon: json.results[0].lon })
-  }
+    const { results } = await response.json()
+    return { lat: results[0].lat, lon: results[0].lon }
+  })
 
-  return coordinates
+  return await Promise.all(coordinatesPromises)
 }
 
 export async function GET(req: Request) {
@@ -44,7 +37,7 @@ export async function GET(req: Request) {
     return Response.json({ message: "Unauthorized" }, { status: 401 })
   }
 
-  const deliveryResults = await db
+  const deliveryPackageResults = await db
     .select()
     .from(shipmentPackages)
     .innerJoin(shipments, eq(shipmentPackages.shipmentId, shipments.id))
@@ -62,48 +55,42 @@ export async function GET(req: Request) {
     )
 
   try {
-    const pending = deliveryResults.filter(
-      (item: { shipment_packages: { status: string } }) => {
-        if (item.shipment_packages.status === "IN_TRANSIT") {
-          return true
-        } else {
-          return false
-        }
+    const pendingPackages = deliveryPackageResults.filter(
+      ({ shipment_packages: shipmentPackage }) =>
+        shipmentPackage.status === "IN_TRANSIT",
+    )
+
+    const completedPackages = deliveryPackageResults.filter(
+      ({ shipment_packages: shipmentPackage }) =>
+        shipmentPackage.status === "COMPLETED",
+    )
+
+    const packageAddresses = deliveryPackageResults.map(
+      ({ packages: _package }) => {
+        return `${_package.receiverStreetAddress} ${_package.receiverBarangay} ${_package.receiverCity} ${_package.receiverCountryCode}`
       },
     )
 
-    const complete = deliveryResults.filter(
-      (item: { shipment_packages: { status: string } }) => {
-        if (item.shipment_packages.status === "COMPLETED") {
-          return true
-        } else {
-          return false
-        }
-      },
-    )
-
-    const packageAddresses = deliveryResults.map((item: { packages: any }) => {
-      const addressList = item.packages
-      const address =
-        addressList.receiverStreetAddress +
-        " " +
-        addressList.receiverBarangay +
-        " " +
-        addressList.receiverCity +
-        " " +
-        addressList.receiverCountryCode
-
-      return address
-    })
-
-    const coordinates = await Convert([...new Set(packageAddresses)])
+    const coordinates = await getCoordinatesFromAddresses([
+      ...new Set(packageAddresses),
+    ])
 
     return Response.json({
-      total: deliveryResults.length,
-      completePackagesCount: complete.length,
-      pendingPackagesCount: pending.length,
+      total: deliveryPackageResults.length,
+      completePackagesCount: completedPackages.length,
+      pendingPackagesCount: pendingPackages.length,
       packageCoordinates: coordinates,
       message: "Statistics retrieved",
     })
-  } catch (e) {}
+  } catch (e) {
+    return Response.json(
+      {
+        message: "Unknown error occured",
+        error: e,
+      },
+      {
+        status: 500,
+      },
+    )
+  }
 }
