@@ -21,7 +21,7 @@ import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 
 function TableItem({ package: _package }: { package: Package }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "EDIT_STATUS" | "VIEW_WAYBILL"
+    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "VIEW_WAYBILL"
   >(null)
 
   return (
@@ -93,12 +93,6 @@ function TableItem({ package: _package }: { package: Package }) {
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 className="transition-colors hover:bg-sky-50 px-3 py-2"
-                onClick={() => setVisibleModal("EDIT_STATUS")}
-              >
-                Edit Status
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                className="transition-colors hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("VIEW_WAYBILL")}
               >
                 View Waybill
@@ -117,11 +111,6 @@ function TableItem({ package: _package }: { package: Package }) {
         <EditDetailsModal
           package={_package}
           isOpen={visibleModal === "EDIT_DETAILS"}
-          close={() => setVisibleModal(null)}
-        />
-        <EditStatusModal
-          package={_package}
-          isOpen={visibleModal === "EDIT_STATUS"}
           close={() => setVisibleModal(null)}
         />
         <ViewWaybillModal
