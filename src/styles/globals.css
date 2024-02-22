@@ -14,20 +14,25 @@ input::-ms-reveal {
 .AccordionTrigger[data-state="open"] > .AccordionChevron {
   transform: rotate(90deg);
 }
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgb(255, 255, 255) rgb(121, 207, 220);
+
+/*
+ * Scroll bar style for Chromium-based browsers.
+ *
+/* Width */
+::-webkit-scrollbar {
+  @apply w-2;
 }
 
-/* Works on Chrome, Edge, and Safari */
-*::-webkit-scrollbar {
-  width: 5px;
+/* Track */
+::-webkit-scrollbar-track {
+  @apply bg-slate-950/20;
 }
 
-*::-webkit-scrollbar-track {
-  background: transparent;
+/* Handle */
+::-webkit-scrollbar-thumb {
+  @apply bg-cyan-600/50;
 }
 
-*::-webkit-scrollbar-thumb {
-  border-radius: 25px;
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-cyan-800;
 }

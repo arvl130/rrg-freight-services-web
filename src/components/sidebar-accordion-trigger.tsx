@@ -18,7 +18,7 @@ export function SidebarAccordionTrigger(props: {
       className={`
         AccordionTrigger
         flex justify-between items-center gap-2
-        px-4 h-10 w-full
+        pl-4 pr-2 h-10 w-full
         transition-colors duration-200 font-semibold
         ${
           hasActiveRoute
