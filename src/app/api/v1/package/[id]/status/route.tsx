@@ -4,8 +4,7 @@ import {
 } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packageStatusLogs, packages } from "@/server/db/schema"
-import type {
-  PackageStatus} from "@/utils/constants";
+import type { PackageStatus } from "@/utils/constants"
 import {
   getDescriptionForNewPackageStatusLog,
   SUPPORTED_PACKAGE_STATUSES,

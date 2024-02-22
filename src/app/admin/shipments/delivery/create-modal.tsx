@@ -3,11 +3,10 @@ import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import type { Package, Vehicle } from "@/server/db/entities"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"
-import type {
-  PackageShippingType} from "@/utils/constants";
+import type { PackageShippingType } from "@/utils/constants"
 import {
   REGEX_ONE_OR_MORE_DIGITS,
-  SUPPORTED_PACKAGE_SHIPPING_TYPES
+  SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { supportedShippingTypeToHumanized } from "@/utils/humanize"
 import { z } from "zod"

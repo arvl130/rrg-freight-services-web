@@ -1,6 +1,6 @@
 import type { Vehicle } from "@/server/db/entities"
 import { api } from "@/utils/api"
-import type { VehicleType } from "@/utils/constants";
+import type { VehicleType } from "@/utils/constants"
 import { SUPPORTED_VEHICLE_TYPES } from "@/utils/constants"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { X } from "@phosphor-icons/react/dist/ssr/X"

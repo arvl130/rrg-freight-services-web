@@ -12,7 +12,7 @@ import { LoadingSpinner } from "@/components/spinner"
 import { TableItem } from "./table-item"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { useState } from "react"
-import type { UserRole } from "@/utils/constants";
+import type { UserRole } from "@/utils/constants"
 import { SUPPORTED_USER_ROLES } from "@/utils/constants"
 import { supportedRoleToHumanized } from "@/utils/humanize"
 import { CreateModal } from "./create-modal"

@@ -2,14 +2,8 @@
 
 import { revalidatePath } from "@/server/actions/revalidate-path"
 import { usePathname } from "next/navigation"
-import type {
-  ReactNode} from "react";
-import {
-  createContext,
-  useEffect,
-  useState,
-  useTransition,
-} from "react"
+import type { ReactNode } from "react"
+import { createContext, useEffect, useState, useTransition } from "react"
 
 export const RevalidatedPageContext = createContext({
   isPending: false,

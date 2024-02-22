@@ -3,7 +3,7 @@ import { protectedProcedure, router } from "../trpc"
 import { vehicles, shipments, deliveryShipments } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import type { VehicleType } from "@/utils/constants";
+import type { VehicleType } from "@/utils/constants"
 import { SUPPORTED_VEHICLE_TYPES } from "@/utils/constants"
 
 export const vehicleRouter = router({

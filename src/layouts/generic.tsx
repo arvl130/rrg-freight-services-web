@@ -1,6 +1,6 @@
 import { useSession } from "@/hooks/session"
 import type { User } from "firebase/auth"
-import type { ReactNode} from "react";
+import type { ReactNode } from "react"
 import { useState } from "react"
 import { AdminSideBar } from "./admin"
 import { WarehouseSideBar } from "./warehouse"

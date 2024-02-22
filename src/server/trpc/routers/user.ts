@@ -6,13 +6,8 @@ import { and, count, eq, inArray, isNull, like } from "drizzle-orm"
 import { createUser, getUserByEmail, updateProfile } from "@/server/auth"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
-import type {
-  Gender,
-  UserRole} from "@/utils/constants";
-import {
-  SUPPORTED_GENDERS,
-  SUPPORTED_USER_ROLES,
-} from "@/utils/constants"
+import type { Gender, UserRole } from "@/utils/constants"
+import { SUPPORTED_GENDERS, SUPPORTED_USER_ROLES } from "@/utils/constants"
 
 // Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
 const TEXT_COLUMN_DEFAULT_LIMIT = 65_535

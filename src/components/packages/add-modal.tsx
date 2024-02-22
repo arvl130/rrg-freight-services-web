@@ -5,7 +5,8 @@ import { api } from "@/utils/api"
 import type {
   PackageShippingMode,
   PackageShippingType,
-  PackageReceptionMode} from "@/utils/constants";
+  PackageReceptionMode,
+} from "@/utils/constants"
 import {
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,

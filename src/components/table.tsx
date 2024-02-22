@@ -1,6 +1,6 @@
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { Export } from "@phosphor-icons/react/dist/ssr/Export"
-import type { ReactNode} from "react";
+import type { ReactNode } from "react"
 import { useRef } from "react"
 import { CaretDoubleLeft } from "@phosphor-icons/react/dist/ssr/CaretDoubleLeft"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"

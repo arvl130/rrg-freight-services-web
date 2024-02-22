@@ -14,7 +14,8 @@ import type {
   PackageReceptionMode,
   PackageShippingMode,
   PackageShippingType,
-  PackageStatus} from "@/utils/constants";
+  PackageStatus,
+} from "@/utils/constants"
 import {
   SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_PACKAGE_SHIPPING_MODES,

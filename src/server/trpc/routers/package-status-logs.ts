@@ -4,7 +4,7 @@ import { packageStatusLogs, packages } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { alias } from "drizzle-orm/mysql-core"
-import type { PackageStatus} from "@/utils/constants";
+import type { PackageStatus } from "@/utils/constants"
 import { SUPPORTED_PACKAGE_STATUSES } from "@/utils/constants"
 
 export const packageStatusLogRouter = router({

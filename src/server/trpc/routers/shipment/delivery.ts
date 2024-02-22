@@ -13,7 +13,7 @@ import {
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
-import type { ResultSetHeader} from "mysql2";
+import type { ResultSetHeader } from "mysql2"
 import { raw } from "mysql2"
 import { DateTime } from "luxon"
 import { generateOtp } from "@/utils/uuid"

@@ -1,6 +1,6 @@
 import type { UserRole } from "@/utils/constants"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
-import type { ReactNode} from "react";
+import type { ReactNode } from "react"
 import { useState } from "react"
 import { getApp, getApps, initializeApp } from "firebase/app"
 import type { User } from "firebase/auth"

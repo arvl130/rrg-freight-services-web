@@ -11,7 +11,8 @@ import {
 import type {
   PackageReceptionMode,
   PackageShippingMode,
-  PackageShippingType} from "@/utils/constants";
+  PackageShippingType,
+} from "@/utils/constants"
 import {
   getDescriptionForNewPackageStatusLog,
   SUPPORTED_PACKAGE_RECEPTION_MODES,

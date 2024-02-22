@@ -3,7 +3,8 @@ import type { Package } from "@/server/db/entities"
 import type {
   PackageReceptionMode,
   PackageShippingMode,
-  PackageShippingType} from "@/utils/constants";
+  PackageShippingType,
+} from "@/utils/constants"
 import {
   REGEX_ONE_OR_MORE_DIGITS,
   SUPPORTED_PACKAGE_RECEPTION_MODES,

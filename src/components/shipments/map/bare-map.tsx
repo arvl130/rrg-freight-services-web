@@ -3,7 +3,7 @@ import { TileLayer } from "react-leaflet/TileLayer"
 import { Marker } from "react-leaflet/Marker"
 import { Popup } from "react-leaflet/Popup"
 import "leaflet/dist/leaflet.css"
-import type { Map } from "leaflet";
+import type { Map } from "leaflet"
 import { Icon } from "leaflet"
 import MarkerIcon from "leaflet/dist/images/marker-icon.png"
 import { useMap } from "react-leaflet/hooks"
