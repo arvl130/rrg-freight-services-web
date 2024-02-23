@@ -22,35 +22,47 @@ import Link from "next/link"
 
 export function SkeletonGenericLayout() {
   return (
-    <div className="grid grid-cols-[16rem_minmax(0,_1fr)]">
+    <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
       <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
       <main className="bg-brand-cyan-100"></main>
     </div>
   )
 }
 
-function GenericSidebar() {
+function GenericSidebar(props: { isMinimized: boolean }) {
   const { role } = useSession()
 
-  if (role === "ADMIN") return <AdminSideBar />
-  if (role === "WAREHOUSE") return <WarehouseSideBar />
-  if (role === "DOMESTIC_AGENT") return <DomesticSideBar />
-  if (role === "OVERSEAS_AGENT") return <OverseasSideBar />
-  if (role === "DRIVER") return <DriverSideBar />
+  if (role === "ADMIN") return <AdminSideBar isMinimized={props.isMinimized} />
+  if (role === "WAREHOUSE")
+    return <WarehouseSideBar isMinimized={props.isMinimized} />
+  if (role === "DOMESTIC_AGENT")
+    return <DomesticSideBar isMinimized={props.isMinimized} />
+  if (role === "OVERSEAS_AGENT")
+    return <OverseasSideBar isMinimized={props.isMinimized} />
+  if (role === "DRIVER")
+    return <DriverSideBar isMinimized={props.isMinimized} />
 
   return (
     <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
   )
 }
 
-export function GenericHeader({ user }: { user: User }) {
+export function GenericHeader({
+  user,
+  onToggleSidebar,
+}: {
+  user: User
+  onToggleSidebar: () => void
+}) {
   const [isOpenSearchModal, setIsOpenSearchModal] = useState(false)
 
   return (
     <header className="flex justify-between bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-4">
       <div className="flex items-center gap-3 rounded-md">
         <div>
-          <List size={24} />
+          <button type="button" onClick={onToggleSidebar}>
+            <List size={24} />
+          </button>
         </div>
         <div>
           <button
@@ -140,6 +152,8 @@ export function GenericLayout({ title, children }: LayoutProps) {
     required: true,
   })
 
+  const [isLayoutMinimized, setIsLayoutMinimized] = useState(true)
+
   if (isLoading)
     return (
       <>
@@ -167,10 +181,21 @@ export function GenericLayout({ title, children }: LayoutProps) {
         name="description"
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
-      <div className="grid grid-cols-[16rem_minmax(0,_1fr)]">
-        <GenericSidebar />
+      <div
+        className={`transition-all grid ${
+          isLayoutMinimized
+            ? "grid-cols-[4rem_minmax(0,_1fr)]"
+            : "grid-cols-[16rem_minmax(0,_1fr)]"
+        }`}
+      >
+        <GenericSidebar isMinimized={isLayoutMinimized} />
         <div className="bg-brand-cyan-100 px-6 py-4">
-          <GenericHeader user={user} />
+          <GenericHeader
+            user={user}
+            onToggleSidebar={() => {
+              setIsLayoutMinimized((prev) => !prev)
+            }}
+          />
           <div>
             {typeof children === "function" ? (
               <>

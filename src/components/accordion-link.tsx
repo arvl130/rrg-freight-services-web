@@ -7,11 +7,13 @@ export function AccordionLink({
   name,
   icon,
   otherRouteNames,
+  isMinimized,
 }: {
   href: string
   otherRouteNames?: string[]
   name: string
   icon: ReactNode
+  isMinimized: boolean
 }) {
   const pathname = usePathname()
   const matchingRouteNames = Array.isArray(otherRouteNames)
@@ -22,7 +24,11 @@ export function AccordionLink({
     <Link
       href={href}
       className={`
-        flex items-center gap-2 px-4 h-10 w-full transition duration-200 font-semibold
+        grid ${
+          isMinimized
+            ? "grid-cols-[4rem] group-hover:grid-cols-[4rem_1fr]"
+            : "grid-cols-[4rem_1fr]"
+        } items-center h-10 w-full transition duration-200 font-semibold
         ${
           pathname === null
             ? "text-white hover:[background-color:_#B5DCDC] hover:[color:_#5C929A]"
@@ -36,8 +42,14 @@ export function AccordionLink({
         }
       `}
     >
-      {icon}
-      <span>{name}</span>
+      <div className="flex justify-center items-center">{icon}</div>
+      <div
+        className={`whitespace-nowrap ${
+          isMinimized ? "hidden group-hover:block" : ""
+        }`}
+      >
+        {name}
+      </div>
     </Link>
   )
 }

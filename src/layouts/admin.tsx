@@ -15,7 +15,7 @@ import { Warehouse } from "@phosphor-icons/react/dist/ssr/Warehouse"
 import { ChartDonut } from "@phosphor-icons/react/dist/ssr/ChartDonut"
 import type { User } from "firebase/auth"
 import Image from "next/image"
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
 import { GenericHeader, SkeletonGenericLayout } from "./generic"
@@ -54,146 +54,176 @@ function getDefaultValue(pathname: string) {
   return []
 }
 
-export function AdminSideBar() {
+export function AdminSideBar(props: { isMinimized: boolean }) {
   const pathname = usePathname()
   const defaultValue = pathname === null ? [] : getDefaultValue(pathname)
 
   return (
-    <nav className="text-sm bg-brand-cyan-500 grid grid-rows-[auto_1fr_auto] py-3 h-screen sticky top-0 bottom-0">
-      <div className="flex justify-center items-center w-full mt-2 mb-5">
-        <Image
-          src="/assets/img/logos/logo-header.png"
-          alt="RRG Freight Services circle logo with white background"
-          width={160}
-          height={58}
-        />
-      </div>
-      <div className="flex flex-col w-full overflow-auto">
-        <Accordion.Root type="multiple" defaultValue={defaultValue}>
-          <SidebarLink
-            icon={<Gauge size={24} />}
-            name="Dashboard"
-            href="/admin/dashboard"
-          />
-          <Accordion.Item value="package-management">
-            <Accordion.Header>
-              <SidebarAccordionTrigger
-                matchingRouteNames={[
-                  "/admin/packages",
-                  "/admin/package-categories",
-                ]}
-              >
-                <Package size={24} />
-                <span>Package Management</span>
-              </SidebarAccordionTrigger>
-            </Accordion.Header>
-            <Accordion.Content className="[background-color:_#6BB6C1]">
-              <AccordionLink
-                icon={<Package size={24} />}
-                name="Packages"
-                href="/admin/packages"
-              />
-              <AccordionLink
-                icon={<Toolbox size={24} />}
-                name="Packages Categories"
-                href="/admin/package-categories"
-              />
-            </Accordion.Content>
-          </Accordion.Item>
-          <Accordion.Item value="shipment-management">
-            <Accordion.Header>
-              <SidebarAccordionTrigger
-                matchingRouteNames={[
-                  "/admin/shipments/incoming",
-                  "/admin/shipments/delivery",
-                  "/admin/shipments/transfer/forwarder",
-                  "/admin/shipments/transfer/warehouse",
-                ]}
-              >
-                <Boat size={24} />
-                <span>Shipment Management</span>
-              </SidebarAccordionTrigger>
-            </Accordion.Header>
-            <Accordion.Content className="[background-color:_#6BB6C1]">
-              <AccordionLink
-                icon={<Boat size={24} />}
-                name="Incoming"
-                href="/admin/shipments/incoming"
-              />
-              <AccordionLink
-                icon={<Motorcycle size={24} />}
-                name="Deliveries"
-                href="/admin/shipments/delivery"
-              />
-              <AccordionLink
-                icon={<ClipboardText size={24} />}
-                name="Forwarder Transfer"
-                href="/admin/shipments/transfer/forwarder"
-              />
-              <AccordionLink
-                icon={<Warehouse size={24} />}
-                name="Warehouse Transfer"
-                href="/admin/shipments/transfer/warehouse"
-              />
-            </Accordion.Content>
-          </Accordion.Item>
-          <Accordion.Item value="asset-management">
-            <Accordion.Header>
-              <SidebarAccordionTrigger matchingRouteNames={["/admin/vehicles"]}>
-                <ChartDonut size={24} />
-                <span>Asset Management</span>
-              </SidebarAccordionTrigger>
-            </Accordion.Header>
-            <Accordion.Content className="[background-color:_#6BB6C1]">
-              <AccordionLink
-                icon={<Truck size={24} />}
-                name="Vehicles"
-                href="/admin/vehicles"
-              />
-            </Accordion.Content>
-          </Accordion.Item>
-          <Accordion.Item value="record-management">
-            <Accordion.Header>
-              <SidebarAccordionTrigger
-                matchingRouteNames={[
-                  "/admin/shipments/incoming",
-                  "/admin/shipments/delivery",
-                  "/admin/shipments/transfer/forwarder",
-                  "/admin/shipments/transfer/warehouse",
-                ]}
-              >
-                <File size={24} />
-                <span>Record Management</span>
-              </SidebarAccordionTrigger>
-            </Accordion.Header>
-            <Accordion.Content className="[background-color:_#6BB6C1]">
-              <AccordionLink
-                icon={<Scroll size={24} />}
-                name="Activity Logs"
-                href="/admin/logs"
-              />
-            </Accordion.Content>
-          </Accordion.Item>
-          <SidebarLink
-            icon={<UsersThree size={24} />}
-            name="Users"
-            href="/admin/users"
-          />
-          <SidebarLink
-            icon={<UserCircle size={24} />}
-            name="Profile"
-            href="/profile/settings"
-            otherRouteNames={[
-              "/profile/notifications",
-              "/profile/change-password",
-            ]}
-          />
-        </Accordion.Root>
-      </div>
-      <div className="w-full">
-        <LogoutButton />
-      </div>
-    </nav>
+    <div>
+      <nav
+        className={`
+        group text-sm transition-all ${
+          props.isMinimized ? "w-16 hover:w-64" : "w-64"
+        } bg-brand-cyan-500 grid grid-rows-[6rem_1fr_auto] pb-3 h-screen sticky top-0 bottom-0
+      `}
+      >
+        <div className="grid grid-cols-[4rem_1fr] items-center w-full">
+          <div className="flex justify-center">
+            <Image
+              src="/assets/img/logos/logo.jpg"
+              alt="RRG Freight Services circle logo with white background"
+              width={48}
+              height={48}
+            />
+          </div>
+          <div
+            className={`whitespace-nowrap ${
+              props.isMinimized ? "hidden group-hover:block" : ""
+            } text-white font-bold text-xl pl-2`}
+          >
+            <p className="leading-none">RRG Freight</p>
+            <p>Services</p>
+          </div>
+        </div>
+        <div className="flex flex-col w-full overflow-x-hidden overflow-y-auto">
+          <Accordion.Root type="multiple" defaultValue={defaultValue}>
+            <SidebarLink
+              isMinimized={props.isMinimized}
+              icon={<Gauge size={32} />}
+              name="Dashboard"
+              href="/admin/dashboard"
+            />
+            <Accordion.Item value="package-management">
+              <Accordion.Header>
+                <SidebarAccordionTrigger
+                  isMinimized={props.isMinimized}
+                  name="Package Management"
+                  matchingRouteNames={[
+                    "/admin/packages",
+                    "/admin/package-categories",
+                  ]}
+                >
+                  <Package size={32} />
+                </SidebarAccordionTrigger>
+              </Accordion.Header>
+              <Accordion.Content className="[background-color:_#6BB6C1]">
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<Package size={32} />}
+                  name="Packages"
+                  href="/admin/packages"
+                />
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<Toolbox size={32} />}
+                  name="Packages Categories"
+                  href="/admin/package-categories"
+                />
+              </Accordion.Content>
+            </Accordion.Item>
+            <Accordion.Item value="shipment-management">
+              <Accordion.Header>
+                <SidebarAccordionTrigger
+                  isMinimized={props.isMinimized}
+                  name="Shipment Management"
+                  matchingRouteNames={[
+                    "/admin/shipments/incoming",
+                    "/admin/shipments/delivery",
+                    "/admin/shipments/transfer/forwarder",
+                    "/admin/shipments/transfer/warehouse",
+                  ]}
+                >
+                  <Boat size={32} />
+                </SidebarAccordionTrigger>
+              </Accordion.Header>
+              <Accordion.Content className="[background-color:_#6BB6C1]">
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<Boat size={32} />}
+                  name="Incoming"
+                  href="/admin/shipments/incoming"
+                />
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<Motorcycle size={32} />}
+                  name="Deliveries"
+                  href="/admin/shipments/delivery"
+                />
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<ClipboardText size={32} />}
+                  name="Forwarder Transfer"
+                  href="/admin/shipments/transfer/forwarder"
+                />
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<Warehouse size={32} />}
+                  name="Warehouse Transfer"
+                  href="/admin/shipments/transfer/warehouse"
+                />
+              </Accordion.Content>
+            </Accordion.Item>
+            <Accordion.Item value="asset-management">
+              <Accordion.Header>
+                <SidebarAccordionTrigger
+                  isMinimized={props.isMinimized}
+                  name="Asset Management"
+                  matchingRouteNames={["/admin/vehicles"]}
+                >
+                  <ChartDonut size={32} />
+                </SidebarAccordionTrigger>
+              </Accordion.Header>
+              <Accordion.Content className="[background-color:_#6BB6C1]">
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<Truck size={32} />}
+                  name="Vehicles"
+                  href="/admin/vehicles"
+                />
+              </Accordion.Content>
+            </Accordion.Item>
+            <Accordion.Item value="record-management">
+              <Accordion.Header>
+                <SidebarAccordionTrigger
+                  isMinimized={props.isMinimized}
+                  name="Record Management"
+                  matchingRouteNames={["/admin/logs"]}
+                >
+                  <File size={32} />
+                </SidebarAccordionTrigger>
+              </Accordion.Header>
+              <Accordion.Content className="[background-color:_#6BB6C1]">
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<Scroll size={32} />}
+                  name="Activity Logs"
+                  href="/admin/logs"
+                />
+              </Accordion.Content>
+            </Accordion.Item>
+            <SidebarLink
+              icon={<UsersThree size={32} />}
+              isMinimized={props.isMinimized}
+              name="Users"
+              href="/admin/users"
+            />
+            <SidebarLink
+              icon={<UserCircle size={32} />}
+              isMinimized={props.isMinimized}
+              name="Profile"
+              href="/profile/settings"
+              otherRouteNames={[
+                "/profile/notifications",
+                "/profile/change-password",
+              ]}
+            />
+          </Accordion.Root>
+        </div>
+        <div className="w-full">
+          <LogoutButton isMinimized={props.isMinimized} />
+        </div>
+      </nav>
+    </div>
   )
 }
 
@@ -228,6 +258,8 @@ export function AdminLayout({ title, children }: LayoutProps) {
       role: "ADMIN",
     },
   })
+
+  const [isLayoutMinimized, setIsLayoutMinimized] = useState(true)
 
   if (isLoading)
     return (
@@ -268,10 +300,21 @@ export function AdminLayout({ title, children }: LayoutProps) {
         name="description"
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
-      <div className="grid grid-cols-[16rem_minmax(0,_1fr)]">
-        <AdminSideBar />
+      <div
+        className={`transition-all grid ${
+          isLayoutMinimized
+            ? "grid-cols-[4rem_minmax(0,_1fr)]"
+            : "grid-cols-[16rem_minmax(0,_1fr)]"
+        }`}
+      >
+        <AdminSideBar isMinimized={isLayoutMinimized} />
         <div className="bg-brand-cyan-100 px-6 py-4">
-          <GenericHeader user={user} />
+          <GenericHeader
+            user={user}
+            onToggleSidebar={() => {
+              setIsLayoutMinimized((prev) => !prev)
+            }}
+          />
           <div>
             {typeof children === "function" ? (
               <>

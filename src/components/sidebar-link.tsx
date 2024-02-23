@@ -7,10 +7,12 @@ export function SidebarLink({
   name,
   icon,
   otherRouteNames,
+  isMinimized,
 }: {
   href: string
   otherRouteNames?: string[]
   name: string
+  isMinimized: boolean
   icon: ReactNode
 }) {
   const pathname = usePathname()
@@ -24,8 +26,12 @@ export function SidebarLink({
     <Link
       href={href}
       className={`
-        flex items-center
-        gap-2 px-4 h-10 w-full
+        grid ${
+          isMinimized
+            ? "grid-cols-[4rem] group-hover:grid-cols-[4rem_1fr]"
+            : "grid-cols-[4rem_1fr]"
+        } items-center
+        h-10 w-full
         transition duration-200 font-semibold
         ${
           hasActiveRoute
@@ -34,8 +40,14 @@ export function SidebarLink({
         }
       `}
     >
-      {icon}
-      <span>{name}</span>
+      <div className="flex justify-center items-center">{icon}</div>
+      <span
+        className={`whitespace-nowrap ${
+          isMinimized ? "hidden group-hover:block" : ""
+        }`}
+      >
+        {name}
+      </span>
     </Link>
   )
 }

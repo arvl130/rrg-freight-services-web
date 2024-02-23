@@ -11,7 +11,7 @@ input::-ms-reveal {
   display: none;
 }
 
-.AccordionTrigger[data-state="open"] > .AccordionChevron {
+.AccordionTrigger[data-state="open"] > * > .AccordionChevron {
   transform: rotate(90deg);
 }
 

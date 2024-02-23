@@ -5,7 +5,7 @@ import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
 import type { User } from "firebase/auth"
 import Image from "next/image"
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import { SkeletonGenericLayout, GenericHeader } from "./generic"
 import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
@@ -13,49 +13,71 @@ import * as Accordion from "@radix-ui/react-accordion"
 import { SidebarLink } from "@/components/sidebar-link"
 import { LogoutButton } from "@/components/logout-button"
 
-export function DomesticSideBar() {
+export function DomesticSideBar(props: { isMinimized: boolean }) {
   return (
-    <nav className="text-sm bg-brand-cyan-500 grid grid-rows-[auto_1fr_auto] py-3 h-screen sticky top-0 bottom-0">
-      <div className="flex justify-center items-center w-full mt-2 mb-5">
-        <Image
-          src="/assets/img/logos/logo-header.png"
-          alt="RRG Freight Services circle logo with white background"
-          width={160}
-          height={58}
-        />
-      </div>
-      <div className="flex flex-col w-full overflow-auto">
-        <Accordion.Root type="multiple">
-          <SidebarLink
-            icon={<Gauge size={24} />}
-            name="Dashboard"
-            href="/domestic/dashboard"
-          />
-          <SidebarLink
-            icon={<Package size={24} />}
-            name="Packages"
-            href="/domestic/packages"
-          />
-          <SidebarLink
-            icon={<Truck size={24} />}
-            name="Shipments"
-            href="/domestic/transfer-forwarder-shipments"
-          />
-          <SidebarLink
-            icon={<UserCircle size={24} />}
-            name="Profile"
-            href="/profile/settings"
-            otherRouteNames={[
-              "/profile/notifications",
-              "/profile/change-password",
-            ]}
-          />
-        </Accordion.Root>
-      </div>
-      <div className="w-full">
-        <LogoutButton />
-      </div>
-    </nav>
+    <div>
+      <nav
+        className={`
+        group text-sm transition-all ${
+          props.isMinimized ? "w-16 hover:w-64" : "w-64"
+        } bg-brand-cyan-500 grid grid-rows-[6rem_1fr_auto] pb-3 h-screen sticky top-0 bottom-0
+      `}
+      >
+        <div className="grid grid-cols-[4rem_1fr] items-center w-full">
+          <div className="flex justify-center">
+            <Image
+              src="/assets/img/logos/logo.jpg"
+              alt="RRG Freight Services circle logo with white background"
+              width={48}
+              height={48}
+            />
+          </div>
+          <div
+            className={`whitespace-nowrap ${
+              props.isMinimized ? "hidden group-hover:block" : ""
+            } text-white font-bold text-xl pl-2`}
+          >
+            <p className="leading-none">RRG Freight</p>
+            <p>Services</p>
+          </div>
+        </div>
+        <div className="flex flex-col w-full overflow-auto">
+          <Accordion.Root type="multiple">
+            <SidebarLink
+              isMinimized={props.isMinimized}
+              icon={<Gauge size={32} />}
+              name="Dashboard"
+              href="/domestic/dashboard"
+            />
+            <SidebarLink
+              isMinimized={props.isMinimized}
+              icon={<Package size={32} />}
+              name="Packages"
+              href="/domestic/packages"
+            />
+            <SidebarLink
+              isMinimized={props.isMinimized}
+              icon={<Truck size={32} />}
+              name="Shipments"
+              href="/domestic/transfer-forwarder-shipments"
+            />
+            <SidebarLink
+              isMinimized={props.isMinimized}
+              icon={<UserCircle size={32} />}
+              name="Profile"
+              href="/profile/settings"
+              otherRouteNames={[
+                "/profile/notifications",
+                "/profile/change-password",
+              ]}
+            />
+          </Accordion.Root>
+        </div>
+        <div className="w-full">
+          <LogoutButton isMinimized={props.isMinimized} />
+        </div>
+      </nav>
+    </div>
   )
 }
 
@@ -100,6 +122,8 @@ export function DomesticLayout({ title, children }: LayoutProps) {
     },
   })
 
+  const [isLayoutMinimized, setIsLayoutMinimized] = useState(true)
+
   if (isLoading)
     return (
       <>
@@ -139,10 +163,21 @@ export function DomesticLayout({ title, children }: LayoutProps) {
         name="description"
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
-      <div className="grid grid-cols-[16rem_minmax(0,_1fr)]">
-        <DomesticSideBar />
+      <div
+        className={`transition-all grid ${
+          isLayoutMinimized
+            ? "grid-cols-[4rem_minmax(0,_1fr)]"
+            : "grid-cols-[16rem_minmax(0,_1fr)]"
+        }`}
+      >
+        <DomesticSideBar isMinimized={isLayoutMinimized} />
         <div className="bg-brand-cyan-100 px-6 py-4">
-          <GenericHeader user={user} />
+          <GenericHeader
+            user={user}
+            onToggleSidebar={() => {
+              setIsLayoutMinimized((prev) => !prev)
+            }}
+          />
           <div>
             {typeof children === "function" ? (
               <>

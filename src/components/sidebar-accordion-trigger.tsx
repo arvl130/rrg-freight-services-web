@@ -8,6 +8,8 @@ import { AccordionTrigger } from "@radix-ui/react-accordion"
 export function SidebarAccordionTrigger(props: {
   matchingRouteNames: string[]
   children: ReactNode
+  isMinimized: boolean
+  name: string
 }) {
   const pathname = usePathname()
   const hasActiveRoute =
@@ -17,8 +19,12 @@ export function SidebarAccordionTrigger(props: {
     <AccordionTrigger
       className={`
         AccordionTrigger
-        flex justify-between items-center gap-2
-        pl-4 pr-2 h-10 w-full
+        grid ${
+          props.isMinimized
+            ? "grid-cols-[4rem] group-hover:grid-cols-[4rem_1fr_2rem]"
+            : "grid-cols-[4rem_1fr_2rem]"
+        }
+        h-10 w-full
         transition-colors duration-200 font-semibold
         ${
           hasActiveRoute
@@ -27,10 +33,24 @@ export function SidebarAccordionTrigger(props: {
         }
       `}
     >
-      <div className="flex gap-2 justify-between items-center">
-        {props.children}
+      <div className="flex justify-center items-center">{props.children}</div>
+      <div
+        className={`items-center whitespace-nowrap ${
+          props.isMinimized ? "hidden group-hover:flex" : "flex"
+        }`}
+      >
+        {props.name}
       </div>
-      <CaretRight className="AccordionChevron transition-transform" size={20} />
+      <div
+        className={`justify-center items-center ${
+          props.isMinimized ? "hidden group-hover:flex" : "flex"
+        }`}
+      >
+        <CaretRight
+          className="AccordionChevron transition-transform"
+          size={20}
+        />
+      </div>
     </AccordionTrigger>
   )
 }
