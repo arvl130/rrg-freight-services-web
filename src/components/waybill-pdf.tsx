@@ -113,7 +113,7 @@ const WaybillPdf = ({ package: _package }: { package: Package }) => {
                   {_package.receiverStateOrProvince},{" "}
                   {_package.receiverCountryCode} {_package.receiverPostalCode}{" "}
                 </Text>
-                <Text>Phone :{_package.receiverContactNumber}</Text>
+                <Text>Phone: {_package.receiverContactNumber}</Text>
                 <Text>Email: {_package.receiverEmailAddress}</Text>
               </View>
             </View>
@@ -140,8 +140,8 @@ const WaybillPdf = ({ package: _package }: { package: Package }) => {
                   {_package.senderStateOrProvince}, {_package.senderCountryCode}{" "}
                   {_package.senderPostalCode}
                 </Text>
-                <Text>Phone :{_package.senderContactNumber}</Text>
-                <Text>Email :{_package.senderEmailAddress}</Text>
+                <Text>Phone: {_package.senderContactNumber}</Text>
+                <Text>Email: {_package.senderEmailAddress}</Text>
               </View>
             </View>
           </View>
