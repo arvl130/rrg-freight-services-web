@@ -1,7 +1,4 @@
-import {
-  getServerSessionFromFetchRequest,
-  getServerSessionFromNextRequest,
-} from "@/server/auth"
+import { getServerSessionFromFetchRequest } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packageStatusLogs,
@@ -13,14 +10,12 @@ import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { HttpError } from "@/utils/errors"
 import {
   HTTP_STATUS_BAD_REQUEST,
-  HTTP_STATUS_METHOD_NOT_ALLOWED,
   HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_SERVER_ERROR,
   HTTP_STATUS_UNAUTHORIZED,
 } from "@/utils/http-status-codes"
 import { and, eq, gt } from "drizzle-orm"
 import { DateTime } from "luxon"
-import { NextApiRequest, NextApiResponse } from "next"
 import { z } from "zod"
 
 const inputSchema = z.object({
@@ -66,7 +61,7 @@ export async function POST(
 
     const { shipmentId, packageId, imageUrl, code } = parseResult.data
 
-    await db.transaction(async (tx) => {
+    const { package: _package } = await db.transaction(async (tx) => {
       const otpResults = await tx
         .select()
         .from(shipmentPackageOtps)
@@ -162,13 +157,17 @@ export async function POST(
         status: "DELIVERED",
       })
 
-      return Response.json({
-        message: "Package marked as delivered.",
+      return {
         package: {
           ..._package,
           proofOfDeliveryImgUrl: imageUrl,
         },
-      })
+      }
+    })
+
+    return Response.json({
+      message: "Package marked as delivered.",
+      package: _package,
     })
   } catch (e) {
     if (e instanceof HttpError) {
