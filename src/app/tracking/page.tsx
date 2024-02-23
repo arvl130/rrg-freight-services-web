@@ -98,7 +98,20 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
           <div className="bg-[#EEEAEA] w-full rounded-lg flex flex-col justify-center items-center py-4">
             <CheckCircle size={96} color="#1E1E1E" />
             <div className="text-center font-semibold">Estimated Delivery</div>
-            <div className="text-center">N/A</div>
+            <div className="text-center">
+              {_package.status === "INCOMING" && <>30-45 days</>}
+
+              {_package.status === "IN_WAREHOUSE" && <>2-3 days</>}
+              {_package.status === "SORTING" && <>2-3 days</>}
+
+              {_package.status === "DELIVERING" && <>2-3 days</>}
+              {_package.status === "DELIVERED" && <>N/A</>}
+
+              {_package.status === "TRANSFERRING_FORWARDER" && <>N/A</>}
+              {_package.status === "TRANSFERRED_FORWARDER" && <>N/A</>}
+
+              {_package.status === "TRANSFERRING_WAREHOUSE" && <>4-5 days</>}
+            </div>
           </div>
 
           <div className="bg-[#ACDEE2] w-full rounded-lg flex flex-col items-center px-6 py-4">
