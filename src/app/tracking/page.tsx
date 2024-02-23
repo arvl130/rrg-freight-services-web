@@ -16,6 +16,7 @@ import { z } from "zod"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { BrowsingPhoneVector } from "@/components/vector/browsing-phone"
+import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 
 function TrackingPageHead() {
   return (
@@ -46,6 +47,13 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
       retry: false,
     },
   )
+
+  const hasDeliverableDestination =
+    _package === undefined
+      ? false
+      : DELIVERABLE_PROVINCES_IN_PH.includes(
+          _package.receiverStateOrProvince.trim().toUpperCase(),
+        )
 
   if (status === "loading")
     return (
@@ -101,8 +109,17 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
             <div className="text-center">
               {_package.status === "INCOMING" && <>30-45 days</>}
 
-              {_package.status === "IN_WAREHOUSE" && <>2-3 days</>}
-              {_package.status === "SORTING" && <>2-3 days</>}
+              {hasDeliverableDestination ? (
+                <>
+                  {_package.status === "IN_WAREHOUSE" && <>2-3 days</>}
+                  {_package.status === "SORTING" && <>2-3 days</>}
+                </>
+              ) : (
+                <>
+                  {_package.status === "IN_WAREHOUSE" && <>N/A</>}
+                  {_package.status === "SORTING" && <>N/A</>}
+                </>
+              )}
 
               {_package.status === "DELIVERING" && <>2-3 days</>}
               {_package.status === "DELIVERED" && <>N/A</>}
