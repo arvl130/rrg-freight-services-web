@@ -57,40 +57,38 @@ export function GenericHeader({
   const [isOpenSearchModal, setIsOpenSearchModal] = useState(false)
 
   return (
-    <header className="flex justify-between bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-4">
-      <div className="flex items-center gap-3 rounded-md">
-        <div>
+    <header className="flex flex-wrap gap-2 justify-between bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-4">
+      <div className="grid grid-cols-[auto_1fr] gap-3 w-56 rounded-md">
+        <div className="flex items-center">
           <button type="button" onClick={onToggleSidebar}>
             <List size={24} />
           </button>
         </div>
-        <div>
-          <button
-            type="button"
-            className="block text-sm w-56 px-4 py-2 text-gray-700 bg-white border border-gray-300"
-            onClick={() => setIsOpenSearchModal(true)}
-          >
-            <MagnifyingGlass />
-          </button>
-        </div>
+        <button
+          type="button"
+          className="block w-56 text-sm px-4 py-2 text-gray-700 bg-white border border-gray-300"
+          onClick={() => setIsOpenSearchModal(true)}
+        >
+          <MagnifyingGlass />
+        </button>
       </div>
-      <div className="flex">
-        <div className="px-2 flex items-center text-gray-400">
+      <div className="flex items-center">
+        <div className="flex flex-wrap gap-2 items-center text-gray-400">
           <Link
             href="/profile/settings"
-            className="px-2 hover:text-gray-300 transition-colors duration-200"
+            className="hover:text-gray-300 transition-colors duration-200"
           >
             <Gear size={24} />
           </Link>
           <Link
             href="/profile/notifications"
-            className="px-2 hover:text-gray-300 transition-colors duration-200"
+            className="hover:text-gray-300 transition-colors duration-200"
           >
             <Bell size={24} />
           </Link>
-          <button
-            type="button"
-            className="px-2 py-2 whitespace-nowrap flex gap-2 items-center text-sm w-40 text-gray-700"
+          <Link
+            href="/profile/settings"
+            className="col-span-2 whitespace-nowrap flex gap-2 items-center text-sm text-gray-700 hover:text-gray-400 transition-colors duration-200"
           >
             {user.photoURL === null ? (
               <UserCircle size={24} />
@@ -103,14 +101,11 @@ export function GenericHeader({
                 className="rounded-full h-6"
               />
             )}
-            <Link
-              className="flex items-center gap-2 hover:text-gray-400 transition-colors duration-200"
-              href="/profile/settings"
-            >
-              <span>{user.displayName}</span>
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline">{user.displayName}</span>
               <CaretDown size={12} />
-            </Link>
-          </button>
+            </div>
+          </Link>
         </div>
       </div>
 
