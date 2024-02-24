@@ -41,7 +41,7 @@ export async function ManifestsShippedTile() {
     <article
       className="
         text-[#AC873C]
-        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
+        grid grid-cols-[1fr_auto] shadow-md px-8 py-6 rounded-lg
         bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]
       "
     >
