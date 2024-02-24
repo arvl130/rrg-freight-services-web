@@ -1,7 +1,7 @@
 import { MapContainer } from "react-leaflet/MapContainer"
 import { TileLayer } from "react-leaflet/TileLayer"
 import { Polyline } from "react-leaflet/Polyline"
-import "leaflet/dist/leaflet.css"
+import "@/styles/leaflet/leaflet.css"
 import type { Map, Polyline as TPolyline } from "leaflet"
 import { LEAFLET_DEFAULT_ZOOM_LEVEL } from "@/utils/constants"
 import type { ShipmentLocation } from "@/server/db/entities"
