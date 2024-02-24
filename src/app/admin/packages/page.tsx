@@ -183,22 +183,22 @@ function PackagesTable({ packages }: { packages: Package[] }) {
   return (
     <>
       <Table.Filters>
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
-          <div>
+        <div className="grid sm:grid-cols-[1fr_auto_1fr] gap-3">
+          <div className="">
             <Table.SearchForm
               updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
               resetPageNumber={resetPageNumber}
             />
           </div>
-          <div className="flex gap-3 text-sm">
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
               <option>Status</option>
             </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
               <option>Warehouse</option>
             </select>
             <select
-              className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
               value={visibleArchiveStatus}
               onChange={(e) => {
                 if (e.currentTarget.value === "ARCHIVED")
@@ -211,12 +211,12 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             </select>
             <button
               type="button"
-              className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
+              className="bg-white border border-gray-300 px-3 py-1.5 w-full sm:w-32 rounded-md text-gray-400 font-medium"
             >
               Clear Filter
             </button>
           </div>
-          <div className="flex justify-end">
+          <div className="flex items-start justify-end">
             <Table.ExportButton records={paginatedItems} />
           </div>
         </div>

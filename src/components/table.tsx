@@ -39,7 +39,7 @@ export function SearchForm({
 
   return (
     <form
-      className="inline-grid grid-cols-[1fr_2.25rem] h-[2.375rem]"
+      className="inline-grid grid-cols-[1fr_auto] h-[2.375rem] w-full sm:max-w-56"
       onSubmit={(e) => {
         e.preventDefault()
 
@@ -52,12 +52,12 @@ export function SearchForm({
       <input
         ref={searchInputRef}
         type="text"
-        className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
+        className="w-full rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
         placeholder="Quick search"
       />
       <button
         type="submit"
-        className="text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
+        className="w-9 text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
       >
         <span className="sr-only">Search</span>
         <MagnifyingGlass size={16} />
