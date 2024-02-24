@@ -21,8 +21,8 @@ export function SidebarAccordionTrigger(props: {
         AccordionTrigger
         grid ${
           props.isMinimized
-            ? "grid-cols-[4rem] group-hover:grid-cols-[4rem_1fr_2rem]"
-            : "grid-cols-[4rem_1fr_2rem]"
+            ? "grid-cols-[4rem] group-hover:grid-cols-[4rem_10rem_2rem]"
+            : "grid-cols-[4rem_10rem_2rem]"
         }
         h-10 w-full
         transition-colors duration-200 font-semibold
