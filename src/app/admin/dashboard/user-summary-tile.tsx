@@ -21,9 +21,10 @@ export function UserStatusTile() {
     : 0
 
   return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
+    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem] overflow-auto">
       <h2 className="font-semibold mb-2">User Status</h2>
       <Pie
+        className="overflow-auto"
         options={{
           plugins: {
             legend: {

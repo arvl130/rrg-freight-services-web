@@ -301,7 +301,7 @@ export function AdminLayout({ title, children }: LayoutProps) {
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
       <div
-        className={`transition-all overflow-clip grid ${
+        className={`transition-all grid ${
           isLayoutMinimized
             ? "grid-cols-[4rem_minmax(0,_1fr)]"
             : "grid-cols-[16rem_minmax(0,_1fr)]"

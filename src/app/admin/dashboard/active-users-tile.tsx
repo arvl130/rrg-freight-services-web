@@ -18,7 +18,11 @@ export function SkeletonActiveUsersTile() {
         <p>Active users</p>
       </div>
       <div>
-        <UsersThree size={96} />
+        <UsersThree
+          className="h-16 sm:h-24 aspect-square"
+          width="auto"
+          height="auto"
+        />
       </div>
     </article>
   )
@@ -46,7 +50,11 @@ export async function ActiveUsersTile() {
         <p>Active users</p>
       </div>
       <div>
-        <UsersThree size={96} />
+        <UsersThree
+          className="h-16 sm:h-24 aspect-square"
+          width="auto"
+          height="auto"
+        />
       </div>
     </article>
   )

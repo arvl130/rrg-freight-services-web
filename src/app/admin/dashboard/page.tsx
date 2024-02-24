@@ -20,7 +20,7 @@ import { RevalidatedPageBoundary } from "@/components/revalidated-page-boundary"
 
 function RecentActivityTile() {
   return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem]">
+    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem] overflow-auto">
       <div className="mb-2">
         <div className="flex justify-between">
           <h2 className="font-semibold">Recent Activity</h2>
@@ -30,28 +30,22 @@ function RecentActivityTile() {
         </div>
       </div>
       {/* Table */}
-      <div className="text-sm">
-        {/* Header */}
-        <div className="grid grid-cols-[1fr_1fr_6rem] text-gray-400 mb-1">
+      <div className="text-sm overflow-auto">
+        <div className="grid grid-cols-[auto_auto_auto] text-gray-400 mb-1">
+          {/* Header */}
           <div>User</div>
           <div>Role</div>
           <div>Action</div>
-        </div>
-        {/* Body */}
-        <div>
-          <div className="grid grid-cols-[1fr_1fr_6rem]">
-            <div className="grid grid-cols-[2rem_1fr] gap-2">
-              <div className="bg-gray-200 flex justify-center items-center h-8 rounded-md">
-                <User size={16} />
-              </div>
-              <div className="flex items-center">John Doe</div>
+          {/* Body */}
+          <div className="grid grid-cols-[2rem_auto] gap-2">
+            <div className="bg-gray-200 flex justify-center items-center h-8 rounded-md">
+              <User size={16} />
             </div>
-            <div className="flex items-center text-gray-400">
-              Warehouse Staff
-            </div>
-            <div className="flex justify-center items-center uppercase bg-yellow-600 text-white rounded-md">
-              Updated
-            </div>
+            <div className="flex items-center">John Doe</div>
+          </div>
+          <div className="flex items-center text-gray-400">Warehouse Staff</div>
+          <div className="flex justify-center items-center uppercase bg-yellow-600 text-white rounded-md">
+            Updated
           </div>
         </div>
       </div>
@@ -91,7 +85,7 @@ export default function DashboardPage() {
       <h1 className="text-2xl font-black [color:_#00203F] mb-4">Dashboard</h1>
       <RevalidatedPageProvider>
         <section className="mb-6">
-          <div className="mb-4 flex justify-end gap-3">
+          <div className="mb-4 flex flex-wrap sm:justify-end gap-3">
             <div className="flex text-sm">
               <input
                 type="date"
@@ -113,7 +107,7 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
+          <div className="grid sm:grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8 gap-y-4">
             <RevalidatedPageBoundary
               fallback={<SkeletonPackagesInWarehouseTile />}
             >
@@ -131,12 +125,12 @@ export default function DashboardPage() {
         </section>
       </RevalidatedPageProvider>
 
-      <section className="grid grid-cols-[24rem_1fr] gap-x-6 [color:_#404040] mb-6">
+      <section className="grid sm:grid-cols-[24rem_1fr] gap-x-6 gap-y-4 [color:_#404040] mb-6">
         <RecentActivityTile />
         <DeliverySummaryTile />
       </section>
 
-      <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040]">
+      <section className="grid sm:grid-cols-[1fr_20rem] gap-x-6 gap-y-4 [color:_#404040]">
         <ManifestSummaryTile />
         <UserStatusTile />
       </section>

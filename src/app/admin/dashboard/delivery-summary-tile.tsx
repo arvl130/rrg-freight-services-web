@@ -2,6 +2,15 @@
 
 import { api } from "@/utils/api"
 import { Bar } from "react-chartjs-2"
+import {
+  Chart as ChartJS,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+} from "chart.js"
+
+ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement)
 
 export function DeliverySummaryTile() {
   const labels = [
@@ -31,9 +40,10 @@ export function DeliverySummaryTile() {
   }, Array(12).fill(0))
 
   return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem]">
+    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem] overflow-auto">
       <h2 className="font-semibold mb-2">Delivery Summary</h2>
       <Bar
+        className="overflow-auto"
         options={{
           responsive: true,
           plugins: {

@@ -12,7 +12,11 @@ export function SkeletonPackagesInWarehouseTile() {
         <p>Packages in-warehouse</p>
       </div>
       <div>
-        <Package size={96} />
+        <Package
+          className="h-16 sm:h-24 aspect-square"
+          width="auto"
+          height="auto"
+        />
       </div>
     </article>
   )
@@ -34,7 +38,11 @@ export async function PackagesInWarehouseTile() {
         <p>Packages in-warehouse</p>
       </div>
       <div>
-        <Package size={96} />
+        <Package
+          className="h-16 sm:h-24 aspect-square"
+          width="auto"
+          height="auto"
+        />
       </div>
     </article>
   )

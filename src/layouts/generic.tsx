@@ -66,7 +66,7 @@ export function GenericHeader({
         </div>
         <button
           type="button"
-          className="block w-56 text-sm px-4 py-2 text-gray-700 bg-white border border-gray-300"
+          className="block text-sm px-4 py-2 text-gray-700 bg-white border border-gray-300"
           onClick={() => setIsOpenSearchModal(true)}
         >
           <MagnifyingGlass />

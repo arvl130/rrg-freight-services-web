@@ -18,7 +18,11 @@ export async function SkeletonManifestsShippedTile() {
         <p>Shipments shipped</p>
       </div>
       <div>
-        <Article size={96} />
+        <Article
+          className="h-16 sm:h-24 aspect-square"
+          width="auto"
+          height="auto"
+        />
       </div>
     </article>
   )
@@ -46,7 +50,11 @@ export async function ManifestsShippedTile() {
         <p>Shipments shipped</p>
       </div>
       <div>
-        <Article size={96} />
+        <Article
+          className="h-16 sm:h-24 aspect-square"
+          width="auto"
+          height="auto"
+        />
       </div>
     </article>
   )
