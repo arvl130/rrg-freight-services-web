@@ -62,7 +62,7 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
     <div>
       <nav
         className={`
-        group text-sm transition-all ${
+        group text-sm transition-all overflow-clip ${
           props.isMinimized ? "w-16 hover:w-64" : "w-64"
         } bg-brand-cyan-500 grid grid-rows-[6rem_1fr_auto] pb-3 h-screen sticky top-0 bottom-0
       `}
@@ -85,7 +85,7 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
             <p>Services</p>
           </div>
         </div>
-        <div className="flex flex-col w-full overflow-x-hidden overflow-y-auto">
+        <div className="flex flex-col w-full overflow-x-clip overflow-y-auto">
           <Accordion.Root type="multiple" defaultValue={defaultValue}>
             <SidebarLink
               isMinimized={props.isMinimized}
@@ -301,7 +301,7 @@ export function AdminLayout({ title, children }: LayoutProps) {
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
       <div
-        className={`transition-all grid ${
+        className={`transition-all overflow-clip grid ${
           isLayoutMinimized
             ? "grid-cols-[4rem_minmax(0,_1fr)]"
             : "grid-cols-[16rem_minmax(0,_1fr)]"
