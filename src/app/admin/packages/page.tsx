@@ -190,7 +190,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
               resetPageNumber={resetPageNumber}
             />
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
             <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
               <option>Status</option>
             </select>
@@ -211,7 +211,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             </select>
             <button
               type="button"
-              className="bg-white border border-gray-300 px-3 py-1.5 w-full sm:w-32 rounded-md text-gray-400 font-medium"
+              className="bg-white border border-gray-300 px-3 py-1.5 w-full sm:w-auto rounded-md text-gray-400 font-medium"
             >
               Clear Filter
             </button>
