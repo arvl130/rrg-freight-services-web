@@ -14,12 +14,8 @@ export function SideNav() {
       <Link href={"/profile/settings"}>
         <div
           className={`
-          bg-white flex p-4 rounded-lg drop-shadow-md
-            ${
-              pathname === "/profile/settings"
-                ? "[filter:_drop-shadow(rgb(121,_207,_220)_0px_3px_3px)_drop-shadow(rgba(0,_0,_0,_0.06)_0px_3px_3px)]"
-                : ""
-            }
+          bg-white flex p-4 rounded-lg
+            ${pathname === "/profile/settings" ? "shadow-lg" : "shadow"}
           `}
         >
           <div className="pr-5">
@@ -38,12 +34,8 @@ export function SideNav() {
       <Link href={"/profile/notifications"}>
         <div
           className={`
-          bg-white flex p-4 rounded-lg drop-shadow-md
-            ${
-              pathname === "/profile/notifications"
-                ? "[filter:_drop-shadow(rgb(121,_207,_220)_0px_3px_3px)_drop-shadow(rgba(0,_0,_0,_0.06)_0px_3px_3px)]"
-                : ""
-            }
+          bg-white flex p-4 rounded-lg
+            ${pathname === "/profile/notifications" ? "shadow-lg" : "shadow"}
           `}
         >
           <div className="pr-5">
@@ -62,12 +54,8 @@ export function SideNav() {
       <Link href={"/profile/change-password"}>
         <div
           className={`
-          bg-white flex p-4 rounded-lg drop-shadow-md
-            ${
-              pathname === "/profile/change-password"
-                ? "[filter:_drop-shadow(rgb(121,_207,_220)_0px_3px_3px)_drop-shadow(rgba(0,_0,_0,_0.06)_0px_3px_3px)]"
-                : ""
-            }
+          bg-white flex p-4 rounded-lg
+            ${pathname === "/profile/change-password" ? "shadow-lg" : "shadow"}
           `}
         >
           <div className="pr-5">

@@ -62,8 +62,8 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
     <div>
       <nav
         className={`
-        group text-sm transition-all overflow-clip z-10 ${
-          props.isMinimized ? "w-16 hover:w-64 hover:drop-shadow-md" : "w-64"
+        group text-sm transition-all overflow-clip ${
+          props.isMinimized ? "w-16 hover:w-64 hover:shadow-md" : "w-64"
         } bg-brand-cyan-500 grid grid-rows-[6rem_1fr_auto] pb-3 h-screen sticky top-0 bottom-0
       `}
       >
