@@ -27,29 +27,29 @@ function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
   >(null)
 
   return (
-    <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
-      <div className="px-4 py-2 flex items-center gap-1">
-        <input type="checkbox" />
-        <span>{item.id}</span>
+    <>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {item.id}
       </div>
-      <div className="px-4 py-2">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <UserDisplayName userId={item.driverId} />
       </div>
-      <div className="px-4 py-2">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {DateTime.fromJSDate(item.createdAt).toLocaleString(
           DateTime.DATETIME_FULL,
         )}
       </div>
-      <div className="px-4 py-2 flex items-center gap-2">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div
           className={`
-        w-36 py-0.5 text-white text-center rounded-md
-        ${getColorFromShipmentStatus(item.status as ShipmentStatus)}
-      `}
+            w-36 py-0.5 text-white text-center rounded-md
+            ${getColorFromShipmentStatus(item.status as ShipmentStatus)}
+          `}
         >
           {item.status.replaceAll("_", " ")}
         </div>
-
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
             <button type="button">
@@ -89,7 +89,7 @@ function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
           shipment={item}
         />
       </div>
-    </div>
+    </>
   )
 }
 
@@ -160,22 +160,22 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
   return (
     <>
       <Table.Filters>
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
+        <div className="grid sm:grid-cols-[1fr_auto_1fr] gap-3">
           <div>
             <Table.SearchForm
               updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
               resetPageNumber={resetPageNumber}
             />
           </div>
-          <div className="flex gap-3 text-sm">
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
               <option>Status</option>
             </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
               <option>Warehouse</option>
             </select>
             <select
-              className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
               value={visibleArchiveStatus}
               onChange={(e) => {
                 if (e.currentTarget.value === "ARCHIVED")
@@ -188,18 +188,18 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
             </select>
             <button
               type="button"
-              className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
+              className="bg-white border border-gray-300 px-3 py-1.5 w-full sm:w-auto rounded-md text-gray-400 font-medium"
             >
               Clear Filter
             </button>
           </div>
-          <div className="flex justify-end">
+          <div className="flex items-start justify-end">
             <Table.ExportButton records={paginatedItems} />
           </div>
         </div>
       </Table.Filters>
       <Table.Content>
-        <div className="flex justify-between mb-3">
+        <div className="flex flex-wrap gap-3 justify-between mb-3">
           <div className="flex gap-3">
             <button
               type="button"
@@ -258,26 +258,32 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div>
-          <Table.Header>
-            <div className="grid grid-cols-4">
-              <div className="uppercase px-4 py-2 flex gap-1">
-                <input type="checkbox" />
-                <span>Shipment ID</span>
-              </div>
-              <div className="uppercase px-4 py-2">Assigned To</div>
-              <div className="uppercase px-4 py-2">Created At</div>
-              <div className="uppercase px-4 py-2">Status</div>
-            </div>
-          </Table.Header>
+        <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min overflow-auto">
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Shipment ID
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Assigned To
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Created At
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Status
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Actions
+          </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4">No packages found.</div>
+            <div className="text-center pt-4 col-span-5">
+              No shipments found.
+            </div>
           ) : (
-            <div>
+            <>
               {paginatedItems.map((item) => (
                 <TableItem key={item.id} item={item} />
               ))}
-            </div>
+            </>
           )}
         </div>
       </Table.Content>
