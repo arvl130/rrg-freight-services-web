@@ -17,8 +17,8 @@ export function TableItem({ user }: { user: User }) {
     useState<UsersTableItemScreen>("MENU")
 
   return (
-    <div className="grid grid-cols-4 border-b border-gray-300 text-sm">
-      <div className="px-4 py-2 flex items-center gap-1">
+    <>
+      <div className="px-4 py-2 flex items-center gap-1 border-b border-gray-300 text-sm">
         {user.photoUrl === null ? (
           <UserCircle size={24} />
         ) : (
@@ -32,11 +32,13 @@ export function TableItem({ user }: { user: User }) {
         )}
         <span>{user.displayName}</span>
       </div>
-      <div className="px-4 py-2 flex items-center">{user.emailAddress}</div>
-      <div className="px-4 py-2 flex items-center">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {user.emailAddress}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {supportedRoleToHumanized(user.role)}
       </div>
-      <div className="px-4 py-2 flex items-center gap-2">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div
           className={`
           text-white rounded-md px-4 py-1 w-24 text-center
@@ -45,6 +47,8 @@ export function TableItem({ user }: { user: User }) {
         >
           {user.isEnabled ? "ACTIVE" : "INACTIVE"}
         </div>
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <button type="button" onClick={() => detailsModal.current?.showModal()}>
           <span className="sr-only">Actions</span>
           <DotsThree size={16} />
@@ -94,6 +98,6 @@ export function TableItem({ user }: { user: User }) {
           />
         )}
       </dialog>
-    </div>
+    </>
   )
 }
