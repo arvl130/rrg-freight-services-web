@@ -63,7 +63,7 @@ export function UpdatePictureForm({ user }: { user: User }) {
 
   return (
     <form
-      className="grid grid-cols-[1fr_auto] justify-between mb-4 px-4 py-4 bg-white rounded-lg"
+      className="grid sm:grid-cols-[1fr_auto] gap-y-3 justify-between mb-4 px-4 py-4 bg-white rounded-lg"
       onSubmit={handleSubmit(async (formData) => {
         const [imageFile] = formData.imageFiles
 
@@ -86,7 +86,7 @@ export function UpdatePictureForm({ user }: { user: User }) {
       })}
     >
       <div>
-        <div className="flex gap-3 items-center">
+        <div className="sm:flex gap-3 items-center">
           <div className="aspect-square h-20">
             {typeof user.photoUrl === "string" ? (
               <Image
@@ -109,11 +109,12 @@ export function UpdatePictureForm({ user }: { user: User }) {
           <input
             type="file"
             accept="image/jpg,image/jpeg,image/png"
+            className="w-full"
             {...register("imageFiles")}
           />
         </div>
       </div>
-      <div className="flex flex-col gap-2 justify-center items-center">
+      <div className="flex flex-col gap-2 justify-center">
         {typeof user.photoUrl === "string" && (
           <button
             onClick={() => removePhotoUrl()}

@@ -31,7 +31,7 @@ export default function ProfileSettingsPage() {
     <GenericLayout title={["Profile", "Account Settings"]} hasSession>
       {({ user }) => (
         <main className="pt-2 pb-6">
-          <section className="grid grid-cols-[22rem_1fr] gap-6 max-w-4xl mx-auto">
+          <section className="grid sm:grid-cols-[22rem_1fr] gap-6 max-w-4xl mx-auto">
             <SideNav />
             <RightColumn user={user} />
           </section>
