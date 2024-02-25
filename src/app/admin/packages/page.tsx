@@ -181,7 +181,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
     <>
       <Table.Filters>
         <div className="grid sm:grid-cols-[1fr_auto_1fr] gap-3">
-          <div className="">
+          <div>
             <Table.SearchForm
               updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
               resetPageNumber={resetPageNumber}
@@ -295,7 +295,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             Actions
           </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4 col-span-4">
+            <div className="text-center pt-4 col-span-5">
               No packages found.
             </div>
           ) : (
