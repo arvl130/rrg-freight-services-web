@@ -55,15 +55,25 @@ function PackagesTableItem({
   )
 }
 
+function filterBySearchTerm(items: Package[], searchTerm: string) {
+  return items.filter((_package) =>
+    _package.id.toString().toLowerCase().includes(searchTerm.toLowerCase()),
+  )
+}
+
 function ChoosePackageTable({
   selectedPackageIds,
   onSelectAll,
   onCheckboxChange,
+  onResetSelection,
 }: {
   selectedPackageIds: string[]
   onSelectAll: (props: { isChecked: boolean; packageIds: string[] }) => void
   onCheckboxChange: (props: { isChecked: boolean; packageId: string }) => void
+  onResetSelection: () => void
 }) {
+  const [searchTerm, setSearchTerm] = useState("")
+
   const {
     refetch,
     status,
@@ -80,6 +90,11 @@ function ChoosePackageTable({
               type="text"
               className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
               placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.currentTarget.value)
+                onResetSelection()
+              }}
             />
             <button
               type="button"
@@ -116,16 +131,22 @@ function ChoosePackageTable({
             <div className="text-sm overflow-auto">
               <div className="grid grid-cols-3 font-bold mb-1">
                 <div className=" py-2 flex items-center gap-1">
-                  {packages.length === 0 ? (
-                    <input type="checkbox" disabled />
+                  {filterBySearchTerm(packages, searchTerm).length === 0 ? (
+                    <input type="checkbox" disabled={true} checked={false} />
                   ) : (
                     <input
                       type="checkbox"
-                      checked={packages.length === selectedPackageIds.length}
+                      checked={
+                        filterBySearchTerm(packages, searchTerm).length ===
+                        selectedPackageIds.length
+                      }
                       onChange={(e) => {
                         onSelectAll({
                           isChecked: e.currentTarget.checked,
-                          packageIds: packages.map((_package) => _package.id),
+                          packageIds: filterBySearchTerm(
+                            packages,
+                            searchTerm,
+                          ).map((_package) => _package.id),
                         })
                       }}
                     />
@@ -135,11 +156,11 @@ function ChoosePackageTable({
                 <div>Sender</div>
                 <div>Receiver</div>
               </div>
-              {packages.length === 0 ? (
+              {filterBySearchTerm(packages, searchTerm).length === 0 ? (
                 <p className="text-center">No packages available</p>
               ) : (
                 <>
-                  {packages.map((_package) => (
+                  {filterBySearchTerm(packages, searchTerm).map((_package) => (
                     <PackagesTableItem
                       key={_package.id}
                       selectedPackageIds={selectedPackageIds}
@@ -298,6 +319,7 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
                 setSelectedPackageIds([])
               }
             }}
+            onResetSelection={() => setSelectedPackageIds([])}
             onCheckboxChange={({ isChecked, packageId }) => {
               if (isChecked)
                 setSelectedPackageIds((currSelectedPackageIds) => [
