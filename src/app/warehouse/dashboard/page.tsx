@@ -15,7 +15,7 @@ function WarehousePackagesTile() {
     <article
       className="
         text-[#29727C]
-        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
+        grid grid-cols-[1fr_auto] shadow-md px-8 py-6 rounded-lg
         bg-gradient-to-b from-[#79CFDCCC] to-[#79CFDC00]
       "
     >
@@ -24,7 +24,11 @@ function WarehousePackagesTile() {
         <p>Warehouse Packages</p>
       </div>
       <div>
-        <Package size={96} />
+        <Package
+          className="h-16 sm:h-24 aspect-square"
+          width="auto"
+          height="auto"
+        />
       </div>
     </article>
   )
@@ -35,7 +39,7 @@ function IncomingPackageTile() {
     <article
       className="
   text-[#C61717]
-  grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
+  grid grid-cols-[1fr_auto] shadow-md px-8 py-6 rounded-lg
   bg-gradient-to-b from-[#ED5959CC] to-[#ED595900]
 "
     >
@@ -44,7 +48,11 @@ function IncomingPackageTile() {
         <p>Incoming Packages</p>
       </div>
       <div>
-        <ArrowsInLineHorizontal size={96} />
+        <ArrowsInLineHorizontal
+          className="h-16 sm:h-24 aspect-square"
+          width="auto"
+          height="auto"
+        />
       </div>
     </article>
   )
@@ -55,7 +63,7 @@ function OutgoingPackageTile() {
     <article
       className="
   text-[#AC873C]
-  grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
+  grid grid-cols-[1fr_auto] shadow-md px-8 py-6 rounded-lg
   bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]
 "
     >
@@ -64,7 +72,11 @@ function OutgoingPackageTile() {
         <p>Shipments shipped</p>
       </div>
       <div>
-        <ArrowsOutLineHorizontal size={96} />
+        <ArrowsOutLineHorizontal
+          className="h-16 sm:h-24 aspect-square"
+          width="auto"
+          height="auto"
+        />
       </div>
     </article>
   )
@@ -72,7 +84,7 @@ function OutgoingPackageTile() {
 
 function RecentActivityTile() {
   return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem] col-span-2 ">
+    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem] col-span-2 overflow-auto">
       <div className="mb-2">
         <div className="flex justify-between">
           <h2 className="font-semibold">Recent Activity</h2>
@@ -82,7 +94,7 @@ function RecentActivityTile() {
         </div>
       </div>
       {/* Table */}
-      <div className="text-sm">
+      <div className="text-sm overflow-auto">
         <table className="min-w-full	">
           <thead className="text-gray-400">
             <tr>
@@ -266,19 +278,19 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-11">
+        <div className="grid sm:grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8 gap-y-4">
           <WarehousePackagesTile />
           <IncomingPackageTile />
           <OutgoingPackageTile />
         </div>
       </section>
 
-      <section className="grid grid-cols-3 gap-x-11 [color:_#404040] mb-6">
+      <section className="grid sm:grid-cols-3 gap-x-6 gap-y-4 [color:_#404040] mb-6">
         <RecentActivityTile />
         <IncomingPackageSummaryTile />
       </section>
 
-      <section className="grid grid-cols-3 gap-x-11 [color:_#404040]">
+      <section className="grid sm:grid-cols-3 gap-x-6 gap-y-4 [color:_#404040]">
         <BarGraphTile />
         <RecentNotifTile />
         <CalendarTile />
