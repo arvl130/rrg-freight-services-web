@@ -19,7 +19,7 @@ export function WarehouseSideBar(props: { isMinimized: boolean }) {
       <nav
         className={`
         group text-sm transition-all ${
-          props.isMinimized ? "w-16 hover:w-64" : "w-64"
+          props.isMinimized ? "w-16 hover:w-64 hover:shadow-md" : "w-64"
         } bg-brand-cyan-500 grid grid-rows-[6rem_1fr_auto] pb-3 h-screen sticky top-0 bottom-0
       `}
       >

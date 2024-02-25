@@ -9,7 +9,6 @@ import toast from "react-hot-toast"
 import { z } from "zod"
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight"
 import { getAuth } from "firebase/auth"
-import type { ShipmentType } from "@/utils/constants"
 import type { Package, PackageCategory } from "@/server/db/entities"
 import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
@@ -81,7 +80,7 @@ function ScanPackageForm({
         })
       })}
     >
-      <div className="grid grid-cols-[1fr_auto] gap-3">
+      <div className="grid sm:grid-cols-[1fr_auto] gap-3">
         <input
           type="text"
           placeholder="Enter a package ID ..."
@@ -121,7 +120,7 @@ function TableItem(props: {
   undoScan: () => void
 }) {
   return (
-    <div key={props.item.id} className="grid grid-cols-5 mb-1">
+    <>
       <div>{props.item.id}</div>
       <div>
         <div>{props.item.receiverFullName}</div>
@@ -192,7 +191,7 @@ function TableItem(props: {
           </button>
         )}
       </div>
-    </div>
+    </>
   )
 }
 
@@ -238,33 +237,34 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
           ])
         }
       />
-      <div className="grid grid-cols-5 font-medium">
-        <div>Package ID</div>
-        <div>Receiver</div>
-        <div>Status</div>
-        <div>Category</div>
-        <div>Actions</div>
+      <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto">
+        <div className="font-medium">Package ID</div>
+        <div className="font-medium">Receiver</div>
+        <div className="font-medium">Status</div>
+        <div className="font-medium">Category</div>
+        <div className="font-medium">Actions</div>
+        {packagesQuery.data.map((_package) => (
+          <TableItem
+            key={_package.id}
+            item={_package}
+            isScanned={scannedPackages.some(({ id }) => id === _package.id)}
+            isUpdatingStatus={isLoading}
+            packageCategories={packageCategoriesQuery.data}
+            setSelectedPackage={(props) => {
+              setScannedPackages((currScannedPackages) => [
+                ...currScannedPackages.filter(({ id }) => id !== props.id),
+                props,
+              ])
+            }}
+            undoScan={() => {
+              setScannedPackages((currScannedPackages) =>
+                currScannedPackages.filter(({ id }) => id !== _package.id),
+              )
+            }}
+          />
+        ))}
       </div>
-      {packagesQuery.data.map((_package) => (
-        <TableItem
-          key={_package.id}
-          item={_package}
-          isScanned={scannedPackages.some(({ id }) => id === _package.id)}
-          isUpdatingStatus={isLoading}
-          packageCategories={packageCategoriesQuery.data}
-          setSelectedPackage={(props) => {
-            setScannedPackages((currScannedPackages) => [
-              ...currScannedPackages.filter(({ id }) => id !== props.id),
-              props,
-            ])
-          }}
-          undoScan={() => {
-            setScannedPackages((currScannedPackages) =>
-              currScannedPackages.filter(({ id }) => id !== _package.id),
-            )
-          }}
-        />
-      ))}
+
       <div className="flex justify-end">
         <button
           type="button"
@@ -350,7 +350,7 @@ function ShipmentSelector({
           ) : (
             <div className="py-2">
               <p>Please choose a shipment.</p>
-              <div className="grid grid-cols-[auto_auto_auto_1fr] gap-x-3">
+              <div className="grid grid-cols-[repeat(3,_auto)_1fr] overflow-auto">
                 <div className="font-medium px-2 py-1">Shipment ID</div>
                 <div className="font-medium px-2 py-1">Status</div>
                 <div className="font-medium px-2 py-1">Sent to Warehouse</div>
@@ -358,18 +358,24 @@ function ShipmentSelector({
                 {shipments.map((shipment) => (
                   <button
                     key={shipment.id}
-                    className="group grid grid-cols-subgrid col-span-4 hover:bg-gray-100 border border-gray-300 hover:border-gray-100 py-2 rounded-lg transition-colors duration-200"
+                    className="group grid grid-cols-subgrid col-span-4 hover:bg-gray-100 hover:border-gray-100 rounded-lg transition-colors duration-200"
                     onClick={() => {
                       onSelectShipmentId(shipment.id)
                     }}
                   >
-                    <p className="text-right px-2">{shipment.id}</p>
-                    <p className="px-2">{shipment.type}</p>
-                    <p className="text-left px-2">
+                    <p className="border-y border-l rounded-l-lg border-gray-300 px-2 py-2 text-right">
+                      {shipment.id}
+                    </p>
+                    <p className="border-y border-gray-300 px-2 py-2">
+                      {shipment.type}
+                    </p>
+                    <p className="border-y border-gray-300 px-2 py-2 text-left">
                       {shipment.warehouseDisplayName}
                     </p>
-                    <p className="invisible group-hover:visible text-left text-gray-500 px-2">
-                      Choose this shipment.
+                    <p className="border-y border-r rounded-r-lg border-gray-300 text-gray-500 px-2 py-2 text-left">
+                      <span className="invisible group-hover:visible">
+                        Choose this shipment.
+                      </span>
                     </p>
                   </button>
                 ))}
@@ -447,12 +453,14 @@ export function WarehouseTransferReceivingTab({
       {selectedShipmentId === null ? (
         <ShipmentSelector onSelectShipmentId={setSelectedShipmentId} />
       ) : (
-        <div className="flex justify-between items-center mb-3">
-          <div className="font-semibold ">Shipment ID {selectedShipmentId}</div>
+        <div className="sm:flex justify-between items-center mb-3">
+          <div className="font-semibold mb-3 sm:mb-0">
+            Shipment ID {selectedShipmentId}
+          </div>
           <div>
             <button
               type="button"
-              className="px-4 py-2 bg-gray-700 text-white hover:bg-gray-600 rounded-md transition-colors mr-3"
+              className="px-4 py-2 mb-3 sm:mb-0 bg-gray-700 text-white hover:bg-gray-600 rounded-md transition-colors mr-3"
               onClick={() => {
                 setSelectedShipmentId(null)
               }}

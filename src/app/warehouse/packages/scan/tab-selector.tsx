@@ -10,7 +10,7 @@ export function TabSelector(props: {
   onSelectTab: (newSelectedTab: SelectedTab) => void
 }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2 mb-3">
       <button
         type="button"
         className={`

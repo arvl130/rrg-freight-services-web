@@ -3,13 +3,12 @@ import { getColorFromPackageStatus } from "@/utils/colors"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight"
 import { getAuth } from "firebase/auth"
-import type { ShipmentType } from "@/utils/constants"
 import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
 
@@ -77,7 +76,7 @@ function ScanPackageForm({
         onSubmitValidPackageId(formData.packageId)
       })}
     >
-      <div className="grid grid-cols-[1fr_auto] gap-3">
+      <div className="grid sm:grid-cols-[1fr_auto] gap-3">
         <input
           type="text"
           placeholder="Enter a package ID ..."
@@ -139,65 +138,66 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
           ])
         }
       />
-      <div className="grid grid-cols-4 font-medium">
-        <div>Package ID</div>
-        <div>Receiver</div>
-        <div>Status</div>
-        <div>Actions</div>
-      </div>
-      {packages.map((_package) => (
-        <div key={_package.id} className="grid grid-cols-4 mb-1">
-          <div>{_package.id}</div>
-          <div>
-            <div>{_package.receiverFullName}</div>
-          </div>
-          {scannedPackageIds.includes(_package.id) ? (
-            <div className="flex items-center gap-2 text-sm">
-              <span
-                className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
-                  _package.status,
-                )}`}
-              >
-                {supportedPackageStatusToHumanized(_package.status)}
-              </span>
-              <ArrowRight size={24} />
-              <span
-                className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
-                  "TRANSFERRING_WAREHOUSE",
-                )}`}
-              >
-                {supportedPackageStatusToHumanized("TRANSFERRING_WAREHOUSE")}
-              </span>
+      <div className="grid grid-cols-[repeat(3,_auto)_1fr] gap-3 overflow-auto">
+        <div className="font-medium">Package ID</div>
+        <div className="font-medium">Receiver</div>
+        <div className="font-medium">Status</div>
+        <div className="font-medium">Actions</div>
+        {packages.map((_package) => (
+          <Fragment key={_package.id}>
+            <div>{_package.id}</div>
+            <div>
+              <div>{_package.receiverFullName}</div>
             </div>
-          ) : (
-            <div className="text-sm">
-              <span
-                className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
-                  _package.status,
-                )}`}
-              >
-                {supportedPackageStatusToHumanized(_package.status)}
-              </span>
-            </div>
-          )}
-          <div>
-            {scannedPackageIds.includes(_package.id) && (
-              <button
-                type="button"
-                className="font-medium bg-red-500 hover:bg-red-400 disabled:bg-red-300 text-white transition-colors px-2 py-1 rounded-md"
-                disabled={isLoading}
-                onClick={() => {
-                  setScannedPackageIds((currScannedPackageIds) =>
-                    currScannedPackageIds.filter((id) => id !== _package.id),
-                  )
-                }}
-              >
-                Undo Scan
-              </button>
+            {scannedPackageIds.includes(_package.id) ? (
+              <div className="flex items-center gap-2 text-sm">
+                <span
+                  className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
+                    _package.status,
+                  )}`}
+                >
+                  {supportedPackageStatusToHumanized(_package.status)}
+                </span>
+                <ArrowRight size={24} />
+                <span
+                  className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
+                    "TRANSFERRING_WAREHOUSE",
+                  )}`}
+                >
+                  {supportedPackageStatusToHumanized("TRANSFERRING_WAREHOUSE")}
+                </span>
+              </div>
+            ) : (
+              <div className="text-sm">
+                <span
+                  className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
+                    _package.status,
+                  )}`}
+                >
+                  {supportedPackageStatusToHumanized(_package.status)}
+                </span>
+              </div>
             )}
-          </div>
-        </div>
-      ))}
+            <div>
+              {scannedPackageIds.includes(_package.id) && (
+                <button
+                  type="button"
+                  className="font-medium bg-red-500 hover:bg-red-400 disabled:bg-red-300 text-white transition-colors px-2 py-1 rounded-md"
+                  disabled={isLoading}
+                  onClick={() => {
+                    setScannedPackageIds((currScannedPackageIds) =>
+                      currScannedPackageIds.filter((id) => id !== _package.id),
+                    )
+                  }}
+                >
+                  Undo Scan
+                </button>
+              )}
+            </div>
+          </Fragment>
+        ))}
+      </div>
+
       <div className="flex justify-end">
         <button
           type="button"
@@ -269,7 +269,7 @@ function ShipmentSelector({
           ) : (
             <div className="py-2">
               <p>Please choose a shipment.</p>
-              <div className="grid grid-cols-[repeat(7,_auto)_1fr] gap-x-3">
+              <div className="grid grid-cols-[repeat(7,_auto)_1fr] overflow-auto">
                 <div className="font-medium px-2 py-1">Shipment ID</div>
                 <div className="font-medium px-2 py-1">Status</div>
                 <div className="font-medium px-2 py-1">Destination</div>
@@ -281,26 +281,36 @@ function ShipmentSelector({
                 {shipments.map((shipment) => (
                   <button
                     key={shipment.id}
-                    className="group grid grid-cols-subgrid col-span-8 hover:bg-gray-100 border border-gray-300 hover:border-gray-100 py-2 rounded-lg transition-colors duration-200"
+                    className="group grid grid-cols-subgrid col-span-8 hover:bg-gray-100 hover:border-gray-100 rounded-lg transition-colors duration-200"
                     onClick={() => {
                       onSelectShipmentId(shipment.id)
                     }}
                   >
-                    <p className="text-right px-2">{shipment.id}</p>
-                    <p className="px-2">{shipment.type}</p>
-                    <p className="px-2">{shipment.warehouseDisplayName}</p>
-                    <p className="px-2 text-left">
+                    <p className="border-y border-l rounded-l-lg border-gray-300 px-2 py-2 text-right">
+                      {shipment.id}
+                    </p>
+                    <p className="border-y border-gray-300 px-2 py-2">
+                      {shipment.type}
+                    </p>
+                    <p className="border-y border-gray-300 px-2 py-2">
+                      {shipment.warehouseDisplayName}
+                    </p>
+                    <p className="border-y border-gray-300 px-2 py-2 text-left">
                       {shipment.driverDisplayName}
                     </p>
-                    <p className="px-2 text-left">
+                    <p className="border-y border-gray-300 px-2 py-2 text-left">
                       {shipment.driverDisplayName}
                     </p>
-                    <p className="px-2 text-left">
+                    <p className="border-y border-gray-300 px-2 py-2 text-left">
                       {shipment.vehicleDisplayName}
                     </p>
-                    <p className="px-2 text-left">{shipment.vehicleType}</p>
-                    <p className="invisible group-hover:visible text-left text-gray-500 px-2">
-                      Choose this shipment.
+                    <p className="border-y border-gray-300 px-2 py-2 text-left">
+                      {shipment.vehicleType}
+                    </p>
+                    <p className="border-y border-r rounded-r-lg border-gray-300 px-2 py-2 text-left text-gray-500">
+                      <span className="invisible group-hover:visible">
+                        Choose this shipment.
+                      </span>
                     </p>
                   </button>
                 ))}
@@ -378,12 +388,14 @@ export function WarehouseTransferTab({
       {selectedShipmentId === null ? (
         <ShipmentSelector onSelectShipmentId={setSelectedShipmentId} />
       ) : (
-        <div className="flex justify-between items-center mb-3">
-          <div className="font-semibold ">Shipment ID {selectedShipmentId}</div>
+        <div className="sm:flex justify-between items-center mb-3">
+          <div className="font-semibold mb-3 sm:mb-0">
+            Shipment ID {selectedShipmentId}
+          </div>
           <div>
             <button
               type="button"
-              className="px-4 py-2 bg-gray-700 text-white hover:bg-gray-600 rounded-md transition-colors mr-3"
+              className="px-4 py-2 mb-3 sm:mb-0 bg-gray-700 text-white hover:bg-gray-600 rounded-md transition-colors mr-3"
               onClick={() => {
                 setSelectedShipmentId(null)
               }}
