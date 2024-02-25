@@ -18,7 +18,7 @@ export function Filters({ children }: { children: ReactNode }) {
 
 export function Content({ children }: { children: ReactNode }) {
   return (
-    <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
+    <div className="grid grid-rows-[auto_1fr] bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
       {children}
     </div>
   )

@@ -25,17 +25,13 @@ function TableItem({ package: _package }: { package: Package }) {
   >(null)
 
   return (
-    <div className="grid grid-cols-[10rem_repeat(3,_1fr)] border-b border-gray-300 text-sm">
-      <div className="px-4 py-2 flex items-center gap-1">
-        <input type="checkbox" name="" id="" />
-        <p
-          className="whitespace-nowrap overflow-hidden text-ellipsis"
-          title={_package.id}
-        >
+    <>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis">
           {_package.id}
         </p>
       </div>
-      <div className="px-4 py-2">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div>{_package.senderFullName}</div>
         <div className="text-gray-400">
           <p>{_package.senderStreetAddress}</p>
@@ -46,7 +42,7 @@ function TableItem({ package: _package }: { package: Package }) {
           </p>
         </div>
       </div>
-      <div className="px-4 py-2">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div>{_package.receiverFullName}</div>
         <div className="text-gray-400">
           <p>{_package.receiverStreetAddress}</p>
@@ -59,7 +55,7 @@ function TableItem({ package: _package }: { package: Package }) {
           </p>
         </div>
       </div>
-      <div className="px-4 py-2 flex items-center gap-2">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div
           className={`
             w-36 py-0.5 text-white text-center rounded-md
@@ -68,7 +64,8 @@ function TableItem({ package: _package }: { package: Package }) {
         >
           {supportedPackageStatusToHumanized(_package.status)}
         </div>
-
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
             <button type="button">
@@ -119,7 +116,7 @@ function TableItem({ package: _package }: { package: Package }) {
           close={() => setVisibleModal(null)}
         />
       </div>
-    </div>
+    </>
   )
 }
 
@@ -222,7 +219,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
         </div>
       </Table.Filters>
       <Table.Content>
-        <div className="flex justify-between mb-3">
+        <div className="flex flex-wrap gap-3 justify-between mb-3">
           <div className="flex gap-3">
             <button
               type="button"
@@ -281,26 +278,32 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div>
-          <Table.Header>
-            <div className="grid grid-cols-[10rem_repeat(3,_1fr)]">
-              <div className="uppercase px-4 py-2 flex gap-1">
-                <input type="checkbox" />
-                <span>Package ID</span>
-              </div>
-              <div className="uppercase px-4 py-2">Sender</div>
-              <div className="uppercase px-4 py-2">Receiver</div>
-              <div className="uppercase px-4 py-2">Status</div>
-            </div>
-          </Table.Header>
+        <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min overflow-auto">
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Package ID
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Sender
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Receiver
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Status
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Actions
+          </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4">No packages found.</div>
+            <div className="text-center pt-4 col-span-4">
+              No packages found.
+            </div>
           ) : (
-            <div>
+            <>
               {paginatedItems.map((_package) => (
                 <TableItem key={_package.id} package={_package} />
               ))}
-            </div>
+            </>
           )}
         </div>
       </Table.Content>
