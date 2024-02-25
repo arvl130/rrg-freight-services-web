@@ -23,53 +23,50 @@ function TableItem({ item }: { item: PackageCategory }) {
 
   return (
     <>
-      <div className="grid grid-cols-5 border-b border-gray-300 text-sm">
-        <div className="px-4 py-2 flex items-center gap-1">
-          <input type="checkbox" name="" id="" />
-          <span>{item.id}</span>
-        </div>
-        <div className="px-4 py-2">{item.displayName}</div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm text-right">
+        {item.id}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {item.displayName}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button type="button">
+              <span className="sr-only">Actions</span>
+              <DotsThree size={16} />
+            </button>
+          </DropdownMenu.Trigger>
 
-        <div className="px-4 py-2"></div>
-        <div className="px-4 py-2 flex items-center gap-2">
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button type="button">
-                <span className="sr-only">Actions</span>
-                <DotsThree size={16} />
-              </button>
-            </DropdownMenu.Trigger>
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm font-medium">
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("EDIT")}
+              >
+                Edit
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("DELETE")}
+              >
+                Delete
+              </DropdownMenu.Item>
+              <DropdownMenu.Arrow className="fill-white" />
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
 
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm font-medium">
-                <DropdownMenu.Item
-                  className="transition-colors hover:bg-sky-50 px-3 py-2"
-                  onClick={() => setVisibleModal("EDIT")}
-                >
-                  Edit
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  className="transition-colors hover:bg-sky-50 px-3 py-2"
-                  onClick={() => setVisibleModal("DELETE")}
-                >
-                  Delete
-                </DropdownMenu.Item>
-                <DropdownMenu.Arrow className="fill-white" />
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
-
-          <EditModal
-            id={item.id}
-            close={() => setVisibleModal(null)}
-            isOpen={visibleModal === "EDIT"}
-          />
-          <DeleteModal
-            id={item.id}
-            close={() => setVisibleModal(null)}
-            isOpen={visibleModal === "DELETE"}
-          />
-        </div>
+        <EditModal
+          id={item.id}
+          close={() => setVisibleModal(null)}
+          isOpen={visibleModal === "EDIT"}
+        />
+        <DeleteModal
+          id={item.id}
+          close={() => setVisibleModal(null)}
+          isOpen={visibleModal === "DELETE"}
+        />
       </div>
     </>
   )
@@ -109,22 +106,22 @@ function CategoryTable({ items }: { items: PackageCategory[] }) {
   return (
     <>
       <Table.Filters>
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
-          <div>
+        <div className="grid sm:grid-cols-[1fr_auto_1fr] gap-3">
+          <div className="">
             <Table.SearchForm
               updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
               resetPageNumber={resetPageNumber}
             />
           </div>
-          <div className="flex gap-3 text-sm">
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
               <option>Status</option>
             </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
               <option>Warehouse</option>
             </select>
             <select
-              className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
               value={visibleArchiveStatus}
               onChange={(e) => {
                 if (e.currentTarget.value === "ARCHIVED")
@@ -137,12 +134,12 @@ function CategoryTable({ items }: { items: PackageCategory[] }) {
             </select>
             <button
               type="button"
-              className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
+              className="bg-white border border-gray-300 px-3 py-1.5 w-full sm:w-auto rounded-md text-gray-400 font-medium"
             >
               Clear Filter
             </button>
           </div>
-          <div className="flex justify-end">
+          <div className="flex items-start justify-end">
             <Table.ExportButton records={paginatedItems} />
           </div>
         </div>
@@ -163,26 +160,26 @@ function CategoryTable({ items }: { items: PackageCategory[] }) {
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div>
-          <Table.Header>
-            <div className="grid grid-cols-5 ">
-              <div className="uppercase px-4 py-2 flex gap-1">
-                <input type="checkbox" name="" id="" />
-                <span>Catgeory ID</span>
-              </div>
-              <div className="uppercase px-4 py-2">Display Name</div>
-
-              <div className="uppercase px-4 py-2"></div>
-            </div>
-          </Table.Header>
+        <div className="grid grid-cols-[repeat(2,_auto)_1fr] auto-rows-min overflow-auto">
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Category ID
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Display Name
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Actions
+          </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4">No Category found.</div>
+            <div className="text-center pt-4 col-span-3">
+              No category found.
+            </div>
           ) : (
-            <div>
+            <>
               {paginatedItems.map((item) => (
                 <TableItem key={item.id} item={item} />
               ))}
-            </div>
+            </>
           )}
         </div>
       </Table.Content>
