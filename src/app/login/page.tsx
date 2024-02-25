@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation"
 import { Eye } from "@phosphor-icons/react/dist/ssr/Eye"
 import { EyeSlash } from "@phosphor-icons/react/dist/ssr/EyeSlash"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
-import { SkeletonGenericLayout } from "@/layouts/generic"
+import { SkeletonGenericLayout } from "@/components/generic-layout"
 import { LoginPageHead } from "./login-page-head"
 
 const formSchema = z.object({

@@ -1,6 +1,6 @@
 "use client"
 
-import { AdminLayout } from "@/layouts/admin"
+import { AdminLayout } from "@/app/admin/auth"
 import { useState } from "react"
 import { useSession } from "@/hooks/session"
 import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"

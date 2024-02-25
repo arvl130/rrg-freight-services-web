@@ -1,6 +1,6 @@
 "use client"
 
-import { DomesticLayout } from "@/layouts/domestic"
+import { DomesticLayout } from "@/app/domestic/auth"
 import { useSession } from "@/hooks/session"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import type { Package } from "@/server/db/entities"

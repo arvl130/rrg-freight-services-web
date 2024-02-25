@@ -18,7 +18,7 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import type { NormalizedForwarderTransferShipment } from "@/server/db/entities"
 import type { ShipmentStatus } from "@/utils/constants"
-import { DomesticLayout } from "@/layouts/domestic"
+import { DomesticLayout } from "@/app/domestic/auth"
 import { CreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
 import { ConfirmTransferModal } from "@/components/shipments/transfer/forwarder/confirm-transfer-modal"
 

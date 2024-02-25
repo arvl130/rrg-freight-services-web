@@ -1,7 +1,6 @@
 "use client"
 
-import type { ShipmentType } from "@/utils/constants"
-import { WarehouseLayout } from "@/layouts/warehouse"
+import { WarehouseLayout } from "@/app/warehouse/auth"
 import { useState } from "react"
 import { DeliveryTab } from "./delivery-tab"
 import { IncomingTab } from "./incoming-tab"

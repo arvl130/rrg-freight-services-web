@@ -2,18 +2,20 @@ import { useSession } from "@/hooks/session"
 import { Gauge } from "@phosphor-icons/react/dist/ssr/Gauge"
 import { Package } from "@phosphor-icons/react/dist/ssr/Package"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
-import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
 import type { User } from "firebase/auth"
 import Image from "next/image"
 import { useState, type ReactNode } from "react"
-import { SkeletonGenericLayout, GenericHeader } from "./generic"
 import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
+import {
+  GenericHeader,
+  SkeletonGenericLayout,
+} from "@/components/generic-layout"
 import * as Accordion from "@radix-ui/react-accordion"
 import { SidebarLink } from "@/components/sidebar-link"
 import { LogoutButton } from "@/components/logout-button"
 
-export function DomesticSideBar(props: { isMinimized: boolean }) {
+export function OverseasSideBar(props: { isMinimized: boolean }) {
   return (
     <div>
       <nav
@@ -47,19 +49,13 @@ export function DomesticSideBar(props: { isMinimized: boolean }) {
               isMinimized={props.isMinimized}
               icon={<Gauge size={32} />}
               name="Dashboard"
-              href="/domestic/dashboard"
+              href="/overseas/dashboard"
             />
             <SidebarLink
               isMinimized={props.isMinimized}
               icon={<Package size={32} />}
               name="Packages"
-              href="/domestic/packages"
-            />
-            <SidebarLink
-              isMinimized={props.isMinimized}
-              icon={<Truck size={32} />}
-              name="Shipments"
-              href="/domestic/transfer-forwarder-shipments"
+              href="/overseas/packages"
             />
             <SidebarLink
               isMinimized={props.isMinimized}
@@ -81,15 +77,6 @@ export function DomesticSideBar(props: { isMinimized: boolean }) {
   )
 }
 
-export function SkeletonDomesticLayout() {
-  return (
-    <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
-      <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
-      <main className="bg-brand-cyan-100"></main>
-    </div>
-  )
-}
-
 type WithFunctionChildren = {
   hasSession: true
   children: ({
@@ -97,7 +84,7 @@ type WithFunctionChildren = {
     role,
   }: {
     user: User
-    role: "DOMESTIC_AGENT"
+    role: "OVERSEAS_AGENT"
     reload: () => Promise<void>
   }) => ReactNode
 }
@@ -111,14 +98,14 @@ type LayoutProps = {
   title: string | string[]
 } & (WithFunctionChildren | WithNodeChildren)
 
-export function DomesticLayout({ title, children }: LayoutProps) {
+export function OverseasLayout({ title, children }: LayoutProps) {
   const titleContent = Array.isArray(title)
     ? `${title.toReversed().join(" \u2013 ")} \u2013 RRG Freight Services`
     : `${title} \u2013 RRG Freight Services`
 
   const { isLoading, user, role, reload } = useSession({
     required: {
-      role: "DOMESTIC_AGENT",
+      role: "OVERSEAS_AGENT",
     },
   })
 
@@ -144,7 +131,7 @@ export function DomesticLayout({ title, children }: LayoutProps) {
       </>
     )
 
-  if (role !== "DOMESTIC_AGENT")
+  if (role !== "OVERSEAS_AGENT")
     return (
       <>
         <title>Dashboard &#x2013; RRG Freight Services</title>
@@ -170,7 +157,7 @@ export function DomesticLayout({ title, children }: LayoutProps) {
             : "grid-cols-[16rem_minmax(0,_1fr)]"
         }`}
       >
-        <DomesticSideBar isMinimized={isLayoutMinimized} />
+        <OverseasSideBar isMinimized={isLayoutMinimized} />
         <div className="bg-brand-cyan-100 px-6 py-4">
           <GenericHeader
             user={user}

@@ -1,7 +1,7 @@
 "use client"
 
 import { ToggleLeft } from "@phosphor-icons/react/dist/ssr/ToggleLeft"
-import { GenericLayout } from "@/layouts/generic"
+import { GenericLayout } from "@/components/generic-layout"
 import { SideNav } from "../sidenav"
 
 function RightColumn() {

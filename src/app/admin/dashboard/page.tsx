@@ -1,4 +1,4 @@
-import { AdminLayout } from "@/layouts/admin"
+import { AdminLayout } from "@/app/admin/auth"
 import { CalendarBlank } from "@phosphor-icons/react/dist/ssr/CalendarBlank"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { FunnelSimple } from "@phosphor-icons/react/dist/ssr/FunnelSimple"

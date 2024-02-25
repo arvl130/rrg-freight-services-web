@@ -1,6 +1,6 @@
 "use client"
 
-import { OverseasLayout } from "@/layouts/overseas"
+import { OverseasLayout } from "@/app/overseas/auth"
 import { Article } from "@phosphor-icons/react/Article"
 import { CaretRight } from "@phosphor-icons/react/CaretRight"
 import { File } from "@phosphor-icons/react/File"

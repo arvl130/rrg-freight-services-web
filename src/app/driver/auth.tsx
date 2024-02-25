@@ -7,7 +7,10 @@ import Image from "next/image"
 import { useState, type ReactNode } from "react"
 import { LoginPageHead } from "@/app/login/login-page-head"
 import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
-import { GenericHeader, SkeletonGenericLayout } from "@/layouts/generic"
+import {
+  GenericHeader,
+  SkeletonGenericLayout,
+} from "@/components/generic-layout"
 import * as Accordion from "@radix-ui/react-accordion"
 import { SidebarLink } from "@/components/sidebar-link"
 import { LogoutButton } from "@/components/logout-button"

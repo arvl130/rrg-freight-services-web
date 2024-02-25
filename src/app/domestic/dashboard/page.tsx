@@ -1,6 +1,6 @@
 "use client"
 
-import { DomesticLayout } from "@/layouts/domestic"
+import { DomesticLayout } from "@/app/domestic/auth"
 import { useSession } from "@/hooks/session"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { api } from "@/utils/api"

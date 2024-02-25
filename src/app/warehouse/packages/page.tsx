@@ -1,6 +1,6 @@
 "use client"
 
-import { WarehouseLayout } from "@/layouts/warehouse"
+import { WarehouseLayout } from "@/app/warehouse/auth"
 import { useSession } from "@/hooks/session"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import type { Package } from "@/server/db/entities"

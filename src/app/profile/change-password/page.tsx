@@ -1,6 +1,6 @@
 "use client"
 
-import { GenericLayout } from "@/layouts/generic"
+import { GenericLayout } from "@/components/generic-layout"
 import { SideNav } from "@/app/profile/sidenav"
 import { UpdatePasswordForm } from "./update-password-form"
 
