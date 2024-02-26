@@ -157,6 +157,7 @@ export const incomingShipmentRouter = router({
             receiverCountryCode: z.string().min(1).max(3),
             receiverPostalCode: z.number(),
             isFragile: z.boolean(),
+            declaredValue: z.number().nullable(),
           })
           .array(),
       }),

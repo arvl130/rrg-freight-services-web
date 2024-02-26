@@ -246,6 +246,14 @@ export function ViewDetailsModal({
                         {_package.failedAttempts}
                       </span>
                     </p>
+                    {_package.declaredValue && (
+                      <p className="font-medium mt-2">
+                        Declared value:{" "}
+                        <span className="text-gray-500 text-sm">
+                          ₱{_package.declaredValue}
+                        </span>
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

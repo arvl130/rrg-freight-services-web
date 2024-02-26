@@ -290,6 +290,7 @@ export const packages = mysqlTable("packages", {
   }),
   status: mysqlEnum("status", SUPPORTED_PACKAGE_STATUSES).notNull(),
   failedAttempts: tinyint("failed_attempts").notNull().default(0),
+  declaredValue: double("declared_value"),
 })
 
 export const packageStatusLogs = mysqlTable("package_status_logs", {
