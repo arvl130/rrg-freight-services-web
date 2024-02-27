@@ -246,8 +246,19 @@ export function ViewDetailsModal({
                         {_package.failedAttempts}
                       </span>
                     </p>
-                    {_package.declaredValue && (
+                    {_package.declaredValue === null ? (
                       <p className="font-medium mt-2">
+                        Insured?{" "}
+                        <span className="text-gray-500 text-sm">No</span>
+                      </p>
+                    ) : (
+                      <p className="font-medium mt-2">
+                        Insured?{" "}
+                        <span className="text-gray-500 text-sm">Yes</span>
+                      </p>
+                    )}
+                    {_package.declaredValue && (
+                      <p className="font-medium">
                         Declared value:{" "}
                         <span className="text-gray-500 text-sm">
                           ₱{_package.declaredValue}
