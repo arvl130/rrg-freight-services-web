@@ -25,6 +25,7 @@ export const serverEnv = createEnv({
     IS_SMS_ENABLED: z.union([z.literal("0"), z.literal("1")]),
     GEOAPIFY_API_URL: z.string().min(1).url(),
     GEOAPIFY_API_KEY: z.string().min(1),
+    WEB_PUSH_PRIVATE_KEY: z.string().min(1),
   },
   runtimeEnv: {
     APP_ENV: process.env.APP_ENV,
@@ -43,5 +44,6 @@ export const serverEnv = createEnv({
     IS_SMS_ENABLED: process.env.IS_SMS_ENABLED,
     GEOAPIFY_API_URL: process.env.GEOAPIFY_API_URL,
     GEOAPIFY_API_KEY: process.env.GEOAPIFY_API_KEY,
+    WEB_PUSH_PRIVATE_KEY: process.env.WEB_PUSH_PRIVATE_KEY,
   },
 })

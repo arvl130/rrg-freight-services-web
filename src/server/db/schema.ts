@@ -336,3 +336,15 @@ export const activities = mysqlTable("activities", {
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
 })
+
+export const pushSubscriptions = mysqlTable("push_subscriptions", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  endpoint: text("endpoint").notNull(),
+  expirationTime: int("expiration_time"),
+  keyAuth: text("key_auth").notNull(),
+  keyP256dh: text("key_p256dh").notNull(),
+})
