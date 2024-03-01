@@ -4,8 +4,8 @@ import { pushSubscriptions } from "@/server/db/schema"
 import { clientEnv } from "@/utils/env.mjs"
 import { sendNotification, setVapidDetails } from "web-push"
 import { z } from "zod"
-import { eq } from "drizzle-orm"
-import { createHash } from "crypto"
+import { eq, inArray } from "drizzle-orm"
+import { stringToSha256Hash } from "@/utils/hash"
 
 setVapidDetails(
   "mailto:test@example.com",
@@ -24,12 +24,7 @@ export const pushSubscriptionsRouter = router({
       const subscriptions = await ctx.db
         .select()
         .from(pushSubscriptions)
-        .where(
-          eq(
-            pushSubscriptions.id,
-            createHash("sha256").update(input.endpoint).digest("hex"),
-          ),
-        )
+        .where(eq(pushSubscriptions.id, stringToSha256Hash(input.endpoint)))
 
       const sendPromises = subscriptions.map((s) => {
         const payload = JSON.stringify({
@@ -49,8 +44,20 @@ export const pushSubscriptionsRouter = router({
         )
       })
 
-      // TODO: Stale URLs should be recorded and later removed.
-      return await Promise.allSettled(sendPromises)
+      const results = await Promise.allSettled(sendPromises)
+      const failedEndpoints = results
+        .filter(
+          (result): result is PromiseRejectedResult =>
+            result.status === "rejected" && result.reason.statusCode === 410,
+        )
+        .map((result) => stringToSha256Hash(result.reason.endpoint))
+
+      if (failedEndpoints.length > 0)
+        await ctx.db
+          .delete(pushSubscriptions)
+          .where(inArray(pushSubscriptions.id, failedEndpoints))
+
+      return results
     }),
   create: protectedProcedure
     .input(
@@ -65,7 +72,7 @@ export const pushSubscriptionsRouter = router({
     )
     .mutation(({ ctx, input }) => {
       return ctx.db.insert(pushSubscriptions).values({
-        id: createHash("sha256").update(input.endpoint).digest("hex"),
+        id: stringToSha256Hash(input.endpoint),
         endpoint: input.endpoint,
         expirationTime: input.expirationTime,
         keyAuth: input.keys.auth,
