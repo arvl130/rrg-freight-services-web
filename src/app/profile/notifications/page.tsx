@@ -94,7 +94,10 @@ function ToggleButtons(props: {
 
   return (
     <div className="flex gap-3">
-      <TestNotificationsButton isMutating={isButtonDisabled} />
+      <TestNotificationsButton
+        endpoint={pushSubscription.endpoint}
+        isMutating={isButtonDisabled}
+      />
 
       <button
         type="button"
@@ -126,14 +129,21 @@ function TogglePushNotifications() {
   )
 }
 
-function TestNotificationsButton(props: { isMutating: boolean }) {
+function TestNotificationsButton(props: {
+  endpoint: string
+  isMutating: boolean
+}) {
   const { isLoading, mutate } = api.pushSubscriptions.testPublish.useMutation()
 
   return (
     <button
       type="button"
       disabled={props.isMutating || isLoading}
-      onClick={() => mutate()}
+      onClick={() =>
+        mutate({
+          endpoint: props.endpoint,
+        })
+      }
       className="bg-gray-700 hover:bg-gray-600 disabled:bg-gray-300 text-white transition-colors font-medium px-3 py-1 rounded-md"
     >
       Test
