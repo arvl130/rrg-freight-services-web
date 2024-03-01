@@ -338,11 +338,12 @@ export const activities = mysqlTable("activities", {
 })
 
 export const pushSubscriptions = mysqlTable("push_subscriptions", {
-  id: bigint("id", {
-    mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  id: varchar("id", {
+    length: 64,
+  }).primaryKey(),
+  userId: varchar("user_id", {
+    length: 28,
+  }).notNull(),
   endpoint: text("endpoint").notNull(),
   expirationTime: int("expiration_time"),
   keyAuth: text("key_auth").notNull(),

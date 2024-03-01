@@ -5,6 +5,7 @@ import { clientEnv } from "@/utils/env.mjs"
 import { sendNotification, setVapidDetails } from "web-push"
 import { z } from "zod"
 import { eq } from "drizzle-orm"
+import { createHash } from "crypto"
 
 setVapidDetails(
   "mailto:test@example.com",
@@ -14,7 +15,11 @@ setVapidDetails(
 
 export const pushSubscriptionsRouter = router({
   testPublish: protectedProcedure.mutation(async ({ ctx }) => {
-    const subscriptions = await ctx.db.select().from(pushSubscriptions)
+    const subscriptions = await ctx.db
+      .select()
+      .from(pushSubscriptions)
+      .where(eq(pushSubscriptions.userId, ctx.user.uid))
+
     const sendPromises = subscriptions.map((s) => {
       const payload = JSON.stringify({
         title: "Hi there!",
@@ -33,6 +38,7 @@ export const pushSubscriptionsRouter = router({
       )
     })
 
+    // TODO: Stale URLs should be recorded and later removed.
     return await Promise.allSettled(sendPromises)
   }),
   create: protectedProcedure
@@ -48,7 +54,9 @@ export const pushSubscriptionsRouter = router({
     )
     .mutation(({ ctx, input }) => {
       return ctx.db.insert(pushSubscriptions).values({
+        id: createHash("sha256").update(input.endpoint).digest("hex"),
         endpoint: input.endpoint,
+        userId: ctx.user.uid,
         expirationTime: input.expirationTime,
         keyAuth: input.keys.auth,
         keyP256dh: input.keys.p256dh,
