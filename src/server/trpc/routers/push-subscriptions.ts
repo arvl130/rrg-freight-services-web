@@ -17,7 +17,7 @@ export const pushSubscriptionsRouter = router({
   testPublish: protectedProcedure
     .input(
       z.object({
-        endpoint: z.string().min(1),
+        endpoint: z.string().min(1).url(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -55,7 +55,7 @@ export const pushSubscriptionsRouter = router({
   create: protectedProcedure
     .input(
       z.object({
-        endpoint: z.string().min(1),
+        endpoint: z.string().min(1).url(),
         expirationTime: z.number().nullable(),
         keys: z.object({
           auth: z.string().min(1),
@@ -75,7 +75,7 @@ export const pushSubscriptionsRouter = router({
   delete: protectedProcedure
     .input(
       z.object({
-        endpoint: z.string().min(1),
+        endpoint: z.string().min(1).url(),
       }),
     )
     .mutation(({ ctx, input }) => {
