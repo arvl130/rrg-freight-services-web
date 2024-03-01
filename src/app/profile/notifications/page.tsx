@@ -41,7 +41,7 @@ function ToggleButtons(props: {
           },
         },
         {
-          onSuccess: () =>
+          onSettled: () =>
             queryClient.setQueryData(["getPushSubscription"], data),
         },
       )
@@ -60,7 +60,7 @@ function ToggleButtons(props: {
           endpoint: variables.endpoint,
         },
         {
-          onSuccess: () =>
+          onSettled: () =>
             queryClient.setQueryData(["getPushSubscription"], null),
         },
       )
