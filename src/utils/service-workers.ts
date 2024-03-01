@@ -1,3 +1,5 @@
+import { clientEnv } from "./env.mjs"
+
 export function isNotificationsSupported() {
   return (
     "Notification" in window &&
@@ -6,7 +8,27 @@ export function isNotificationsSupported() {
   )
 }
 
-export async function unregisterServiceWorkers() {
-  const registrations = await navigator.serviceWorker.getRegistrations()
-  await Promise.all(registrations.map((r) => r.unregister()))
+export async function getServiceWorkerRegistration() {
+  return await navigator.serviceWorker.register("/sw.js")
+}
+
+export async function getPushSubscription(
+  swRegistration: ServiceWorkerRegistration,
+) {
+  return await swRegistration.pushManager.getSubscription()
+}
+
+export async function subscribeToPushNotifications(
+  swRegistration: ServiceWorkerRegistration,
+) {
+  return await swRegistration.pushManager.subscribe({
+    applicationServerKey: clientEnv.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
+    userVisibleOnly: true,
+  })
+}
+
+export async function unsubscribeToPushNotifications(
+  pushSubscription: PushSubscription,
+) {
+  return await pushSubscription.unsubscribe()
 }

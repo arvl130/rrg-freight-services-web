@@ -4,6 +4,7 @@ import { pushSubscriptions } from "@/server/db/schema"
 import { clientEnv } from "@/utils/env.mjs"
 import { sendNotification, setVapidDetails } from "web-push"
 import { z } from "zod"
+import { eq } from "drizzle-orm"
 
 setVapidDetails(
   "mailto:test@example.com",
@@ -16,8 +17,8 @@ export const pushSubscriptionsRouter = router({
     const subscriptions = await ctx.db.select().from(pushSubscriptions)
     const sendPromises = subscriptions.map((s) => {
       const payload = JSON.stringify({
-        title: "WebPush Notification!",
-        body: "Hi there",
+        title: "Hi there!",
+        body: "This is a test notification.",
       })
 
       return sendNotification(
@@ -32,7 +33,7 @@ export const pushSubscriptionsRouter = router({
       )
     })
 
-    return await Promise.all(sendPromises)
+    return await Promise.allSettled(sendPromises)
   }),
   create: protectedProcedure
     .input(
@@ -52,5 +53,16 @@ export const pushSubscriptionsRouter = router({
         keyAuth: input.keys.auth,
         keyP256dh: input.keys.p256dh,
       })
+    }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        endpoint: z.string().min(1),
+      }),
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.db
+        .delete(pushSubscriptions)
+        .where(eq(pushSubscriptions.endpoint, input.endpoint))
     }),
 })
