@@ -25,7 +25,7 @@ import { TRPCError } from "@trpc/server"
 import { and, count, eq } from "drizzle-orm"
 import { generateUniqueId } from "@/utils/uuid"
 import { notifyByEmail } from "@/server/notification"
-import { DateTime } from "luxon"
+import { createLog } from "@/utils/logging"
 
 export const incomingShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -226,11 +226,10 @@ export const incomingShipmentRouter = router({
         ])
       })
 
-      await ctx.db.insert(activities).values({
+      await createLog(ctx.db, {
         verb: "CREATE",
         entity: "INCOMING_SHIPMENT",
         createdById: ctx.user.uid,
-        createdAt: DateTime.now().toISO(),
       })
     }),
 })
