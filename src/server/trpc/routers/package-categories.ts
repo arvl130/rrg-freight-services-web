@@ -3,6 +3,7 @@ import { protectedProcedure, router } from "../trpc"
 import { packageCategories } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import { TRPCError } from "@trpc/server"
+import { createLog } from "@/utils/logging"
 
 export const packageCategoriesRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -39,10 +40,16 @@ export const packageCategoriesRouter = router({
         displayName: z.string().min(1).max(255),
       }),
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.db.insert(packageCategories).values({
-        ...input,
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db.insert(packageCategories).values(input)
+
+      await createLog(ctx.db, {
+        verb: "CREATE",
+        entity: "PACKAGE_CATEGORY",
+        createdById: ctx.user.uid,
       })
+
+      return result
     }),
   updateById: protectedProcedure
     .input(
@@ -51,13 +58,19 @@ export const packageCategoriesRouter = router({
         displayName: z.string().min(1).max(255),
       }),
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.db
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
         .update(packageCategories)
-        .set({
-          ...input,
-        })
+        .set(input)
         .where(eq(packageCategories.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "PACKAGE_CATEGORY",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   deleteById: protectedProcedure
     .input(
@@ -65,9 +78,17 @@ export const packageCategoriesRouter = router({
         id: z.number(),
       }),
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.db
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
         .delete(packageCategories)
         .where(eq(packageCategories.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "DELETE",
+        entity: "PACKAGE_CATEGORY",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
 })

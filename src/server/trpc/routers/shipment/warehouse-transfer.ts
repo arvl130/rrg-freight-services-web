@@ -11,9 +11,9 @@ import {
   vehicles,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
-import type { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
+import { createLog } from "@/utils/logging"
 
 export const warehouseTransferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -139,12 +139,20 @@ export const warehouseTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const result = await ctx.db
         .update(shipments)
         .set({
           status: "IN_TRANSIT",
         })
         .where(eq(shipments.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "TRANSFER_WAREHOUSE_SHIPMENT",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   updateStatusToCompletedById: protectedProcedure
     .input(
@@ -153,12 +161,20 @@ export const warehouseTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const result = await ctx.db
         .update(shipments)
         .set({
           status: "COMPLETED",
         })
         .where(eq(shipments.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "TRANSFER_WAREHOUSE_SHIPMENT",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   create: protectedProcedure
     .input(
@@ -170,11 +186,10 @@ export const warehouseTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const [result] = (await ctx.db.insert(shipments).values({
+      const [{ insertId: shipmentId }] = await ctx.db.insert(shipments).values({
         type: "TRANSFER_WAREHOUSE",
         status: "PREPARING",
-      })) as unknown as [ResultSetHeader]
-      const shipmentId = result.insertId
+      })
 
       await ctx.db.insert(warehouseTransferShipments).values({
         shipmentId,
@@ -205,5 +220,11 @@ export const warehouseTransferShipmentRouter = router({
           createdAt: new Date(),
         })
       }
+
+      await createLog(ctx.db, {
+        verb: "CREATE",
+        entity: "TRANSFER_WAREHOUSE_SHIPMENT",
+        createdById: ctx.user.uid,
+      })
     }),
 })

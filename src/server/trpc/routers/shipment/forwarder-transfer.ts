@@ -10,10 +10,10 @@ import {
   vehicles,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
-import type { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
 import { and, count, eq } from "drizzle-orm"
 import { alias } from "drizzle-orm/mysql-core"
+import { createLog } from "@/utils/logging"
 
 export const forwarderTransferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -137,12 +137,20 @@ export const forwarderTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const result = await ctx.db
         .update(shipments)
         .set({
           status: "IN_TRANSIT",
         })
         .where(eq(shipments.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "TRANSFER_FORWARDER_SHIPMENT",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   updateStatusToCompletedById: protectedProcedure
     .input(
@@ -151,12 +159,20 @@ export const forwarderTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const result = await ctx.db
         .update(shipments)
         .set({
           status: "COMPLETED",
         })
         .where(eq(shipments.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "TRANSFER_FORWARDER_SHIPMENT",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   create: protectedProcedure
     .input(
@@ -168,11 +184,10 @@ export const forwarderTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const [result] = (await ctx.db.insert(shipments).values({
+      const [{ insertId: shipmentId }] = await ctx.db.insert(shipments).values({
         type: "TRANSFER_FORWARDER",
         status: "PREPARING",
-      })) as unknown as [ResultSetHeader]
-      const shipmentId = result.insertId
+      })
 
       await ctx.db.insert(forwarderTransferShipments).values({
         shipmentId,
@@ -203,6 +218,12 @@ export const forwarderTransferShipmentRouter = router({
           createdAt: new Date(),
         })
       }
+
+      await createLog(ctx.db, {
+        verb: "CREATE",
+        entity: "TRANSFER_FORWARDER_SHIPMENT",
+        createdById: ctx.user.uid,
+      })
     }),
   confirmTransferById: protectedProcedure
     .input(
@@ -211,12 +232,20 @@ export const forwarderTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const result = await ctx.db
         .update(forwarderTransferShipments)
         .set({
           isTransferConfirmed: 1,
         })
         .where(eq(forwarderTransferShipments.shipmentId, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "TRANSFER_FORWARDER_SHIPMENT",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   getTotalInTransitSentToAgentId: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db

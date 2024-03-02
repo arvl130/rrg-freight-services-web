@@ -13,11 +13,10 @@ import {
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
-import type { ResultSetHeader } from "mysql2"
-import { raw } from "mysql2"
 import { DateTime } from "luxon"
 import { generateOtp } from "@/utils/uuid"
 import { notifyByEmail, notifyBySms } from "@/server/notification"
+import { createLog } from "@/utils/logging"
 
 export const deliveryShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -220,6 +219,12 @@ export const deliveryShipmentRouter = router({
           status: "IN_TRANSIT",
         })
         .where(eq(shipments.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "DELIVERY_SHIPMENT",
+        createdById: ctx.user.uid,
+      })
     }),
   updateStatusToCompletedById: protectedProcedure
     .input(
@@ -234,6 +239,12 @@ export const deliveryShipmentRouter = router({
           status: "COMPLETED",
         })
         .where(eq(shipments.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "DELIVERY_SHIPMENT",
+        createdById: ctx.user.uid,
+      })
     }),
   create: protectedProcedure
     .input(
@@ -305,10 +316,10 @@ export const deliveryShipmentRouter = router({
           }),
         )
 
-        const [{ insertId: shipmentId }] = (await tx.insert(shipments).values({
+        const [{ insertId: shipmentId }] = await tx.insert(shipments).values({
           type: "DELIVERY",
           status: "PREPARING",
-        })) as unknown as [ResultSetHeader]
+        })
 
         await tx.insert(deliveryShipments).values({
           shipmentId,
@@ -345,6 +356,12 @@ export const deliveryShipmentRouter = router({
           ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
           ...packageReceiverSmsNotifications.map((s) => notifyBySms(s)),
         ])
+      })
+
+      await createLog(ctx.db, {
+        verb: "CREATE",
+        entity: "DELIVERY_SHIPMENT",
+        createdById: ctx.user.uid,
       })
     }),
 })

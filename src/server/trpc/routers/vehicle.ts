@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import type { VehicleType } from "@/utils/constants"
 import { SUPPORTED_VEHICLE_TYPES } from "@/utils/constants"
+import { createLog } from "@/utils/logging"
 
 export const vehicleRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -68,11 +69,19 @@ export const vehicleRouter = router({
         isExpressAllowed: z.boolean(),
       }),
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.db.insert(vehicles).values({
+    .mutation(async ({ ctx, input }) => {
+      const result = ctx.db.insert(vehicles).values({
         ...input,
         isExpressAllowed: input.isExpressAllowed ? 1 : 0,
       })
+
+      await createLog(ctx.db, {
+        verb: "CREATE",
+        entity: "VEHICLE",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   updateById: protectedProcedure
     .input(
@@ -85,14 +94,22 @@ export const vehicleRouter = router({
         isExpressAllowed: z.boolean(),
       }),
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.db
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
         .update(vehicles)
         .set({
           ...input,
           isExpressAllowed: input.isExpressAllowed ? 1 : 0,
         })
         .where(eq(vehicles.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "VEHICLE",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   deleteById: protectedProcedure
     .input(
@@ -100,7 +117,17 @@ export const vehicleRouter = router({
         id: z.number(),
       }),
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.db.delete(vehicles).where(eq(vehicles.id, input.id))
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .delete(vehicles)
+        .where(eq(vehicles.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "DELETE",
+        entity: "VEHICLE",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
 })

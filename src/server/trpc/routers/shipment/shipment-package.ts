@@ -10,9 +10,9 @@ import {
   packages,
   shipmentPackages,
   shipments,
-  incomingShipments,
 } from "@/server/db/schema"
 import { and, count, eq, inArray, sql } from "drizzle-orm"
+import { createLog } from "@/utils/logging"
 
 export const shipmentPackageRouter = router({
   updateManyToCompletedStatusWithCategory: protectedProcedure
@@ -82,6 +82,12 @@ export const shipmentPackageRouter = router({
             .where(eq(packages.id, id))
         }
       })
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "SHIPMENT_PACKAGE",
+        createdById: ctx.user.uid,
+      })
     }),
   updateManyToCompletedStatus: protectedProcedure
     .input(
@@ -133,6 +139,12 @@ export const shipmentPackageRouter = router({
               inArray(shipmentPackages.packageId, input.packageIds),
             ),
           )
+      })
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "SHIPMENT_PACKAGE",
+        createdById: ctx.user.uid,
       })
     }),
 

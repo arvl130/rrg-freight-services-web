@@ -20,7 +20,6 @@ import {
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
-import type { ResultSetHeader } from "mysql2"
 import { TRPCError } from "@trpc/server"
 import { and, count, eq } from "drizzle-orm"
 import { generateUniqueId } from "@/utils/uuid"
@@ -112,12 +111,20 @@ export const incomingShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const result = await ctx.db
         .update(shipments)
         .set({
           status: "COMPLETED",
         })
         .where(eq(shipments.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "INCOMING_SHIPMENT",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   create: protectedProcedure
     .input(
@@ -203,10 +210,10 @@ export const incomingShipmentRouter = router({
         await tx.insert(packages).values(newPackages)
         await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
 
-        const [{ insertId: shipmentId }] = (await tx.insert(shipments).values({
+        const [{ insertId: shipmentId }] = await tx.insert(shipments).values({
           type: "INCOMING",
           status: "IN_TRANSIT",
-        })) as unknown as [ResultSetHeader]
+        })
 
         await tx.insert(incomingShipments).values({
           shipmentId,

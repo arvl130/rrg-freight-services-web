@@ -8,6 +8,7 @@ import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
 import type { Gender, UserRole } from "@/utils/constants"
 import { SUPPORTED_GENDERS, SUPPORTED_USER_ROLES } from "@/utils/constants"
+import { createLog } from "@/utils/logging"
 
 // Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
 const TEXT_COLUMN_DEFAULT_LIMIT = 65_535
@@ -128,7 +129,7 @@ export const userRouter = router({
         email: input.emailAddress,
       })
 
-      await ctx.db.insert(users).values({
+      const result = await ctx.db.insert(users).values({
         id: ctx.user.uid,
         displayName: input.displayName,
         contactNumber: input.contactNumber,
@@ -136,6 +137,14 @@ export const userRouter = router({
         gender: input.gender,
         role: input.role,
       })
+
+      await createLog(ctx.db, {
+        verb: "CREATE",
+        entity: "USER",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   updateDetails: protectedProcedure
     .input(
@@ -149,7 +158,7 @@ export const userRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const result = await ctx.db
         .update(users)
         .set({
           displayName: input.displayName,
@@ -163,6 +172,14 @@ export const userRouter = router({
         displayName: input.displayName,
         email: input.emailAddress,
       })
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "USER",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   updatePhotoUrl: protectedProcedure
     .input(
@@ -175,12 +192,20 @@ export const userRouter = router({
         photoURL: input.photoUrl,
       })
 
-      await ctx.db
+      const result = await ctx.db
         .update(users)
         .set({
           photoUrl: input.photoUrl,
         })
         .where(eq(users.id, ctx.user.uid))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "USER",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   removePhotoUrl: protectedProcedure.mutation(async ({ ctx }) => {
     const storage = getStorage()
@@ -193,12 +218,20 @@ export const userRouter = router({
       photoURL: null,
     })
 
-    await ctx.db
+    const result = await ctx.db
       .update(users)
       .set({
         photoUrl: null,
       })
       .where(eq(users.id, ctx.user.uid))
+
+    await createLog(ctx.db, {
+      verb: "UPDATE",
+      entity: "USER",
+      createdById: ctx.user.uid,
+    })
+
+    return result
   }),
   updateRoleAndEnabledById: protectedProcedure
     .input(
@@ -211,13 +244,21 @@ export const userRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
+      const result = await ctx.db
         .update(users)
         .set({
           role: input.role,
           isEnabled: input.isEnabled ? 1 : 0,
         })
         .where(eq(users.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "USER",
+        createdById: ctx.user.uid,
+      })
+
+      return result
     }),
   getAvailableDrivers: protectedProcedure.query(async ({ ctx }) => {
     // FIXME: This db query should also consider transfers in progress.
