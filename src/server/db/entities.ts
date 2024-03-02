@@ -13,6 +13,7 @@ import type {
   packageStatusLogs,
   activities,
   packageCategories,
+  pushSubscriptions,
 } from "./schema"
 
 export type User = typeof users.$inferSelect
@@ -76,3 +77,6 @@ export type NewPackageCategory = typeof packageCategories.$inferInsert
 
 export type Warehouse = typeof warehouses.$inferSelect
 export type NewWarehouse = typeof warehouses.$inferInsert
+
+export type PushSubscription = typeof pushSubscriptions.$inferSelect
+export type NewPushSubscription = typeof pushSubscriptions.$inferInsert
