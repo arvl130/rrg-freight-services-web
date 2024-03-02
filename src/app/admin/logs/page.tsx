@@ -14,10 +14,6 @@ import type { Activity } from "@/server/db/entities"
 import { getColorFromActivityVerb } from "@/utils/colors"
 
 function TableItem({ item }: { item: Activity }) {
-  const [visibleModal, setVisibleModal] = useState<null | "EDIT" | "DELETE">(
-    null,
-  )
-
   return (
     <>
       <div className="px-4 py-2 border-b border-gray-300 text-sm text-right">
@@ -40,34 +36,6 @@ function TableItem({ item }: { item: Activity }) {
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {item.entity}
-      </div>
-      <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger asChild>
-            <button type="button">
-              <span className="sr-only">Actions</span>
-              <DotsThree size={16} />
-            </button>
-          </DropdownMenu.Trigger>
-
-          <DropdownMenu.Portal>
-            <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm font-medium">
-              <DropdownMenu.Item
-                className="transition-colors hover:bg-sky-50 px-3 py-2"
-                onClick={() => setVisibleModal("EDIT")}
-              >
-                Edit
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                className="transition-colors hover:bg-sky-50 px-3 py-2"
-                onClick={() => setVisibleModal("DELETE")}
-              >
-                Delete
-              </DropdownMenu.Item>
-              <DropdownMenu.Arrow className="fill-white" />
-            </DropdownMenu.Content>
-          </DropdownMenu.Portal>
-        </DropdownMenu.Root>
       </div>
     </>
   )
@@ -168,7 +136,7 @@ function ActivitiesTable({ items }: { items: Activity[] }) {
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min overflow-auto">
+        <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min overflow-auto">
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             ID
           </div>
@@ -183,9 +151,6 @@ function ActivitiesTable({ items }: { items: Activity[] }) {
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Entity
-          </div>
-          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
-            Action
           </div>
           {paginatedItems.length === 0 ? (
             <div className="text-center pt-4 col-span-5">
