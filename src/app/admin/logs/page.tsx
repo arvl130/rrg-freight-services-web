@@ -1,175 +1,237 @@
 "use client"
 
 import { AdminLayout } from "@/app/admin/auth"
-import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple"
+import { useSession } from "@/hooks/session"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
-import { Export } from "@phosphor-icons/react/dist/ssr/Export"
-import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
-import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
-import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
-import { CaretDoubleLeft } from "@phosphor-icons/react/dist/ssr/CaretDoubleLeft"
-import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
-import { CaretDoubleRight } from "@phosphor-icons/react/dist/ssr/CaretDoubleRight"
+import { api } from "@/utils/api"
+import { useState } from "react"
+import { LoadingSpinner } from "@/components/spinner"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import * as Page from "@/components/page"
+import * as Table from "@/components/table"
+import { usePaginatedItems } from "@/hooks/paginated-items"
+import type { Activity } from "@/server/db/entities"
+import { getColorFromActivityVerb } from "@/utils/colors"
 
-function PageHeader() {
+function TableItem({ item }: { item: Activity }) {
+  const [visibleModal, setVisibleModal] = useState<null | "EDIT" | "DELETE">(
+    null,
+  )
+
   return (
-    <div className="flex justify-between mb-6">
-      <h1 className="text-2xl font-black [color:_#00203F]">Activity Logs</h1>
-    </div>
+    <>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm text-right">
+        {item.id}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {item.createdById}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {item.createdAt}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        <span
+          className={`${getColorFromActivityVerb(
+            item.verb,
+          )} text-white px-3 py-1.5 inline-block rounded-md font-semibold`}
+        >
+          {item.verb}
+        </span>
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {item.entity}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button type="button">
+              <span className="sr-only">Actions</span>
+              <DotsThree size={16} />
+            </button>
+          </DropdownMenu.Trigger>
+
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm font-medium">
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("EDIT")}
+              >
+                Edit
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("DELETE")}
+              >
+                Delete
+              </DropdownMenu.Item>
+              <DropdownMenu.Arrow className="fill-white" />
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+      </div>
+    </>
   )
 }
 
-const activities = [
-  {
-    id: 1,
-    displayName: "John Doe",
-    ipAddress: "192.168.16.32",
-    role: "WAREHOUSE",
-    timestamp: "9/25/2023 10:42:01",
-    action: "UPDATED",
-    description: "Update package",
-  },
-]
+function filterBySearchTerm(items: Activity[], searchTerm: string) {
+  return items.filter((item) =>
+    item.id.toString().toLowerCase().includes(searchTerm),
+  )
+}
 
-export default function ActivityLogsPage() {
+function filterByArchiveStatus(items: Activity[], isArchived: boolean) {
+  if (isArchived) return items.filter((item) => item.isArchived === 1)
+
+  return items.filter((item) => item.isArchived === 0)
+}
+
+function ActivitiesTable({ items }: { items: Activity[] }) {
+  const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
+    "ARCHIVED" | "NOT_ARCHIVED"
+  >("NOT_ARCHIVED")
+
+  const [searchTerm, setSearchTerm] = useState("")
+  const visibleItems = filterBySearchTerm(
+    filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+    searchTerm,
+  )
+
+  const {
+    pageNumber,
+    pageSize,
+    pageCount,
+    isOnFirstPage,
+    isOnLastPage,
+    paginatedItems,
+    updatePageSize,
+    resetPageNumber,
+    gotoFirstPage,
+    gotoLastPage,
+    gotoPage,
+    gotoNextPage,
+    gotoPreviousPage,
+  } = usePaginatedItems<Activity>({
+    items: visibleItems,
+  })
+
   return (
-    <AdminLayout title="Activity Logs">
-      <PageHeader />
-      <div className="flex justify-between gap-3 bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 mb-6">
-        <div className="grid grid-cols-[1fr_2.25rem] h-[2.375rem]">
-          <input
-            type="text"
-            className="rounded-l-lg px-3 border-l border-y border-brand-cyan-500 py-1.5 text-sm"
-            placeholder="Quick search"
-          />
-          <button
-            type="button"
-            className="text-white bg-brand-cyan-500 flex justify-center items-center rounded-r-lg border-r border-y border-brand-cyan-500"
-          >
-            <span className="sr-only">Search</span>
-            <MagnifyingGlass size={16} />
-          </button>
-        </div>
-        <div className="flex gap-3 text-sm">
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Filter by role ...</option>
-          </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">All actions</option>
-          </select>
-          <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-            <option value="">Any date</option>
-          </select>
-          <button
-            type="button"
-            className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
-          >
-            Clear Filter
-          </button>
-        </div>
-        <div className="flex gap-3 text-sm">
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <DownloadSimple size={16} />
-            <span>Import</span>
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium"
-          >
-            <Export size={16} />
-            <span>Export</span>
-          </button>
-        </div>
-      </div>
-      <div className="bg-white px-6 py-4 rounded-lg shadow-md shadow-brand-cyan-500 min-h-[36rem]">
-        <div className="flex justify-between mb-3">
-          <h2 className="text-lg font-semibold">Action Summary</h2>
-          <div className="flex gap-8">
-            <div>
-              Showing{" "}
-              <select className="bg-white border border-gray-300 px-2 py-1 w-16">
-                <option>All</option>
-              </select>{" "}
-              entries
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <CaretLeft size={16} />
-              <CaretDoubleLeft size={16} />
-              <button
-                type="button"
-                className="bg-brand-cyan-500 text-white w-6 h-6 rounded-md"
-              >
-                1
-              </button>
-              <button type="button" className="text-gray-400">
-                2
-              </button>
-              <button type="button" className="text-gray-400">
-                3
-              </button>
-              <button type="button" className="text-gray-400">
-                4
-              </button>
-              <span className="text-gray-400">...</span>
-              <button type="button" className="text-gray-400">
-                10
-              </button>
-              <CaretRight size={16} />
-              <CaretDoubleRight size={16} />
-            </div>
-          </div>
-        </div>
-        {/* Table */}
-        <div>
-          {/* Header */}
-          <div className="grid grid-cols-6 border-y border-gray-300 font-medium">
-            <div className="uppercase px-4 py-2">Name</div>
-            <div className="uppercase px-4 py-2">IP Address</div>
-            <div className="uppercase px-4 py-2">Role</div>
-            <div className="uppercase px-4 py-2">Date & Time</div>
-            <div className="uppercase px-4 py-2">Action</div>
-            <div className="uppercase px-4 py-2">Description</div>
-          </div>
-          {/* Body */}
+    <>
+      <Table.Filters>
+        <div className="grid sm:grid-cols-[1fr_auto_1fr] gap-3">
           <div>
-            {activities.map((activity) => (
-              <div
-                key={activity.id}
-                className="grid grid-cols-6 border-b border-gray-300 text-sm"
-              >
-                <div className="px-4 py-2 flex items-center gap-1">
-                  <UserCircle size={24} />
-                  <span>{activity.displayName}</span>
-                </div>
-                <div className="px-4 py-2 flex items-center">
-                  {activity.ipAddress}
-                </div>
-                <div className="px-4 py-2 flex items-center">
-                  {activity.role}
-                </div>
-                <div className="px-4 py-2 flex items-center">
-                  {activity.timestamp}
-                </div>
-                <div className="px-4 py-2 flex items-center">
-                  <div className="px-2 py-1 bg-yellow-500 text-white rounded-md">
-                    {activity.action}
-                  </div>
-                </div>
-                <div className="px-4 py-2 flex items-center gap-2">
-                  <div>Updated package</div>
-                  <button type="button">
-                    <span className="sr-only">Actions</span>
-                    <DotsThree size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
+            <Table.SearchForm
+              updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
+              resetPageNumber={resetPageNumber}
+            />
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
+            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
+              <option>Status</option>
+            </select>
+            <select
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+              value={visibleArchiveStatus}
+              onChange={(e) => {
+                if (e.currentTarget.value === "ARCHIVED")
+                  setVisibleArchiveStatus("ARCHIVED")
+                else setVisibleArchiveStatus("NOT_ARCHIVED")
+              }}
+            >
+              <option value="NOT_ARCHIVED">Not Archived</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
+            <button
+              type="button"
+              className="bg-white border border-gray-300 px-3 py-1.5 w-full sm:w-auto rounded-md text-gray-400 font-medium"
+            >
+              Clear Filter
+            </button>
+          </div>
+          <div className="flex items-start justify-end">
+            <Table.ExportButton records={paginatedItems} />
           </div>
         </div>
-      </div>
+      </Table.Filters>
+      <Table.Content>
+        <div className="flex justify-end mb-3">
+          <Table.Pagination
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            pageCount={pageCount}
+            isOnFirstPage={isOnFirstPage}
+            isOnLastPage={isOnLastPage}
+            updatePageSize={updatePageSize}
+            gotoFirstPage={gotoFirstPage}
+            gotoLastPage={gotoLastPage}
+            gotoPage={gotoPage}
+            gotoNextPage={gotoNextPage}
+            gotoPreviousPage={gotoPreviousPage}
+          />
+        </div>
+        <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min overflow-auto">
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            ID
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            User
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Date & Time
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Verb
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Entity
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Action
+          </div>
+          {paginatedItems.length === 0 ? (
+            <div className="text-center pt-4 col-span-5">
+              No activity found.
+            </div>
+          ) : (
+            <>
+              {paginatedItems.map((item) => (
+                <TableItem key={item.id} item={item} />
+              ))}
+            </>
+          )}
+        </div>
+      </Table.Content>
+    </>
+  )
+}
+
+export default function ActivitiesPage() {
+  const { user, role } = useSession()
+  const {
+    status,
+    data: activities,
+    error,
+  } = api.activity.getAll.useQuery(undefined, {
+    enabled: user !== null && role === "ADMIN",
+  })
+
+  return (
+    <AdminLayout title="Packages">
+      <Page.Header>
+        <h1 className="text-2xl font-black [color:_#00203F] mb-2">
+          Activities
+        </h1>
+      </Page.Header>
+      {status === "loading" && (
+        <div className="flex justify-center pt-4">
+          <LoadingSpinner />
+        </div>
+      )}
+      {status === "error" && (
+        <div className="flex justify-center pt-4">
+          An error occured: {error.message}
+        </div>
+      )}
+      {status === "success" && <ActivitiesTable items={activities} />}
     </AdminLayout>
   )
 }

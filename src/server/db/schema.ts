@@ -9,6 +9,8 @@ import {
   SUPPORTED_VEHICLE_TYPES,
   SUPPORTED_SHIPMENT_TYPES,
   SUPPORTED_SHIPMENT_PACKAGE_STATUSES,
+  SUPPORTED_ACTIVITY_VERB,
+  SUPPORTED_ACTIVITY_ENTITY,
 } from "../../utils/constants"
 import {
   bigint,
@@ -314,25 +316,11 @@ export const packageStatusLogs = mysqlTable("package_status_logs", {
 
 export const activities = mysqlTable("activities", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  description: varchar("description", {
-    length: 5000,
+  verb: mysqlEnum("verb", SUPPORTED_ACTIVITY_VERB).notNull(),
+  entity: mysqlEnum("entity", SUPPORTED_ACTIVITY_ENTITY).notNull(),
+  createdAt: varchar("created_at", {
+    length: 255,
   }).notNull(),
-  tableName: varchar("table_name", {
-    length: 64,
-  }).notNull(),
-  fieldName: varchar("field_name", {
-    length: 64,
-  }).notNull(),
-  rowKey: bigint("row_key", {
-    mode: "number",
-  }).notNull(),
-  oldValue: text("old_value").notNull(),
-  newValue: text("new_value").notNull(),
-  createdAt: timestamp("created_at", {
-    mode: "date",
-  })
-    .notNull()
-    .defaultNow(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
 })

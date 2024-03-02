@@ -127,3 +127,28 @@ export function getDescriptionForNewShipmentStatusLog(
 
 export const SUPPORTED_VEHICLE_TYPES = ["TRUCK", "VAN"] as const
 export type VehicleType = (typeof SUPPORTED_VEHICLE_TYPES)[number]
+
+export const SUPPORTED_ACTIVITY_VERB = [
+  "CREATE",
+  "READ",
+  "UPDATE",
+  "DELETE",
+] as const
+export type ActivityVerb = (typeof SUPPORTED_ACTIVITY_VERB)[number]
+
+export const SUPPORTED_ACTIVITY_ENTITY = [
+  "PACKAGE",
+  "SHIPMENT_PACKAGE",
+  "SHIPMENT_PACKAGE_OTP",
+  "SHIPMENT",
+  "SHIPMENT_LOCATION",
+  "INCOMING_SHIPMENT",
+  "DELIVERY_SHIPMENT",
+  "TRANSFER_FORWARDER_SHIPMENT",
+  "TRANSFER_WAREHOUSE_SHIPMENT",
+  "USER",
+  "VEHICLE",
+  "WAREHOUSE",
+  "PACKAGE_CATEGORY",
+] as const
+export type ActivityEntity = (typeof SUPPORTED_ACTIVITY_ENTITY)[number]
