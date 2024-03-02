@@ -2,11 +2,9 @@
 
 import { AdminLayout } from "@/app/admin/auth"
 import { useSession } from "@/hooks/session"
-import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Page from "@/components/page"
 import * as Table from "@/components/table"
 import { usePaginatedItems } from "@/hooks/paginated-items"
