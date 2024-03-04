@@ -12,7 +12,6 @@ import { TRPCError } from "@trpc/server"
 import { createCustomToken, getUserByEmail } from "@/server/auth"
 import { isoBase64URL, isoUint8Array } from "@simplewebauthn/server/helpers"
 import { serverEnv } from "@/server/env.mjs"
-import { getBaseUrl } from "@/utils/base-url"
 
 export const webauthnRouter = router({
   getCredentials: protectedProcedure.query(async ({ ctx }) => {
@@ -34,7 +33,7 @@ export const webauthnRouter = router({
     }),
   generateRegistrationOptions: protectedProcedure.mutation(async ({ ctx }) => {
     const credentials = await ctx.db.select().from(webauthnCredentials)
-    const url = new URL(getBaseUrl())
+    const url = new URL(serverEnv.APP_ORIGIN)
     const options = await generateRegistrationOptions({
       rpID: url.hostname,
       rpName: serverEnv.APP_NAME,
@@ -84,7 +83,7 @@ export const webauthnRouter = router({
         })
       }
 
-      const url = new URL(getBaseUrl())
+      const url = new URL(serverEnv.APP_ORIGIN)
       const { verified, registrationInfo: info } =
         await verifyRegistrationResponse({
           response: input.response,
@@ -183,7 +182,7 @@ export const webauthnRouter = router({
           message: "No challenge found for user.",
         })
 
-      const url = new URL(getBaseUrl())
+      const url = new URL(serverEnv.APP_ORIGIN)
       const { verified, authenticationInfo: info } =
         await verifyAuthenticationResponse({
           response: input.response,

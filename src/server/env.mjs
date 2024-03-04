@@ -4,6 +4,7 @@ import { z } from "zod"
 export const serverEnv = createEnv({
   server: {
     APP_NAME: z.string().min(1),
+    APP_ORIGIN: z.string().min(1),
     APP_ENV: z.union([z.literal("development"), z.literal("production")]),
     DEV_DATABASE_URL: z.string().min(1).url(),
     DEV_DATABASE_MODE: z.union([
@@ -30,6 +31,7 @@ export const serverEnv = createEnv({
   },
   runtimeEnv: {
     APP_NAME: process.env.APP_NAME,
+    APP_ORIGIN: process.env.APP_ORIGIN,
     APP_ENV: process.env.APP_ENV,
     DEV_DATABASE_URL: process.env.DEV_DATABASE_URL,
     DEV_DATABASE_MODE: process.env.DEV_DATABASE_MODE,
