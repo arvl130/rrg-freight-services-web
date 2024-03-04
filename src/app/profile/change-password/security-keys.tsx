@@ -1,6 +1,7 @@
 import type { WebauthnCredential } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { startRegistration } from "@simplewebauthn/browser"
+import toast from "react-hot-toast"
 
 function CredentialsList(props: { credentials: WebauthnCredential[] }) {
   const apiUtils = api.useUtils()
@@ -54,12 +55,19 @@ export function SecurityKeysSection() {
           response,
         })
       },
+      onError: ({ message }) => {
+        toast.error(message)
+      },
     })
 
   const verifyRegistrationResponseMutation =
     api.webauthn.verifyRegistrationResponse.useMutation({
       onSuccess: () => {
         credentialsQuery.refetch()
+        toast.success("Authenticator registered.")
+      },
+      onError: ({ message }) => {
+        toast.error(message)
       },
     })
 
