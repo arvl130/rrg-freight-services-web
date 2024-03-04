@@ -15,7 +15,7 @@ function CredentialsList(props: { credentials: WebauthnCredential[] }) {
     return <div>No authenticators registered.</div>
 
   return (
-    <div>
+    <div className="space-y-3">
       {props.credentials.map((credential) => (
         <div key={credential.id} className="">
           <div className="overflow-hidden text-ellipsis bg-rose-500 px-4 py-2 rounded-t-lg text-white font-semibold">
