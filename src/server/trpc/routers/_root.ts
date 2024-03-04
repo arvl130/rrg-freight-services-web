@@ -9,6 +9,7 @@ import { shipmentRouter } from "./shipment/shipment"
 import { packageCategoriesRouter } from "./package-categories"
 import { pushSubscriptionsRouter } from "./push-subscriptions"
 import { activityRouter } from "./activity"
+import { webauthnRouter } from "./webauthn"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -31,6 +32,7 @@ export const rootRouter = router({
   packageCategories: packageCategoriesRouter,
   pushSubscriptions: pushSubscriptionsRouter,
   activity: activityRouter,
+  webauthn: webauthnRouter,
 })
 
 export type RootRouter = typeof rootRouter

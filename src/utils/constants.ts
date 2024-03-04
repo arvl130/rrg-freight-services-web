@@ -152,3 +152,13 @@ export const SUPPORTED_ACTIVITY_ENTITY = [
   "PACKAGE_CATEGORY",
 ] as const
 export type ActivityEntity = (typeof SUPPORTED_ACTIVITY_ENTITY)[number]
+
+export const SUPPORTED_AUTHENTICATOR_TRANSPORT_TYPES = [
+  "ble",
+  "cable",
+  "hybrid",
+  "internal",
+  "nfc",
+  "smart-card",
+  "usb",
+] as const

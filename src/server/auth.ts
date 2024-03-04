@@ -24,6 +24,10 @@ const app =
 
 const auth = getAuth(app)
 
+export function createCustomToken(uid: string) {
+  return auth.createCustomToken(uid)
+}
+
 export function getUserByEmail(email: string) {
   return auth.getUserByEmail(email)
 }

@@ -42,7 +42,6 @@ export function UpdatePasswordForm({ user }: { user: User }) {
 
   return (
     <form
-      className="px-6 pt-4 pb-6 rounded-lg bg-white"
       onSubmit={handleSubmit(async (formData) => {
         setIsUpdating(true)
         try {
@@ -59,9 +58,7 @@ export function UpdatePasswordForm({ user }: { user: User }) {
         }
       })}
     >
-      <div>
-        <h2 className="font-semibold pb-5">Change Password</h2>
-      </div>
+      <h2 className="font-semibold mb-3">Change Password</h2>
       <div className="grid grid-rows-1">
         <div className="mb-3">
           <label className="block text-sm	text-gray-500 mb-1 ">

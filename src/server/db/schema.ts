@@ -334,3 +334,18 @@ export const pushSubscriptions = mysqlTable("push_subscriptions", {
   keyAuth: text("key_auth").notNull(),
   keyP256dh: text("key_p256dh").notNull(),
 })
+
+export const webauthnChallenges = mysqlTable("webauthn_challenges", {
+  userId: varchar("user_id", { length: 28 }).primaryKey(),
+  challenge: text("challenge").notNull(),
+})
+
+export const webauthnCredentials = mysqlTable("webauthn_credentials", {
+  id: varchar("id", {
+    length: 255,
+  }).primaryKey(),
+  userId: varchar("user_id", { length: 28 }).notNull(),
+  key: text("key").notNull(),
+  transports: text("transports").notNull(),
+  counter: int("counter").notNull(),
+})

@@ -1,21 +1,21 @@
 "use client"
 
+import { api } from "@/utils/api"
+import { startAuthentication } from "@simplewebauthn/browser"
 import Image from "next/image"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
+import { getAuth, signInWithCustomToken } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { FirebaseError } from "firebase/app"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { useSession } from "@/hooks/session"
 import { useRouter } from "next/navigation"
-import { Eye } from "@phosphor-icons/react/dist/ssr/Eye"
-import { EyeSlash } from "@phosphor-icons/react/dist/ssr/EyeSlash"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
 import { SkeletonGenericLayout } from "@/components/generic-layout"
-import { LoginPageHead } from "./login-page-head"
+import { LoginPageHead } from "../login-page-head"
 
 const formSchema = z.object({
   email: z
@@ -26,14 +26,71 @@ const formSchema = z.object({
     .email({
       message: "This email has an invalid format.",
     }),
-  password: z.string().min(1, {
-    message: "Please enter your password.",
-  }),
 })
 
 type FormType = z.infer<typeof formSchema>
 
-export default function LoginPage() {
+export default function Page() {
+  const generateAuthenticationOptionsMutation =
+    api.webauthn.generateAuthenticationOptions.useMutation({
+      onSuccess: async (options) => {
+        const response = await startAuthentication(options)
+        verifyAuthenticationResponseMutation.mutate({
+          response,
+        })
+      },
+    })
+
+  const verifyAuthenticationResponseMutation =
+    api.webauthn.verifyAuthenticationResponse.useMutation({
+      onSuccess: async (customToken) => {
+        try {
+          setIsSigningIn(true)
+
+          const auth = getAuth()
+          await signInWithCustomToken(auth, customToken)
+        } catch (e) {
+          if (e instanceof FirebaseError) {
+            if (
+              e.code === "auth/invalid-credential" ||
+              e.code === "auth/invalid-login-credentials" ||
+              e.code === "auth/user-not-found"
+            ) {
+              setSignInError({
+                title: "Invalid credentials",
+                message:
+                  "The credentials you have used are invalid. Please try again.",
+              })
+            } else if (e.code === "auth/too-many-requests") {
+              setSignInError({
+                title: "Too many requests",
+                message:
+                  "Too many invalid login attempts. Please try again later.",
+              })
+            } else {
+              setSignInError({
+                title: "Unknown Firebase error occured",
+                message:
+                  "An unknown error with Firebase occured. Please check the Console for more information.",
+              })
+
+              console.log("Firebase error occured:", e)
+            }
+          } else {
+            setSignInError({
+              title: "Unknown error occured",
+              message:
+                "An unknown error occured. Please check the Console for more information.",
+            })
+
+            console.log("Unknown error occured:", e)
+          }
+        } finally {
+          setIsSigningIn(false)
+        }
+      },
+    })
+
   const { user, role, isLoading } = useSession()
   const router = useRouter()
 
@@ -46,7 +103,6 @@ export default function LoginPage() {
   }, [router, isLoading, user, role])
 
   const {
-    reset,
     register,
     handleSubmit,
     formState: { errors },
@@ -59,8 +115,6 @@ export default function LoginPage() {
     title: string
     message: string
   }>(null)
-
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
   if (isLoading)
     return (
@@ -120,79 +174,9 @@ export default function LoginPage() {
             </div>
             <form
               onSubmit={handleSubmit(async (formData) => {
-                try {
-                  setIsSigningIn(true)
-                  const auth = getAuth()
-                  await signInWithEmailAndPassword(
-                    auth,
-                    formData.email,
-                    formData.password,
-                  )
-                } catch (e) {
-                  if (e instanceof FirebaseError) {
-                    if (
-                      e.code === "auth/invalid-credential" ||
-                      e.code === "auth/invalid-login-credentials" ||
-                      e.code === "auth/wrong-password" ||
-                      e.code === "auth/user-not-found"
-                    ) {
-                      setSignInError({
-                        title: "Invalid email or password",
-                        message:
-                          "The email or password you have entered is incorrect. Please try again.",
-                      })
-
-                      reset((originalValues) => ({
-                        email: originalValues.email,
-                        password: "",
-                      }))
-                      return
-                    }
-
-                    if (e.code === "auth/too-many-requests") {
-                      setSignInError({
-                        title: "Too many requests",
-                        message:
-                          "Too many invalid login attempts. Please try again later.",
-                      })
-
-                      reset((originalValues) => ({
-                        email: originalValues.email,
-                        password: "",
-                      }))
-                      return
-                    }
-
-                    setSignInError({
-                      title: "Unknown Firebase error occured",
-                      message:
-                        "An unknown error with Firebase occured. Please check the Console for more information.",
-                    })
-
-                    reset((originalValues) => ({
-                      email: originalValues.email,
-                      password: "",
-                    }))
-
-                    console.log("Firebase error occured:", e)
-                    return
-                  }
-
-                  setSignInError({
-                    title: "Unknown error occured",
-                    message:
-                      "An unknown error occured. Please check the Console for more information.",
-                  })
-
-                  reset((originalValues) => ({
-                    email: originalValues.email,
-                    password: "",
-                  }))
-
-                  console.log("Unknown error occured:", e)
-                } finally {
-                  setIsSigningIn(false)
-                }
+                generateAuthenticationOptionsMutation.mutate({
+                  email: formData.email,
+                })
               })}
             >
               <div>
@@ -210,43 +194,6 @@ export default function LoginPage() {
                   </p>
                 )}
               </div>
-              <div className="mt-4">
-                <label className="font-medium block mb-1">Password</label>
-                <div className="relative">
-                  <input
-                    type={isPasswordVisible ? "text" : "password"}
-                    className="text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-                    {...register("password", {
-                      onChange: () => setSignInError(null),
-                    })}
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-2.5"
-                    onClick={() =>
-                      setIsPasswordVisible(
-                        (currentIsPasswordVisible) => !currentIsPasswordVisible,
-                      )
-                    }
-                  >
-                    {isPasswordVisible ? (
-                      <Eye size={20} className="text-gray-600" />
-                    ) : (
-                      <EyeSlash size={20} className="text-gray-600" />
-                    )}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="text-red-600 mt-1 text-sm">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
-              <div className="text-right mt-1">
-                <Link href="/forgot-password" className="text-sm">
-                  Forgot Password?
-                </Link>
-              </div>
               {signInError && (
                 <p className="text-red-600 text-center mt-3">
                   {signInError.message}
@@ -254,7 +201,11 @@ export default function LoginPage() {
               )}
               <button
                 type="submit"
-                disabled={isSigningIn}
+                disabled={
+                  generateAuthenticationOptionsMutation.isLoading ||
+                  verifyAuthenticationResponseMutation.isLoading ||
+                  isSigningIn
+                }
                 className="font-semibold w-full mt-4 px-8 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-blue-500 rounded-md hover:bg-blue-400 focus:outline-none focus:bg-blue-400 disabled:bg-blue-300"
               >
                 Sign in
@@ -266,7 +217,7 @@ export default function LoginPage() {
               <CaretLeft height={12} /> Back to Homepage
             </Link>
 
-            <Link href="/login/authenticator">Use an Authenticator</Link>
+            <Link href="/login">Sign in with Email</Link>
           </div>
         </section>
       </main>
