@@ -23,7 +23,7 @@ export function DomesticSideBar(props: { isMinimized: boolean }) {
         className={`
         group text-sm transition-all ${
           props.isMinimized ? "w-16 hover:w-64" : "w-64"
-        } bg-brand-cyan-500 grid grid-rows-[6rem_1fr_auto] pb-3 h-screen sticky top-0 bottom-0
+        } bg-brand-cyan-500 grid grid-rows-[6rem_1fr_auto] pb-3 h-dvh sticky top-0 bottom-0
       `}
       >
         <div className="grid grid-cols-[4rem_1fr] items-center w-full">
@@ -87,7 +87,7 @@ export function DomesticSideBar(props: { isMinimized: boolean }) {
 export function SkeletonDomesticLayout() {
   return (
     <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
-      <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
+      <nav className="bg-brand-cyan-500 h-dvh sticky top-0 bottom-0"></nav>
       <main className="bg-brand-cyan-100"></main>
     </div>
   )
@@ -135,7 +135,7 @@ export function DomesticLayout({ title, children }: LayoutProps) {
           name="description"
           content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
         />
-        <main className="min-h-screen bg-brand-cyan-100"></main>
+        <main className="min-h-dvh bg-brand-cyan-100"></main>
       </>
     )
 

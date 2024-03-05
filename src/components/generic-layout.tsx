@@ -23,7 +23,7 @@ import Link from "next/link"
 export function SkeletonGenericLayout() {
   return (
     <div className="grid grid-cols-[4rem_minmax(0,_1fr)]">
-      <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
+      <nav className="bg-brand-cyan-500 h-dvh sticky top-0 bottom-0"></nav>
       <main className="bg-brand-cyan-100"></main>
     </div>
   )
@@ -42,9 +42,7 @@ function GenericSidebar(props: { isMinimized: boolean }) {
   if (role === "DRIVER")
     return <DriverSideBar isMinimized={props.isMinimized} />
 
-  return (
-    <nav className="bg-brand-cyan-500 h-screen sticky top-0 bottom-0"></nav>
-  )
+  return <nav className="bg-brand-cyan-500 h-dvh sticky top-0 bottom-0"></nav>
 }
 
 export function GenericHeader({
@@ -157,7 +155,7 @@ export function GenericLayout({ title, children }: LayoutProps) {
           name="description"
           content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
         />
-        <main className="min-h-screen bg-brand-cyan-100"></main>
+        <main className="min-h-dvh bg-brand-cyan-100"></main>
       </>
     )
 

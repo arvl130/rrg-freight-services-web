@@ -1,3 +1,3 @@
 export function SkeletonLoginPage() {
-  return <main className="min-h-screen bg-brand-cyan-450" />
+  return <main className="min-h-dvh bg-brand-cyan-450" />
 }

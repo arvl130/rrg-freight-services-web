@@ -22,7 +22,7 @@ export function OverseasSideBar(props: { isMinimized: boolean }) {
         className={`
         group text-sm transition-all ${
           props.isMinimized ? "w-16 hover:w-64" : "w-64"
-        } bg-brand-cyan-500 grid grid-rows-[6rem_1fr_auto] pb-3 h-screen sticky top-0 bottom-0
+        } bg-brand-cyan-500 grid grid-rows-[6rem_1fr_auto] pb-3 h-dvh sticky top-0 bottom-0
       `}
       >
         <div className="grid grid-cols-[4rem_1fr] items-center w-full">
@@ -119,7 +119,7 @@ export function OverseasLayout({ title, children }: LayoutProps) {
           name="description"
           content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
         />
-        <main className="min-h-screen bg-brand-cyan-100"></main>
+        <main className="min-h-dvh bg-brand-cyan-100"></main>
       </>
     )
 

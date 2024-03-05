@@ -124,7 +124,7 @@ export default function Page() {
           name="description"
           content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
         />
-        <main className="min-h-screen bg-brand-cyan-100"></main>
+        <main className="min-h-dvh bg-brand-cyan-100"></main>
       </>
     )
 
@@ -143,7 +143,7 @@ export default function Page() {
   return (
     <>
       <LoginPageHead />
-      <main className="min-h-screen bg-brand-cyan-450 px-3 py-24 pb-3 relative">
+      <main className="min-h-dvh bg-brand-cyan-450 px-3 py-24 pb-3 relative">
         <div className="absolute inset-0 h-full sm:grid grid-cols-2 hidden">
           <div className="flex justify-center items-end">
             <Image
