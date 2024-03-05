@@ -19,7 +19,7 @@ function CredentialsList(props: { credentials: WebauthnCredential[] }) {
       {props.credentials.map((credential) => (
         <div key={credential.id} className="">
           <div className=" bg-rose-500 px-4 py-2 rounded-t-lg text-white text-center font-semibold">
-            {credential.displayName}
+            {credential.deviceName}
           </div>
           <div className="border-x border-gray-300 px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap">
             <span className="font-semibold">ID:</span>{" "}
