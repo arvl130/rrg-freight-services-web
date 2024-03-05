@@ -9,7 +9,7 @@ import toast from "react-hot-toast"
 import { z } from "zod"
 
 const formSchema = z.object({
-  displayName: z.string().min(1).max(255),
+  deviceName: z.string().min(1).max(255),
 })
 
 type FormSchema = z.infer<typeof formSchema>
@@ -56,7 +56,7 @@ function RegisterForm({ onClose }: { onClose: () => void }) {
               const response = await startRegistration(options)
               verifyRegistrationResponseMutation.mutate({
                 response,
-                displayName: formData.displayName,
+                deviceName: formData.deviceName,
               })
             } finally {
               setIsRegistering(false)
@@ -66,14 +66,16 @@ function RegisterForm({ onClose }: { onClose: () => void }) {
       )}
     >
       <div className="grid mb-3">
-        <label className="font-medium mb-1">Display Name</label>
+        <label className="font-medium mb-2 text-gray-600">
+          Enter a device name that is easy to remember.
+        </label>
         <input
           type="text"
           className="px-2 py-1 border border-gray-300"
-          {...register("displayName")}
+          {...register("deviceName")}
         />
-        {errors.displayName && (
-          <div className="mt-1 text-red-500">{errors.displayName.message}.</div>
+        {errors.deviceName && (
+          <div className="mt-1 text-red-500">{errors.deviceName.message}.</div>
         )}
       </div>
 

@@ -344,7 +344,7 @@ export const webauthnCredentials = mysqlTable("webauthn_credentials", {
   id: varchar("id", {
     length: 255,
   }).primaryKey(),
-  displayName: varchar("display_name", {
+  deviceName: varchar("device_name", {
     length: 100,
   }).notNull(),
   userId: varchar("user_id", { length: 28 }).notNull(),
