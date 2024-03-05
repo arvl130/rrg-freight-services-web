@@ -2,7 +2,7 @@ import { api } from "@/utils/api"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
-import { startRegistration } from "@simplewebauthn/browser"
+import { WebAuthnError, startRegistration } from "@simplewebauthn/browser"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
@@ -58,6 +58,15 @@ function RegisterForm({ onClose }: { onClose: () => void }) {
                 response,
                 deviceName: formData.deviceName,
               })
+            } catch (e) {
+              if (e instanceof WebAuthnError) {
+                toast.error(e.message)
+              } else if (e instanceof Error) {
+                toast.error(e.message)
+              } else {
+                toast.error("Unknown error occured.")
+                console.log("Unknown error occured:", e)
+              }
             } finally {
               setIsRegistering(false)
             }
