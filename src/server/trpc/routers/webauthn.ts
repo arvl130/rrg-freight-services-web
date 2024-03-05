@@ -69,6 +69,7 @@ export const webauthnRouter = router({
     .input(
       z.object({
         response: z.any(),
+        displayName: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -101,6 +102,7 @@ export const webauthnRouter = router({
       await ctx.db.insert(webauthnCredentials).values({
         id: isoUint8Array.toHex(info.credentialID),
         userId: ctx.user.uid,
+        displayName: input.displayName,
         key: Buffer.from(info.credentialPublicKey).toString("hex"),
         counter: info.counter,
         transports: JSON.stringify(

@@ -1,7 +1,7 @@
 import type { WebauthnCredential } from "@/server/db/entities"
 import { api } from "@/utils/api"
-import { startRegistration } from "@simplewebauthn/browser"
-import toast from "react-hot-toast"
+import { useState } from "react"
+import { RegisterModal } from "./register-authenticator-modal"
 
 function CredentialsList(props: { credentials: WebauthnCredential[] }) {
   const apiUtils = api.useUtils()
@@ -18,8 +18,12 @@ function CredentialsList(props: { credentials: WebauthnCredential[] }) {
     <div className="space-y-3">
       {props.credentials.map((credential) => (
         <div key={credential.id} className="">
-          <div className="overflow-hidden text-ellipsis bg-rose-500 px-4 py-2 rounded-t-lg text-white font-semibold">
-            {credential.id}
+          <div className=" bg-rose-500 px-4 py-2 rounded-t-lg text-white text-center font-semibold">
+            {credential.displayName}
+          </div>
+          <div className="border-x border-gray-300 px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap">
+            <span className="font-semibold">ID:</span>{" "}
+            <span>{credential.id}</span>
           </div>
           <div className="border-x border-gray-300 px-4 py-2">
             <span className="font-semibold">Transport:</span>{" "}
@@ -47,29 +51,7 @@ function CredentialsList(props: { credentials: WebauthnCredential[] }) {
 
 export function SecurityKeysSection() {
   const credentialsQuery = api.webauthn.getCredentials.useQuery()
-  const generateRegistrationOptionsMutation =
-    api.webauthn.generateRegistrationOptions.useMutation({
-      onSuccess: async (options) => {
-        const response = await startRegistration(options)
-        verifyRegistrationResponseMutation.mutate({
-          response,
-        })
-      },
-      onError: ({ message }) => {
-        toast.error(message)
-      },
-    })
-
-  const verifyRegistrationResponseMutation =
-    api.webauthn.verifyRegistrationResponse.useMutation({
-      onSuccess: () => {
-        credentialsQuery.refetch()
-        toast.success("Authenticator registered.")
-      },
-      onError: ({ message }) => {
-        toast.error(message)
-      },
-    })
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
   return (
     <section className="mt-6">
@@ -84,17 +66,17 @@ export function SecurityKeysSection() {
       <button
         type="button"
         className="mt-3 px-4 py-2 rounded-md bg-green-500 hover:bg-green-400 disabled:bg-green-300 transition-colors text-white font-medium w-full"
-        disabled={
-          credentialsQuery.isLoading ||
-          generateRegistrationOptionsMutation.isLoading ||
-          verifyRegistrationResponseMutation.isLoading
-        }
         onClick={() => {
-          generateRegistrationOptionsMutation.mutate()
+          setIsModalVisible(true)
         }}
       >
-        Register Authenticator
+        Register an Authenticator
       </button>
+
+      <RegisterModal
+        isOpen={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+      />
     </section>
   )
 }
