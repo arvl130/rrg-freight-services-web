@@ -76,7 +76,9 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
   await db.insert(packageStatusLogs).values({
     packageId: id,
     createdById: session.user.uid,
-    description: getDescriptionForNewPackageStatusLog("DELIVERED"),
+    description: getDescriptionForNewPackageStatusLog({
+      status: "DELIVERED",
+    }),
     status: "DELIVERED",
   })
 

@@ -211,7 +211,6 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
               shipmentPackageStatus: "IN_TRANSIT" as const,
               packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
               packageStatus: "DELIVERING" as const,
-              description: getDescriptionForNewPackageStatusLog("DELIVERING"),
               createdAt: new Date(),
               createdById: auth.currentUser!.uid,
             })

@@ -92,24 +92,45 @@ export type UsersTableItemScreen =
 export const LEAFLET_DEFAULT_ZOOM_LEVEL = 16
 export const REGEX_ONE_OR_MORE_DIGITS = /^\d+$/
 
-// FIXME: This should be more dynamic and include origin or destination hub
-// information, as well as who's responsible for a specific action or status
-// change.
-const packageStatusLogWithDescriptions: Record<PackageStatus, string> = {
-  INCOMING: "Package is in transit to one of our warehouse.",
-  IN_WAREHOUSE: "Package has been received at one of our warehouse.",
-  SORTING: "Package is being sorted.",
-  TRANSFERRING_WAREHOUSE: "Package is being transferred to another warehouse.",
-  DELIVERING: "Package is out for delivery.",
-  DELIVERED: "Package has been delivered.",
-  TRANSFERRING_FORWARDER: "Package is being transferred to another forwarder.",
-  TRANSFERRED_FORWARDER: "Package has been transferred to another forwarder.",
-}
+type NewPackageStatusDescriptionOptions =
+  | {
+      status: "INCOMING" | "SORTING" | "DELIVERING" | "DELIVERED"
+    }
+  | {
+      status: "IN_WAREHOUSE" | "TRANSFERRING_WAREHOUSE"
+      warehouseName: string
+    }
+  | {
+      status: "TRANSFERRING_FORWARDER" | "TRANSFERRED_FORWARDER"
+      forwarderName: string
+    }
 
 export function getDescriptionForNewPackageStatusLog(
-  packageStatus: PackageStatus,
+  options: NewPackageStatusDescriptionOptions,
 ) {
-  return packageStatusLogWithDescriptions[packageStatus] ?? ""
+  if (options.status === "INCOMING")
+    return "Your package is in transit to our warehouse."
+
+  if (options.status === "IN_WAREHOUSE")
+    return `Your package has been received at our warehouse (${options.warehouseName}).`
+
+  if (options.status === "SORTING") return "Your package is being sorted."
+
+  if (options.status === "TRANSFERRING_WAREHOUSE")
+    return `Your package is being transferred to another warehouse (${options.warehouseName}).`
+
+  if (options.status === "DELIVERING")
+    return "Your package is out for delivery."
+
+  if (options.status === "DELIVERED") return "Your package has been delivered."
+
+  if (options.status === "TRANSFERRING_FORWARDER")
+    return `Your package is being transferred to another forwarder (${options.forwarderName}).`
+
+  if (options.status === "TRANSFERRED_FORWARDER")
+    return `Your package has been transferred to another forwarder (${options.forwarderName}).`
+
+  return ""
 }
 
 const shipmentStatusLogWithDescriptions: Record<ShipmentStatus, string> = {

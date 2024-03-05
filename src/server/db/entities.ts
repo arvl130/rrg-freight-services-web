@@ -1,3 +1,6 @@
+import type { MySql2Database } from "drizzle-orm/mysql2"
+import type * as schema from "@/server/db/schema"
+
 import type {
   users,
   shipments,
@@ -84,3 +87,5 @@ export type NewPushSubscription = typeof pushSubscriptions.$inferInsert
 
 export type WebauthnCredential = typeof webauthnCredentials.$inferSelect
 export type NewWebauthnCredential = typeof webauthnCredentials.$inferInsert
+
+export type DbWithEntities = MySql2Database<typeof schema>

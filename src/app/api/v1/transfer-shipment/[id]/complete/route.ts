@@ -1,7 +1,4 @@
-import {
-  getServerSessionFromFetchRequest,
-  getServerSessionFromNextRequest,
-} from "@/server/auth"
+import { getServerSessionFromFetchRequest } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packageStatusLogs,
@@ -9,10 +6,10 @@ import {
   shipmentPackages,
   forwarderTransferShipments,
   packages,
+  users,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { and, eq, inArray } from "drizzle-orm"
-import type { NextApiRequest, NextApiResponse } from "next"
 import { ZodError, z } from "zod"
 
 const getLocationsSchema = z.object({
@@ -38,10 +35,18 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
       imageUrl: body.imageUrl,
     })
 
-    const transferShipmentResults = await db
+    const transferShipmentResultsPreformatted = await db
       .select()
       .from(forwarderTransferShipments)
+      .innerJoin(users, eq(forwarderTransferShipments.sentToAgentId, users.id))
       .where(eq(forwarderTransferShipments.shipmentId, transferShipmentId))
+
+    const transferShipmentResults = transferShipmentResultsPreformatted.map(
+      ({ forwarder_transfer_shipments, users }) => ({
+        ...forwarder_transfer_shipments,
+        agentDisplayName: users.displayName,
+      }),
+    )
 
     if (transferShipmentResults.length === 0) {
       return Response.json(
@@ -85,9 +90,10 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
       ({ packageId }) => ({
         packageId,
         createdById: session.user.uid,
-        description: getDescriptionForNewPackageStatusLog(
-          "TRANSFERRED_FORWARDER",
-        ),
+        description: getDescriptionForNewPackageStatusLog({
+          status: "TRANSFERRED_FORWARDER",
+          forwarderName: transferShipment.agentDisplayName,
+        }),
         status: "TRANSFERRED_FORWARDER" as const,
         createdAt: new Date(),
       }),

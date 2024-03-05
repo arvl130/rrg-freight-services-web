@@ -1,7 +1,4 @@
-import {
-  getServerSessionFromFetchRequest,
-  getServerSessionFromNextRequest,
-} from "@/server/auth"
+import { getServerSessionFromFetchRequest } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packageStatusLogs, packages } from "@/server/db/schema"
 import type { PackageStatus } from "@/utils/constants"
@@ -10,15 +7,37 @@ import {
   SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"
 import { eq } from "drizzle-orm"
-import type { ResultSetHeader } from "mysql2"
 import { ZodError, z } from "zod"
 
-const inputSchema = z.object({
-  packageId: z.string(),
-  status: z.custom<PackageStatus>((val) =>
-    SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
-  ),
-})
+const inputSchema = z
+  .object({
+    packageId: z.string(),
+    status: z.custom<PackageStatus>((val) =>
+      SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
+    ),
+    warehouseName: z.string().optional(),
+    forwarderName: z.string().optional(),
+  })
+  .superRefine(({ status, warehouseName }, ctx) => {
+    if (
+      (status === "IN_WAREHOUSE" || status === "TRANSFERRING_WAREHOUSE") &&
+      typeof warehouseName === "undefined"
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Warehouse name must be provided when setting this status.",
+      })
+    } else if (
+      (status === "TRANSFERRING_FORWARDER" ||
+        status === "TRANSFERRED_FORWARDER") &&
+      typeof warehouseName === "undefined"
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Forwarder name must be provided when setting this status.",
+      })
+    }
+  })
 
 export async function POST(req: Request, ctx: { params: { id: string } }) {
   try {
@@ -33,7 +52,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     }
 
     const body = await req.json()
-    const { packageId, status } = inputSchema.parse({
+    const input = inputSchema.parse({
       packageId: Number(ctx.params.id),
       status: body.status,
     })
@@ -41,7 +60,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     const packageResults = await db
       .select()
       .from(packages)
-      .where(eq(packages.id, packageId))
+      .where(eq(packages.id, input.packageId))
 
     if (packageResults.length === 0) {
       return Response.json(
@@ -75,32 +94,91 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     await db
       .update(packages)
       .set({
-        status,
+        status: input.status,
       })
-      .where(eq(packages.id, packageId))
+      .where(eq(packages.id, input.packageId))
 
     const createdAt = new Date()
-    const description = getDescriptionForNewPackageStatusLog(status)
     const createdById = session.user.uid
-    const [result] = (await db.insert(packageStatusLogs).values({
-      packageId,
-      status,
-      createdAt,
-      description,
-      createdById,
-    })) as unknown as [ResultSetHeader]
 
-    return Response.json({
-      message: "Package status updated",
-      data: {
-        id: result.insertId,
-        packageId,
-        status,
+    if (
+      input.status === "IN_WAREHOUSE" ||
+      input.status === "TRANSFERRING_WAREHOUSE"
+    ) {
+      const description = getDescriptionForNewPackageStatusLog({
+        status: input.status,
+        warehouseName: input.warehouseName!,
+      })
+
+      const [{ insertId }] = await db.insert(packageStatusLogs).values({
+        ...input,
         createdAt,
-        description,
         createdById,
-      },
-    })
+        description,
+      })
+
+      return Response.json({
+        message: "Package status updated",
+        data: {
+          id: insertId,
+          packageId: input.packageId,
+          status: input.status,
+          createdAt,
+          description,
+          createdById,
+        },
+      })
+    } else if (
+      input.status === "TRANSFERRING_FORWARDER" ||
+      input.status === "TRANSFERRED_FORWARDER"
+    ) {
+      const description = getDescriptionForNewPackageStatusLog({
+        status: input.status,
+        forwarderName: input.forwarderName!,
+      })
+
+      const [{ insertId }] = await db.insert(packageStatusLogs).values({
+        ...input,
+        createdAt,
+        createdById,
+        description,
+      })
+
+      return Response.json({
+        message: "Package status updated",
+        data: {
+          id: insertId,
+          packageId: input.packageId,
+          status: input.status,
+          createdAt,
+          description,
+          createdById,
+        },
+      })
+    } else {
+      const description = getDescriptionForNewPackageStatusLog({
+        status: input.status,
+      })
+
+      const [{ insertId }] = await db.insert(packageStatusLogs).values({
+        ...input,
+        createdAt,
+        createdById,
+        description,
+      })
+
+      return Response.json({
+        message: "Package status updated",
+        data: {
+          id: insertId,
+          packageId: input.packageId,
+          status: input.status,
+          createdAt,
+          description,
+          createdById,
+        },
+      })
+    }
   } catch (e) {
     if (e instanceof ZodError) {
       return Response.json(

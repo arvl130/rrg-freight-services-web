@@ -4,8 +4,11 @@ import { packageStatusLogs, packages } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { alias } from "drizzle-orm/mysql-core"
-import type { PackageStatus } from "@/utils/constants"
-import { SUPPORTED_PACKAGE_STATUSES } from "@/utils/constants"
+import {
+  getDescriptionForNewPackageStatusLog,
+  SUPPORTED_PACKAGE_STATUSES,
+  type PackageStatus,
+} from "@/utils/constants"
 
 export const packageStatusLogRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -127,15 +130,40 @@ export const packageStatusLogRouter = router({
     }),
   create: protectedProcedure
     .input(
-      z.object({
-        packageId: z.string(),
-        status: z.custom<PackageStatus>((val) =>
-          SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
-        ),
-        description: z.string(),
-        createdAt: z.date(),
-        createdById: z.string().length(28),
-      }),
+      z
+        .object({
+          packageId: z.string(),
+          status: z.custom<PackageStatus>((val) =>
+            SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
+          ),
+          createdAt: z.date(),
+          createdById: z.string().length(28),
+          warehouseName: z.string().optional(),
+          forwarderName: z.string().optional(),
+        })
+        .superRefine(({ status, warehouseName }, ctx) => {
+          if (
+            (status === "IN_WAREHOUSE" ||
+              status === "TRANSFERRING_WAREHOUSE") &&
+            typeof warehouseName === "undefined"
+          ) {
+            ctx.addIssue({
+              code: "custom",
+              message:
+                "Warehouse name must be provided when setting this status.",
+            })
+          } else if (
+            (status === "TRANSFERRING_FORWARDER" ||
+              status === "TRANSFERRED_FORWARDER") &&
+            typeof warehouseName === "undefined"
+          ) {
+            ctx.addIssue({
+              code: "custom",
+              message:
+                "Forwarder name must be provided when setting this status.",
+            })
+          }
+        }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction(async (tx) => {
@@ -145,7 +173,36 @@ export const packageStatusLogRouter = router({
             status: input.status,
           })
           .where(eq(packages.id, input.packageId))
-        await tx.insert(packageStatusLogs).values(input)
+
+        if (
+          input.status === "IN_WAREHOUSE" ||
+          input.status === "TRANSFERRING_WAREHOUSE"
+        )
+          await tx.insert(packageStatusLogs).values({
+            ...input,
+            description: getDescriptionForNewPackageStatusLog({
+              status: input.status,
+              warehouseName: input.warehouseName!,
+            }),
+          })
+        else if (
+          input.status === "TRANSFERRING_FORWARDER" ||
+          input.status === "TRANSFERRED_FORWARDER"
+        )
+          await tx.insert(packageStatusLogs).values({
+            ...input,
+            description: getDescriptionForNewPackageStatusLog({
+              status: input.status,
+              forwarderName: input.forwarderName!,
+            }),
+          })
+        else
+          await tx.insert(packageStatusLogs).values({
+            ...input,
+            description: getDescriptionForNewPackageStatusLog({
+              status: input.status,
+            }),
+          })
       })
     }),
   createMany: protectedProcedure

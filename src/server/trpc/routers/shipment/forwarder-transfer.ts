@@ -214,7 +214,9 @@ export const forwarderTransferShipmentRouter = router({
           packageId,
           createdById: ctx.user.uid,
           status: "SORTING",
-          description: getDescriptionForNewPackageStatusLog("SORTING"),
+          description: getDescriptionForNewPackageStatusLog({
+            status: "SORTING",
+          }),
           createdAt: new Date(),
         })
       }

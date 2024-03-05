@@ -4,15 +4,81 @@ import type { PackageStatus, ShipmentPackageStatus } from "@/utils/constants"
 import {
   SUPPORTED_PACKAGE_STATUSES,
   SUPPORTED_SHIPMENT_PACKAGE_STATUSES,
+  getDescriptionForNewPackageStatusLog,
 } from "@/utils/constants"
 import {
   packageStatusLogs,
   packages,
   shipmentPackages,
   shipments,
+  forwarderTransferShipments,
+  users,
+  warehouseTransferShipments,
+  warehouses,
 } from "@/server/db/schema"
 import { and, count, eq, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
+import type { DbWithEntities } from "@/server/db/entities"
+
+async function getDescriptionForStatus(options: {
+  db: DbWithEntities
+  shipmentId: number
+  status: PackageStatus
+}) {
+  if (options.status === "IN_WAREHOUSE") {
+    // TODO: Retrieve the actual new warehouse, instead
+    // of assuming all packages go to warehouse id 1.
+    const [{ displayName }] = await options.db
+      .select()
+      .from(warehouses)
+      .where(eq(warehouses.id, 1))
+
+    return getDescriptionForNewPackageStatusLog({
+      status: options.status,
+      warehouseName: displayName,
+    })
+  } else if (options.status === "TRANSFERRING_WAREHOUSE") {
+    const [
+      {
+        warehouses: { displayName },
+      },
+    ] = await options.db
+      .select()
+      .from(warehouseTransferShipments)
+      .innerJoin(
+        warehouses,
+        eq(warehouseTransferShipments.sentToWarehouseId, warehouses.id),
+      )
+      .where(eq(forwarderTransferShipments.shipmentId, options.shipmentId))
+
+    return getDescriptionForNewPackageStatusLog({
+      status: options.status,
+      warehouseName: displayName,
+    })
+  } else if (
+    options.status === "TRANSFERRING_FORWARDER" ||
+    options.status === "TRANSFERRED_FORWARDER"
+  ) {
+    const [
+      {
+        users: { displayName },
+      },
+    ] = await options.db
+      .select()
+      .from(forwarderTransferShipments)
+      .innerJoin(users, eq(forwarderTransferShipments.sentToAgentId, users.id))
+      .where(eq(forwarderTransferShipments.shipmentId, options.shipmentId))
+
+    return getDescriptionForNewPackageStatusLog({
+      status: options.status,
+      forwarderName: displayName,
+    })
+  } else {
+    return getDescriptionForNewPackageStatusLog({
+      status: options.status,
+    })
+  }
+}
 
 export const shipmentPackageRouter = router({
   updateManyToCompletedStatusWithCategory: protectedProcedure
@@ -34,7 +100,6 @@ export const shipmentPackageRouter = router({
         packageStatus: z.custom<PackageStatus>((val) =>
           SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
         ),
-        description: z.string(),
         createdAt: z.date(),
         createdById: z.string().length(28),
         isFailedAttempt: z.boolean().default(false),
@@ -42,10 +107,16 @@ export const shipmentPackageRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const packageIds = input.packages.map(({ id }) => id)
+      const description = await getDescriptionForStatus({
+        db: ctx.db,
+        shipmentId: input.shipmentId,
+        status: input.packageStatus,
+      })
+
       const newPackageStatusLogs = packageIds.map((packageId) => ({
         packageId,
         status: input.packageStatus,
-        description: input.description,
+        description,
         createdAt: input.createdAt,
         createdById: input.createdById,
       }))
@@ -102,17 +173,22 @@ export const shipmentPackageRouter = router({
         packageStatus: z.custom<PackageStatus>((val) =>
           SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
         ),
-        description: z.string(),
         createdAt: z.date(),
         createdById: z.string().length(28),
         isFailedAttempt: z.boolean().default(false),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const description = await getDescriptionForStatus({
+        db: ctx.db,
+        shipmentId: input.shipmentId,
+        status: input.packageStatus,
+      })
+
       const newPackageStatusLogs = input.packageIds.map((packageId) => ({
         packageId,
         status: input.packageStatus,
-        description: input.description,
+        description,
         createdAt: input.createdAt,
         createdById: input.createdById,
       }))

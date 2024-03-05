@@ -210,9 +210,6 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
               shipmentPackageStatus: "IN_TRANSIT" as const,
               packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
               packageStatus: "TRANSFERRING_FORWARDER" as const,
-              description: getDescriptionForNewPackageStatusLog(
-                "TRANSFERRING_FORWARDER",
-              ),
               createdAt: new Date(),
               createdById: auth.currentUser!.uid,
             })

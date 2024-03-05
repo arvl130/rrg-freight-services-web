@@ -153,7 +153,9 @@ export async function POST(
       await tx.insert(packageStatusLogs).values({
         packageId,
         createdById: session.user.uid,
-        description: getDescriptionForNewPackageStatusLog("DELIVERED"),
+        description: getDescriptionForNewPackageStatusLog({
+          status: "DELIVERED",
+        }),
         status: "DELIVERED",
       })
 

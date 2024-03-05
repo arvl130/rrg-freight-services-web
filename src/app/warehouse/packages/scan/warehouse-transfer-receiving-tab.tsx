@@ -293,7 +293,6 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
                 ...scannedPackagesNonNull.slice(1),
               ],
               packageStatus: "IN_WAREHOUSE" as const,
-              description: getDescriptionForNewPackageStatusLog("IN_WAREHOUSE"),
               createdAt: new Date(),
               createdById: auth.currentUser!.uid,
             })

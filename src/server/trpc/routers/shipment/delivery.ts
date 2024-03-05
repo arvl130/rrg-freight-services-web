@@ -273,7 +273,9 @@ export const deliveryShipmentRouter = router({
       const newPackageStatusLogs = input.packageIds.map((packageId) => ({
         packageId,
         createdById: ctx.user.uid,
-        description: getDescriptionForNewPackageStatusLog("SORTING"),
+        description: getDescriptionForNewPackageStatusLog({
+          status: "SORTING",
+        }),
         status: "SORTING" as const,
         createdAt: new Date(),
       }))

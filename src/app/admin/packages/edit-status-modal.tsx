@@ -120,16 +120,13 @@ function AddStatusLogForm({ packageId }: { packageId: string }) {
     <form
       className="mb-6"
       onSubmit={handleSubmit((formData) => {
-        const description = getDescriptionForNewPackageStatusLog(
-          formData.status,
-        )
-
         mutate({
           packageId,
           createdAt: new Date(formData.createdAt),
           createdById: formData.createdById,
           status: formData.status,
-          description,
+          // TODO: Provide a forwarder name or warehouse name on certain statuses.
+          // Otherwise, this will throw an error.
         })
       })}
     >
