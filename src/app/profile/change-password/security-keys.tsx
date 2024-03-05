@@ -3,66 +3,66 @@ import { api } from "@/utils/api"
 import { useState } from "react"
 import { RegisterModal } from "./register-authenticator-modal"
 import { EditModal } from "./edit-authenticator-modal"
+import { DeleteModal } from "./delete-authenticator-modal"
+
+function CredentialsListItem(props: { credential: WebauthnCredential }) {
+  const [visibleModal, setVisibleModal] = useState<"" | "EDIT" | "DELETE">("")
+
+  return (
+    <div key={props.credential.deviceName}>
+      <div className=" bg-rose-500 px-4 py-2 rounded-t-lg text-white text-center font-semibold">
+        {props.credential.deviceName}
+      </div>
+      <div className="border-x border-gray-300 px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap">
+        <span className="font-semibold">ID:</span>{" "}
+        <span>{props.credential.id}</span>
+      </div>
+      <div className="border-x border-gray-300 px-4 py-2">
+        <span className="font-semibold">Transport:</span>{" "}
+        {props.credential.transports}
+      </div>
+      <div className="border-x border-b border-gray-300 px-4 pb-2 pt-1 flex flex-col sm:flex-row gap-3">
+        <button
+          type="button"
+          className="px-4 py-2 rounded-md bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 transition-colors text-white font-medium w-full"
+          onClick={() => setVisibleModal("EDIT")}
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          className="px-4 py-2 rounded-md bg-red-500 hover:bg-red-400 disabled:bg-red-300 transition-colors text-white font-medium w-full"
+          onClick={() => setVisibleModal("DELETE")}
+        >
+          Remove
+        </button>
+      </div>
+
+      <EditModal
+        isOpen={visibleModal === "EDIT"}
+        onClose={() => setVisibleModal("")}
+        credential={props.credential}
+      />
+      <DeleteModal
+        isOpen={visibleModal === "DELETE"}
+        onClose={() => setVisibleModal("")}
+        credential={props.credential}
+      />
+    </div>
+  )
+}
 
 function CredentialsList(props: { credentials: WebauthnCredential[] }) {
-  const [isModalVisible, setIsModalVisible] = useState(false)
-
-  const apiUtils = api.useUtils()
-  const { isLoading, mutate } = api.webauthn.deleteCredentialById.useMutation({
-    onSuccess: () => {
-      apiUtils.webauthn.getCredentials.invalidate()
-    },
-  })
-
   if (props.credentials.length === 0)
     return <div>No authenticators registered.</div>
 
   return (
     <div className="space-y-3">
       {props.credentials.map((credential) => (
-        <div key={credential.id} className="">
-          <div className=" bg-rose-500 px-4 py-2 rounded-t-lg text-white text-center font-semibold">
-            {credential.deviceName}
-          </div>
-          <div className="border-x border-gray-300 px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap">
-            <span className="font-semibold">ID:</span>{" "}
-            <span>{credential.id}</span>
-          </div>
-          <div className="border-x border-gray-300 px-4 py-2">
-            <span className="font-semibold">Transport:</span>{" "}
-            {credential.transports}
-          </div>
-          <div className="border-x border-gray-300 px-4 pb-2 pt-1">
-            <button
-              type="button"
-              disabled={isLoading}
-              className="px-4 py-2 rounded-md bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 transition-colors text-white font-medium w-full"
-              onClick={() => setIsModalVisible(true)}
-            >
-              Edit
-            </button>
-          </div>
-          <div className="border-x border-b border-gray-300 px-4 pb-2 pt-1">
-            <button
-              type="button"
-              disabled={isLoading}
-              className="px-4 py-2 rounded-md bg-red-500 hover:bg-red-400 disabled:bg-red-300 transition-colors text-white font-medium w-full"
-              onClick={() => {
-                mutate({
-                  id: credential.id,
-                })
-              }}
-            >
-              Remove
-            </button>
-          </div>
-
-          <EditModal
-            isOpen={isModalVisible}
-            onClose={() => setIsModalVisible(false)}
-            credential={credential}
-          />
-        </div>
+        <CredentialsListItem
+          key={credential.deviceName}
+          credential={credential}
+        />
       ))}
     </div>
   )
