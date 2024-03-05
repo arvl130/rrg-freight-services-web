@@ -31,6 +31,21 @@ export const webauthnRouter = router({
         .delete(webauthnCredentials)
         .where(eq(webauthnCredentials.id, input.id))
     }),
+  updateCredentialDeviceNameById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().min(1),
+        deviceName: z.string().min(1).max(100),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .update(webauthnCredentials)
+        .set({
+          deviceName: input.deviceName,
+        })
+        .where(eq(webauthnCredentials.id, input.id))
+    }),
   generateRegistrationOptions: protectedProcedure.mutation(async ({ ctx }) => {
     const credentials = await ctx.db.select().from(webauthnCredentials)
     const url = new URL(serverEnv.APP_ORIGIN)
@@ -69,7 +84,7 @@ export const webauthnRouter = router({
     .input(
       z.object({
         response: z.any(),
-        deviceName: z.string().min(1),
+        deviceName: z.string().min(1).max(100),
       }),
     )
     .mutation(async ({ ctx, input }) => {

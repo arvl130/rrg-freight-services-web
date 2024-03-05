@@ -2,8 +2,11 @@ import type { WebauthnCredential } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { RegisterModal } from "./register-authenticator-modal"
+import { EditModal } from "./edit-authenticator-modal"
 
 function CredentialsList(props: { credentials: WebauthnCredential[] }) {
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
   const apiUtils = api.useUtils()
   const { isLoading, mutate } = api.webauthn.deleteCredentialById.useMutation({
     onSuccess: () => {
@@ -29,6 +32,16 @@ function CredentialsList(props: { credentials: WebauthnCredential[] }) {
             <span className="font-semibold">Transport:</span>{" "}
             {credential.transports}
           </div>
+          <div className="border-x border-gray-300 px-4 pb-2 pt-1">
+            <button
+              type="button"
+              disabled={isLoading}
+              className="px-4 py-2 rounded-md bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 transition-colors text-white font-medium w-full"
+              onClick={() => setIsModalVisible(true)}
+            >
+              Edit
+            </button>
+          </div>
           <div className="border-x border-b border-gray-300 px-4 pb-2 pt-1">
             <button
               type="button"
@@ -43,6 +56,12 @@ function CredentialsList(props: { credentials: WebauthnCredential[] }) {
               Remove
             </button>
           </div>
+
+          <EditModal
+            isOpen={isModalVisible}
+            onClose={() => setIsModalVisible(false)}
+            credential={credential}
+          />
         </div>
       ))}
     </div>
