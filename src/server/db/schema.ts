@@ -34,6 +34,9 @@ export const users = mysqlTable("users", {
   gender: mysqlEnum("gender", SUPPORTED_GENDERS),
   role: mysqlEnum("role", SUPPORTED_USER_ROLES).notNull(),
   isEnabled: tinyint("is_enabled").notNull().default(1),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
 })
 
 export const shipments = mysqlTable("shipments", {
@@ -58,6 +61,9 @@ export const shipmentPackages = mysqlTable(
     }).notNull(),
     packageId: varchar("package_id", { length: 36 }).notNull(),
     status: mysqlEnum("status", SUPPORTED_SHIPMENT_PACKAGE_STATUSES).notNull(),
+    createdAt: varchar("created_at", {
+      length: 255,
+    }).notNull(),
   },
   (table) => ({
     pk: primaryKey({
@@ -79,6 +85,9 @@ export const shipmentPackageOtps = mysqlTable("shipment_package_otps", {
   isValid: tinyint("is_valid").notNull().default(1),
   code: int("code").notNull(),
   expireAt: varchar("expire_at", {
+    length: 255,
+  }).notNull(),
+  createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
 })
@@ -113,6 +122,9 @@ export const incomingShipments = mysqlTable("incoming_shipments", {
   sentByAgentId: varchar("sent_by_agent_id", {
     length: 28,
   }).notNull(),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
 })
 
 export const forwarderTransferShipments = mysqlTable(
@@ -132,6 +144,9 @@ export const forwarderTransferShipments = mysqlTable(
     }).notNull(),
     proofOfTransferImgUrl: text("proof_of_transfer_img_url"),
     isTransferConfirmed: tinyint("is_transfer_confirmed").notNull().default(0),
+    createdAt: varchar("created_at", {
+      length: 255,
+    }).notNull(),
   },
 )
 
@@ -150,6 +165,9 @@ export const warehouseTransferShipments = mysqlTable(
     sentToWarehouseId: bigint("sent_to_warehouse_id", {
       mode: "number",
     }).notNull(),
+    createdAt: varchar("created_at", {
+      length: 255,
+    }).notNull(),
   },
 )
 
@@ -164,6 +182,9 @@ export const deliveryShipments = mysqlTable("delivery_shipments", {
     mode: "number",
   }).notNull(),
   isExpress: tinyint("is_express").notNull(),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
 })
 
 export const warehouses = mysqlTable("warehouses", {
@@ -174,6 +195,9 @@ export const warehouses = mysqlTable("warehouses", {
     .autoincrement(),
   displayName: varchar("display_name", {
     length: 100,
+  }).notNull(),
+  createdAt: varchar("created_at", {
+    length: 255,
   }).notNull(),
 })
 
@@ -189,6 +213,9 @@ export const vehicles = mysqlTable("vehicles", {
   }).notNull(),
   isExpressAllowed: tinyint("is_express_allowed").notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
 })
 
 export const packageCategories = mysqlTable("package_categories", {
@@ -199,6 +226,9 @@ export const packageCategories = mysqlTable("package_categories", {
     .autoincrement(),
   displayName: varchar("display_name", {
     length: 100,
+  }).notNull(),
+  createdAt: varchar("created_at", {
+    length: 255,
   }).notNull(),
 })
 
@@ -325,11 +355,17 @@ export const webpushSubscriptions = mysqlTable("webpush_subscriptions", {
   expirationTime: int("expiration_time"),
   keyAuth: text("key_auth").notNull(),
   keyP256dh: text("key_p256dh").notNull(),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
 })
 
 export const webauthnChallenges = mysqlTable("webauthn_challenges", {
   userId: varchar("user_id", { length: 28 }).primaryKey(),
   challenge: text("challenge").notNull(),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
 })
 
 export const webauthnCredentials = mysqlTable("webauthn_credentials", {
@@ -343,4 +379,7 @@ export const webauthnCredentials = mysqlTable("webauthn_credentials", {
   key: text("key").notNull(),
   transports: text("transports").notNull(),
   counter: int("counter").notNull(),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
 })

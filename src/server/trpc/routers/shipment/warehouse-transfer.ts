@@ -199,6 +199,7 @@ export const warehouseTransferShipmentRouter = router({
         driverId: input.driverId,
         vehicleId: input.vehicleId,
         sentToWarehouseId: input.sentToWarehouseId,
+        createdAt,
       })
 
       for (const packageId of input.packageIds) {
@@ -206,6 +207,7 @@ export const warehouseTransferShipmentRouter = router({
           packageId,
           shipmentId,
           status: "PREPARING",
+          createdAt,
         })
 
         await ctx.db

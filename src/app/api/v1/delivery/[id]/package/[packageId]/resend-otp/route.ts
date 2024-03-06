@@ -30,6 +30,8 @@ export async function GET(
   req: Request,
   ctx: { params: { id: string; packageId: string } },
 ) {
+  const createdAt = DateTime.now().toISO()
+
   try {
     const session = await getServerSessionFromFetchRequest({ req })
     if (session === null)
@@ -107,6 +109,7 @@ export async function GET(
         packageId,
         code,
         expireAt,
+        createdAt,
       })
 
       await Promise.all([

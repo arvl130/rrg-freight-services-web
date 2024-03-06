@@ -330,12 +330,14 @@ export const deliveryShipmentRouter = router({
           driverId: input.driverId,
           vehicleId: input.vehicleId,
           isExpress: input.isExpress ? 1 : 0,
+          createdAt,
         })
 
         const newShipmentPackages = input.packageIds.map((packageId) => ({
           shipmentId,
           packageId,
           status: "PREPARING" as const,
+          createdAt,
         }))
 
         const newShipmentPackageOtps = packageResultsWithOtp.map(
@@ -344,6 +346,7 @@ export const deliveryShipmentRouter = router({
             packageId: id,
             code: otp,
             expireAt: otpExpiryDate.toISO(),
+            createdAt,
           }),
         )
 

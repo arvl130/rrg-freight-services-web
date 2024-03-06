@@ -6,6 +6,7 @@ import { sendNotification, setVapidDetails } from "web-push"
 import { z } from "zod"
 import { eq, inArray } from "drizzle-orm"
 import { stringToSha256Hash } from "@/utils/hash"
+import { DateTime } from "luxon"
 
 setVapidDetails(
   "mailto:test@example.com",
@@ -71,12 +72,15 @@ export const webpushSubscriptionRouter = router({
       }),
     )
     .mutation(({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
+
       return ctx.db.insert(webpushSubscriptions).values({
         id: stringToSha256Hash(input.endpoint),
         endpoint: input.endpoint,
         expirationTime: input.expirationTime,
         keyAuth: input.keys.auth,
         keyP256dh: input.keys.p256dh,
+        createdAt,
       })
     }),
   delete: protectedProcedure

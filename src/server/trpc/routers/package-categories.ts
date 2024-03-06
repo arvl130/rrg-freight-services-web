@@ -4,6 +4,7 @@ import { packageCategories } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import { TRPCError } from "@trpc/server"
 import { createLog } from "@/utils/logging"
+import { DateTime } from "luxon"
 
 export const packageCategoryRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -41,7 +42,11 @@ export const packageCategoryRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db.insert(packageCategories).values(input)
+      const createdAt = DateTime.now().toISO()
+
+      const result = await ctx.db
+        .insert(packageCategories)
+        .values({ ...input, createdAt })
 
       await createLog(ctx.db, {
         verb: "CREATE",

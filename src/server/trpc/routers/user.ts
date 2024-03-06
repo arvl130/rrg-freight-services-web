@@ -9,6 +9,7 @@ import { clientEnv } from "@/utils/env.mjs"
 import type { Gender, UserRole } from "@/utils/constants"
 import { SUPPORTED_GENDERS, SUPPORTED_USER_ROLES } from "@/utils/constants"
 import { createLog } from "@/utils/logging"
+import { DateTime } from "luxon"
 
 // Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
 const TEXT_COLUMN_DEFAULT_LIMIT = 65_535
@@ -66,6 +67,8 @@ export const userRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
+
       try {
         const userFromFirebase = await getUserByEmail(input.emailAddress)
         if (userFromFirebase) {
@@ -107,6 +110,7 @@ export const userRouter = router({
         emailAddress: input.emailAddress,
         gender: input.gender,
         role: input.role,
+        createdAt,
       })
     }),
   createDetails: protectedProcedure
@@ -124,6 +128,8 @@ export const userRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
+
       await updateProfile(ctx.user, {
         displayName: input.displayName,
         email: input.emailAddress,
@@ -136,6 +142,7 @@ export const userRouter = router({
         emailAddress: input.emailAddress,
         gender: input.gender,
         role: input.role,
+        createdAt,
       })
 
       await createLog(ctx.db, {

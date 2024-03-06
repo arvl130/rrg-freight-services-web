@@ -4,12 +4,13 @@ import { seedEnv } from "./env.mjs"
 import * as schema from "@/server/db/schema"
 import mysql from "mysql2/promise"
 import { drizzle } from "drizzle-orm/mysql2"
-import {
+import type {
   NewPackageCategory,
   NewUser,
   NewVehicle,
   NewWarehouse,
 } from "@/server/db/entities"
+import { DateTime } from "luxon"
 
 const pool = mysql.createPool({
   uri:
@@ -26,6 +27,8 @@ const db = drizzle(pool, {
   schema,
 })
 
+const createdAt = DateTime.now().toISO()
+
 const newUsers: NewUser[] = [
   {
     id: seedEnv.TEST_ADMIN_USER_ID,
@@ -35,6 +38,7 @@ const newUsers: NewUser[] = [
     role: "ADMIN",
     gender: "MALE",
     isEnabled: 1,
+    createdAt,
   },
   {
     id: seedEnv.TEST_WAREHOUSE_USER_ID,
@@ -44,6 +48,7 @@ const newUsers: NewUser[] = [
     role: "WAREHOUSE",
     gender: "MALE",
     isEnabled: 1,
+    createdAt,
   },
   {
     id: seedEnv.TEST_DOMESTIC_USER_ID,
@@ -53,6 +58,7 @@ const newUsers: NewUser[] = [
     role: "DOMESTIC_AGENT",
     gender: "MALE",
     isEnabled: 1,
+    createdAt,
   },
   {
     id: seedEnv.TEST_OVERSEAS_USER_ID,
@@ -62,6 +68,7 @@ const newUsers: NewUser[] = [
     role: "OVERSEAS_AGENT",
     gender: "FEMALE",
     isEnabled: 1,
+    createdAt,
   },
   {
     id: seedEnv.TEST_DRIVER_USER_ID,
@@ -71,6 +78,7 @@ const newUsers: NewUser[] = [
     role: "DRIVER",
     gender: "MALE",
     isEnabled: 1,
+    createdAt,
   },
 ]
 
@@ -78,10 +86,12 @@ const newWarehouses: NewWarehouse[] = [
   {
     id: 1,
     displayName: "Warehouse 1",
+    createdAt,
   },
   {
     id: 2,
     displayName: "Warehouse 2",
+    createdAt,
   },
 ]
 
@@ -91,30 +101,35 @@ const newVehicles: NewVehicle[] = [
     displayName: "Truck 1",
     type: "TRUCK",
     isExpressAllowed: 0,
+    createdAt,
   },
   {
     id: 2,
     displayName: "Truck 2",
     type: "TRUCK",
     isExpressAllowed: 0,
+    createdAt,
   },
   {
     id: 3,
     displayName: "Truck 3",
     type: "TRUCK",
     isExpressAllowed: 0,
+    createdAt,
   },
   {
     id: 4,
     displayName: "Van 1",
     type: "VAN",
     isExpressAllowed: 1,
+    createdAt,
   },
   {
     id: 5,
     displayName: "Van 2",
     type: "VAN",
     isExpressAllowed: 1,
+    createdAt,
   },
 ]
 
@@ -122,14 +137,17 @@ const newPackageCategories: NewPackageCategory[] = [
   {
     id: 1,
     displayName: "Category 1",
+    createdAt,
   },
   {
     id: 2,
     displayName: "Category 2",
+    createdAt,
   },
   {
     id: 3,
     displayName: "Category 3",
+    createdAt,
   },
 ]
 

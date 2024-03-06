@@ -12,6 +12,7 @@ import { TRPCError } from "@trpc/server"
 import { createCustomToken, getUserByEmail } from "@/server/auth"
 import { isoBase64URL, isoUint8Array } from "@simplewebauthn/server/helpers"
 import { serverEnv } from "@/server/env.mjs"
+import { DateTime } from "luxon"
 
 export const webauthnRouter = router({
   getCredentials: protectedProcedure.query(async ({ ctx }) => {
@@ -47,6 +48,7 @@ export const webauthnRouter = router({
         .where(eq(webauthnCredentials.id, input.id))
     }),
   generateRegistrationOptions: protectedProcedure.mutation(async ({ ctx }) => {
+    const createdAt = DateTime.now().toISO()
     const credentials = await ctx.db.select().from(webauthnCredentials)
     const url = new URL(serverEnv.APP_ORIGIN)
     const options = await generateRegistrationOptions({
@@ -68,7 +70,11 @@ export const webauthnRouter = router({
     try {
       await ctx.db
         .insert(webauthnChallenges)
-        .values({ userId: ctx.user.uid, challenge: options.challenge })
+        .values({
+          userId: ctx.user.uid,
+          challenge: options.challenge,
+          createdAt,
+        })
         .onDuplicateKeyUpdate({ set: { challenge: options.challenge } })
     } catch (e) {
       throw new TRPCError({
@@ -88,6 +94,7 @@ export const webauthnRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
       const challenge = await ctx.db.query.webauthnChallenges.findFirst({
         where: eq(webauthnChallenges.userId, ctx.user.uid),
       })
@@ -123,6 +130,7 @@ export const webauthnRouter = router({
         transports: JSON.stringify(
           input.response.response.transports ?? ["internal"],
         ),
+        createdAt,
       })
     }),
   generateAuthenticationOptions: publicProcedure
@@ -132,6 +140,7 @@ export const webauthnRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
       const userRecord = await getUserByEmail(input.email)
       const credentials = await ctx.db
         .select()
@@ -156,7 +165,11 @@ export const webauthnRouter = router({
       try {
         await ctx.db
           .insert(webauthnChallenges)
-          .values({ userId: userRecord.uid, challenge: options.challenge })
+          .values({
+            userId: userRecord.uid,
+            challenge: options.challenge,
+            createdAt,
+          })
           .onDuplicateKeyUpdate({ set: { challenge: options.challenge } })
       } catch (e) {
         throw new TRPCError({

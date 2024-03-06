@@ -223,12 +223,14 @@ export const incomingShipmentRouter = router({
         await tx.insert(incomingShipments).values({
           shipmentId,
           sentByAgentId: input.sentByAgentId,
+          createdAt,
         })
 
         const newShipmentPackages = newPackages.map(({ id }) => ({
           shipmentId,
           packageId: id,
           status: "IN_TRANSIT" as const,
+          createdAt,
         }))
 
         await tx.insert(shipmentPackages).values(newShipmentPackages)

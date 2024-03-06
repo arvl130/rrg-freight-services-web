@@ -6,6 +6,7 @@ import { z } from "zod"
 import type { VehicleType } from "@/utils/constants"
 import { SUPPORTED_VEHICLE_TYPES } from "@/utils/constants"
 import { createLog } from "@/utils/logging"
+import { DateTime } from "luxon"
 
 export const vehicleRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -70,9 +71,12 @@ export const vehicleRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
+
       const result = ctx.db.insert(vehicles).values({
         ...input,
         isExpressAllowed: input.isExpressAllowed ? 1 : 0,
+        createdAt,
       })
 
       await createLog(ctx.db, {
