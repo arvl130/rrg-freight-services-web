@@ -173,6 +173,7 @@ export const incomingShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
       const newPackages = input.newPackages.map((newPackage) => ({
         ...newPackage,
         id: generateUniqueId(),
@@ -183,7 +184,6 @@ export const incomingShipmentRouter = router({
         createdAt,
       }))
 
-      const createdAt = DateTime.now().toISO()
       const newPackageStatusLogs = newPackages.map(({ id }) => ({
         packageId: id,
         createdById: ctx.user.uid,
