@@ -23,6 +23,7 @@ import { gt } from "drizzle-orm"
 import { DateTime } from "luxon"
 import type { NextRequest } from "next/server"
 import { z } from "zod"
+import { uploadJsonToBucket } from "@/server/auth"
 
 const inputSchema = z.object({
   entity: z
@@ -348,28 +349,36 @@ export async function GET(req: NextRequest) {
       .from(incomingShipments)
       .where(gt(incomingShipments.createdAt, startAt))
 
+    const entities = {
+      activities: activitiesResults,
+      deliveryShipments: deliveryShipmentsResults,
+      forwarderTransferShipments: forwarderTransferShipmentsResults,
+      packages: packagesResults,
+      packageCategories: packageCategoriesResults,
+      packageStatusLogs: packageStatusLogsResults,
+      shipments: shipmentsResults,
+      shipmentLocations: shipmentLocationsResults,
+      shipmentPackages: shipmentPackagesResults,
+      shipmentPackageOtps: shipmentPackageOtpsResults,
+      users: usersResults,
+      vehicles: vehiclesResults,
+      warehouses: warehousesResults,
+      warehouseTransferShipments: warehouseTransferShipmentsResults,
+      webauthnChallenges: webauthnChallengesResults,
+      webauthnCredentials: webauthnCredentialsResults,
+      webpushSubscriptions: webpushSubscriptionsResults,
+      incomingShipments: incomingShipmentsResults,
+    }
+
+    const downloadUrl = await uploadJsonToBucket({
+      filename: `backups/backup-${startAt}.json`,
+      body: JSON.stringify(entities),
+    })
+
     return Response.json({
       message: `Entity retrieved starting ${startAt}`,
-      entities: {
-        activities: activitiesResults,
-        deliveryShipments: deliveryShipmentsResults,
-        forwarderTransferShipments: forwarderTransferShipmentsResults,
-        packages: packagesResults,
-        packageCategories: packageCategoriesResults,
-        packageStatusLogs: packageStatusLogsResults,
-        shipments: shipmentsResults,
-        shipmentLocations: shipmentLocationsResults,
-        shipmentPackages: shipmentPackagesResults,
-        shipmentPackageOtps: shipmentPackageOtpsResults,
-        users: usersResults,
-        vehicles: vehiclesResults,
-        warehouses: warehousesResults,
-        warehouseTransferShipments: warehouseTransferShipmentsResults,
-        webauthnChallenges: webauthnChallengesResults,
-        webauthnCredentials: webauthnCredentialsResults,
-        webpushSubscriptions: webpushSubscriptionsResults,
-        incomingShipments: incomingShipmentsResults,
-      },
+      downloadUrl,
+      entities,
     })
   }
 }

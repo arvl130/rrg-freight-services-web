@@ -1,9 +1,11 @@
 import { getApps, getApp, initializeApp, cert } from "firebase-admin/app"
 import type { CreateRequest, UserRecord } from "firebase-admin/auth"
 import { getAuth } from "firebase-admin/auth"
+import { getStorage, getDownloadURL } from "firebase-admin/storage"
 import type { GetServerSidePropsContext } from "next"
 import { serverEnv } from "./env.mjs"
 import type { UserRole } from "@/utils/constants"
+import { clientEnv } from "@/utils/env.mjs"
 
 const {
   FIREBASE_ADMIN_PROJECT_ID,
@@ -19,10 +21,25 @@ const app =
           privateKey: FIREBASE_ADMIN_PRIVATE_KEY.replace(/\\n/g, "\n"),
           clientEmail: FIREBASE_ADMIN_CLIENT_EMAIL,
         }),
+        storageBucket: clientEnv.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       })
     : getApp()
 
 const auth = getAuth(app)
+const storage = getStorage(app)
+
+export async function uploadJsonToBucket(options: {
+  filename: string
+  body: string
+}) {
+  const bucket = storage.bucket()
+  const file = bucket.file(options.filename)
+
+  await file.save(options.body)
+
+  const downloadUrl = await getDownloadURL(file)
+  return downloadUrl
+}
 
 export function createCustomToken(uid: string) {
   return auth.createCustomToken(uid)
