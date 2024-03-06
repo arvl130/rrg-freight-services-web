@@ -25,6 +25,7 @@ import { and, count, eq } from "drizzle-orm"
 import { generateUniqueId } from "@/utils/uuid"
 import { notifyByEmail } from "@/server/notification"
 import { createLog } from "@/utils/logging"
+import { DateTime } from "luxon"
 
 export const incomingShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -179,9 +180,10 @@ export const incomingShipmentRouter = router({
         updatedById: ctx.user.uid,
         isFragile: newPackage.isFragile ? 1 : 0,
         status: "INCOMING" as const,
+        createdAt,
       }))
 
-      const createdAt = new Date()
+      const createdAt = DateTime.now().toISO()
       const newPackageStatusLogs = newPackages.map(({ id }) => ({
         packageId: id,
         createdById: ctx.user.uid,
@@ -215,6 +217,7 @@ export const incomingShipmentRouter = router({
         const [{ insertId: shipmentId }] = await tx.insert(shipments).values({
           type: "INCOMING",
           status: "IN_TRANSIT",
+          createdAt,
         })
 
         await tx.insert(incomingShipments).values({

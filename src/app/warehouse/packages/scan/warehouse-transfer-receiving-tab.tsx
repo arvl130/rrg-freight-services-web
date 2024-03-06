@@ -12,6 +12,7 @@ import { getAuth } from "firebase/auth"
 import type { Package, PackageCategory } from "@/server/db/entities"
 import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
+import { DateTime } from "luxon"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
@@ -285,6 +286,7 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
               return
             }
 
+            const createdAt = DateTime.now().toISO()
             mutate({
               shipmentId,
               shipmentPackageStatus: "COMPLETED" as const,
@@ -293,7 +295,7 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
                 ...scannedPackagesNonNull.slice(1),
               ],
               packageStatus: "IN_WAREHOUSE" as const,
-              createdAt: new Date(),
+              createdAt,
               createdById: auth.currentUser!.uid,
             })
           }}

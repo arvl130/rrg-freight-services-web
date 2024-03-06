@@ -9,6 +9,7 @@ import {
   SUPPORTED_PACKAGE_STATUSES,
   type PackageStatus,
 } from "@/utils/constants"
+import { DateTime } from "luxon"
 
 export const packageStatusLogRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -174,6 +175,8 @@ export const packageStatusLogRouter = router({
           })
           .where(eq(packages.id, input.packageId))
 
+        const createdAt = DateTime.now().toISO()
+
         if (
           input.status === "IN_WAREHOUSE" ||
           input.status === "TRANSFERRING_WAREHOUSE"
@@ -184,6 +187,7 @@ export const packageStatusLogRouter = router({
               status: input.status,
               warehouseName: input.warehouseName!,
             }),
+            createdAt,
           })
         else if (
           input.status === "TRANSFERRING_FORWARDER" ||
@@ -195,6 +199,7 @@ export const packageStatusLogRouter = router({
               status: input.status,
               forwarderName: input.forwarderName!,
             }),
+            createdAt,
           })
         else
           await tx.insert(packageStatusLogs).values({
@@ -202,6 +207,7 @@ export const packageStatusLogRouter = router({
             description: getDescriptionForNewPackageStatusLog({
               status: input.status,
             }),
+            createdAt,
           })
       })
     }),
@@ -215,7 +221,7 @@ export const packageStatusLogRouter = router({
               SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
             ),
             description: z.string(),
-            createdAt: z.date(),
+            createdAt: z.string(),
             createdById: z.string().length(28),
           })
           .array()

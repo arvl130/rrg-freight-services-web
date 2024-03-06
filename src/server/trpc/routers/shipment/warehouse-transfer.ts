@@ -14,6 +14,7 @@ import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
 import { eq } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
+import { DateTime } from "luxon"
 
 export const warehouseTransferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -186,9 +187,11 @@ export const warehouseTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
       const [{ insertId: shipmentId }] = await ctx.db.insert(shipments).values({
         type: "TRANSFER_WAREHOUSE",
         status: "PREPARING",
+        createdAt,
       })
 
       await ctx.db.insert(warehouseTransferShipments).values({
@@ -219,7 +222,7 @@ export const warehouseTransferShipmentRouter = router({
           description: getDescriptionForNewPackageStatusLog({
             status: "SORTING",
           }),
-          createdAt: new Date(),
+          createdAt,
         })
       }
 

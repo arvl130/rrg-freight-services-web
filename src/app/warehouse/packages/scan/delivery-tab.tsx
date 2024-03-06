@@ -12,6 +12,7 @@ import { getAuth } from "firebase/auth"
 import type { ShipmentType } from "@/utils/constants"
 import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
+import { DateTime } from "luxon"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
@@ -206,12 +207,14 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
           disabled={isLoading || scannedPackageIds.length === 0}
           onClick={() => {
             const auth = getAuth()
+            const createdAt = DateTime.now().toISO()
+
             mutate({
               shipmentId,
               shipmentPackageStatus: "IN_TRANSIT" as const,
               packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
               packageStatus: "DELIVERING" as const,
-              createdAt: new Date(),
+              createdAt,
               createdById: auth.currentUser!.uid,
             })
           }}

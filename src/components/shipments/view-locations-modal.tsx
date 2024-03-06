@@ -122,7 +122,7 @@ export function ViewLocationsModal({
                         }}
                       >
                         <div className="font-medium">
-                          {DateTime.fromJSDate(
+                          {DateTime.fromISO(
                             deliveryLocation.createdAt,
                           ).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)}
                         </div>

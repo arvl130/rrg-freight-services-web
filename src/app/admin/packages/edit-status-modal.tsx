@@ -40,7 +40,7 @@ function StatusLogItem({
       } border-gray-300`}
     >
       <div className="text-sm">
-        {DateTime.fromJSDate(statusLog.createdAt).toLocaleString(
+        {DateTime.fromISO(statusLog.createdAt).toLocaleString(
           DateTime.DATETIME_FULL,
         )}
       </div>

@@ -270,6 +270,7 @@ export const deliveryShipmentRouter = router({
         })
       }
 
+      const createdAt = DateTime.now().toISO()
       const newPackageStatusLogs = input.packageIds.map((packageId) => ({
         packageId,
         createdById: ctx.user.uid,
@@ -277,7 +278,7 @@ export const deliveryShipmentRouter = router({
           status: "SORTING",
         }),
         status: "SORTING" as const,
-        createdAt: new Date(),
+        createdAt,
       }))
 
       await ctx.db.transaction(async (tx) => {
@@ -321,6 +322,7 @@ export const deliveryShipmentRouter = router({
         const [{ insertId: shipmentId }] = await tx.insert(shipments).values({
           type: "DELIVERY",
           status: "PREPARING",
+          createdAt,
         })
 
         await tx.insert(deliveryShipments).values({

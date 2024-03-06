@@ -150,8 +150,10 @@ export async function POST(
         })
         .where(eq(packages.id, packageId))
 
+      const createdAt = DateTime.now().toISO()
       await tx.insert(packageStatusLogs).values({
         packageId,
+        createdAt,
         createdById: session.user.uid,
         description: getDescriptionForNewPackageStatusLog({
           status: "DELIVERED",

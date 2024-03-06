@@ -31,7 +31,7 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
         <UserDisplayName userId={item.sentByAgentId} />
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        {DateTime.fromJSDate(item.createdAt).toLocaleString(
+        {DateTime.fromISO(item.createdAt).toLocaleString(
           DateTime.DATETIME_FULL,
         )}
       </div>

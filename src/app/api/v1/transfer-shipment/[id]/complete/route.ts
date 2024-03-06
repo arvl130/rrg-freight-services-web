@@ -10,6 +10,7 @@ import {
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { and, eq, inArray } from "drizzle-orm"
+import { DateTime } from "luxon"
 import { ZodError, z } from "zod"
 
 const getLocationsSchema = z.object({
@@ -86,6 +87,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
       .from(shipmentPackages)
       .where(eq(shipmentPackages.shipmentId, transferShipmentId))
 
+    const createdAt = DateTime.now().toISO()
     const newPackageStatusLogs = transferShipmentPackagesResults.map(
       ({ packageId }) => ({
         packageId,
@@ -95,7 +97,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
           forwarderName: transferShipment.agentDisplayName,
         }),
         status: "TRANSFERRED_FORWARDER" as const,
-        createdAt: new Date(),
+        createdAt,
       }),
     )
 

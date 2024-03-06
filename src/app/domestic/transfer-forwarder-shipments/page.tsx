@@ -78,7 +78,7 @@ function TransferShipmentsTableItem({
         <UserDisplayName userId={transferShipment.sentToAgentId} />
       </div>
       <div className="px-4 py-2">
-        {DateTime.fromJSDate(transferShipment.createdAt).toLocaleString(
+        {DateTime.fromISO(transferShipment.createdAt).toLocaleString(
           DateTime.DATETIME_FULL,
         )}
       </div>

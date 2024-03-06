@@ -24,6 +24,7 @@ import {
 } from "@/utils/constants"
 import { generateUniqueId } from "@/utils/uuid"
 import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
+import { DateTime } from "luxon"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -191,10 +192,13 @@ export const packageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
+
       await ctx.db.insert(packages).values(
         input.newPackages.map((newPackage) => ({
           ...newPackage,
           id: generateUniqueId(),
+          createdAt,
           createdById: ctx.user.uid,
           updatedById: ctx.user.uid,
           isFragile: newPackage.isFragile ? 1 : 0,

@@ -19,6 +19,7 @@ import {
 import { and, count, eq, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import type { DbWithEntities } from "@/server/db/entities"
+import { DateTime } from "luxon"
 
 async function getDescriptionForStatus(options: {
   db: DbWithEntities
@@ -100,7 +101,7 @@ export const shipmentPackageRouter = router({
         packageStatus: z.custom<PackageStatus>((val) =>
           SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
         ),
-        createdAt: z.date(),
+        createdAt: z.string(),
         createdById: z.string().length(28),
         isFailedAttempt: z.boolean().default(false),
       }),
@@ -173,7 +174,7 @@ export const shipmentPackageRouter = router({
         packageStatus: z.custom<PackageStatus>((val) =>
           SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
         ),
-        createdAt: z.date(),
+        createdAt: z.string(),
         createdById: z.string().length(28),
         isFailedAttempt: z.boolean().default(false),
       }),

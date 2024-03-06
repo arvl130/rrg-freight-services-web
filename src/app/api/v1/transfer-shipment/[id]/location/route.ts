@@ -5,6 +5,7 @@ import {
 import { db } from "@/server/db/client"
 import { shipments, shipmentLocations } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
+import { DateTime } from "luxon"
 import type { ResultSetHeader } from "mysql2"
 import { ZodError, z } from "zod"
 
@@ -137,11 +138,13 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
       )
     }
 
+    const createdAt = DateTime.now().toISO()
     const createdById = session.user.uid
     const [result] = (await db.insert(shipmentLocations).values({
       shipmentId: transferShipmentId,
       long: location.long,
       lat: location.lat,
+      createdAt,
       createdById,
     })) as unknown as [ResultSetHeader]
 

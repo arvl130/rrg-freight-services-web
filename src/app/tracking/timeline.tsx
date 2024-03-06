@@ -34,7 +34,7 @@ function TimelineItem({
       </div>
       <div className="ml-4">
         <div className="text-gray-600">
-          {DateTime.fromJSDate(packageStatusLog.createdAt).toLocaleString(
+          {DateTime.fromISO(packageStatusLog.createdAt).toLocaleString(
             DateTime.DATETIME_FULL,
           )}
         </div>

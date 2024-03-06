@@ -44,11 +44,9 @@ export const shipments = mysqlTable("shipments", {
     .autoincrement(),
   type: mysqlEnum("type", SUPPORTED_SHIPMENT_TYPES).notNull(),
   status: mysqlEnum("status", SUPPORTED_SHIPMENT_STATUSES).notNull(),
-  createdAt: timestamp("created_at", {
-    mode: "date",
-  })
-    .notNull()
-    .defaultNow(),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
@@ -102,11 +100,9 @@ export const shipmentLocations = mysqlTable("shipment_locations", {
     precision: 12,
     scale: 9,
   }).notNull(),
-  createdAt: timestamp("created_at", {
-    mode: "date",
-  })
-    .notNull()
-    .defaultNow(),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
 
@@ -270,11 +266,9 @@ export const packages = mysqlTable("packages", {
   }).notNull(),
   receiverPostalCode: int("receiver_postal_code").notNull(),
   proofOfDeliveryImgUrl: text("proof_of_delivery_img_url"),
-  createdAt: timestamp("created_at", {
-    mode: "date",
-  })
-    .notNull()
-    .defaultNow(),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
   updatedAt: timestamp("updated_at", {
     mode: "date",
@@ -306,11 +300,9 @@ export const packageStatusLogs = mysqlTable("package_status_logs", {
   description: varchar("description", {
     length: 255,
   }).notNull(),
-  createdAt: timestamp("created_at", {
-    mode: "date",
-  })
-    .notNull()
-    .defaultNow(),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
 

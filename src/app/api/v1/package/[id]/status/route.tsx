@@ -7,6 +7,7 @@ import {
   SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"
 import { eq } from "drizzle-orm"
+import { DateTime } from "luxon"
 import { ZodError, z } from "zod"
 
 const inputSchema = z
@@ -98,7 +99,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
       })
       .where(eq(packages.id, input.packageId))
 
-    const createdAt = new Date()
+    const createdAt = DateTime.now().toISO()
     const createdById = session.user.uid
 
     if (

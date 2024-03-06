@@ -100,10 +100,10 @@ function LogEntries({ packageId }: { packageId: string }) {
         >
           <div>
             <p className="text-right">
-              {DateTime.fromJSDate(statusLog.createdAt).toFormat("LLL d")}
+              {DateTime.fromISO(statusLog.createdAt).toFormat("LLL d")}
             </p>
             <p className="text-gray-500 text-sm text-right">
-              {DateTime.fromJSDate(statusLog.createdAt).toLocaleString(
+              {DateTime.fromISO(statusLog.createdAt).toLocaleString(
                 DateTime.TIME_SIMPLE,
               )}
             </p>

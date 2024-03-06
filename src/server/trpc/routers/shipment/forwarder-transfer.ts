@@ -14,6 +14,7 @@ import { TRPCError } from "@trpc/server"
 import { and, count, eq } from "drizzle-orm"
 import { alias } from "drizzle-orm/mysql-core"
 import { createLog } from "@/utils/logging"
+import { DateTime } from "luxon"
 
 export const forwarderTransferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -184,9 +185,11 @@ export const forwarderTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
       const [{ insertId: shipmentId }] = await ctx.db.insert(shipments).values({
         type: "TRANSFER_FORWARDER",
         status: "PREPARING",
+        createdAt,
       })
 
       await ctx.db.insert(forwarderTransferShipments).values({
@@ -217,7 +220,7 @@ export const forwarderTransferShipmentRouter = router({
           description: getDescriptionForNewPackageStatusLog({
             status: "SORTING",
           }),
-          createdAt: new Date(),
+          createdAt,
         })
       }
 

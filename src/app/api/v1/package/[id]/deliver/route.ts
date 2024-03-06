@@ -3,6 +3,7 @@ import { db } from "@/server/db/client"
 import { packageStatusLogs, packages } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { eq } from "drizzle-orm"
+import { DateTime } from "luxon"
 import { z } from "zod"
 
 const inputSchema = z.object({
@@ -73,8 +74,10 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     })
     .where(eq(packages.id, id))
 
+  const createdAt = DateTime.now().toISO()
   await db.insert(packageStatusLogs).values({
     packageId: id,
+    createdAt,
     createdById: session.user.uid,
     description: getDescriptionForNewPackageStatusLog({
       status: "DELIVERED",
