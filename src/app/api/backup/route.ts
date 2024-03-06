@@ -54,11 +54,12 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const entity = searchParams.get("entity")
   const startAt = DateTime.now()
+    .setZone("Asia/Manila")
     .minus({
       month: 1,
     })
     .startOf("month")
-    .toISO()
+    .toISO()!
 
   const parseResult = inputSchema.safeParse({
     entity,
