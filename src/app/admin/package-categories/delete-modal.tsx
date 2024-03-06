@@ -11,9 +11,9 @@ function DeleteForm({
   close: () => void
 }) {
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.packageCategories.deleteById.useMutation({
+  const { mutate, isLoading } = api.packageCategory.deleteById.useMutation({
     onSuccess: () => {
-      apiUtils.packageCategories.getAll.invalidate()
+      apiUtils.packageCategory.getAll.invalidate()
       close()
     },
   })
@@ -58,7 +58,7 @@ export function DeleteModal({
     status,
     data: category,
     error,
-  } = api.packageCategories.getById.useQuery({
+  } = api.packageCategory.getById.useQuery({
     id,
   })
   return (

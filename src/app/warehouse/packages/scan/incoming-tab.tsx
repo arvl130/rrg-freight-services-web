@@ -200,7 +200,7 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
   const packagesQuery = api.package.getWithLatestStatusByShipmentId.useQuery({
     shipmentId,
   })
-  const packageCategoriesQuery = api.packageCategories.getAll.useQuery()
+  const packageCategoriesQuery = api.packageCategory.getAll.useQuery()
   const [scannedPackages, setScannedPackages] = useState<SelectedPackage[]>([])
 
   const utils = api.useUtils()

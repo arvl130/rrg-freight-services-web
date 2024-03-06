@@ -32,12 +32,12 @@ function EditForm({
   })
 
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.packageCategories.updateById.useMutation({
+  const { mutate, isLoading } = api.packageCategory.updateById.useMutation({
     onSuccess: () => {
-      apiUtils.packageCategories.getById.invalidate({
+      apiUtils.packageCategory.getById.invalidate({
         id: category.id,
       })
-      apiUtils.packageCategories.getAll.invalidate()
+      apiUtils.packageCategory.getAll.invalidate()
       close()
       reset()
     },
@@ -91,7 +91,7 @@ export function EditModal({
     status,
     data: category,
     error,
-  } = api.packageCategories.getById.useQuery({
+  } = api.packageCategory.getById.useQuery({
     id,
   })
   return (

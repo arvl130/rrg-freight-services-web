@@ -16,7 +16,7 @@ import type {
   packageStatusLogs,
   activities,
   packageCategories,
-  pushSubscriptions,
+  webpushSubscriptions,
   webauthnCredentials,
 } from "./schema"
 
@@ -82,8 +82,8 @@ export type NewPackageCategory = typeof packageCategories.$inferInsert
 export type Warehouse = typeof warehouses.$inferSelect
 export type NewWarehouse = typeof warehouses.$inferInsert
 
-export type PushSubscription = typeof pushSubscriptions.$inferSelect
-export type NewPushSubscription = typeof pushSubscriptions.$inferInsert
+export type WebpushSubscription = typeof webpushSubscriptions.$inferSelect
+export type NewWebpushSubscription = typeof webpushSubscriptions.$inferInsert
 
 export type WebauthnCredential = typeof webauthnCredentials.$inferSelect
 export type NewWebauthnCredential = typeof webauthnCredentials.$inferInsert

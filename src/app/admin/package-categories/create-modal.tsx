@@ -22,9 +22,9 @@ function CreateForm({ close }: { close: () => void }) {
   })
 
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.packageCategories.create.useMutation({
+  const { mutate, isLoading } = api.packageCategory.create.useMutation({
     onSuccess: () => {
-      apiUtils.packageCategories.getAll.invalidate()
+      apiUtils.packageCategory.getAll.invalidate()
       close()
       reset()
     },

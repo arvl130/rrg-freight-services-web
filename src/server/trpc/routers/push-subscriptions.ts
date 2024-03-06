@@ -1,6 +1,6 @@
 import { serverEnv } from "@/server/env.mjs"
 import { protectedProcedure, router } from "../trpc"
-import { pushSubscriptions } from "@/server/db/schema"
+import { webpushSubscriptions } from "@/server/db/schema"
 import { clientEnv } from "@/utils/env.mjs"
 import { sendNotification, setVapidDetails } from "web-push"
 import { z } from "zod"
@@ -13,7 +13,7 @@ setVapidDetails(
   serverEnv.WEB_PUSH_PRIVATE_KEY,
 )
 
-export const pushSubscriptionsRouter = router({
+export const webpushSubscriptionRouter = router({
   testPublish: protectedProcedure
     .input(
       z.object({
@@ -23,8 +23,8 @@ export const pushSubscriptionsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const subscriptions = await ctx.db
         .select()
-        .from(pushSubscriptions)
-        .where(eq(pushSubscriptions.id, stringToSha256Hash(input.endpoint)))
+        .from(webpushSubscriptions)
+        .where(eq(webpushSubscriptions.id, stringToSha256Hash(input.endpoint)))
 
       const sendPromises = subscriptions.map((s) => {
         const payload = JSON.stringify({
@@ -54,8 +54,8 @@ export const pushSubscriptionsRouter = router({
 
       if (failedEndpoints.length > 0)
         await ctx.db
-          .delete(pushSubscriptions)
-          .where(inArray(pushSubscriptions.id, failedEndpoints))
+          .delete(webpushSubscriptions)
+          .where(inArray(webpushSubscriptions.id, failedEndpoints))
 
       return results
     }),
@@ -71,7 +71,7 @@ export const pushSubscriptionsRouter = router({
       }),
     )
     .mutation(({ ctx, input }) => {
-      return ctx.db.insert(pushSubscriptions).values({
+      return ctx.db.insert(webpushSubscriptions).values({
         id: stringToSha256Hash(input.endpoint),
         endpoint: input.endpoint,
         expirationTime: input.expirationTime,
@@ -87,7 +87,7 @@ export const pushSubscriptionsRouter = router({
     )
     .mutation(({ ctx, input }) => {
       return ctx.db
-        .delete(pushSubscriptions)
-        .where(eq(pushSubscriptions.endpoint, input.endpoint))
+        .delete(webpushSubscriptions)
+        .where(eq(webpushSubscriptions.endpoint, input.endpoint))
     }),
 })

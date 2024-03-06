@@ -6,8 +6,8 @@ import { packageStatusLogRouter } from "./package-status-logs"
 import { vehicleRouter } from "./vehicle"
 import { warehouseRouter } from "./warehouse"
 import { shipmentRouter } from "./shipment/shipment"
-import { packageCategoriesRouter } from "./package-categories"
-import { pushSubscriptionsRouter } from "./push-subscriptions"
+import { packageCategoryRouter } from "./package-categories"
+import { webpushSubscriptionRouter } from "./push-subscriptions"
 import { activityRouter } from "./activity"
 import { webauthnRouter } from "./webauthn"
 
@@ -29,8 +29,8 @@ export const rootRouter = router({
   shipment: shipmentRouter,
   vehicle: vehicleRouter,
   warehouse: warehouseRouter,
-  packageCategories: packageCategoriesRouter,
-  pushSubscriptions: pushSubscriptionsRouter,
+  packageCategory: packageCategoryRouter,
+  webpushSubscription: webpushSubscriptionRouter,
   activity: activityRouter,
   webauthn: webauthnRouter,
 })

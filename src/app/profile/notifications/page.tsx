@@ -49,7 +49,7 @@ function ToggleButtons(props: {
   })
 
   const createPushSubscriptionMutation =
-    api.pushSubscriptions.create.useMutation()
+    api.webpushSubscription.create.useMutation()
 
   const unsubscribeMutation = useMutation({
     mutationKey: ["unsubscribeToPushNotifications"],
@@ -68,7 +68,7 @@ function ToggleButtons(props: {
   })
 
   const deletePushSubscriptionMutation =
-    api.pushSubscriptions.delete.useMutation()
+    api.webpushSubscription.delete.useMutation()
 
   const isButtonDisabled =
     subscribeMutation.isLoading ||
@@ -133,7 +133,8 @@ function TestNotificationsButton(props: {
   endpoint: string
   isMutating: boolean
 }) {
-  const { isLoading, mutate } = api.pushSubscriptions.testPublish.useMutation()
+  const { isLoading, mutate } =
+    api.webpushSubscription.testPublish.useMutation()
 
   return (
     <button

@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm"
 import { TRPCError } from "@trpc/server"
 import { createLog } from "@/utils/logging"
 
-export const packageCategoriesRouter = router({
+export const packageCategoryRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(packageCategories)
   }),

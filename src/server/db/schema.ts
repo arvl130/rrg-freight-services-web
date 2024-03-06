@@ -325,7 +325,7 @@ export const activities = mysqlTable("activities", {
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
-export const pushSubscriptions = mysqlTable("push_subscriptions", {
+export const webpushSubscriptions = mysqlTable("webpush_subscriptions", {
   id: varchar("id", {
     length: 64,
   }).primaryKey(),

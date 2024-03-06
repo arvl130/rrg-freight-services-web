@@ -194,7 +194,7 @@ function PackageCategories() {
     status,
     data: categories,
     error,
-  } = api.packageCategories.getAll.useQuery(undefined, {
+  } = api.packageCategory.getAll.useQuery(undefined, {
     enabled: user !== null && role === "ADMIN",
   })
   return (
