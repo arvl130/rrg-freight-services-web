@@ -189,7 +189,6 @@ export const forwarderTransferShipmentRouter = router({
       const [{ insertId: shipmentId }] = await ctx.db.insert(shipments).values({
         type: "TRANSFER_FORWARDER",
         status: "PREPARING",
-        createdAt,
       })
 
       await ctx.db.insert(forwarderTransferShipments).values({

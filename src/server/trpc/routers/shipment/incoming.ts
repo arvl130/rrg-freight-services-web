@@ -217,7 +217,6 @@ export const incomingShipmentRouter = router({
         const [{ insertId: shipmentId }] = await tx.insert(shipments).values({
           type: "INCOMING",
           status: "IN_TRANSIT",
-          createdAt,
         })
 
         await tx.insert(incomingShipments).values({

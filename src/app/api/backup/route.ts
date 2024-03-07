@@ -19,7 +19,7 @@ import {
   webpushSubscriptions,
   incomingShipments,
 } from "@/server/db/schema"
-import { gt } from "drizzle-orm"
+import { eq, gt } from "drizzle-orm"
 import { DateTime } from "luxon"
 import type { NextRequest } from "next/server"
 import { z } from "zod"
@@ -29,7 +29,6 @@ const inputSchema = z.object({
   entity: z
     .union([
       z.literal("USERS"),
-      z.literal("SHIPMENTS"),
       z.literal("SHIPMENT_PACKAGES"),
       z.literal("SHIPMENT_PACKAGE_OTPS"),
       z.literal("SHIPMENT_LOCATIONS"),
@@ -92,21 +91,32 @@ export async function GET(req: NextRequest) {
     const entity = await db
       .select()
       .from(deliveryShipments)
+      .innerJoin(shipments, eq(shipments.id, deliveryShipments.shipmentId))
       .where(gt(deliveryShipments.createdAt, startAt))
 
     return Response.json({
       message: `Entity retrieved starting ${startAt}`,
-      entity,
+      entity: entity.map(({ shipments, delivery_shipments }) => ({
+        ...shipments,
+        ...delivery_shipments,
+      })),
     })
   } else if (parseResult.data.entity === "FORWARDER_TRANSFER_SHIPMENTS") {
     const entity = await db
       .select()
       .from(forwarderTransferShipments)
+      .innerJoin(
+        shipments,
+        eq(shipments.id, forwarderTransferShipments.shipmentId),
+      )
       .where(gt(forwarderTransferShipments.createdAt, startAt))
 
     return Response.json({
       message: `Entity retrieved starting ${startAt}`,
-      entity,
+      entity: entity.map(({ shipments, forwarder_transfer_shipments }) => ({
+        ...shipments,
+        ...forwarder_transfer_shipments,
+      })),
     })
   } else if (parseResult.data.entity === "PACKAGES") {
     const entity = await db
@@ -133,16 +143,6 @@ export async function GET(req: NextRequest) {
       .select()
       .from(packageStatusLogs)
       .where(gt(packageStatusLogs.createdAt, startAt))
-
-    return Response.json({
-      message: `Entity retrieved starting ${startAt}`,
-      entity,
-    })
-  } else if (parseResult.data.entity === "SHIPMENTS") {
-    const entity = await db
-      .select()
-      .from(shipments)
-      .where(gt(shipments.createdAt, startAt))
 
     return Response.json({
       message: `Entity retrieved starting ${startAt}`,
@@ -212,11 +212,18 @@ export async function GET(req: NextRequest) {
     const entity = await db
       .select()
       .from(warehouseTransferShipments)
+      .innerJoin(
+        shipments,
+        eq(shipments.id, warehouseTransferShipments.shipmentId),
+      )
       .where(gt(warehouseTransferShipments.createdAt, startAt))
 
     return Response.json({
       message: `Entity retrieved starting ${startAt}`,
-      entity,
+      entity: entity.map(({ shipments, warehouse_transfer_shipments }) => ({
+        ...shipments,
+        ...warehouse_transfer_shipments,
+      })),
     })
   } else if (parseResult.data.entity === "WEBAUTHN_CHALLENGES") {
     const entity = await db
@@ -252,11 +259,15 @@ export async function GET(req: NextRequest) {
     const entity = await db
       .select()
       .from(incomingShipments)
+      .innerJoin(shipments, eq(shipments.id, incomingShipments.shipmentId))
       .where(gt(incomingShipments.createdAt, startAt))
 
     return Response.json({
       message: `Entity retrieved starting ${startAt}`,
-      entity,
+      entity: entity.map(({ shipments, incoming_shipments }) => ({
+        ...shipments,
+        ...incoming_shipments,
+      })),
     })
   } else {
     const activitiesResults = await db
@@ -267,11 +278,16 @@ export async function GET(req: NextRequest) {
     const deliveryShipmentsResults = await db
       .select()
       .from(deliveryShipments)
+      .innerJoin(shipments, eq(shipments.id, deliveryShipments.shipmentId))
       .where(gt(deliveryShipments.createdAt, startAt))
 
     const forwarderTransferShipmentsResults = await db
       .select()
       .from(forwarderTransferShipments)
+      .innerJoin(
+        shipments,
+        eq(shipments.id, forwarderTransferShipments.shipmentId),
+      )
       .where(gt(forwarderTransferShipments.createdAt, startAt))
 
     const packagesResults = await db
@@ -288,11 +304,6 @@ export async function GET(req: NextRequest) {
       .select()
       .from(packageStatusLogs)
       .where(gt(packageStatusLogs.createdAt, startAt))
-
-    const shipmentsResults = await db
-      .select()
-      .from(shipments)
-      .where(gt(shipments.createdAt, startAt))
 
     const shipmentLocationsResults = await db
       .select()
@@ -327,6 +338,10 @@ export async function GET(req: NextRequest) {
     const warehouseTransferShipmentsResults = await db
       .select()
       .from(warehouseTransferShipments)
+      .innerJoin(
+        shipments,
+        eq(shipments.id, warehouseTransferShipments.shipmentId),
+      )
       .where(gt(warehouseTransferShipments.createdAt, startAt))
 
     const webauthnChallengesResults = await db
@@ -347,27 +362,47 @@ export async function GET(req: NextRequest) {
     const incomingShipmentsResults = await db
       .select()
       .from(incomingShipments)
+      .innerJoin(shipments, eq(shipments.id, incomingShipments.shipmentId))
       .where(gt(incomingShipments.createdAt, startAt))
 
     const entities = {
       activities: activitiesResults,
-      deliveryShipments: deliveryShipmentsResults,
-      forwarderTransferShipments: forwarderTransferShipmentsResults,
+      deliveryShipments: deliveryShipmentsResults.map(
+        ({ shipments, delivery_shipments }) => ({
+          ...shipments,
+          ...delivery_shipments,
+        }),
+      ),
+      forwarderTransferShipments: forwarderTransferShipmentsResults.map(
+        ({ shipments, forwarder_transfer_shipments }) => ({
+          ...shipments,
+          ...forwarder_transfer_shipments,
+        }),
+      ),
       packages: packagesResults,
       packageCategories: packageCategoriesResults,
       packageStatusLogs: packageStatusLogsResults,
-      shipments: shipmentsResults,
       shipmentLocations: shipmentLocationsResults,
       shipmentPackages: shipmentPackagesResults,
       shipmentPackageOtps: shipmentPackageOtpsResults,
       users: usersResults,
       vehicles: vehiclesResults,
       warehouses: warehousesResults,
-      warehouseTransferShipments: warehouseTransferShipmentsResults,
+      warehouseTransferShipments: warehouseTransferShipmentsResults.map(
+        ({ shipments, warehouse_transfer_shipments }) => ({
+          ...shipments,
+          ...warehouse_transfer_shipments,
+        }),
+      ),
       webauthnChallenges: webauthnChallengesResults,
       webauthnCredentials: webauthnCredentialsResults,
       webpushSubscriptions: webpushSubscriptionsResults,
-      incomingShipments: incomingShipmentsResults,
+      incomingShipments: incomingShipmentsResults.map(
+        ({ shipments, incoming_shipments }) => ({
+          ...shipments,
+          ...incoming_shipments,
+        }),
+      ),
     }
 
     const downloadUrl = await uploadJsonToBucket({

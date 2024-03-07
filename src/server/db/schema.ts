@@ -47,9 +47,6 @@ export const shipments = mysqlTable("shipments", {
     .autoincrement(),
   type: mysqlEnum("type", SUPPORTED_SHIPMENT_TYPES).notNull(),
   status: mysqlEnum("status", SUPPORTED_SHIPMENT_STATUSES).notNull(),
-  createdAt: varchar("created_at", {
-    length: 255,
-  }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 

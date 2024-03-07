@@ -322,7 +322,6 @@ export const deliveryShipmentRouter = router({
         const [{ insertId: shipmentId }] = await tx.insert(shipments).values({
           type: "DELIVERY",
           status: "PREPARING",
-          createdAt,
         })
 
         await tx.insert(deliveryShipments).values({
