@@ -99,7 +99,6 @@ export async function POST(
             eq(shipmentPackageOtps.shipmentId, shipmentId),
             eq(shipmentPackageOtps.packageId, packageId),
             eq(shipmentPackageOtps.isValid, 1),
-            gt(shipmentPackageOtps.expireAt, date.toISO()),
           ),
         )
 
