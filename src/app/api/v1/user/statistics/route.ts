@@ -7,7 +7,7 @@ import {
   packages,
 } from "@/server/db/schema"
 import { serverEnv } from "@/server/env.mjs"
-import { eq, and } from "drizzle-orm"
+import { eq, and, or } from "drizzle-orm"
 
 type Coordinates = {
   lat: number
@@ -49,8 +49,11 @@ export async function GET(req: Request) {
     .where(
       and(
         eq(shipments.status, "IN_TRANSIT"),
-        eq(shipmentPackages.status, "IN_TRANSIT"),
         eq(deliveryShipments.driverId, session.user.uid),
+        or(
+          eq(shipmentPackages.status, "IN_TRANSIT"),
+          eq(shipmentPackages.status, "COMPLETED"),
+        ),
       ),
     )
 
