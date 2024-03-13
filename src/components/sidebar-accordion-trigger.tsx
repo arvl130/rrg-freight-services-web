@@ -19,7 +19,7 @@ export function SidebarAccordionTrigger(props: {
     <AccordionTrigger
       className={`
         AccordionTrigger
-        grid ${
+        grid items-center ${
           props.isMinimized
             ? "grid-cols-[4rem] group-hover:grid-cols-[4rem_10rem_2rem]"
             : "grid-cols-[4rem_10rem_2rem]"
