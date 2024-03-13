@@ -138,7 +138,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
 
   const [selectedTab, setSelectedTab] = useState<
     "EXPRESS" | "STANDARD" | "ALL"
-  >("EXPRESS")
+  >("STANDARD")
 
   const [searchTerm, setSearchTerm] = useState("")
   const visiblePackages = filterBySearchTerm(

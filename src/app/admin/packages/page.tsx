@@ -13,7 +13,6 @@ import * as Page from "@/components/page"
 import { ViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { ViewDetailsModal } from "@/components/packages/view-details-modal"
 import { EditDetailsModal } from "./edit-details-modal"
-import { EditStatusModal } from "./edit-status-modal"
 import type { PackageShippingType } from "@/utils/constants"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { getColorFromPackageStatus } from "@/utils/colors"
@@ -148,7 +147,7 @@ function PackagesTable({ packages }: { packages: Package[] }) {
 
   const [selectedTab, setSelectedTab] = useState<
     "EXPRESS" | "STANDARD" | "ALL"
-  >("EXPRESS")
+  >("STANDARD")
 
   const [searchTerm, setSearchTerm] = useState("")
   const visiblePackages = filterBySearchTerm(

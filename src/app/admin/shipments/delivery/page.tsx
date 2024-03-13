@@ -128,7 +128,7 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
 
   const [selectedTab, setSelectedTab] = useState<
     "EXPRESS" | "STANDARD" | "ALL"
-  >("EXPRESS")
+  >("STANDARD")
 
   const [searchTerm, setSearchTerm] = useState("")
   const visibleItems = filterBySearchTerm(
