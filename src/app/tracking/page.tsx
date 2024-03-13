@@ -246,9 +246,15 @@ function HeroSection() {
   )
 }
 
-export default function TrackingPage() {
+export default function TrackingPage({
+  searchParams,
+}: {
+  searchParams?: {
+    id?: string
+  }
+}) {
   const [selectedPackageId, setSelectedPackageId] = useState<null | string>(
-    null,
+    searchParams?.id ?? null,
   )
 
   return (
