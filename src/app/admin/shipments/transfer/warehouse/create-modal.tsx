@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import toast from "react-hot-toast"
 import { REGEX_ONE_OR_MORE_DIGITS } from "@/utils/constants"
+import { X } from "@phosphor-icons/react/dist/ssr/X"
 
 function PackagesTableItem({
   selectedPackageIds,
@@ -369,6 +370,16 @@ export function CreateModal({
               </button>
             </div>
           </form>
+          <Dialog.Close asChild>
+            <button
+              type="button"
+              className="text-white absolute top-3 right-3"
+              onClick={close}
+            >
+              <X size={20} />
+              <span className="sr-only">Close</span>
+            </button>
+          </Dialog.Close>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

@@ -17,6 +17,7 @@ import {
 } from "@/utils/constants"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
+import { X } from "@phosphor-icons/react/dist/ssr/X"
 import type { User } from "@/server/db/entities"
 
 const selectFileFormSchema = z.object({
@@ -450,6 +451,16 @@ export function CreateModal({
               />
             )}
           </div>
+          <Dialog.Close asChild>
+            <button
+              type="button"
+              className="text-white absolute top-3 right-3"
+              onClick={close}
+            >
+              <X size={20} />
+              <span className="sr-only">Close</span>
+            </button>
+          </Dialog.Close>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
