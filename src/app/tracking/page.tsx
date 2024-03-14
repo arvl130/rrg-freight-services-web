@@ -30,6 +30,146 @@ function TrackingPageHead() {
   )
 }
 
+function First() {
+  return (
+    <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
+      <div className="border-2 border-black rounded-full p-4">
+        <Package size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <Truck size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <Path size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <MapPin size={44} color="#1d798b" />
+      </div>
+      <div className="text-center">Handed Over</div>
+      <div></div>
+      <div className="text-center">In Transit</div>
+      <div></div>
+      <div className="text-center">Out for Delivery</div>
+      <div></div>
+      <div className="text-center">Delivered</div>
+    </section>
+  )
+}
+
+function Second() {
+  return (
+    <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
+      <div className="border-2 border-black rounded-full p-4">
+        <Package size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="h-1 w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <Truck size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <Path size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <MapPin size={44} color="#1d798b" />
+      </div>
+      <div className="text-center">Handed Over</div>
+      <div></div>
+      <div className="text-center">In Transit</div>
+      <div></div>
+      <div className="text-center">Out for Delivery</div>
+      <div></div>
+      <div className="text-center">Delivered</div>
+    </section>
+  )
+}
+
+function Third() {
+  return (
+    <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
+      <div className="border-2 border-black rounded-full p-4">
+        <Package size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="h-1 w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <Truck size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="h-1 w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <Path size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <MapPin size={44} color="#1d798b" />
+      </div>
+      <div className="text-center">Handed Over</div>
+      <div></div>
+      <div className="text-center">In Transit</div>
+      <div></div>
+      <div className="text-center">Out for Delivery</div>
+      <div></div>
+      <div className="text-center">Delivered</div>
+    </section>
+  )
+}
+
+function Fourth() {
+  return (
+    <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
+      <div className="border-2 border-black rounded-full p-4">
+        <Package size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="h-1 w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <Truck size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="h-1 w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <Path size={44} color="#1d798b" />
+      </div>
+      <div className="flex items-center">
+        <div className="h-1 w-full bg-[#A4D8D8]"></div>
+      </div>
+      <div className="border-2 border-black rounded-full p-4">
+        <MapPin size={44} color="#1d798b" />
+      </div>
+      <div className="text-center">Handed Over</div>
+      <div></div>
+      <div className="text-center">In Transit</div>
+      <div></div>
+      <div className="text-center">Out for Delivery</div>
+      <div></div>
+      <div className="text-center">Delivered</div>
+    </section>
+  )
+}
+
 function censorWords(words: string) {
   return words.replaceAll(/(?<=\w{2,})\w/g, "*")
 }
@@ -57,49 +197,28 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
 
   if (status === "loading")
     return (
-      <>
-        <div className="flex justify-center py-10">
-          <LoadingSpinner></LoadingSpinner>
-        </div>
-      </>
+      <div className="flex justify-center py-10">
+        <LoadingSpinner></LoadingSpinner>
+      </div>
     )
+
   if (status === "error")
     return (
-      <>
-        <div className="flex justify-center py-10">
-          <p className="text-xl text-red font-semibold">Package not found.</p>
-        </div>
-      </>
+      <div className="flex justify-center py-10">
+        <p className="text-xl text-red font-semibold">Package not found.</p>
+      </div>
     )
 
   return (
     <>
-      <section className="max-w-4xl mx-auto flex justify-between mb-6">
-        <div className="flex flex-col items-center">
-          <div className="outline black rounded-full p-4 mb-6">
-            <Package size={44} color="#1d798b" />
-          </div>
-          <div>Handed Over</div>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="outline black rounded-full p-4 mb-6">
-            <Truck size={44} color="#1d798b" />
-          </div>
-          <div>In Transit</div>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="outline black rounded-full p-4 mb-6">
-            <Path size={44} color="#1d798b" />
-          </div>
-          <div>Out for Delivery</div>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="outline black rounded-full p-4 mb-6">
-            <MapPin size={44} color="#1d798b" />
-          </div>
-          <div>Delivered</div>
-        </div>
-      </section>
+      {_package.status === "INCOMING" && <First />}
+      {_package.status === "IN_WAREHOUSE" && <Second />}
+      {_package.status === "SORTING" && <Second />}
+      {_package.status === "DELIVERING" && <Third />}
+      {_package.status === "DELIVERED" && <Fourth />}
+      {_package.status === "TRANSFERRING_WAREHOUSE" && <Second />}
+      {_package.status === "TRANSFERRING_FORWARDER" && <Third />}
+      {_package.status === "TRANSFERRED_FORWARDER" && <Fourth />}
 
       <section className="max-w-4xl mx-auto">
         <div className="grid grid-cols-[2fr,_3fr] gap-4">
@@ -182,7 +301,7 @@ function ChoosePackageForm({
   })
 
   return (
-    <div className="px-16 mb-14 w-full md:w-full md:mx-auto md:grid md:grid-cols-[auto_1fr] md:gap-4 md:my-6 lg:px-52 ">
+    <div className="px-16 mb-14 w-full md:w-full md:mx-auto md:grid md:grid-cols-[auto_1fr] md:gap-4 md:my-16 lg:px-52 ">
       <div className="bg-[#ACDEE2]  rounded-lg hidden md:block">
         <Image
           src="/assets/img/logos/logo.jpg"
