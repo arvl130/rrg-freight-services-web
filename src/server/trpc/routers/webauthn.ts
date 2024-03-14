@@ -49,7 +49,11 @@ export const webauthnRouter = router({
     }),
   generateRegistrationOptions: protectedProcedure.mutation(async ({ ctx }) => {
     const createdAt = DateTime.now().toISO()
-    const credentials = await ctx.db.select().from(webauthnCredentials)
+    const credentials = await ctx.db
+      .select()
+      .from(webauthnCredentials)
+      .where(eq(webauthnCredentials.userId, ctx.user.uid))
+
     const url = new URL(serverEnv.APP_ORIGIN)
     const options = await generateRegistrationOptions({
       rpID: url.hostname,
