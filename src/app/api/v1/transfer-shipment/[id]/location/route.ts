@@ -1,7 +1,4 @@
-import {
-  getServerSessionFromFetchRequest,
-  getServerSessionFromNextRequest,
-} from "@/server/auth"
+import { getServerSessionFromFetchRequest } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { shipments, shipmentLocations } from "@/server/db/schema"
 import { eq } from "drizzle-orm"

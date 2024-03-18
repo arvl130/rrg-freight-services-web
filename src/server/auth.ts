@@ -80,29 +80,6 @@ export async function updateProfile(
   })
 }
 
-export async function getServerSessionFromNextRequest({
-  req,
-}: {
-  req: GetServerSidePropsContext["req"]
-}) {
-  const { authorization } = req.headers
-  if (!authorization) return null
-
-  try {
-    const idToken = authorization.split(" ")[1]
-    const token = await auth.verifyIdToken(idToken)
-    const user = await auth.getUser(token.uid)
-
-    return {
-      user,
-      token,
-    }
-  } catch {
-    // If verification fails, then we have no session.
-    return null
-  }
-}
-
 export async function getServerSessionFromFetchRequest({
   req,
 }: {
