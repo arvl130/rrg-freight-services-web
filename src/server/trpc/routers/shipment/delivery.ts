@@ -116,7 +116,7 @@ export const deliveryShipmentRouter = router({
         value: count(),
       })
       .from(deliveryShipments)
-      .where(eq(deliveryShipments.driverId, ctx.user.uid))
+      .where(eq(deliveryShipments.driverId, ctx.user.id))
 
     return {
       count: value,
@@ -133,7 +133,7 @@ export const deliveryShipmentRouter = router({
 
         .where(
           and(
-            eq(deliveryShipments.driverId, ctx.user.uid),
+            eq(deliveryShipments.driverId, ctx.user.id),
             eq(shipments.status, "COMPLETED"),
           ),
         )
@@ -154,7 +154,7 @@ export const deliveryShipmentRouter = router({
 
         .where(
           and(
-            eq(deliveryShipments.driverId, ctx.user.uid),
+            eq(deliveryShipments.driverId, ctx.user.id),
             eq(shipments.status, "FAILED"),
           ),
         )
@@ -175,7 +175,7 @@ export const deliveryShipmentRouter = router({
 
         .where(
           and(
-            eq(deliveryShipments.driverId, ctx.user.uid),
+            eq(deliveryShipments.driverId, ctx.user.id),
             eq(shipments.status, "IN_TRANSIT"),
           ),
         )
@@ -196,7 +196,7 @@ export const deliveryShipmentRouter = router({
 
         .where(
           and(
-            eq(deliveryShipments.driverId, ctx.user.uid),
+            eq(deliveryShipments.driverId, ctx.user.id),
             eq(shipments.status, "PREPARING"),
           ),
         )
@@ -223,7 +223,7 @@ export const deliveryShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "DELIVERY_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
     }),
   updateStatusToCompletedById: protectedProcedure
@@ -243,7 +243,7 @@ export const deliveryShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "DELIVERY_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
     }),
   create: protectedProcedure
@@ -273,7 +273,7 @@ export const deliveryShipmentRouter = router({
       const createdAt = DateTime.now().toISO()
       const newPackageStatusLogs = input.packageIds.map((packageId) => ({
         packageId,
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
         description: getDescriptionForNewPackageStatusLog({
           status: "SORTING",
         }),
@@ -367,7 +367,7 @@ export const deliveryShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "CREATE",
         entity: "DELIVERY_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
     }),
 })

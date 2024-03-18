@@ -19,7 +19,7 @@ export const webauthnRouter = router({
     return await ctx.db
       .select()
       .from(webauthnCredentials)
-      .where(eq(webauthnCredentials.userId, ctx.user.uid))
+      .where(eq(webauthnCredentials.userId, ctx.user.id))
   }),
   deleteCredentialById: protectedProcedure
     .input(
@@ -52,14 +52,14 @@ export const webauthnRouter = router({
     const credentials = await ctx.db
       .select()
       .from(webauthnCredentials)
-      .where(eq(webauthnCredentials.userId, ctx.user.uid))
+      .where(eq(webauthnCredentials.userId, ctx.user.id))
 
     const url = new URL(serverEnv.APP_ORIGIN)
     const options = await generateRegistrationOptions({
       rpID: url.hostname,
       rpName: serverEnv.APP_NAME,
-      userID: ctx.user.uid,
-      userName: ctx.user.uid,
+      userID: ctx.user.id,
+      userName: ctx.user.id,
       attestationType: "none",
       authenticatorSelection: {
         userVerification: "preferred",
@@ -75,7 +75,7 @@ export const webauthnRouter = router({
       await ctx.db
         .insert(webauthnChallenges)
         .values({
-          userId: ctx.user.uid,
+          userId: ctx.user.id,
           challenge: options.challenge,
           createdAt,
         })
@@ -100,7 +100,7 @@ export const webauthnRouter = router({
     .mutation(async ({ ctx, input }) => {
       const createdAt = DateTime.now().toISO()
       const challenge = await ctx.db.query.webauthnChallenges.findFirst({
-        where: eq(webauthnChallenges.userId, ctx.user.uid),
+        where: eq(webauthnChallenges.userId, ctx.user.id),
       })
 
       if (!challenge) {
@@ -127,7 +127,7 @@ export const webauthnRouter = router({
 
       await ctx.db.insert(webauthnCredentials).values({
         id: isoUint8Array.toHex(info.credentialID),
-        userId: ctx.user.uid,
+        userId: ctx.user.id,
         deviceName: input.deviceName,
         key: Buffer.from(info.credentialPublicKey).toString("hex"),
         counter: info.counter,

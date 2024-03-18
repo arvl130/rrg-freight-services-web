@@ -1,3 +1,4 @@
+import { generateId } from "lucia"
 import { customAlphabet } from "nanoid"
 
 const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -8,4 +9,8 @@ export function generateUniqueId() {
 
 export function generateOtp() {
   return Math.floor(Math.random() * 900000) + 100000
+}
+
+export function generateUserId() {
+  return generateId(28)
 }

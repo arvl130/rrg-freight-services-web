@@ -1,20 +1,16 @@
-import { useSession } from "@/hooks/session"
+"use client"
+
 import { Gauge } from "@phosphor-icons/react/dist/ssr/Gauge"
 import { Package } from "@phosphor-icons/react/dist/ssr/Package"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
-import type { User } from "firebase/auth"
 import Image from "next/image"
 import { useState, type ReactNode } from "react"
-import {
-  SkeletonGenericLayout,
-  GenericHeader,
-} from "@/components/generic-layout"
-import { LoginPageHead } from "@/app/login/login-page-head"
-import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
+import { GenericHeader } from "@/components/generic-layout"
 import * as Accordion from "@radix-ui/react-accordion"
 import { SidebarLink } from "@/components/sidebar-link"
 import { LogoutButton } from "@/components/logout-button"
+import type { User } from "lucia"
 
 export function DomesticSideBar(props: { isMinimized: boolean }) {
   return (
@@ -93,71 +89,20 @@ export function SkeletonDomesticLayout() {
   )
 }
 
-type WithFunctionChildren = {
-  hasSession: true
-  children: ({
-    user,
-    role,
-  }: {
-    user: User
-    role: "DOMESTIC_AGENT"
-    reload: () => Promise<void>
-  }) => ReactNode
-}
-
-type WithNodeChildren = {
-  hasSession?: false
-  children?: ReactNode
-}
-
-type LayoutProps = {
+export function DomesticLayout({
+  title,
+  children,
+  user,
+}: {
   title: string | string[]
-} & (WithFunctionChildren | WithNodeChildren)
-
-export function DomesticLayout({ title, children }: LayoutProps) {
+  children: ReactNode
+  user: User
+}) {
   const titleContent = Array.isArray(title)
     ? `${title.toReversed().join(" \u2013 ")} \u2013 RRG Freight Services`
     : `${title} \u2013 RRG Freight Services`
 
-  const { isLoading, user, role, reload } = useSession({
-    required: {
-      role: "DOMESTIC_AGENT",
-    },
-  })
-
   const [isLayoutMinimized, setIsLayoutMinimized] = useState(true)
-
-  if (isLoading)
-    return (
-      <>
-        <title>RRG Freight Services</title>
-        <meta
-          name="description"
-          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-        />
-        <main className="min-h-dvh bg-brand-cyan-100"></main>
-      </>
-    )
-
-  if (user === null)
-    return (
-      <>
-        <LoginPageHead />
-        <SkeletonLoginPage />
-      </>
-    )
-
-  if (role !== "DOMESTIC_AGENT")
-    return (
-      <>
-        <title>Dashboard &#x2013; RRG Freight Services</title>
-        <meta
-          name="description"
-          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-        />
-        <SkeletonGenericLayout />
-      </>
-    )
 
   return (
     <>
@@ -181,28 +126,7 @@ export function DomesticLayout({ title, children }: LayoutProps) {
               setIsLayoutMinimized((prev) => !prev)
             }}
           />
-          <div>
-            {typeof children === "function" ? (
-              <>
-                {/* When `children` is of type function, we can assume
-                    `hasSession` is also defined, so let's provide the
-                    session information.
-                */}
-                {children({
-                  user,
-                  role,
-                  reload,
-                })}
-              </>
-            ) : (
-              <>
-                {/* When `children` is not of type function, `hasSession`
-                    is not defined, so don't provide any session information.
-                */}
-                {children}
-              </>
-            )}
-          </div>
+          <div>{children}</div>
         </div>
       </div>
     </>

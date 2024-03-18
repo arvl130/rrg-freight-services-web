@@ -148,7 +148,7 @@ export const forwarderTransferShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "TRANSFER_FORWARDER_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -170,7 +170,7 @@ export const forwarderTransferShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "TRANSFER_FORWARDER_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -216,7 +216,7 @@ export const forwarderTransferShipmentRouter = router({
 
         await ctx.db.insert(packageStatusLogs).values({
           packageId,
-          createdById: ctx.user.uid,
+          createdById: ctx.user.id,
           status: "SORTING",
           description: getDescriptionForNewPackageStatusLog({
             status: "SORTING",
@@ -228,7 +228,7 @@ export const forwarderTransferShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "CREATE",
         entity: "TRANSFER_FORWARDER_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
     }),
   confirmTransferById: protectedProcedure
@@ -248,7 +248,7 @@ export const forwarderTransferShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "TRANSFER_FORWARDER_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -265,7 +265,7 @@ export const forwarderTransferShipmentRouter = router({
       )
       .where(
         and(
-          eq(forwarderTransferShipments.sentToAgentId, ctx.user.uid),
+          eq(forwarderTransferShipments.sentToAgentId, ctx.user.id),
           eq(shipments.status, "IN_TRANSIT"),
         ),
       )

@@ -1,13 +1,15 @@
-"use client"
-
 import { OverseasLayout } from "@/app/overseas/auth"
-import { Article } from "@phosphor-icons/react/Article"
-import { CaretRight } from "@phosphor-icons/react/CaretRight"
-import { File } from "@phosphor-icons/react/File"
-import { Package } from "@phosphor-icons/react/Package"
-import { UserCircle } from "@phosphor-icons/react/UserCircle"
-import { api } from "@/utils/api"
-import { count } from "drizzle-orm"
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { File } from "@phosphor-icons/react/dist/ssr/File"
+import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
+import { validateSessionFromCookies } from "@/server/auth"
+import { redirect } from "next/navigation"
+import { getUserRoleRedirectPath } from "@/utils/redirects"
+import {
+  TotalPackageTile,
+  TotalRushPackageTile,
+  TotalUnsendShipmentTile,
+} from "./top-tiles"
 
 const shipments = [
   {
@@ -53,80 +55,6 @@ const shipments = [
     date: "Oct 18,2023",
   },
 ]
-
-function TotalRushPackageTile() {
-  const { status, data } =
-    api.package.getTotalIncomingRushPackageSentByAgentId.useQuery()
-
-  return (
-    <article className="text-[#29727C] grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg bg-gradient-to-b from-[#79CFDCCC] to-[#79CFDC00]">
-      <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">
-          {status === "loading" && <>...</>}
-          {status === "error" && <>error</>}
-          {status === "success" && <>{data.count}</>}
-        </p>
-        <p>Total Rush Package</p>
-      </div>
-      <div>
-        <Package size={96} />
-      </div>
-    </article>
-  )
-}
-function TotalPackageTile() {
-  const { status, data } =
-    api.package.getTotalIncomingPackagesSentByAgentId.useQuery()
-
-  return (
-    <article
-      className="
-        text-[#C61717]
-        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-        bg-gradient-to-b from-[#ED5959CC] to-[#ED595900]
-      "
-    >
-      <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">
-          {status === "loading" && <>...</>}
-          {status === "error" && <>error</>}
-          {status === "success" && <>{data.count}</>}
-        </p>
-        <p>Total Package</p>
-      </div>
-      <div>
-        <Package size={96} />
-      </div>
-    </article>
-  )
-}
-
-function TotalUnsendShipmentTile() {
-  const { status, data } =
-    api.shipment.incoming.getTotalInTransitSentByAgentId.useQuery()
-
-  return (
-    <article
-      className="
-        text-[#AC873C]
-        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-        bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]
-      "
-    >
-      <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">
-          {status === "loading" && <>...</>}
-          {status === "error" && <>error</>}
-          {status === "success" && <>{data.count}</>}
-        </p>
-        <p>Total Unsend Shipment</p>
-      </div>
-      <div>
-        <Article size={96} />
-      </div>
-    </article>
-  )
-}
 
 function ManifestSummaryTile() {
   return (
@@ -373,9 +301,20 @@ function RecentNotificationTile() {
   )
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const sessionResult = await validateSessionFromCookies()
+  if (!sessionResult) {
+    return redirect("/login")
+  }
+
+  const { user } = sessionResult
+  if (user.role !== "OVERSEAS_AGENT") {
+    const redirectPath = getUserRoleRedirectPath(user.role)
+    return redirect(redirectPath)
+  }
+
   return (
-    <OverseasLayout title="Dashboard">
+    <OverseasLayout title="Dashboard" user={user}>
       <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
       <section className="mb-6">
         <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">

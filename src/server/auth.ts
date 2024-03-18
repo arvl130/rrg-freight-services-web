@@ -2,10 +2,15 @@ import { getApps, getApp, initializeApp, cert } from "firebase-admin/app"
 import type { CreateRequest, UserRecord } from "firebase-admin/auth"
 import { getAuth } from "firebase-admin/auth"
 import { getStorage, getDownloadURL } from "firebase-admin/storage"
-import type { GetServerSidePropsContext } from "next"
 import { serverEnv } from "./env.mjs"
-import type { UserRole } from "@/utils/constants"
 import { clientEnv } from "@/utils/env.mjs"
+import { Lucia } from "lucia"
+import { DrizzleMySQLAdapter } from "@lucia-auth/adapter-drizzle"
+import { cache } from "react"
+import { cookies } from "next/headers"
+import type { UserRole } from "@/utils/constants"
+import { db } from "./db/client"
+import { sessions, users } from "./db/schema"
 
 const {
   FIREBASE_ADMIN_PROJECT_ID,
@@ -97,4 +102,94 @@ export async function getServerSession({ req }: { req: Request }) {
     // If verification fails, then we have no session.
     return null
   }
+}
+
+const adapter = new DrizzleMySQLAdapter(db, sessions, users)
+const lucia = new Lucia(adapter, {
+  sessionCookie: {
+    expires: false,
+    attributes: {
+      secure: process.env.NODE_ENV === "production",
+    },
+  },
+  getUserAttributes: (attributes) => {
+    return {
+      role: attributes.role,
+      photoUrl: attributes.photoUrl,
+      displayName: attributes.displayName,
+    }
+  },
+})
+
+declare module "lucia" {
+  interface Register {
+    Lucia: typeof lucia
+    DatabaseUserAttributes: DatabaseUserAttributes
+  }
+}
+
+interface DatabaseUserAttributes {
+  role: UserRole
+  displayName: string
+  photoUrl: string | null
+}
+
+export async function createSessionForUserId(userId: string) {
+  const session = await lucia.createSession(userId, {})
+  const sessionCookie = lucia.createSessionCookie(session.id)
+
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes,
+  )
+}
+
+export const validateSessionFromCookies = cache(async () => {
+  const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null
+  if (!sessionId) {
+    return null
+  }
+
+  const { user, session } = await lucia.validateSession(sessionId)
+  if (!user) {
+    return null
+  }
+
+  // Next.js throws when you attempt to set a cookie when rendering page.
+  try {
+    if (session) {
+      if (session.fresh) {
+        const sessionCookie = lucia.createSessionCookie(session.id)
+        cookies().set(
+          sessionCookie.name,
+          sessionCookie.value,
+          sessionCookie.attributes,
+        )
+      }
+    } else {
+      const sessionCookie = lucia.createBlankSessionCookie()
+      cookies().set(
+        sessionCookie.name,
+        sessionCookie.value,
+        sessionCookie.attributes,
+      )
+    }
+  } catch {}
+
+  return {
+    user,
+    session,
+  }
+})
+
+export async function invalidateSessionById(sessionId: string) {
+  await lucia.invalidateSession(sessionId)
+  const sessionCookie = lucia.createBlankSessionCookie()
+
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes,
+  )
 }

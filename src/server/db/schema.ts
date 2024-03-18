@@ -23,6 +23,7 @@ import {
   int,
   double,
   primaryKey,
+  datetime,
 } from "drizzle-orm/mysql-core"
 
 export const users = mysqlTable("users", {
@@ -30,6 +31,7 @@ export const users = mysqlTable("users", {
   displayName: varchar("display_name", { length: 100 }).notNull(),
   photoUrl: text("photo_url"),
   emailAddress: varchar("email_address", { length: 100 }).notNull(),
+  hashedPassword: varchar("hashed_password", { length: 255 }).notNull(),
   contactNumber: varchar("contact_number", { length: 15 }).notNull(),
   gender: mysqlEnum("gender", SUPPORTED_GENDERS),
   role: mysqlEnum("role", SUPPORTED_USER_ROLES).notNull(),
@@ -37,6 +39,18 @@ export const users = mysqlTable("users", {
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
+})
+
+export const sessions = mysqlTable("sessions", {
+  id: varchar("id", {
+    length: 255,
+  }).primaryKey(),
+  userId: varchar("user_id", {
+    length: 28,
+  })
+    .notNull()
+    .references(() => users.id),
+  expiresAt: datetime("expires_at").notNull(),
 })
 
 export const shipments = mysqlTable("shipments", {

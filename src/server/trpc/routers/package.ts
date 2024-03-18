@@ -124,7 +124,7 @@ export const packageRouter = router({
           receiverStateOrProvince: input.receiverStateOrProvince,
           receiverCountryCode: input.receiverCountryCode,
           receiverPostalCode: input.receiverPostalCode,
-          updatedById: ctx.user.uid,
+          updatedById: ctx.user.id,
           updatedAt: new Date(),
         })
         .where(eq(packages.id, input.id))
@@ -199,8 +199,8 @@ export const packageRouter = router({
           ...newPackage,
           id: generateUniqueId(),
           createdAt,
-          createdById: ctx.user.uid,
-          updatedById: ctx.user.uid,
+          createdById: ctx.user.id,
+          updatedById: ctx.user.id,
           isFragile: newPackage.isFragile ? 1 : 0,
         })),
       )
@@ -293,7 +293,7 @@ export const packageRouter = router({
         .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
         .where(
           and(
-            eq(incomingShipments.sentByAgentId, ctx.user.uid),
+            eq(incomingShipments.sentByAgentId, ctx.user.id),
             eq(packages.shippingType, "EXPRESS"),
           ),
         )
@@ -312,7 +312,7 @@ export const packageRouter = router({
           eq(incomingShipments.shipmentId, shipmentPackages.shipmentId),
         )
         .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
-        .where(eq(incomingShipments.sentByAgentId, ctx.user.uid))
+        .where(eq(incomingShipments.sentByAgentId, ctx.user.id))
       return {
         count: value,
       }
@@ -327,7 +327,7 @@ export const packageRouter = router({
         eq(forwarderTransferShipments.shipmentId, shipmentPackages.shipmentId),
       )
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
-      .where(eq(forwarderTransferShipments.sentToAgentId, ctx.user.uid))
+      .where(eq(forwarderTransferShipments.sentToAgentId, ctx.user.id))
     return {
       count: value,
     }

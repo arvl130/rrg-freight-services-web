@@ -51,7 +51,7 @@ export const packageCategoryRouter = router({
       await createLog(ctx.db, {
         verb: "CREATE",
         entity: "PACKAGE_CATEGORY",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -72,7 +72,7 @@ export const packageCategoryRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "PACKAGE_CATEGORY",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -91,7 +91,7 @@ export const packageCategoryRouter = router({
       await createLog(ctx.db, {
         verb: "DELETE",
         entity: "PACKAGE_CATEGORY",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result

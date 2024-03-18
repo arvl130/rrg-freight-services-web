@@ -11,6 +11,7 @@ import type {
   NewWarehouse,
 } from "@/server/db/entities"
 import { DateTime } from "luxon"
+import { Scrypt } from "lucia"
 
 const pool = mysql.createPool({
   uri:
@@ -27,6 +28,12 @@ const db = drizzle(pool, {
   schema,
 })
 
+const scrypt = new Scrypt()
+const adminPassword = await scrypt.hash(seedEnv.TEST_ADMIN_PASSWORD)
+const warehousePassword = await scrypt.hash(seedEnv.TEST_WAREHOUSE_PASSWORD)
+const domesticPassword = await scrypt.hash(seedEnv.TEST_DOMESTIC_PASSWORD)
+const overseasPassword = await scrypt.hash(seedEnv.TEST_OVERSEAS_PASSWORD)
+const driverPassword = await scrypt.hash(seedEnv.TEST_DRIVER_PASSWORD)
 const createdAt = DateTime.now().toISO()
 
 const newUsers: NewUser[] = [
@@ -39,6 +46,7 @@ const newUsers: NewUser[] = [
     gender: "MALE",
     isEnabled: 1,
     createdAt,
+    hashedPassword: adminPassword,
   },
   {
     id: seedEnv.TEST_WAREHOUSE_USER_ID,
@@ -49,6 +57,7 @@ const newUsers: NewUser[] = [
     gender: "MALE",
     isEnabled: 1,
     createdAt,
+    hashedPassword: warehousePassword,
   },
   {
     id: seedEnv.TEST_DOMESTIC_USER_ID,
@@ -59,6 +68,7 @@ const newUsers: NewUser[] = [
     gender: "MALE",
     isEnabled: 1,
     createdAt,
+    hashedPassword: domesticPassword,
   },
   {
     id: seedEnv.TEST_OVERSEAS_USER_ID,
@@ -69,6 +79,7 @@ const newUsers: NewUser[] = [
     gender: "FEMALE",
     isEnabled: 1,
     createdAt,
+    hashedPassword: overseasPassword,
   },
   {
     id: seedEnv.TEST_DRIVER_USER_ID,
@@ -79,6 +90,7 @@ const newUsers: NewUser[] = [
     gender: "MALE",
     isEnabled: 1,
     createdAt,
+    hashedPassword: driverPassword,
   },
 ]
 

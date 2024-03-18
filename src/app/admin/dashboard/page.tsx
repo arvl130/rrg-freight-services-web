@@ -17,6 +17,9 @@ import { UserStatusTile } from "./user-summary-tile"
 import { RefreshButton } from "./refresh-button"
 import { RevalidatedPageProvider } from "@/providers/revalidated-page"
 import { RevalidatedPageBoundary } from "@/components/revalidated-page-boundary"
+import { validateSessionFromCookies } from "@/server/auth"
+import { redirect } from "next/navigation"
+import { getUserRoleRedirectPath } from "@/utils/redirects"
 
 function RecentActivityTile() {
   return (
@@ -79,9 +82,20 @@ function ManifestSummaryTile() {
   )
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const sessionResult = await validateSessionFromCookies()
+  if (!sessionResult) {
+    return redirect("/login")
+  }
+
+  const { user } = sessionResult
+  if (user.role !== "ADMIN") {
+    const redirectPath = getUserRoleRedirectPath(user.role)
+    return redirect(redirectPath)
+  }
+
   return (
-    <AdminLayout title="Dashboard">
+    <AdminLayout title="Dashboard" user={user}>
       <h1 className="text-2xl font-black [color:_#00203F] mb-4">Dashboard</h1>
       <RevalidatedPageProvider>
         <section className="mb-6">

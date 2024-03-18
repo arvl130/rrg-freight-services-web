@@ -3,13 +3,14 @@ import { protectedProcedure, router } from "../trpc"
 import { shipments, deliveryShipments, users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { and, count, eq, inArray, isNull, like } from "drizzle-orm"
-import { createUser, getUserByEmail, updateProfile } from "@/server/auth"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
 import type { Gender, UserRole } from "@/utils/constants"
 import { SUPPORTED_GENDERS, SUPPORTED_USER_ROLES } from "@/utils/constants"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
+import { Scrypt } from "lucia"
+import { generateUserId } from "@/utils/uuid"
 
 // Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
 const TEXT_COLUMN_DEFAULT_LIMIT = 65_535
@@ -69,19 +70,6 @@ export const userRouter = router({
     .mutation(async ({ ctx, input }) => {
       const createdAt = DateTime.now().toISO()
 
-      try {
-        const userFromFirebase = await getUserByEmail(input.emailAddress)
-        if (userFromFirebase) {
-          throw new TRPCError({
-            code: "CONFLICT",
-            message: "A user with this email already exists.",
-          })
-        }
-      } catch {
-        // Firebase will throw an error if no user is found,
-        // which we can ignore because this is what we want.
-      }
-
       const usersFromDb = await ctx.db
         .select()
         .from(users)
@@ -94,64 +82,20 @@ export const userRouter = router({
         })
       }
 
-      const userRecord = await createUser({
-        options: {
-          displayName: input.displayName,
-          email: input.emailAddress,
-          password: input.password,
-        },
-        role: input.role,
-      })
+      const scrypt = new Scrypt()
+      const hashedPassword = await scrypt.hash(input.password)
+      const userId = generateUserId()
 
       await ctx.db.insert(users).values({
-        id: userRecord.uid,
+        id: userId,
         displayName: input.displayName,
         contactNumber: input.contactNumber,
         emailAddress: input.emailAddress,
+        hashedPassword,
         gender: input.gender,
         role: input.role,
         createdAt,
       })
-    }),
-  createDetails: protectedProcedure
-    .input(
-      z.object({
-        displayName: z.string().min(1),
-        contactNumber: z.string().min(1),
-        emailAddress: z.string().min(1).max(100).email(),
-        gender: z.custom<Gender>((val) =>
-          SUPPORTED_GENDERS.includes(val as Gender),
-        ),
-        role: z.custom<UserRole>((val) =>
-          SUPPORTED_USER_ROLES.includes(val as UserRole),
-        ),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const createdAt = DateTime.now().toISO()
-
-      await updateProfile(ctx.user, {
-        displayName: input.displayName,
-        email: input.emailAddress,
-      })
-
-      const result = await ctx.db.insert(users).values({
-        id: ctx.user.uid,
-        displayName: input.displayName,
-        contactNumber: input.contactNumber,
-        emailAddress: input.emailAddress,
-        gender: input.gender,
-        role: input.role,
-        createdAt,
-      })
-
-      await createLog(ctx.db, {
-        verb: "CREATE",
-        entity: "USER",
-        createdById: ctx.user.uid,
-      })
-
-      return result
     }),
   updateDetails: protectedProcedure
     .input(
@@ -173,17 +117,12 @@ export const userRouter = router({
           emailAddress: input.emailAddress,
           gender: input.gender,
         })
-        .where(eq(users.id, ctx.user.uid))
-
-      await updateProfile(ctx.user, {
-        displayName: input.displayName,
-        email: input.emailAddress,
-      })
+        .where(eq(users.id, ctx.user.id))
 
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "USER",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -195,21 +134,17 @@ export const userRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await updateProfile(ctx.user, {
-        photoURL: input.photoUrl,
-      })
-
       const result = await ctx.db
         .update(users)
         .set({
           photoUrl: input.photoUrl,
         })
-        .where(eq(users.id, ctx.user.uid))
+        .where(eq(users.id, ctx.user.id))
 
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "USER",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -218,24 +153,20 @@ export const userRouter = router({
     const storage = getStorage()
     await storage
       .bucket(clientEnv.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET)
-      .file(`profile-photos/${ctx.user.uid}`)
+      .file(`profile-photos/${ctx.user.id}`)
       .delete()
-
-    await updateProfile(ctx.user, {
-      photoURL: null,
-    })
 
     const result = await ctx.db
       .update(users)
       .set({
         photoUrl: null,
       })
-      .where(eq(users.id, ctx.user.uid))
+      .where(eq(users.id, ctx.user.id))
 
     await createLog(ctx.db, {
       verb: "UPDATE",
       entity: "USER",
-      createdById: ctx.user.uid,
+      createdById: ctx.user.id,
     })
 
     return result
@@ -262,7 +193,7 @@ export const userRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "USER",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result

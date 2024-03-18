@@ -1,26 +1,17 @@
-"use client"
+import { signOutAction } from "@/server/actions/auth"
+import { validateSessionFromCookies } from "@/server/auth"
+import { redirect } from "next/navigation"
 
-import { useSession } from "@/hooks/session"
-import { getAuth, signOut } from "firebase/auth"
-
-export default function SomethingWentWrongPage() {
-  const { isLoading, user } = useSession({
-    required: true,
-  })
+export default async function SomethingWentWrongPage() {
+  const session = await validateSessionFromCookies()
+  if (!session) {
+    return redirect("/login")
+  }
 
   return (
-    <>
+    <form action={signOutAction}>
       <p>Something went wrong. Please try again.</p>
-      <button
-        type="button"
-        disabled={isLoading || user === null}
-        onClick={() => {
-          const auth = getAuth()
-          signOut(auth)
-        }}
-      >
-        logout
-      </button>
-    </>
+      <button type="submit">logout</button>
+    </form>
   )
 }

@@ -1,11 +1,10 @@
-"use client"
-
 import { DomesticLayout } from "@/app/domestic/auth"
-import { useSession } from "@/hooks/session"
+import { validateSessionFromCookies } from "@/server/auth"
+import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
-import { api } from "@/utils/api"
-import { Package } from "@phosphor-icons/react/dist/icons/Package"
-import { Article } from "@phosphor-icons/react/dist/icons/Article"
+import { redirect } from "next/navigation"
+import { TotalArrivingShipmentTile, TotalPackageTile } from "./top-tiles"
+
 function ManifestSummaryTile() {
   return (
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
@@ -53,58 +52,6 @@ function ManifestHistoryTile() {
           <div>Date Issued</div>
           <div>Items</div>
         </div>
-      </div>
-    </article>
-  )
-}
-
-function TotalPackageTile() {
-  const { status, data } = api.package.getTotalPackagesSentToAgentId.useQuery()
-
-  return (
-    <article
-      className="
-        text-[#C61717]
-        grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-        bg-gradient-to-b from-[#ED5959CC] to-[#ED595900]
-      "
-    >
-      <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold">
-          {status === "loading" && <>...</>}
-          {status === "error" && <>error</>}
-          {status === "success" && <>{data.count}</>}
-        </p>
-        <p>Total Package</p>
-      </div>
-      <div>
-        <Package size={96} />
-      </div>
-    </article>
-  )
-}
-
-function TotalArrivingShipmentTile() {
-  const { status, data } =
-    api.shipment.forwarderTransfer.getTotalInTransitSentToAgentId.useQuery()
-
-  return (
-    <article
-      className=" text-[#AC873C]
-      grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-      bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]"
-    >
-      <div className="flex flex-col justify-center items-start">
-        <p className="text-4xl font-semibold"></p>
-        <p className="text-4xl font-semibold">
-          {status === "loading" && <>...</>}
-          {status === "error" && <>error</>}
-          {status === "success" && <>{data.count}</>}
-        </p>
-        <p>Total Arriving Shipment</p>
-      </div>
-      <div>
-        <Article size={96} />
       </div>
     </article>
   )
@@ -159,17 +106,20 @@ function RecentNotificationTile() {
   )
 }
 
-export default function DashboardPage() {
-  const { isLoading, role } = useSession({
-    required: {
-      role: "DOMESTIC_AGENT",
-    },
-  })
+export default async function DashboardPage() {
+  const sessionResult = await validateSessionFromCookies()
+  if (!sessionResult) {
+    return redirect("/login")
+  }
 
-  if (isLoading || role !== "DOMESTIC_AGENT") return <>...</>
+  const { user } = sessionResult
+  if (user.role !== "DOMESTIC_AGENT") {
+    const redirectPath = getUserRoleRedirectPath(user.role)
+    return redirect(redirectPath)
+  }
 
   return (
-    <DomesticLayout title="Dashboard">
+    <DomesticLayout title="Dashboard" user={user}>
       <>
         <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
         <section className="mb-6">

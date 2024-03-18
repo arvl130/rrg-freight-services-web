@@ -1,3 +1,5 @@
+"use client"
+
 import type { WebauthnCredential } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { useState } from "react"

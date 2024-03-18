@@ -150,7 +150,7 @@ export const warehouseTransferShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "TRANSFER_WAREHOUSE_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -172,7 +172,7 @@ export const warehouseTransferShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "TRANSFER_WAREHOUSE_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -218,7 +218,7 @@ export const warehouseTransferShipmentRouter = router({
 
         await ctx.db.insert(packageStatusLogs).values({
           packageId,
-          createdById: ctx.user.uid,
+          createdById: ctx.user.id,
           status: "SORTING",
           description: getDescriptionForNewPackageStatusLog({
             status: "SORTING",
@@ -230,7 +230,7 @@ export const warehouseTransferShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "CREATE",
         entity: "TRANSFER_WAREHOUSE_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
     }),
 })

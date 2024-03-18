@@ -1,3 +1,5 @@
+"use client"
+
 import * as Dialog from "@radix-ui/react-dialog"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import { Fragment, useState } from "react"

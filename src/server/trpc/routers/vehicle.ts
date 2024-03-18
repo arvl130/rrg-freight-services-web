@@ -82,7 +82,7 @@ export const vehicleRouter = router({
       await createLog(ctx.db, {
         verb: "CREATE",
         entity: "VEHICLE",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -110,7 +110,7 @@ export const vehicleRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "VEHICLE",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -129,7 +129,7 @@ export const vehicleRouter = router({
       await createLog(ctx.db, {
         verb: "DELETE",
         entity: "VEHICLE",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result

@@ -19,7 +19,6 @@ import {
 import { and, count, eq, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import type { DbWithEntities } from "@/server/db/entities"
-import { DateTime } from "luxon"
 
 async function getDescriptionForStatus(options: {
   db: DbWithEntities
@@ -158,7 +157,7 @@ export const shipmentPackageRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "SHIPMENT_PACKAGE",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
     }),
   updateManyToCompletedStatus: protectedProcedure
@@ -221,7 +220,7 @@ export const shipmentPackageRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "SHIPMENT_PACKAGE",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
     }),
 

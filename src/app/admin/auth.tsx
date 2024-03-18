@@ -1,6 +1,5 @@
 "use client"
 
-import { useSession } from "@/hooks/session"
 import { Gauge } from "@phosphor-icons/react/dist/ssr/Gauge"
 import { Package } from "@phosphor-icons/react/dist/ssr/Package"
 import { Scroll } from "@phosphor-icons/react/dist/ssr/Scroll"
@@ -13,15 +12,9 @@ import { Boat } from "@phosphor-icons/react/dist/ssr/Boat"
 import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
 import { Warehouse } from "@phosphor-icons/react/dist/ssr/Warehouse"
 import { ChartDonut } from "@phosphor-icons/react/dist/ssr/ChartDonut"
-import type { User } from "firebase/auth"
 import Image from "next/image"
 import { useState, type ReactNode } from "react"
-import { LoginPageHead } from "@/app/login/login-page-head"
-import { SkeletonLoginPage } from "@/app/login/skeleton-login-page"
-import {
-  GenericHeader,
-  SkeletonGenericLayout,
-} from "@/components/generic-layout"
+import { GenericHeader } from "@/components/generic-layout"
 import * as Accordion from "@radix-ui/react-accordion"
 import { File } from "@phosphor-icons/react/dist/ssr/File"
 import { usePathname } from "next/navigation"
@@ -29,6 +22,7 @@ import { SidebarLink } from "@/components/sidebar-link"
 import { AccordionLink } from "@/components/accordion-link"
 import { LogoutButton } from "@/components/logout-button"
 import { SidebarAccordionTrigger } from "@/components/sidebar-accordion-trigger"
+import type { User } from "lucia"
 
 function getDefaultValue(pathname: string) {
   if (["/admin/packages", "/admin/package-categories"].includes(pathname)) {
@@ -230,71 +224,20 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
   )
 }
 
-type WithFunctionChildren = {
-  hasSession: true
-  children: ({
-    user,
-    role,
-  }: {
-    user: User
-    role: "ADMIN"
-    reload: () => Promise<void>
-  }) => ReactNode
-}
-
-type WithNodeChildren = {
-  hasSession?: false
-  children?: ReactNode
-}
-
-type LayoutProps = {
+export function AdminLayout({
+  title,
+  children,
+  user,
+}: {
   title: string | string[]
-} & (WithFunctionChildren | WithNodeChildren)
-
-export function AdminLayout({ title, children }: LayoutProps) {
+  children: ReactNode
+  user: User
+}) {
   const titleContent = Array.isArray(title)
     ? `${title.toReversed().join(" \u2013 ")} \u2013 RRG Freight Services`
     : `${title} \u2013 RRG Freight Services`
 
-  const { isLoading, user, role, reload } = useSession({
-    required: {
-      role: "ADMIN",
-    },
-  })
-
   const [isLayoutMinimized, setIsLayoutMinimized] = useState(true)
-
-  if (isLoading)
-    return (
-      <>
-        <title>RRG Freight Services</title>
-        <meta
-          name="description"
-          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-        />
-        <main className="min-h-dvh bg-brand-cyan-100"></main>
-      </>
-    )
-
-  if (user === null)
-    return (
-      <>
-        <LoginPageHead />
-        <SkeletonLoginPage />
-      </>
-    )
-
-  if (role !== "ADMIN")
-    return (
-      <>
-        <title>Dashboard &#x2013; RRG Freight Services</title>
-        <meta
-          name="description"
-          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-        />
-        <SkeletonGenericLayout />
-      </>
-    )
 
   return (
     <>
@@ -318,28 +261,7 @@ export function AdminLayout({ title, children }: LayoutProps) {
               setIsLayoutMinimized((prev) => !prev)
             }}
           />
-          <div>
-            {typeof children === "function" ? (
-              <>
-                {/* When `children` is of type function, we can assume
-                    `hasSession` is also defined, so let's provide the
-                    session information.
-                */}
-                {children({
-                  user,
-                  role,
-                  reload,
-                })}
-              </>
-            ) : (
-              <>
-                {/* When `children` is not of type function, `hasSession`
-                    is not defined, so don't provide any session information.
-                */}
-                {children}
-              </>
-            )}
-          </div>
+          <div>{children}</div>
         </div>
       </div>
     </>

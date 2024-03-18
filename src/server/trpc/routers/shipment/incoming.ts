@@ -96,7 +96,7 @@ export const incomingShipmentRouter = router({
       .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
       .where(
         and(
-          eq(incomingShipments.sentByAgentId, ctx.user.uid),
+          eq(incomingShipments.sentByAgentId, ctx.user.id),
           eq(shipments.status, "IN_TRANSIT"),
         ),
       )
@@ -122,7 +122,7 @@ export const incomingShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "INCOMING_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
 
       return result
@@ -177,8 +177,8 @@ export const incomingShipmentRouter = router({
       const newPackages = input.newPackages.map((newPackage) => ({
         ...newPackage,
         id: generateUniqueId(),
-        createdById: ctx.user.uid,
-        updatedById: ctx.user.uid,
+        createdById: ctx.user.id,
+        updatedById: ctx.user.id,
         isFragile: newPackage.isFragile ? 1 : 0,
         status: "INCOMING" as const,
         createdAt,
@@ -186,7 +186,7 @@ export const incomingShipmentRouter = router({
 
       const newPackageStatusLogs = newPackages.map(({ id }) => ({
         packageId: id,
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
         description: getDescriptionForNewPackageStatusLog({
           status: "INCOMING",
         }),
@@ -242,7 +242,7 @@ export const incomingShipmentRouter = router({
       await createLog(ctx.db, {
         verb: "CREATE",
         entity: "INCOMING_SHIPMENT",
-        createdById: ctx.user.uid,
+        createdById: ctx.user.id,
       })
     }),
 })

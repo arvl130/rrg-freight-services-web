@@ -1,5 +1,3 @@
-"use client"
-
 import type { UserRole } from "./constants"
 
 const userRoleRedirectPaths: Record<UserRole, string> = {

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { SignOut } from "@phosphor-icons/react/dist/ssr/SignOut"
-import { getAuth, signOut } from "firebase/auth"
+import { signOutAction } from "@/server/actions/auth"
 
 export function LogoutButton(props: { isMinimized: boolean }) {
   const [isSigningOut, setIsSigningOut] = useState(false)
@@ -19,9 +19,8 @@ export function LogoutButton(props: { isMinimized: boolean }) {
       onClick={async () => {
         setIsSigningOut(true)
         try {
-          const auth = getAuth()
-          await signOut(auth)
-        } finally {
+          await signOutAction()
+        } catch {
           setIsSigningOut(false)
         }
       }}
