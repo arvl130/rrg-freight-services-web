@@ -1,4 +1,4 @@
-import { getServerSession } from "@/server/auth"
+import { validateSessionFromHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { shipments, shipmentLocations } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
@@ -12,7 +12,7 @@ const getLocationsSchema = z.object({
 
 export async function GET(req: Request, ctx: { params: { id: string } }) {
   try {
-    const session = await getServerSession({ req })
+    const session = await validateSessionFromHeaders({ req })
     if (session === null) {
       return Response.json(
         { message: "Unauthorized" },
@@ -93,7 +93,7 @@ const newLocationSchema = z.object({
 
 export async function POST(req: Request, ctx: { params: { id: string } }) {
   try {
-    const session = await getServerSession({ req })
+    const session = await validateSessionFromHeaders({ req })
     if (session === null) {
       return Response.json(
         { message: "Unauthorized" },
@@ -136,7 +136,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     }
 
     const createdAt = DateTime.now().toISO()
-    const createdById = session.user.uid
+    const createdById = session.user.id
     const [result] = (await db.insert(shipmentLocations).values({
       shipmentId: transferShipmentId,
       long: location.long,

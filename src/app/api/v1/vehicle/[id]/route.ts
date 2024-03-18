@@ -1,4 +1,4 @@
-import { getServerSession } from "@/server/auth"
+import { validateSessionFromHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { vehicles } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
@@ -9,7 +9,7 @@ const inputSchema = z.object({
 })
 
 export async function GET(req: Request, ctx: { params: { id: string } }) {
-  const session = await getServerSession({ req })
+  const session = await validateSessionFromHeaders({ req })
   if (session === null) {
     return Response.json(
       { message: "Unauthorized" },

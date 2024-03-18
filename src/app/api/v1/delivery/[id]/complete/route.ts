@@ -1,4 +1,4 @@
-import { getServerSession } from "@/server/auth"
+import { validateSessionFromHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { shipments } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
@@ -10,7 +10,7 @@ const getLocationsSchema = z.object({
 
 export async function POST(req: Request, ctx: { params: { id: string } }) {
   try {
-    const session = await getServerSession({ req })
+    const session = await validateSessionFromHeaders({ req })
     if (session === null) {
       return Response.json(
         { message: "Unauthorized" },

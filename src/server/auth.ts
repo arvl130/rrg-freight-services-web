@@ -85,21 +85,17 @@ export async function updateProfile(
   })
 }
 
-export async function getServerSession({ req }: { req: Request }) {
+export async function validateSessionFromHeaders({ req }: { req: Request }) {
   const authorization = req.headers.get("Authorization")
-  if (!authorization) return null
+  const sessionId = lucia.readBearerToken(authorization ?? "")
 
+  if (!sessionId) return null
   try {
-    const idToken = authorization.split(" ")[1]
-    const token = await auth.verifyIdToken(idToken)
-    const user = await auth.getUser(token.uid)
+    const sessionResult = await lucia.validateSession(sessionId)
 
-    return {
-      user,
-      token,
-    }
+    if (!sessionResult.user) return null
+    else return sessionResult
   } catch {
-    // If verification fails, then we have no session.
     return null
   }
 }

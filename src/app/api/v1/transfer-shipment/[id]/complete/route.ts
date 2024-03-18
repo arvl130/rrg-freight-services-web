@@ -1,4 +1,4 @@
-import { getServerSession } from "@/server/auth"
+import { validateSessionFromHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packageStatusLogs,
@@ -20,7 +20,7 @@ const getLocationsSchema = z.object({
 
 export async function POST(req: Request, ctx: { params: { id: string } }) {
   try {
-    const session = await getServerSession({ req })
+    const session = await validateSessionFromHeaders({ req })
     if (session === null) {
       return Response.json(
         { message: "Unauthorized" },
@@ -91,7 +91,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     const newPackageStatusLogs = transferShipmentPackagesResults.map(
       ({ packageId }) => ({
         packageId,
-        createdById: session.user.uid,
+        createdById: session.user.id,
         description: getDescriptionForNewPackageStatusLog({
           status: "TRANSFERRED_FORWARDER",
           forwarderName: transferShipment.agentDisplayName,

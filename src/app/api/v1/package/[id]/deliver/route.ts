@@ -1,4 +1,4 @@
-import { getServerSession } from "@/server/auth"
+import { validateSessionFromHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packageStatusLogs, packages } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
@@ -12,7 +12,7 @@ const inputSchema = z.object({
 })
 
 export async function POST(req: Request, ctx: { params: { id: string } }) {
-  const session = await getServerSession({ req })
+  const session = await validateSessionFromHeaders({ req })
   if (session === null) {
     return Response.json(
       { message: "Unauthorized" },
@@ -78,7 +78,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
   await db.insert(packageStatusLogs).values({
     packageId: id,
     createdAt,
-    createdById: session.user.uid,
+    createdById: session.user.id,
     description: getDescriptionForNewPackageStatusLog({
       status: "DELIVERED",
     }),

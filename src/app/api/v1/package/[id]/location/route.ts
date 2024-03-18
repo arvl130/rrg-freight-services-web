@@ -1,4 +1,4 @@
-import { getServerSession } from "@/server/auth"
+import { validateSessionFromHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packages } from "@/server/db/schema"
 import { eq, and } from "drizzle-orm"
@@ -22,7 +22,7 @@ async function AddressToCoordintaesConvertion(addresses: string[]) {
 
 export async function GET(req: Request, ctx: { params: { id: string } }) {
   try {
-    const session = await getServerSession({ req })
+    const session = await validateSessionFromHeaders({ req })
     if (session === null) {
       return Response.json({ message: "Unauthorized" }, { status: 401 })
     }
