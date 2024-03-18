@@ -1,4 +1,4 @@
-import { getServerSessionFromFetchRequest } from "@/server/auth"
+import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { deliveryShipments, shipments } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
@@ -9,7 +9,7 @@ const inputSchema = z.object({
 })
 
 export async function GET(req: Request, ctx: { params: { id: string } }) {
-  const session = await getServerSessionFromFetchRequest({ req })
+  const session = await getServerSession({ req })
   if (session === null) {
     return Response.json(
       { message: "Unauthorized" },

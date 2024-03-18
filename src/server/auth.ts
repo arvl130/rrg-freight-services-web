@@ -80,11 +80,7 @@ export async function updateProfile(
   })
 }
 
-export async function getServerSessionFromFetchRequest({
-  req,
-}: {
-  req: Request
-}) {
+export async function getServerSession({ req }: { req: Request }) {
   const authorization = req.headers.get("Authorization")
   if (!authorization) return null
 

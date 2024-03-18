@@ -1,4 +1,4 @@
-import { getServerSessionFromFetchRequest } from "@/server/auth"
+import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packageStatusLogs, packages } from "@/server/db/schema"
 import type { PackageStatus } from "@/utils/constants"
@@ -42,7 +42,7 @@ const inputSchema = z
 
 export async function POST(req: Request, ctx: { params: { id: string } }) {
   try {
-    const session = await getServerSessionFromFetchRequest({ req })
+    const session = await getServerSession({ req })
     if (session === null) {
       return Response.json(
         { message: "Unauthorized" },

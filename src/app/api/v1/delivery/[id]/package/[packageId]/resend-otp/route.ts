@@ -1,4 +1,4 @@
-import { getServerSessionFromFetchRequest } from "@/server/auth"
+import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packages,
@@ -30,7 +30,7 @@ export async function GET(
   const createdAt = DateTime.now().toISO()
 
   try {
-    const session = await getServerSessionFromFetchRequest({ req })
+    const session = await getServerSession({ req })
     if (session === null)
       throw new HttpError({
         message: "Unauthorized.",

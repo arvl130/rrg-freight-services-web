@@ -1,4 +1,4 @@
-import { getServerSessionFromFetchRequest } from "@/server/auth"
+import { getServerSession } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packageStatusLogs,
@@ -20,7 +20,7 @@ const getLocationsSchema = z.object({
 
 export async function POST(req: Request, ctx: { params: { id: string } }) {
   try {
-    const session = await getServerSessionFromFetchRequest({ req })
+    const session = await getServerSession({ req })
     if (session === null) {
       return Response.json(
         { message: "Unauthorized" },
