@@ -1,5 +1,9 @@
 import { protectedProcedure, publicProcedure, router } from "../trpc"
-import { webauthnChallenges, webauthnCredentials } from "@/server/db/schema"
+import {
+  users,
+  webauthnChallenges,
+  webauthnCredentials,
+} from "@/server/db/schema"
 import { z } from "zod"
 import { eq } from "drizzle-orm"
 import {
@@ -9,7 +13,7 @@ import {
   verifyRegistrationResponse,
 } from "@simplewebauthn/server"
 import { TRPCError } from "@trpc/server"
-import { createCustomToken, getUserByEmail } from "@/server/auth"
+import { createCustomToken } from "@/server/auth"
 import { isoBase64URL, isoUint8Array } from "@simplewebauthn/server/helpers"
 import { serverEnv } from "@/server/env.mjs"
 import { DateTime } from "luxon"
@@ -145,11 +149,27 @@ export const webauthnRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const createdAt = DateTime.now().toISO()
-      const userRecord = await getUserByEmail(input.email)
+      const userRecords = await ctx.db
+        .select()
+        .from(users)
+        .where(eq(users.emailAddress, input.email))
+
+      if (userRecords.length === 0)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        })
+
+      if (userRecords.length > 1)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Expected 1 result, but got multiple.",
+        })
+
+      const [userRecord] = userRecords
       const credentials = await ctx.db
         .select()
         .from(webauthnCredentials)
-        .where(eq(webauthnCredentials.userId, userRecord.uid))
+        .where(eq(webauthnCredentials.userId, userRecord.id))
 
       if (credentials.length === 0)
         throw new TRPCError({
@@ -170,7 +190,7 @@ export const webauthnRouter = router({
         await ctx.db
           .insert(webauthnChallenges)
           .values({
-            userId: userRecord.uid,
+            userId: userRecord.id,
             challenge: options.challenge,
             createdAt,
           })

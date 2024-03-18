@@ -50,41 +50,6 @@ export function createCustomToken(uid: string) {
   return auth.createCustomToken(uid)
 }
 
-export function getUserByEmail(email: string) {
-  return auth.getUserByEmail(email)
-}
-
-export async function createUser(props: {
-  options: CreateRequest
-  role: UserRole
-}) {
-  const userRecord = await auth.createUser(props.options)
-  auth.setCustomUserClaims(userRecord.uid, {
-    role: props.role,
-  })
-
-  return userRecord
-}
-
-export async function updateProfile(
-  user: UserRecord,
-  {
-    displayName,
-    photoURL,
-    email,
-  }: {
-    displayName?: string | null
-    photoURL?: string | null
-    email?: string
-  },
-) {
-  await auth.updateUser(user.uid, {
-    displayName,
-    photoURL,
-    email,
-  })
-}
-
 export async function validateSessionFromHeaders({ req }: { req: Request }) {
   const authorization = req.headers.get("Authorization")
   const sessionId = lucia.readBearerToken(authorization ?? "")
