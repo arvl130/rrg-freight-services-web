@@ -1,3 +1,4 @@
+import "@/utils/firebase"
 import type { User } from "@/server/db/entities"
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
