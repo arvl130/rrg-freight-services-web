@@ -1,5 +1,4 @@
 import type { User } from "@/server/db/entities"
-import { useSession } from "@/hooks/session"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -20,7 +19,6 @@ const updateInformationFormSchema = z.object({
 type UpdateInformationFormType = z.infer<typeof updateInformationFormSchema>
 
 export function UpdateInformationForm({ user }: { user: User }) {
-  const { reload } = useSession()
   const {
     reset,
     register,
@@ -46,7 +44,6 @@ export function UpdateInformationForm({ user }: { user: User }) {
       utils.user.getById.invalidate({
         id: user.id,
       })
-      reload()
     },
   })
 

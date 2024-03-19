@@ -1,6 +1,5 @@
 "use client"
 
-import { useSession } from "@/hooks/session"
 import type { User } from "lucia"
 import type { ReactNode } from "react"
 import { useState } from "react"
@@ -107,6 +106,7 @@ export function GenericHeader({
       </div>
 
       <GlobalSearchModal
+        role={user.role}
         isOpen={isOpenSearchModal}
         close={() => setIsOpenSearchModal(false)}
       />

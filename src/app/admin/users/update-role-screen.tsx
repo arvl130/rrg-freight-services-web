@@ -1,5 +1,4 @@
 import type { User } from "@/server/db/entities"
-import { useSession } from "@/hooks/session"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -33,8 +32,6 @@ export function UpdateRoleScreen({
   goBack: () => void
   close: () => void
 }) {
-  const { user: firebaseUser, reload, role } = useSession()
-
   const {
     reset,
     register,
@@ -43,7 +40,7 @@ export function UpdateRoleScreen({
   } = useForm<UpdateRoleFormType>({
     resolver: zodResolver(updateRoleFormSchema),
     defaultValues: {
-      role: (role ?? "UNKNOWN") as UserRole,
+      role: user.role,
       isEnabled: user.isEnabled === 1 ? "YES" : "NO",
     },
     resetOptions: {
@@ -56,7 +53,6 @@ export function UpdateRoleScreen({
     onSuccess: () => {
       reset()
       utils.user.getAll.invalidate()
-      if (firebaseUser!.uid === user.id) reload()
     },
   })
 

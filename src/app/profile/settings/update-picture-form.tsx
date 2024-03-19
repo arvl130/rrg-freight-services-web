@@ -1,5 +1,4 @@
 import type { User } from "@/server/db/entities"
-import { useSession } from "@/hooks/session"
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { useState } from "react"
@@ -23,7 +22,6 @@ const updatePictureFormSchema = z.object({
 type UpdatePictureFormType = z.infer<typeof updatePictureFormSchema>
 
 export function UpdatePictureForm({ user }: { user: User }) {
-  const { reload, role } = useSession()
   const {
     reset,
     register,
@@ -43,7 +41,6 @@ export function UpdatePictureForm({ user }: { user: User }) {
         utils.user.getById.invalidate({
           id: user.id,
         })
-        reload()
       },
     })
 
@@ -54,7 +51,6 @@ export function UpdatePictureForm({ user }: { user: User }) {
         utils.user.getById.invalidate({
           id: user.id,
         })
-        reload()
       },
     })
 
@@ -102,7 +98,7 @@ export function UpdatePictureForm({ user }: { user: User }) {
           </div>
           <div>
             <h2 className="font-semibold">{user.displayName}</h2>
-            <p className="text-sm	text-gray-400">{role}</p>
+            <p className="text-sm	text-gray-400">{user.role}</p>
           </div>
         </div>
         <div className="text-sm pl-2 mt-3">
