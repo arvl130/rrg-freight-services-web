@@ -21,7 +21,7 @@ export default async function ProfilePasswordPage() {
           <SideNav />
           <div className="min-w-0">
             <div className="px-6 pt-4 pb-6 rounded-lg bg-white">
-              {/* <UpdatePasswordForm user={sessionResult.user} /> */}
+              <UpdatePasswordForm />
               <SecurityKeysSection />
             </div>
           </div>

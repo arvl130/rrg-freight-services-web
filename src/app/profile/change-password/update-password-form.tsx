@@ -1,13 +1,10 @@
+"use client"
+
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { User } from "firebase/auth"
-import {
-  EmailAuthProvider,
-  reauthenticateWithCredential,
-  updatePassword,
-} from "firebase/auth"
-import { useState } from "react"
+import { api } from "@/utils/api"
+import toast from "react-hot-toast"
 
 const updatePasswordFormSchema = z
   .object({
@@ -24,8 +21,16 @@ const updatePasswordFormSchema = z
 
 type UpdatePasswordFormType = z.infer<typeof updatePasswordFormSchema>
 
-export function UpdatePasswordForm({ user }: { user: User }) {
-  const [isUpdating, setIsUpdating] = useState(false)
+export function UpdatePasswordForm() {
+  const { isLoading, mutate } = api.user.updatePassword.useMutation({
+    onSuccess: () => {
+      toast.success("Your password has been updated.")
+      reset()
+    },
+    onError: (error) => {
+      toast.error(`${error.message}`)
+    },
+  })
   const {
     reset,
     register,
@@ -43,19 +48,10 @@ export function UpdatePasswordForm({ user }: { user: User }) {
   return (
     <form
       onSubmit={handleSubmit(async (formData) => {
-        setIsUpdating(true)
-        try {
-          const userCredential = await EmailAuthProvider.credential(
-            user.email!,
-            formData.oldPassword,
-          )
-
-          await reauthenticateWithCredential(user, userCredential)
-          await updatePassword(user, formData.oldPassword)
-          reset()
-        } finally {
-          setIsUpdating(false)
-        }
+        mutate({
+          currentPassword: formData.oldPassword,
+          newPassword: formData.newPassword,
+        })
       })}
     >
       <h2 className="font-semibold mb-3">Change Password</h2>
@@ -96,10 +92,10 @@ export function UpdatePasswordForm({ user }: { user: User }) {
       </div>
       <button
         type="submit"
-        disabled={isUpdating}
+        disabled={isLoading}
         className="p-2 text-white	w-full disabled:bg-cyan-300 bg-cyan-500 transition-colors hover:bg-cyan-400 rounded-lg font-medium"
       >
-        {isUpdating ? "Saving ..." : "Save"}
+        {isLoading ? "Saving ..." : "Save"}
       </button>
     </form>
   )

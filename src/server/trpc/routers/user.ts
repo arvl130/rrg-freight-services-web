@@ -198,6 +198,56 @@ export const userRouter = router({
 
       return result
     }),
+  updatePassword: protectedProcedure
+    .input(
+      z.object({
+        currentPassword: z.string().min(1),
+        newPassword: z.string().min(8),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const scrypt = new Scrypt()
+      const userRecords = await ctx.db
+        .select()
+        .from(users)
+        .where(eq(users.id, ctx.user.id))
+
+      if (userRecords.length !== 1) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No such user.",
+        })
+      }
+
+      const [userRecord] = userRecords
+      const passwordIsCorrect = await scrypt.verify(
+        userRecord.hashedPassword,
+        input.currentPassword,
+      )
+
+      if (!passwordIsCorrect) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Incorrect password.",
+        })
+      }
+
+      const hashedPassword = await scrypt.hash(input.newPassword)
+      const result = await ctx.db
+        .update(users)
+        .set({
+          hashedPassword,
+        })
+        .where(eq(users.id, ctx.user.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "USER",
+        createdById: ctx.user.id,
+      })
+
+      return result
+    }),
   getAvailableDrivers: protectedProcedure.query(async ({ ctx }) => {
     // FIXME: This db query should also consider transfers in progress.
     const deliveriesInProgress = ctx.db
