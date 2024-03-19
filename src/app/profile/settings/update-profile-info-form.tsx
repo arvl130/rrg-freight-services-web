@@ -49,15 +49,19 @@ export function UpdateInformationForm({ user }: { user: User }) {
     <div className="rounded-lg bg-white px-6 pt-4 pb-6">
       <div className="">
         <h1 className="font-semibold pb-2">Personal Information</h1>
-        {state.message !== "" && !Array.isArray(state.issues) && (
-          <p className="text-red-600 text-center mt-3">{state.message}</p>
-        )}
-        {state.issues && (
-          <ul className="text-red-600 text-center mt-3">
-            {state.issues.map((issue, index) => (
-              <li key={index}>{issue}</li>
-            ))}
-          </ul>
+        {!state.success && (
+          <>
+            {state.message !== "" && !Array.isArray(state.issues) && (
+              <p className="text-red-600 text-center mt-3">{state.message}</p>
+            )}
+            {state.issues && (
+              <ul className="text-red-600 text-center mt-3">
+                {state.issues.map((issue, index) => (
+                  <li key={index}>{issue}</li>
+                ))}
+              </ul>
+            )}
+          </>
         )}
         <form
           ref={formRef}
