@@ -1,3 +1,4 @@
+import "@/utils/firebase"
 import type { User } from "@/server/db/entities"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
@@ -45,7 +46,7 @@ export function UpdatePhotoScreen({
 
   const utils = api.useUtils()
   const { isLoading: isLoadingUpdatePhotoUrl, mutate: updatePhotoUrl } =
-    api.user.updatePhotoUrl.useMutation({
+    api.user.updatePhotoUrlById.useMutation({
       onSuccess: () => {
         reset()
         utils.user.getAll.invalidate()
@@ -53,7 +54,7 @@ export function UpdatePhotoScreen({
     })
 
   const { isLoading: isLoadingRemovePhotoUrl, mutate: removePhotoUrl } =
-    api.user.removePhotoUrl.useMutation({
+    api.user.removePhotoUrlById.useMutation({
       onSuccess: () => {
         reset()
         utils.user.getAll.invalidate()
@@ -80,6 +81,7 @@ export function UpdatePhotoScreen({
           const downloadUrl = await getDownloadURL(imageRef)
 
           updatePhotoUrl({
+            id: user.id,
             photoUrl: downloadUrl,
           })
         } finally {
@@ -117,7 +119,11 @@ export function UpdatePhotoScreen({
       <div>
         {typeof user.photoUrl === "string" && (
           <button
-            onClick={() => removePhotoUrl()}
+            onClick={() =>
+              removePhotoUrl({
+                id: user.id,
+              })
+            }
             disabled={isLoading}
             className="p-2 mb-3 text-white	w-full bg-red-500 transition-colors disabled:bg-red-300 hover:bg-red-400 rounded-lg font-medium"
           >

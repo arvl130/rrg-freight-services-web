@@ -149,6 +149,29 @@ export const userRouter = router({
 
       return result
     }),
+  updatePhotoUrlById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().length(28),
+        photoUrl: z.string().min(1).url().max(TEXT_COLUMN_DEFAULT_LIMIT),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .update(users)
+        .set({
+          photoUrl: input.photoUrl,
+        })
+        .where(eq(users.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "USER",
+        createdById: ctx.user.id,
+      })
+
+      return result
+    }),
   removePhotoUrl: protectedProcedure.mutation(async ({ ctx }) => {
     const storage = getStorage()
     await storage
@@ -171,6 +194,34 @@ export const userRouter = router({
 
     return result
   }),
+  removePhotoUrlById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().length(28),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const storage = getStorage()
+      await storage
+        .bucket(clientEnv.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET)
+        .file(`profile-photos/${input.id}`)
+        .delete()
+
+      const result = await ctx.db
+        .update(users)
+        .set({
+          photoUrl: null,
+        })
+        .where(eq(users.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "USER",
+        createdById: ctx.user.id,
+      })
+
+      return result
+    }),
   updateRoleAndEnabledById: protectedProcedure
     .input(
       z.object({
