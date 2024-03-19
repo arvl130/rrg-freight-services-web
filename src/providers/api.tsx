@@ -7,7 +7,19 @@ import { getBaseUrl } from "@/utils/base-url"
 import SuperJSON from "superjson"
 
 export function ApiProvider({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            networkMode: "always",
+          },
+          mutations: {
+            networkMode: "always",
+          },
+        },
+      }),
+  )
   const [trpcClient] = useState(() =>
     api.createClient({
       transformer: SuperJSON,
