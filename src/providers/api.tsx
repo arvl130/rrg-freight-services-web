@@ -4,7 +4,6 @@ import { useState } from "react"
 import { api } from "@/utils/api"
 import { httpBatchLink } from "@trpc/client"
 import { getBaseUrl } from "@/utils/base-url"
-import { getAuth, getIdToken } from "firebase/auth"
 import SuperJSON from "superjson"
 
 export function ApiProvider({ children }: { children: ReactNode }) {
@@ -20,17 +19,7 @@ export function ApiProvider({ children }: { children: ReactNode }) {
            **/
           url: `${getBaseUrl()}/api/trpc`,
           /** headers are called on every request */
-          headers: async () => {
-            // Don't any additional header, if there is no logged in user.
-            const auth = getAuth()
-            if (!auth.currentUser) return {}
-
-            // Send Auth header, if there is a logged in user.
-            const token = await getIdToken(auth.currentUser)
-            return {
-              Authorization: `Bearer ${token}`,
-            }
-          },
+          // headers: () => {},
         }),
       ],
       /**
