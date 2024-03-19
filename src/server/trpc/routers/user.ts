@@ -6,14 +6,15 @@ import { and, count, eq, inArray, isNull, like } from "drizzle-orm"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
 import type { Gender, UserRole } from "@/utils/constants"
-import { SUPPORTED_GENDERS, SUPPORTED_USER_ROLES } from "@/utils/constants"
+import {
+  MYSQL_TEXT_COLUMN_DEFAULT_LIMIT,
+  SUPPORTED_GENDERS,
+  SUPPORTED_USER_ROLES,
+} from "@/utils/constants"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
 import { Scrypt } from "lucia"
 import { generateUserId } from "@/utils/uuid"
-
-// Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
-const TEXT_COLUMN_DEFAULT_LIMIT = 65_535
 
 export const userRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -130,7 +131,7 @@ export const userRouter = router({
   updatePhotoUrl: protectedProcedure
     .input(
       z.object({
-        photoUrl: z.string().min(1).url().max(TEXT_COLUMN_DEFAULT_LIMIT),
+        photoUrl: z.string().min(1).url().max(MYSQL_TEXT_COLUMN_DEFAULT_LIMIT),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -153,7 +154,7 @@ export const userRouter = router({
     .input(
       z.object({
         id: z.string().length(28),
-        photoUrl: z.string().min(1).url().max(TEXT_COLUMN_DEFAULT_LIMIT),
+        photoUrl: z.string().min(1).url().max(MYSQL_TEXT_COLUMN_DEFAULT_LIMIT),
       }),
     )
     .mutation(async ({ ctx, input }) => {
