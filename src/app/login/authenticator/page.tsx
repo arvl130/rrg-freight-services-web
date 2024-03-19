@@ -7,15 +7,11 @@ import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { getAuth, signInWithCustomToken } from "firebase/auth"
-import { useEffect, useState } from "react"
-import { FirebaseError } from "firebase/app"
-import { getUserRoleRedirectPath } from "@/utils/redirects"
-import { useSession } from "@/hooks/session"
-import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
-import { SkeletonGenericLayout } from "@/components/generic-layout"
 import { LoginPageHead } from "../login-page-head"
+import { signInWithWebauthnResponseAction } from "@/server/actions/auth"
+import toast from "react-hot-toast"
 
 const formSchema = z.object({
   email: z
@@ -34,73 +30,16 @@ export default function Page() {
   const generateAuthenticationOptionsMutation =
     api.webauthn.generateAuthenticationOptions.useMutation({
       onSuccess: async (options) => {
-        const response = await startAuthentication(options)
-        verifyAuthenticationResponseMutation.mutate({
-          response,
-        })
-      },
-    })
-
-  const verifyAuthenticationResponseMutation =
-    api.webauthn.verifyAuthenticationResponse.useMutation({
-      onSuccess: async (customToken) => {
+        setIsSigningIn(true)
         try {
-          setIsSigningIn(true)
-
-          const auth = getAuth()
-          await signInWithCustomToken(auth, customToken)
-        } catch (e) {
-          if (e instanceof FirebaseError) {
-            if (
-              e.code === "auth/invalid-credential" ||
-              e.code === "auth/invalid-login-credentials" ||
-              e.code === "auth/user-not-found"
-            ) {
-              setSignInError({
-                title: "Invalid credentials",
-                message:
-                  "The credentials you have used are invalid. Please try again.",
-              })
-            } else if (e.code === "auth/too-many-requests") {
-              setSignInError({
-                title: "Too many requests",
-                message:
-                  "Too many invalid login attempts. Please try again later.",
-              })
-            } else {
-              setSignInError({
-                title: "Unknown Firebase error occured",
-                message:
-                  "An unknown error with Firebase occured. Please check the Console for more information.",
-              })
-
-              console.log("Firebase error occured:", e)
-            }
-          } else {
-            setSignInError({
-              title: "Unknown error occured",
-              message:
-                "An unknown error occured. Please check the Console for more information.",
-            })
-
-            console.log("Unknown error occured:", e)
-          }
-        } finally {
+          const response = await startAuthentication(options)
+          await signInWithWebauthnResponseAction(response)
+        } catch {
           setIsSigningIn(false)
+          toast.error("Sign in error occured.")
         }
       },
     })
-
-  const { user, role, isLoading } = useSession()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (isLoading) return
-    if (user === null) return
-
-    const redirectPath = getUserRoleRedirectPath(role)
-    router.push(redirectPath)
-  }, [router, isLoading, user, role])
 
   const {
     register,
@@ -115,30 +54,6 @@ export default function Page() {
     title: string
     message: string
   }>(null)
-
-  if (isLoading)
-    return (
-      <>
-        <title>RRG Freight Services</title>
-        <meta
-          name="description"
-          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-        />
-        <main className="min-h-dvh bg-brand-cyan-100"></main>
-      </>
-    )
-
-  if (user !== null)
-    return (
-      <>
-        <title>Dashboard &#x2013; RRG Freight Services</title>
-        <meta
-          name="description"
-          content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-        />
-        <SkeletonGenericLayout />
-      </>
-    )
 
   return (
     <>
@@ -202,9 +117,7 @@ export default function Page() {
               <button
                 type="submit"
                 disabled={
-                  generateAuthenticationOptionsMutation.isLoading ||
-                  verifyAuthenticationResponseMutation.isLoading ||
-                  isSigningIn
+                  generateAuthenticationOptionsMutation.isLoading || isSigningIn
                 }
                 className="font-semibold w-full mt-4 px-8 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-blue-500 rounded-md hover:bg-blue-400 focus:outline-none focus:bg-blue-400 disabled:bg-blue-300"
               >
