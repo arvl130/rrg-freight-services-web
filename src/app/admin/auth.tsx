@@ -6,7 +6,6 @@ import { Scroll } from "@phosphor-icons/react/dist/ssr/Scroll"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { UsersThree } from "@phosphor-icons/react/dist/ssr/UsersThree"
 import { Motorcycle } from "@phosphor-icons/react/dist/ssr/Motorcycle"
-import { Toolbox } from "@phosphor-icons/react/dist/ssr/Toolbox"
 import { ClipboardText } from "@phosphor-icons/react/dist/ssr/ClipboardText"
 import { Boat } from "@phosphor-icons/react/dist/ssr/Boat"
 import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
@@ -109,12 +108,6 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
                   icon={<Package size={32} />}
                   name="Packages"
                   href="/admin/packages"
-                />
-                <AccordionLink
-                  isMinimized={props.isMinimized}
-                  icon={<Toolbox size={32} />}
-                  name="Packages Categories"
-                  href="/admin/package-categories"
                 />
               </Accordion.Content>
             </Accordion.Item>

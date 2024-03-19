@@ -49,7 +49,7 @@ async function getDescriptionForStatus(options: {
         warehouses,
         eq(warehouseTransferShipments.sentToWarehouseId, warehouses.id),
       )
-      .where(eq(forwarderTransferShipments.shipmentId, options.shipmentId))
+      .where(eq(warehouseTransferShipments.shipmentId, options.shipmentId))
 
     return getDescriptionForNewPackageStatusLog({
       status: options.status,

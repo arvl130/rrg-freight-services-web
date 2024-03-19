@@ -10,10 +10,6 @@ const adminPages = [
     path: "/admin/packages",
   },
   {
-    title: "Package Categories",
-    path: "/admin/package-categories",
-  },
-  {
     title: "Incoming Shipments",
     path: "/admin/shipments/incoming",
   },
