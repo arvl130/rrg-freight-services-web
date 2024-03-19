@@ -7,6 +7,10 @@ import { updateDetailsInputSchema } from "./form-schema"
 import { eq } from "drizzle-orm"
 import { validateSessionFromCookies } from "@/server/auth"
 import { revalidatePath } from "next/cache"
+import { z } from "zod"
+import { MYSQL_TEXT_COLUMN_DEFAULT_LIMIT } from "@/utils/constants"
+import { getStorage } from "firebase-admin/storage"
+import { clientEnv } from "@/utils/env.mjs"
 
 type FormState = {
   success: boolean
@@ -66,5 +70,93 @@ export async function updateDetailsAction(_: FormState, formData: FormData) {
   return {
     success: true,
     message: "User details updated.",
+  }
+}
+
+const updatePhotoUrlInputSchema = z.object({
+  photoUrl: z.string().min(1).url().max(MYSQL_TEXT_COLUMN_DEFAULT_LIMIT),
+})
+
+export async function updatePhotoUrlAction(_: FormState, formData: FormData) {
+  const session = await validateSessionFromCookies()
+  if (!session) {
+    return {
+      success: false,
+      message: "Unauthorized.",
+    }
+  }
+
+  const parseResult = updatePhotoUrlInputSchema.safeParse({
+    photoUrl: formData.get("photoUrl"),
+  })
+
+  if (!parseResult.success) {
+    const fields: Record<string, string> = {}
+    for (const key of formData.keys()) {
+      fields[key] = formData.get(key)?.toString() ?? ""
+    }
+
+    return {
+      success: false,
+      message: "One or more fields has invalid format.",
+      fields,
+      issues: parseResult.error.issues.map((issue) => issue.message),
+    }
+  }
+
+  const { photoUrl } = parseResult.data
+  await db
+    .update(users)
+    .set({
+      photoUrl,
+    })
+    .where(eq(users.id, session.user.id))
+
+  await createLog(db, {
+    verb: "UPDATE",
+    entity: "USER",
+    createdById: session.user.id,
+  })
+
+  revalidatePath("/", "layout")
+  return {
+    success: true,
+    message: "User photo url updated.",
+  }
+}
+
+export async function removePhotoUrlAction(_: FormState) {
+  console.log("triggered")
+  const session = await validateSessionFromCookies()
+  if (!session) {
+    return {
+      success: false,
+      message: "Unauthorized.",
+    }
+  }
+
+  const storage = getStorage()
+  await storage
+    .bucket(clientEnv.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET)
+    .file(`profile-photos/${session.user.id}`)
+    .delete()
+
+  await db
+    .update(users)
+    .set({
+      photoUrl: null,
+    })
+    .where(eq(users.id, session.user.id))
+
+  await createLog(db, {
+    verb: "UPDATE",
+    entity: "USER",
+    createdById: session.user.id,
+  })
+
+  revalidatePath("/", "layout")
+  return {
+    success: true,
+    message: "User photo url removed.",
   }
 }
