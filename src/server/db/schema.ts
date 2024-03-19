@@ -47,9 +47,7 @@ export const sessions = mysqlTable("sessions", {
   }).primaryKey(),
   userId: varchar("user_id", {
     length: 28,
-  })
-    .notNull()
-    .references(() => users.id),
+  }).notNull(),
   expiresAt: datetime("expires_at").notNull(),
 })
 
