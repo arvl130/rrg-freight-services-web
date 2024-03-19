@@ -1,31 +1,30 @@
 import type { User } from "@/server/db/entities"
-import { z } from "zod"
+import type { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
+import { useFormState } from "react-dom"
+import { updateDetailsAction } from "./actions"
+import { useEffect, useRef, useTransition } from "react"
+import { updateDetailsInputSchema } from "./form-schema"
 
-const updateInformationFormSchema = z.object({
-  displayName: z.string().min(1).max(100),
-  emailAddress: z.string().min(1).max(100).email(),
-  contactNumber: z.string().min(1).max(15),
-  gender: z.union([
-    z.literal("MALE"),
-    z.literal("FEMALE"),
-    z.literal("OTHER"),
-    z.literal("UNKNOWN"),
-  ]),
-})
-
-type UpdateInformationFormType = z.infer<typeof updateInformationFormSchema>
+type UpdateInformationFormType = z.infer<typeof updateDetailsInputSchema>
 
 export function UpdateInformationForm({ user }: { user: User }) {
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const [isPending, startTransition] = useTransition()
+  const [state, formAction] = useFormState(updateDetailsAction, {
+    success: false,
+    message: "",
+  })
+
   const {
-    reset,
     register,
-    formState: { errors, isDirty, isValid },
+    formState: { errors },
     handleSubmit,
   } = useForm<UpdateInformationFormType>({
-    resolver: zodResolver(updateInformationFormSchema),
+    resolver: zodResolver(updateDetailsInputSchema),
     defaultValues: {
       displayName: user.displayName,
       contactNumber: user.contactNumber,
@@ -38,35 +37,50 @@ export function UpdateInformationForm({ user }: { user: User }) {
   })
 
   const utils = api.useUtils()
-  const { isLoading, mutate } = api.user.updateDetails.useMutation({
-    onSuccess: async () => {
-      reset()
+  useEffect(() => {
+    if (state.success) {
       utils.user.getById.invalidate({
         id: user.id,
       })
-    },
-  })
+    }
+  }, [state.success, utils.user.getById, user.id])
 
   return (
     <div className="rounded-lg bg-white px-6 pt-4 pb-6">
       <div className="">
         <h1 className="font-semibold pb-2">Personal Information</h1>
+        {state.message !== "" && !Array.isArray(state.issues) && (
+          <p className="text-red-600 text-center mt-3">{state.message}</p>
+        )}
+        {state.issues && (
+          <ul className="text-red-600 text-center mt-3">
+            {state.issues.map((issue, index) => (
+              <li key={index}>{issue}</li>
+            ))}
+          </ul>
+        )}
         <form
-          onSubmit={handleSubmit((formData) => {
-            mutate({
-              displayName: formData.displayName,
-              contactNumber: formData.contactNumber,
-              emailAddress: formData.emailAddress,
-              gender: formData.gender === "UNKNOWN" ? null : formData.gender,
-            })
-          })}
+          ref={formRef}
+          action={formAction}
+          onSubmit={(e) => {
+            e.preventDefault()
+
+            handleSubmit(() => {
+              if (formRef.current) {
+                const formData = new FormData(formRef.current)
+                startTransition(() => {
+                  formAction(formData)
+                })
+              }
+            })(e)
+          }}
         >
           <div className="mb-3">
             <label className="block text-sm	text-gray-500 mb-1">Full Name</label>
             <input
               className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
               {...register("displayName")}
-              disabled={isLoading}
+              disabled={isPending}
             />
             {errors.displayName && (
               <div className="text-sm text-red-500 mt-1">
@@ -81,7 +95,7 @@ export function UpdateInformationForm({ user }: { user: User }) {
             <input
               className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
               {...register("emailAddress")}
-              disabled={isLoading}
+              disabled={isPending}
             />
             {errors.emailAddress && (
               <div className="text-sm text-red-500 mt-1">
@@ -96,7 +110,7 @@ export function UpdateInformationForm({ user }: { user: User }) {
             <input
               className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
               {...register("contactNumber")}
-              disabled={isLoading}
+              disabled={isPending}
             />
             {errors.contactNumber && (
               <div className="text-sm text-red-500 mt-1">
@@ -109,7 +123,7 @@ export function UpdateInformationForm({ user }: { user: User }) {
             <select
               className="block rounded-lg text-sm w-full px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
               {...register("gender")}
-              disabled={isLoading}
+              disabled={isPending}
             >
               <option value="MALE">Male</option>
               <option value="FEMALE">Female</option>
@@ -119,9 +133,9 @@ export function UpdateInformationForm({ user }: { user: User }) {
           </div>
           <button
             className="p-2 text-white	w-full bg-cyan-500 transition-colors disabled:bg-cyan-300 hover:bg-cyan-400 rounded-lg font-medium"
-            disabled={isLoading || !isDirty || !isValid}
+            disabled={isPending}
           >
-            {isLoading ? "Saving ..." : "Save"}
+            {isPending ? "Saving ..." : "Save"}
           </button>
         </form>
       </div>
