@@ -9,14 +9,12 @@ import { eq } from "drizzle-orm"
 import {
   generateAuthenticationOptions,
   generateRegistrationOptions,
-  verifyAuthenticationResponse,
   verifyRegistrationResponse,
 } from "@simplewebauthn/server"
 import { TRPCError } from "@trpc/server"
-import { createCustomToken } from "@/server/auth"
-import { isoBase64URL, isoUint8Array } from "@simplewebauthn/server/helpers"
 import { serverEnv } from "@/server/env.mjs"
 import { DateTime } from "luxon"
+import { isoUint8Array } from "@simplewebauthn/server/helpers"
 
 export const webauthnRouter = router({
   getCredentials: protectedProcedure.query(async ({ ctx }) => {
@@ -204,67 +202,5 @@ export const webauthnRouter = router({
       }
 
       return options
-    }),
-  verifyAuthenticationResponse: publicProcedure
-    .input(
-      z.object({
-        response: z.any(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const credentialIdBuffer = isoBase64URL.toBuffer(input.response.rawId)
-      const credential = await ctx.db.query.webauthnCredentials.findFirst({
-        where: eq(
-          webauthnCredentials.id,
-          isoUint8Array.toHex(credentialIdBuffer),
-        ),
-      })
-
-      if (!credential)
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "No such credential.",
-        })
-
-      const challenge = await ctx.db.query.webauthnChallenges.findFirst({
-        where: eq(webauthnChallenges.userId, credential.userId),
-      })
-
-      if (!challenge)
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "No challenge found for user.",
-        })
-
-      const url = new URL(serverEnv.APP_ORIGIN)
-      const { verified, authenticationInfo: info } =
-        await verifyAuthenticationResponse({
-          response: input.response,
-          expectedChallenge: challenge.challenge,
-          expectedOrigin: url.origin,
-          expectedRPID: url.hostname,
-          authenticator: {
-            credentialPublicKey: new Uint8Array(
-              Buffer.from(credential.key, "hex"),
-            ),
-            credentialID: isoUint8Array.fromHex(credential.id),
-            counter: credential.counter,
-          },
-        })
-
-      if (!verified || !info)
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Missing verified or info from authentication response.",
-        })
-
-      await ctx.db
-        .update(webauthnCredentials)
-        .set({
-          counter: info.newCounter,
-        })
-        .where(eq(webauthnCredentials.id, credential.id))
-
-      return createCustomToken(credential.userId)
     }),
 })

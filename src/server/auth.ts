@@ -1,6 +1,4 @@
 import { getApps, getApp, initializeApp, cert } from "firebase-admin/app"
-import type { CreateRequest, UserRecord } from "firebase-admin/auth"
-import { getAuth } from "firebase-admin/auth"
 import { getStorage, getDownloadURL } from "firebase-admin/storage"
 import { serverEnv } from "./env.mjs"
 import { clientEnv } from "@/utils/env.mjs"
@@ -30,7 +28,6 @@ const app =
       })
     : getApp()
 
-const auth = getAuth(app)
 const storage = getStorage(app)
 
 export async function uploadJsonToBucket(options: {
@@ -44,10 +41,6 @@ export async function uploadJsonToBucket(options: {
 
   const downloadUrl = await getDownloadURL(file)
   return downloadUrl
-}
-
-export function createCustomToken(uid: string) {
-  return auth.createCustomToken(uid)
 }
 
 export async function validateSessionFromHeaders({ req }: { req: Request }) {
