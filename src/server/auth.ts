@@ -105,8 +105,7 @@ export async function createSessionForUserId(userId: string) {
 }
 
 export async function createSessionForUserIdWithoutCookie(userId: string) {
-  const session = await lucia.createSession(userId, {})
-  return session.id
+  return await lucia.createSession(userId, {})
 }
 
 export const validateSessionWithCookies = cache(async () => {

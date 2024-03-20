@@ -65,13 +65,15 @@ export async function POST(req: Request) {
       )
     }
 
-    const sessionId = await createSessionForUserIdWithoutCookie(userRecord.id)
+    const session = await createSessionForUserIdWithoutCookie(userRecord.id)
     return Response.json({
       message: "Sign in succedeed.",
-      sessionId,
+      session,
       user: {
         id: userRecord.id,
         role: userRecord.role,
+        displayName: userRecord.displayName,
+        photoUrl: userRecord.photoUrl,
       },
     })
   } catch (e) {
