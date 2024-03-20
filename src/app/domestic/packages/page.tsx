@@ -1,17 +1,16 @@
 import { DomesticLayout } from "@/app/domestic/auth"
 import * as Page from "@/components/page"
-import { validateSessionFromCookies } from "@/server/auth"
+import { validateSessionWithCookies } from "@/server/auth"
 import { redirect } from "next/navigation"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { MainSection } from "./main-section"
 
 export default async function PackagesPage() {
-  const sessionResult = await validateSessionFromCookies()
-  if (!sessionResult) {
+  const { user } = await validateSessionWithCookies()
+  if (!user) {
     return redirect("/login")
   }
 
-  const { user } = sessionResult
   if (user.role !== "DOMESTIC_AGENT") {
     const redirectPath = getUserRoleRedirectPath(user.role)
     return redirect(redirectPath)

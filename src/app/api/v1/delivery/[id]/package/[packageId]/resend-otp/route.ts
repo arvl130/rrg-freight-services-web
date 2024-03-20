@@ -1,4 +1,4 @@
-import { validateSessionFromHeaders } from "@/server/auth"
+import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packages,
@@ -30,8 +30,8 @@ export async function GET(
   const createdAt = DateTime.now().toISO()
 
   try {
-    const session = await validateSessionFromHeaders({ req })
-    if (session === null)
+    const { user } = await validateSessionWithHeaders({ req })
+    if (user === null)
       throw new HttpError({
         message: "Unauthorized.",
         statusCode: HTTP_STATUS_UNAUTHORIZED,

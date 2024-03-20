@@ -1,5 +1,5 @@
 import { DomesticLayout } from "@/app/domestic/auth"
-import { validateSessionFromCookies } from "@/server/auth"
+import { validateSessionWithCookies } from "@/server/auth"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { redirect } from "next/navigation"
@@ -107,12 +107,11 @@ function RecentNotificationTile() {
 }
 
 export default async function DashboardPage() {
-  const sessionResult = await validateSessionFromCookies()
-  if (!sessionResult) {
+  const { user } = await validateSessionWithCookies()
+  if (!user) {
     return redirect("/login")
   }
 
-  const { user } = sessionResult
   if (user.role !== "DOMESTIC_AGENT") {
     const redirectPath = getUserRoleRedirectPath(user.role)
     return redirect(redirectPath)

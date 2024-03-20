@@ -1,4 +1,4 @@
-import { validateSessionFromHeaders } from "@/server/auth"
+import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   packageStatusLogs,
@@ -30,8 +30,8 @@ export async function POST(
   ctx: { params: { id: string; packageId: string } },
 ) {
   try {
-    const session = await validateSessionFromHeaders({ req })
-    if (session === null)
+    const { user } = await validateSessionWithHeaders({ req })
+    if (user === null)
       throw new HttpError({
         message: "Unauthorized.",
         statusCode: HTTP_STATUS_UNAUTHORIZED,
@@ -153,7 +153,7 @@ export async function POST(
       await tx.insert(packageStatusLogs).values({
         packageId,
         createdAt,
-        createdById: session.user.id,
+        createdById: user.id,
         description: getDescriptionForNewPackageStatusLog({
           status: "DELIVERED",
         }),

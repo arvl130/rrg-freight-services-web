@@ -1,14 +1,14 @@
 import { initTRPC, TRPCError } from "@trpc/server"
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
-import { validateSessionFromCookies } from "../auth"
+import { validateSessionWithCookies } from "../auth"
 import { db } from "../db/client"
 import SuperJSON from "superjson"
 
 export async function createContext({ req }: FetchCreateContextFnOptions) {
-  const session = await validateSessionFromCookies()
+  const { user } = await validateSessionWithCookies()
 
   return {
-    user: session?.user,
+    user,
     db,
   }
 }

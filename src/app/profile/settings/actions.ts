@@ -5,7 +5,7 @@ import { users } from "@/server/db/schema"
 import { createLog } from "@/utils/logging"
 import { updateDetailsInputSchema } from "./form-schema"
 import { eq } from "drizzle-orm"
-import { validateSessionFromCookies } from "@/server/auth"
+import { validateSessionWithCookies } from "@/server/auth"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { MYSQL_TEXT_COLUMN_DEFAULT_LIMIT } from "@/utils/constants"
@@ -20,8 +20,8 @@ type FormState = {
 }
 
 export async function updateDetailsAction(_: FormState, formData: FormData) {
-  const session = await validateSessionFromCookies()
-  if (!session) {
+  const { user } = await validateSessionWithCookies()
+  if (!user) {
     return {
       success: false,
       message: "Unauthorized.",
@@ -58,12 +58,12 @@ export async function updateDetailsAction(_: FormState, formData: FormData) {
       emailAddress,
       gender: gender === "UNKNOWN" ? null : gender,
     })
-    .where(eq(users.id, session.user.id))
+    .where(eq(users.id, user.id))
 
   await createLog(db, {
     verb: "UPDATE",
     entity: "USER",
-    createdById: session.user.id,
+    createdById: user.id,
   })
 
   revalidatePath("/", "layout")
@@ -78,8 +78,8 @@ const updatePhotoUrlInputSchema = z.object({
 })
 
 export async function updatePhotoUrlAction(_: FormState, formData: FormData) {
-  const session = await validateSessionFromCookies()
-  if (!session) {
+  const { user } = await validateSessionWithCookies()
+  if (!user) {
     return {
       success: false,
       message: "Unauthorized.",
@@ -110,12 +110,12 @@ export async function updatePhotoUrlAction(_: FormState, formData: FormData) {
     .set({
       photoUrl,
     })
-    .where(eq(users.id, session.user.id))
+    .where(eq(users.id, user.id))
 
   await createLog(db, {
     verb: "UPDATE",
     entity: "USER",
-    createdById: session.user.id,
+    createdById: user.id,
   })
 
   revalidatePath("/", "layout")
@@ -127,8 +127,8 @@ export async function updatePhotoUrlAction(_: FormState, formData: FormData) {
 
 export async function removePhotoUrlAction(_: FormState) {
   console.log("triggered")
-  const session = await validateSessionFromCookies()
-  if (!session) {
+  const { user } = await validateSessionWithCookies()
+  if (!user) {
     return {
       success: false,
       message: "Unauthorized.",
@@ -138,7 +138,7 @@ export async function removePhotoUrlAction(_: FormState) {
   const storage = getStorage()
   await storage
     .bucket(clientEnv.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET)
-    .file(`profile-photos/${session.user.id}`)
+    .file(`profile-photos/${user.id}`)
     .delete()
 
   await db
@@ -146,12 +146,12 @@ export async function removePhotoUrlAction(_: FormState) {
     .set({
       photoUrl: null,
     })
-    .where(eq(users.id, session.user.id))
+    .where(eq(users.id, user.id))
 
   await createLog(db, {
     verb: "UPDATE",
     entity: "USER",
-    createdById: session.user.id,
+    createdById: user.id,
   })
 
   revalidatePath("/", "layout")

@@ -1,16 +1,15 @@
 import { WarehouseLayout } from "@/app/warehouse/auth"
-import { validateSessionFromCookies } from "@/server/auth"
+import { validateSessionWithCookies } from "@/server/auth"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { redirect } from "next/navigation"
 import { Tabs } from "./tabs"
 
 export default async function ScanPackagePage() {
-  const sessionResult = await validateSessionFromCookies()
-  if (!sessionResult) {
+  const { user } = await validateSessionWithCookies()
+  if (!user) {
     return redirect("/login")
   }
 
-  const { user } = sessionResult
   if (user.role !== "WAREHOUSE") {
     const redirectPath = getUserRoleRedirectPath(user.role)
     return redirect(redirectPath)

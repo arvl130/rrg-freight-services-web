@@ -1,4 +1,4 @@
-import { validateSessionFromHeaders } from "@/server/auth"
+import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packages } from "@/server/db/schema"
 import { eq, and } from "drizzle-orm"
@@ -22,9 +22,14 @@ async function AddressToCoordintaesConvertion(addresses: string[]) {
 
 export async function GET(req: Request, ctx: { params: { id: string } }) {
   try {
-    const session = await validateSessionFromHeaders({ req })
-    if (session === null) {
-      return Response.json({ message: "Unauthorized" }, { status: 401 })
+    const { user } = await validateSessionWithHeaders({ req })
+    if (user === null) {
+      return Response.json(
+        { message: "Unauthorized." },
+        {
+          status: 401,
+        },
+      )
     }
 
     const input = inputSchema.parse({

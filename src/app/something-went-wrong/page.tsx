@@ -1,9 +1,9 @@
 import { signOutAction } from "@/server/actions/auth"
-import { validateSessionFromCookies } from "@/server/auth"
+import { validateSessionWithCookies } from "@/server/auth"
 import { redirect } from "next/navigation"
 
 export default async function SomethingWentWrongPage() {
-  const session = await validateSessionFromCookies()
+  const session = await validateSessionWithCookies()
   if (!session) {
     return redirect("/login")
   }

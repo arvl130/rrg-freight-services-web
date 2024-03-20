@@ -1,13 +1,13 @@
-import { validateSessionFromHeaders } from "@/server/auth"
+import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { forwarderTransferShipments, shipments } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 
 export async function GET(req: Request) {
-  const session = await validateSessionFromHeaders({ req })
-  if (session === null) {
+  const { user } = await validateSessionWithHeaders({ req })
+  if (user === null) {
     return Response.json(
-      { message: "Unauthorized" },
+      { message: "Unauthorized." },
       {
         status: 401,
       },

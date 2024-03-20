@@ -7,7 +7,7 @@ import { Phone } from "@phosphor-icons/react/dist/ssr/Phone"
 import { Envelope } from "@phosphor-icons/react/dist/ssr/Envelope"
 import { Clock } from "@phosphor-icons/react/dist/ssr/Clock"
 import { GlobePlaneVector } from "@/components/vector/globe-plane"
-import { validateSessionFromCookies } from "@/server/auth"
+import { validateSessionWithCookies } from "@/server/auth"
 
 function HeroSection() {
   return (
@@ -33,7 +33,7 @@ function HeroSection() {
 }
 
 export default async function AboutUsPage() {
-  const session = await validateSessionFromCookies()
+  const { user } = await validateSessionWithCookies()
 
   return (
     <>
@@ -42,7 +42,7 @@ export default async function AboutUsPage() {
         name="description"
         content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
       />
-      <Navbar user={session?.user ?? null} />
+      <Navbar user={user} />
       <main>
         <HeroSection />
 

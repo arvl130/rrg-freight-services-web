@@ -1,7 +1,7 @@
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import { MainSection } from "./main-section"
-import { validateSessionFromCookies } from "@/server/auth"
+import { validateSessionWithCookies } from "@/server/auth"
 
 function TrackingPageHead() {
   return (
@@ -22,7 +22,7 @@ export default async function TrackingPage({
     id?: string
   }
 }) {
-  const session = await validateSessionFromCookies()
+  const session = await validateSessionWithCookies()
 
   return (
     <>

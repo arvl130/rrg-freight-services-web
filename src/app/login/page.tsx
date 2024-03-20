@@ -1,15 +1,15 @@
 import Image from "next/image"
 import Link from "next/link"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
-import { validateSessionFromCookies } from "@/server/auth"
+import { validateSessionWithCookies } from "@/server/auth"
 import { redirect } from "next/navigation"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { LoginForm } from "./login-form"
 
 export default async function LoginPage() {
-  const session = await validateSessionFromCookies()
-  if (session) {
-    const redirectPath = getUserRoleRedirectPath(session.user.role)
+  const { user } = await validateSessionWithCookies()
+  if (user) {
+    const redirectPath = getUserRoleRedirectPath(user.role)
     return redirect(redirectPath)
   }
 

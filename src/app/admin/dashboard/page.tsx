@@ -17,7 +17,7 @@ import { UserStatusTile } from "./user-summary-tile"
 import { RefreshButton } from "./refresh-button"
 import { RevalidatedPageProvider } from "@/providers/revalidated-page"
 import { RevalidatedPageBoundary } from "@/components/revalidated-page-boundary"
-import { validateSessionFromCookies } from "@/server/auth"
+import { validateSessionWithCookies } from "@/server/auth"
 import { redirect } from "next/navigation"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
 
@@ -83,12 +83,11 @@ function ManifestSummaryTile() {
 }
 
 export default async function DashboardPage() {
-  const sessionResult = await validateSessionFromCookies()
-  if (!sessionResult) {
+  const { user } = await validateSessionWithCookies()
+  if (!user) {
     return redirect("/login")
   }
 
-  const { user } = sessionResult
   if (user.role !== "ADMIN") {
     const redirectPath = getUserRoleRedirectPath(user.role)
     return redirect(redirectPath)

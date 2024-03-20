@@ -2,7 +2,7 @@ import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { File } from "@phosphor-icons/react/dist/ssr/File"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { DriverLayout } from "../auth"
-import { validateSessionFromCookies } from "@/server/auth"
+import { validateSessionWithCookies } from "@/server/auth"
 import { redirect } from "next/navigation"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
 import {
@@ -302,12 +302,11 @@ function RecentNotificationTile() {
 }
 
 export default async function DashboardPage() {
-  const sessionResult = await validateSessionFromCookies()
-  if (!sessionResult) {
+  const { user } = await validateSessionWithCookies()
+  if (!user) {
     return redirect("/login")
   }
 
-  const { user } = sessionResult
   if (user.role !== "DRIVER") {
     const redirectPath = getUserRoleRedirectPath(user.role)
     return redirect(redirectPath)

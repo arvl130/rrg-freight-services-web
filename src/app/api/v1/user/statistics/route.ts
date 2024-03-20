@@ -1,4 +1,4 @@
-import { validateSessionFromHeaders } from "@/server/auth"
+import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   shipmentPackages,
@@ -32,9 +32,14 @@ async function getCoordinatesFromAddresses(
 }
 
 export async function GET(req: Request) {
-  const session = await validateSessionFromHeaders({ req })
-  if (session === null) {
-    return Response.json({ message: "Unauthorized" }, { status: 401 })
+  const { user } = await validateSessionWithHeaders({ req })
+  if (user === null) {
+    return Response.json(
+      { message: "Unauthorized." },
+      {
+        status: 401,
+      },
+    )
   }
 
   const deliveryPackageResults = await db
@@ -49,7 +54,7 @@ export async function GET(req: Request) {
     .where(
       and(
         eq(shipments.status, "IN_TRANSIT"),
-        eq(deliveryShipments.driverId, session.user.id),
+        eq(deliveryShipments.driverId, user.id),
         or(
           eq(shipmentPackages.status, "IN_TRANSIT"),
           eq(shipmentPackages.status, "COMPLETED"),

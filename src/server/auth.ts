@@ -43,18 +43,23 @@ export async function uploadJsonToBucket(options: {
   return downloadUrl
 }
 
-export async function validateSessionFromHeaders({ req }: { req: Request }) {
+export async function validateSessionWithHeaders({ req }: { req: Request }) {
   const authorization = req.headers.get("Authorization")
   const sessionId = lucia.readBearerToken(authorization ?? "")
 
-  if (!sessionId) return null
-  try {
-    const sessionResult = await lucia.validateSession(sessionId)
+  if (!sessionId)
+    return {
+      user: null,
+      session: null,
+    }
 
-    if (!sessionResult.user) return null
-    else return sessionResult
+  try {
+    return await lucia.validateSession(sessionId)
   } catch {
-    return null
+    return {
+      user: null,
+      session: null,
+    }
   }
 }
 
@@ -104,15 +109,21 @@ export async function createSessionForUserIdWithoutCookie(userId: string) {
   return session.id
 }
 
-export const validateSessionFromCookies = cache(async () => {
+export const validateSessionWithCookies = cache(async () => {
   const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null
   if (!sessionId) {
-    return null
+    return {
+      user: null,
+      session: null,
+    }
   }
 
-  const { user, session } = await lucia.validateSession(sessionId)
-  if (!user) {
-    return null
+  const { session, user } = await lucia.validateSession(sessionId)
+  if (!session) {
+    return {
+      user: null,
+      session: null,
+    }
   }
 
   // Next.js throws when you attempt to set a cookie when rendering page.

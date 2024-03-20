@@ -1,16 +1,21 @@
 import {
   invalidateSessionByIdWithoutCookie,
-  validateSessionFromHeaders,
+  validateSessionWithHeaders,
 } from "@/server/auth"
 
 export async function GET(req: Request) {
-  const session = await validateSessionFromHeaders({ req })
+  const { session } = await validateSessionWithHeaders({ req })
   if (session === null) {
-    return Response.json({ message: "Unauthorized" }, { status: 401 })
+    return Response.json(
+      { message: "Unauthorized." },
+      {
+        status: 401,
+      },
+    )
   }
 
   try {
-    await invalidateSessionByIdWithoutCookie(session.session.id)
+    await invalidateSessionByIdWithoutCookie(session.id)
 
     return Response.json({
       message: "Sign out succedeed.",
