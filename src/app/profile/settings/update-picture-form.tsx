@@ -1,13 +1,15 @@
+import "@/utils/firebase"
 import type { User } from "@/server/db/entities"
-import { useSession } from "@/hooks/session"
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
-import { useState } from "react"
+import { useEffect, useRef, useState, useTransition } from "react"
 import Image from "next/image"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
+import { useFormState } from "react-dom"
+import { removePhotoUrlAction, updatePhotoUrlAction } from "./actions"
 
 const updatePictureFormSchema = z.object({
   imageFiles: z.custom<FileList>(
@@ -23,67 +25,89 @@ const updatePictureFormSchema = z.object({
 type UpdatePictureFormType = z.infer<typeof updatePictureFormSchema>
 
 export function UpdatePictureForm({ user }: { user: User }) {
-  const { reload, role } = useSession()
+  const [isPending, startTransition] = useTransition()
+  const [removeActionState, removeFormAction] = useFormState(
+    removePhotoUrlAction,
+    {
+      success: false,
+      message: "",
+    },
+  )
+
+  const [updateActionState, updateFormAction] = useFormState(
+    updatePhotoUrlAction,
+    {
+      success: false,
+      message: "",
+    },
+  )
+
   const {
     reset,
     register,
-    formState: { isValid },
+    formState: { isValid, isSubmitSuccessful },
     handleSubmit,
   } = useForm<UpdatePictureFormType>({
     resolver: zodResolver(updatePictureFormSchema),
   })
 
-  const [isUploading, setIsUploading] = useState(false)
-
+  const formRef = useRef<HTMLFormElement>(null)
   const utils = api.useUtils()
-  const { isLoading: isLoadingUpdatePhotoUrl, mutate: updatePhotoUrl } =
-    api.user.updatePhotoUrl.useMutation({
-      onSuccess: async () => {
-        reset()
-        utils.user.getById.invalidate({
-          id: user.id,
-        })
-        reload()
-      },
-    })
 
-  const { isLoading: isLoadingRemovePhotoUrl, mutate: removePhotoUrl } =
-    api.user.removePhotoUrl.useMutation({
-      onSuccess: async () => {
-        reset()
-        utils.user.getById.invalidate({
-          id: user.id,
-        })
-        reload()
-      },
-    })
+  useEffect(() => {
+    if (removeActionState.success || updateActionState.success) {
+      utils.user.getById.invalidate({
+        id: user.id,
+      })
 
-  const isLoading =
-    isLoadingUpdatePhotoUrl || isLoadingRemovePhotoUrl || isUploading
+      if (updateActionState.success && isSubmitSuccessful) {
+        reset()
+      }
+    }
+  }, [
+    removeActionState.success,
+    updateActionState.success,
+    utils.user.getById,
+    user.id,
+    isSubmitSuccessful,
+    reset,
+  ])
+
+  const [isUploading, setIsUploading] = useState(false)
 
   return (
     <form
+      ref={formRef}
       className="grid sm:grid-cols-[1fr_auto] gap-y-3 justify-between mb-4 px-4 py-4 bg-white rounded-lg"
-      onSubmit={handleSubmit(async (formData) => {
-        const [imageFile] = formData.imageFiles
+      onSubmit={(e) => {
+        e.preventDefault()
 
-        setIsUploading(true)
-        try {
-          const storage = getStorage()
-          const imageRef = ref(storage, `profile-photos/${user.id}`)
+        handleSubmit(async (formData) => {
+          if (formRef.current) {
+            const [imageFile] = formData.imageFiles
 
-          await uploadBytes(imageRef, imageFile, {
-            contentType: imageFile.type,
-          })
-          const downloadUrl = await getDownloadURL(imageRef)
+            setIsUploading(true)
+            try {
+              const storage = getStorage()
+              const imageRef = ref(storage, `profile-photos/${user.id}`)
 
-          updatePhotoUrl({
-            photoUrl: downloadUrl,
-          })
-        } finally {
-          setIsUploading(false)
-        }
-      })}
+              await uploadBytes(imageRef, imageFile, {
+                contentType: imageFile.type,
+              })
+
+              const downloadUrl = await getDownloadURL(imageRef)
+              const newFormData = new FormData()
+              newFormData.set("photoUrl", downloadUrl)
+
+              startTransition(() => {
+                updateFormAction(newFormData)
+              })
+            } finally {
+              setIsUploading(false)
+            }
+          }
+        })(e)
+      }}
     >
       <div>
         <div className="sm:flex gap-3 items-center">
@@ -102,7 +126,7 @@ export function UpdatePictureForm({ user }: { user: User }) {
           </div>
           <div>
             <h2 className="font-semibold">{user.displayName}</h2>
-            <p className="text-sm	text-gray-400">{role}</p>
+            <p className="text-sm	text-gray-400">{user.role}</p>
           </div>
         </div>
         <div className="text-sm pl-2 mt-3">
@@ -117,19 +141,24 @@ export function UpdatePictureForm({ user }: { user: User }) {
       <div className="flex flex-col gap-2 justify-center">
         {typeof user.photoUrl === "string" && (
           <button
-            onClick={() => removePhotoUrl()}
-            disabled={isLoading}
-            className="py-2 px-3 rounded-lg font-medium text-sm text-red-500 border border-red-500 disabled:text-red-300 disabled:border-red-300"
+            type="button"
+            disabled={isUploading || isPending}
+            className="py-2 px-3 rounded-lg font-medium text-sm text-red-500 border border-red-500 disabled:text-red-300 disabled:border-red-300 uppercase"
+            onClick={() => {
+              startTransition(() => {
+                removeFormAction()
+              })
+            }}
           >
-            DELETE
+            Delete
           </button>
         )}
         <button
           type="submit"
-          disabled={isLoading || !isValid}
-          className="py-2 px-3 rounded-lg font-medium text-sm text-green-500 border border-green-500 disabled:text-green-300 disabled:border-green-300"
+          disabled={isUploading || isPending || !isValid}
+          className="py-2 px-3 rounded-lg font-medium text-sm text-green-500 border border-green-500 disabled:text-green-300 disabled:border-green-300 uppercase"
         >
-          UPDATE
+          Update
         </button>
       </div>
     </form>

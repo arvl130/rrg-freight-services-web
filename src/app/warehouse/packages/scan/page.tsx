@@ -23,7 +23,7 @@ export default async function ScanPackagePage() {
           Scan Package
         </h1>
       </div>
-      <Tabs />
+      <Tabs userId={user.id} />
     </WarehouseLayout>
   )
 }

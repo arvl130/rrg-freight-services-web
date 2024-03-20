@@ -1,6 +1,5 @@
 import { api } from "@/utils/api"
 import { getColorFromPackageStatus } from "@/utils/colors"
-import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
@@ -8,7 +7,6 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight"
-import { getAuth } from "firebase/auth"
 import type { Package, PackageCategory } from "@/server/db/entities"
 import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
@@ -24,14 +22,14 @@ type ScanPackageSchemaFormType = z.infer<typeof scanPackageSchemaFormSchema>
 
 function ScanPackageForm({
   packageIds,
-  scannedPackages,
+  scannedPackageIds,
   updatedPackageIds,
-  onSubmitValidPackage,
+  onSubmitValidPackageId: onSubmitValidPackageId,
 }: {
   packageIds: string[]
-  scannedPackages: SelectedPackage[]
+  scannedPackageIds: string[]
   updatedPackageIds: string[]
-  onSubmitValidPackage: (prop: SelectedPackage) => void
+  onSubmitValidPackageId: (packageId: string) => void
 }) {
   const {
     handleSubmit,
@@ -63,7 +61,7 @@ function ScanPackageForm({
           return
         }
 
-        if (scannedPackages.some(({ id }) => id === formData.packageId)) {
+        if (scannedPackageIds.includes(formData.packageId)) {
           toast("Package was already scanned.", {
             icon: "⚠️",
           })
@@ -75,10 +73,7 @@ function ScanPackageForm({
           return
         }
 
-        onSubmitValidPackage({
-          id: formData.packageId,
-          categoryId: null,
-        })
+        onSubmitValidPackageId(formData.packageId)
       })}
     >
       <div className="grid sm:grid-cols-[1fr_auto] gap-3">
@@ -102,22 +97,11 @@ function ScanPackageForm({
   )
 }
 
-type SelectedPackage = {
-  id: string
-  categoryId: number | null
-}
-
-type ValidSelectedPackage = {
-  id: string
-  categoryId: number
-}
-
 function TableItem(props: {
   item: Package
   isScanned: boolean
   isUpdatingStatus: boolean
   packageCategories: PackageCategory[]
-  setSelectedPackage: (props: SelectedPackage) => void
   undoScan: () => void
 }) {
   return (
@@ -157,31 +141,6 @@ function TableItem(props: {
       )}
       <div>
         {props.isScanned && (
-          <select
-            onChange={(e) => {
-              if (e.currentTarget.value === "")
-                props.setSelectedPackage({
-                  id: props.item.id,
-                  categoryId: null,
-                })
-              else
-                props.setSelectedPackage({
-                  id: props.item.id,
-                  categoryId: Number(e.currentTarget.value),
-                })
-            }}
-          >
-            <option value="">Select a category ...</option>
-            {props.packageCategories.map(({ id, displayName }) => (
-              <option key={id} value={id}>
-                {displayName}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
-      <div>
-        {props.isScanned && (
           <button
             type="button"
             className="font-medium bg-red-500 hover:bg-red-400 disabled:bg-red-300 text-white transition-colors px-2 py-1 rounded-md"
@@ -196,22 +155,28 @@ function TableItem(props: {
   )
 }
 
-function PackagesTable({ shipmentId }: { shipmentId: number }) {
+function PackagesTable({
+  shipmentId,
+  userId,
+}: {
+  shipmentId: number
+  userId: string
+}) {
   const packagesQuery = api.package.getWithLatestStatusByShipmentId.useQuery({
     shipmentId,
   })
   const packageCategoriesQuery = api.packageCategory.getAll.useQuery()
-  const [scannedPackages, setScannedPackages] = useState<SelectedPackage[]>([])
+  const [scannedPackageIds, setScannedPackageIds] = useState<string[]>([])
 
   const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.shipment.package.updateManyToCompletedStatusWithCategory.useMutation({
+    api.shipment.package.updateManyToCompletedStatus.useMutation({
       onSuccess: () => {
         utils.package.getWithLatestStatusByShipmentId.invalidate({
           shipmentId,
         })
         utils.package.getAll.invalidate()
-        setScannedPackages([])
+        setScannedPackageIds([])
       },
     })
 
@@ -227,39 +192,32 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
     <div>
       <ScanPackageForm
         packageIds={packagesQuery.data.map((_package) => _package.id)}
-        scannedPackages={scannedPackages}
+        scannedPackageIds={scannedPackageIds}
         updatedPackageIds={packagesQuery.data
           .filter((_package) => _package.status === "IN_WAREHOUSE")
           .map((_package) => _package.id)}
-        onSubmitValidPackage={(props) =>
-          setScannedPackages((currScannedPackages) => [
+        onSubmitValidPackageId={(props) =>
+          setScannedPackageIds((currScannedPackages) => [
             ...currScannedPackages,
             props,
           ])
         }
       />
-      <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto">
+      <div className="grid grid-cols-[repeat(3,_auto)_1fr] gap-3 overflow-auto">
         <div className="font-medium">Package ID</div>
         <div className="font-medium">Receiver</div>
         <div className="font-medium">Status</div>
-        <div className="font-medium">Category</div>
         <div className="font-medium">Actions</div>
         {packagesQuery.data.map((_package) => (
           <TableItem
             key={_package.id}
             item={_package}
-            isScanned={scannedPackages.some(({ id }) => id === _package.id)}
+            isScanned={scannedPackageIds.includes(_package.id)}
             isUpdatingStatus={isLoading}
             packageCategories={packageCategoriesQuery.data}
-            setSelectedPackage={(props) => {
-              setScannedPackages((currScannedPackages) => [
-                ...currScannedPackages.filter(({ id }) => id !== props.id),
-                props,
-              ])
-            }}
             undoScan={() => {
-              setScannedPackages((currScannedPackages) =>
-                currScannedPackages.filter(({ id }) => id !== _package.id),
+              setScannedPackageIds((currScannedPackages) =>
+                currScannedPackages.filter((id) => id !== _package.id),
               )
             }}
           />
@@ -270,33 +228,16 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
         <button
           type="button"
           className="font-medium bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 text-white transition-colors px-4 py-2 rounded-md"
-          disabled={isLoading || scannedPackages.length === 0}
+          disabled={isLoading || scannedPackageIds.length === 0}
           onClick={() => {
-            const auth = getAuth()
-            const scannedPackagesNonNull =
-              scannedPackages.filter<ValidSelectedPackage>(
-                (props): props is ValidSelectedPackage =>
-                  props.categoryId !== null,
-              )
-
-            if (scannedPackages.length !== scannedPackagesNonNull.length) {
-              toast("One or more packages has an invalid category.", {
-                icon: "⚠️",
-              })
-              return
-            }
-
             const createdAt = DateTime.now().toISO()
             mutate({
               shipmentId,
               shipmentPackageStatus: "COMPLETED" as const,
-              packages: [
-                scannedPackagesNonNull[0],
-                ...scannedPackagesNonNull.slice(1),
-              ],
+              packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
               packageStatus: "IN_WAREHOUSE" as const,
               createdAt,
-              createdById: auth.currentUser!.uid,
+              createdById: userId,
             })
           }}
         >
@@ -440,9 +381,11 @@ function MarkAsCompleted({
 export function WarehouseTransferReceivingTab({
   selectedTab,
   setSelectedTab,
+  userId,
 }: {
   selectedTab: SelectedTab
   setSelectedTab: (tab: SelectedTab) => void
+  userId: string
 }) {
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
     null,
@@ -478,7 +421,9 @@ export function WarehouseTransferReceivingTab({
         </div>
       )}
 
-      {selectedShipmentId && <PackagesTable shipmentId={selectedShipmentId} />}
+      {selectedShipmentId && (
+        <PackagesTable shipmentId={selectedShipmentId} userId={userId} />
+      )}
     </div>
   )
 }

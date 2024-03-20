@@ -183,3 +183,6 @@ export const SUPPORTED_AUTHENTICATOR_TRANSPORT_TYPES = [
   "smart-card",
   "usb",
 ] as const
+
+// Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
+export const MYSQL_TEXT_COLUMN_DEFAULT_LIMIT = 65_535

@@ -6,23 +6,12 @@ import Image from "next/image"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+import type { z } from "zod"
 import { useState } from "react"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
-import { LoginPageHead } from "../login-page-head"
-import { signInWithWebauthnResponseAction } from "@/server/actions/auth"
+import { signInWithWebauthnResponseAction } from "./actions"
 import toast from "react-hot-toast"
-
-const formSchema = z.object({
-  email: z
-    .string()
-    .min(1, {
-      message: "Please enter your email.",
-    })
-    .email({
-      message: "This email has an invalid format.",
-    }),
-})
+import { formSchema } from "./form-schema"
 
 type FormType = z.infer<typeof formSchema>
 
@@ -50,14 +39,14 @@ export default function Page() {
   })
 
   const [isSigningIn, setIsSigningIn] = useState(false)
-  const [signInError, setSignInError] = useState<null | {
-    title: string
-    message: string
-  }>(null)
 
   return (
     <>
-      <LoginPageHead />
+      <title>Login &#x2013; RRG Freight Services</title>
+      <meta
+        name="description"
+        content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
+      />
       <main className="min-h-dvh bg-brand-cyan-450 px-3 py-24 pb-3 relative">
         <div className="absolute inset-0 h-full sm:grid grid-cols-2 hidden">
           <div className="flex justify-center items-end">
@@ -99,9 +88,7 @@ export default function Page() {
                 <input
                   type="text"
                   className="text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-                  {...register("email", {
-                    onChange: () => setSignInError(null),
-                  })}
+                  {...register("email")}
                 />
                 {errors.email && (
                   <p className="text-red-600 mt-1 text-sm">
@@ -109,11 +96,6 @@ export default function Page() {
                   </p>
                 )}
               </div>
-              {signInError && (
-                <p className="text-red-600 text-center mt-3">
-                  {signInError.message}
-                </p>
-              )}
               <button
                 type="submit"
                 disabled={

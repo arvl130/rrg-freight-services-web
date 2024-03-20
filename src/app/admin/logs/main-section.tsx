@@ -1,11 +1,8 @@
 "use client"
 
-import { AdminLayout } from "@/app/admin/auth"
-import { useSession } from "@/hooks/session"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
-import * as Page from "@/components/page"
 import * as Table from "@/components/table"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import type { Activity } from "@/server/db/entities"

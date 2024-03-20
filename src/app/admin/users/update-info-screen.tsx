@@ -1,5 +1,4 @@
 import type { User } from "@/server/db/entities"
-import { useSession } from "@/hooks/session"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -30,8 +29,6 @@ export function UpdateInformationScreen({
   goBack: () => void
   close: () => void
 }) {
-  const { user: firebaseUser, reload } = useSession()
-
   const {
     reset,
     register,
@@ -55,7 +52,6 @@ export function UpdateInformationScreen({
     onSuccess: () => {
       reset()
       utils.user.getAll.invalidate()
-      if (firebaseUser!.uid === user.id) reload()
     },
   })
 

@@ -6,13 +6,12 @@ import { Fragment, useState } from "react"
 import Link from "next/link"
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { usePathname } from "next/navigation"
-import { useSession } from "@/hooks/session"
 import { getSearchablePagesForRole } from "@/utils/searcheable-pages"
+import type { UserRole } from "@/utils/constants"
 
-function SearchForm(props: { close: () => void }) {
-  const session = useSession()
+function SearchForm(props: { close: () => void; role: UserRole }) {
   const [searchTerm, setSearchTerm] = useState("")
-  const searchResults = getSearchablePagesForRole(session.role).filter((page) =>
+  const searchResults = getSearchablePagesForRole(props.role).filter((page) =>
     page.title.toLowerCase().includes(searchTerm),
   )
   const pathname = usePathname()
@@ -77,9 +76,11 @@ function SearchForm(props: { close: () => void }) {
 export function GlobalSearchModal({
   isOpen,
   close,
+  role,
 }: {
   isOpen: boolean
   close: () => void
+  role: UserRole
 }) {
   return (
     <Dialog.Root open={isOpen}>
@@ -92,7 +93,7 @@ export function GlobalSearchModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             Page Search
           </Dialog.Title>
-          <SearchForm close={close} />
+          <SearchForm close={close} role={role} />
           <Dialog.Close asChild>
             <button
               type="button"

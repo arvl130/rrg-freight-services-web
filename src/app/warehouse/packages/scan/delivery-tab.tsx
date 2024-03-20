@@ -1,6 +1,5 @@
 import { api } from "@/utils/api"
 import { getColorFromPackageStatus } from "@/utils/colors"
-import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { supportedPackageStatusToHumanized } from "@/utils/humanize"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Fragment, useEffect, useState } from "react"
@@ -8,8 +7,6 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight"
-import { getAuth } from "firebase/auth"
-import type { ShipmentType } from "@/utils/constants"
 import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
 import { DateTime } from "luxon"
@@ -99,7 +96,13 @@ function ScanPackageForm({
   )
 }
 
-function PackagesTable({ shipmentId }: { shipmentId: number }) {
+function PackagesTable({
+  shipmentId,
+  userId,
+}: {
+  shipmentId: number
+  userId: string
+}) {
   const {
     status,
     data: packages,
@@ -206,7 +209,6 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
           className="font-medium bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 text-white transition-colors px-4 py-2 rounded-md"
           disabled={isLoading || scannedPackageIds.length === 0}
           onClick={() => {
-            const auth = getAuth()
             const createdAt = DateTime.now().toISO()
 
             mutate({
@@ -215,7 +217,7 @@ function PackagesTable({ shipmentId }: { shipmentId: number }) {
               packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
               packageStatus: "DELIVERING" as const,
               createdAt,
-              createdById: auth.currentUser!.uid,
+              createdById: userId,
             })
           }}
         >
@@ -371,9 +373,11 @@ function MarkAsInTransit({
 export function DeliveryTab({
   selectedTab,
   setSelectedTab,
+  userId,
 }: {
   selectedTab: SelectedTab
   setSelectedTab: (tab: SelectedTab) => void
+  userId: string
 }) {
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
     null,
@@ -409,7 +413,9 @@ export function DeliveryTab({
         </div>
       )}
 
-      {selectedShipmentId && <PackagesTable shipmentId={selectedShipmentId} />}
+      {selectedShipmentId && (
+        <PackagesTable shipmentId={selectedShipmentId} userId={userId} />
+      )}
     </div>
   )
 }

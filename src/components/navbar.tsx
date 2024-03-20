@@ -4,9 +4,9 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { List } from "@phosphor-icons/react/dist/ssr/List"
-import { User } from "@phosphor-icons/react/dist/ssr/User"
+import { User as UserIcon } from "@phosphor-icons/react/dist/ssr/User"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
-import { useSession } from "@/hooks/session"
+import type { User } from "lucia"
 
 function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -34,7 +34,7 @@ function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
         </Link>
 
         <Link href="/login">
-          <User className="text-3xl font-bold focus:outline-none" />
+          <UserIcon className="text-3xl font-bold focus:outline-none" />
         </Link>
       </div>
       {isMobileMenuOpen && (
@@ -63,9 +63,7 @@ function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
   )
 }
 
-function DesktopNav() {
-  const { isLoading, user, role } = useSession()
-
+function DesktopNav(props: { user: User | null }) {
   return (
     <div className="hidden md:flex max-w-6xl mx-auto px-6 h-full justify-between items-center text-white font-semibold">
       <Link href="/">
@@ -100,40 +98,29 @@ function DesktopNav() {
         </li>
       </ul>
 
-      {isLoading ? (
-        <div className="flex items-center text-white">
-          <User
+      {props.user === null ? (
+        <Link href="/login" className="flex items-center text-white">
+          <UserIcon
             size={30}
             className="text-xl font-bold focus:outline-none text-white"
           />
-        </div>
+        </Link>
       ) : (
-        <>
-          {user === null ? (
-            <Link href="/login" className="flex items-center text-white">
-              <User
-                size={30}
-                className="text-xl font-bold focus:outline-none text-white"
-              />
-            </Link>
-          ) : (
-            <Link
-              href={getUserRoleRedirectPath(role)}
-              className="flex items-center text-white"
-            >
-              <User
-                size={30}
-                className="text-xl font-bold focus:outline-none text-white"
-              />
-            </Link>
-          )}
-        </>
+        <Link
+          href={getUserRoleRedirectPath(props.user.role)}
+          className="flex items-center text-white"
+        >
+          <UserIcon
+            size={30}
+            className="text-xl font-bold focus:outline-none text-white"
+          />
+        </Link>
       )}
     </div>
   )
 }
 
-export function Navbar() {
+export function Navbar(props: { user: User | null }) {
   const [hasScrolled, setHasScrolled] = useState(false)
 
   useEffect(() => {
@@ -158,7 +145,7 @@ export function Navbar() {
         }`}
       >
         <MobileNav hasScrolled={hasScrolled} />
-        <DesktopNav />
+        <DesktopNav user={props.user} />
       </div>
     </>
   )
