@@ -15,9 +15,12 @@ import { DateTime } from "luxon"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { UserDisplayName } from "@/components/user-display-name"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
+import { ViewWaybillsModal } from "./view-waybills-modal"
 
 function TableItem({ item }: { item: NormalizedIncomingShipment }) {
-  const [visibleModal, setVisibleModal] = useState<null | "VIEW_DETAILS">(null)
+  const [visibleModal, setVisibleModal] = useState<
+    null | "VIEW_DETAILS" | "PRINT_WAYBILLS"
+  >(null)
 
   return (
     <>
@@ -59,6 +62,12 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
               >
                 View Details
               </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("PRINT_WAYBILLS")}
+              >
+                Print Waybills
+              </DropdownMenu.Item>
 
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
@@ -68,6 +77,11 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
         <ViewDetailsModal
           shipmentId={item.id}
           isOpen={visibleModal === "VIEW_DETAILS"}
+          close={() => setVisibleModal(null)}
+        />
+        <ViewWaybillsModal
+          shipmentId={item.id}
+          isOpen={visibleModal === "PRINT_WAYBILLS"}
           close={() => setVisibleModal(null)}
         />
       </div>
