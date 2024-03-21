@@ -51,6 +51,53 @@ export const sessions = mysqlTable("sessions", {
   expiresAt: datetime("expires_at").notNull(),
 })
 
+export const warehouseStaffs = mysqlTable("warehouse_staffs", {
+  userId: varchar("user_id", {
+    length: 28,
+  })
+    .notNull()
+    .primaryKey(),
+  warehouseId: bigint("warehouse_id", {
+    mode: "number",
+  }).notNull(),
+})
+
+export const drivers = mysqlTable("drivers", {
+  userId: varchar("user_id", {
+    length: 28,
+  })
+    .notNull()
+    .primaryKey(),
+  licenseNumber: varchar("license_number", {
+    length: 100,
+  }).notNull(),
+  licenseRegisteredAt: varchar("license_registered_at", {
+    length: 255,
+  }).notNull(),
+})
+
+export const overseasAgents = mysqlTable("overseas_agents", {
+  userId: varchar("user_id", {
+    length: 28,
+  })
+    .notNull()
+    .primaryKey(),
+  companyName: varchar("company_name", {
+    length: 100,
+  }).notNull(),
+})
+
+export const domesticAgents = mysqlTable("domestic_agents", {
+  userId: varchar("user_id", {
+    length: 28,
+  })
+    .notNull()
+    .primaryKey(),
+  companyName: varchar("company_name", {
+    length: 100,
+  }).notNull(),
+})
+
 export const shipments = mysqlTable("shipments", {
   id: bigint("id", {
     mode: "number",
