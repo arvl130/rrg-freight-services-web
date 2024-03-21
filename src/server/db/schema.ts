@@ -324,6 +324,9 @@ export const packages = mysqlTable("packages", {
   lastWarehouseId: bigint("last_warehouse_id", {
     mode: "number",
   }),
+  expectedDeliveryAt: varchar("expected_delivery_at", {
+    length: 255,
+  }),
   isFragile: tinyint("is_fragile").notNull(),
   status: mysqlEnum("status", SUPPORTED_PACKAGE_STATUSES).notNull(),
   failedAttempts: tinyint("failed_attempts").notNull().default(0),
