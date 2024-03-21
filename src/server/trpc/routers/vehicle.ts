@@ -4,9 +4,13 @@ import { vehicles, shipments, deliveryShipments } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import type { VehicleType } from "@/utils/constants"
-import { SUPPORTED_VEHICLE_TYPES } from "@/utils/constants"
+import {
+  MYSQL_ERROR_DUPLICATE_ENTRY,
+  SUPPORTED_VEHICLE_TYPES,
+} from "@/utils/constants"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
+import type { QueryError } from "mysql2"
 
 export const vehicleRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -66,26 +70,37 @@ export const vehicleRouter = router({
         type: z.custom<VehicleType>((val) =>
           SUPPORTED_VEHICLE_TYPES.includes(val as VehicleType),
         ),
-        displayName: z.string().min(1).max(255),
+        displayName: z.string().min(1).max(100),
+        plateNumber: z.string().min(1).max(15),
         isExpressAllowed: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const createdAt = DateTime.now().toISO()
+      try {
+        const createdAt = DateTime.now().toISO()
+        const result = await ctx.db.insert(vehicles).values({
+          ...input,
+          isExpressAllowed: input.isExpressAllowed ? 1 : 0,
+          createdAt,
+        })
 
-      const result = ctx.db.insert(vehicles).values({
-        ...input,
-        isExpressAllowed: input.isExpressAllowed ? 1 : 0,
-        createdAt,
-      })
+        await createLog(ctx.db, {
+          verb: "CREATE",
+          entity: "VEHICLE",
+          createdById: ctx.user.id,
+        })
 
-      await createLog(ctx.db, {
-        verb: "CREATE",
-        entity: "VEHICLE",
-        createdById: ctx.user.id,
-      })
-
-      return result
+        return result
+      } catch (e) {
+        if ((e as QueryError).errno === MYSQL_ERROR_DUPLICATE_ENTRY) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "ID and Plate Number must be unique.",
+          })
+        } else {
+          throw e
+        }
+      }
     }),
   updateById: protectedProcedure
     .input(
@@ -94,26 +109,38 @@ export const vehicleRouter = router({
         type: z.custom<VehicleType>((val) =>
           SUPPORTED_VEHICLE_TYPES.includes(val as VehicleType),
         ),
-        displayName: z.string().min(1).max(255),
+        displayName: z.string().min(1).max(100),
+        plateNumber: z.string().min(1).max(15),
         isExpressAllowed: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db
-        .update(vehicles)
-        .set({
-          ...input,
-          isExpressAllowed: input.isExpressAllowed ? 1 : 0,
+      try {
+        const result = await ctx.db
+          .update(vehicles)
+          .set({
+            ...input,
+            isExpressAllowed: input.isExpressAllowed ? 1 : 0,
+          })
+          .where(eq(vehicles.id, input.id))
+
+        await createLog(ctx.db, {
+          verb: "UPDATE",
+          entity: "VEHICLE",
+          createdById: ctx.user.id,
         })
-        .where(eq(vehicles.id, input.id))
 
-      await createLog(ctx.db, {
-        verb: "UPDATE",
-        entity: "VEHICLE",
-        createdById: ctx.user.id,
-      })
-
-      return result
+        return result
+      } catch (e) {
+        if ((e as QueryError).errno === MYSQL_ERROR_DUPLICATE_ENTRY) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "ID and Plate Number must be unique.",
+          })
+        } else {
+          throw e
+        }
+      }
     }),
   deleteById: protectedProcedure
     .input(

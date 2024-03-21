@@ -27,6 +27,9 @@ function TableItem({ item }: { item: Vehicle }) {
         {item.displayName}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {item.plateNumber}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {item.type}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
@@ -173,9 +176,12 @@ function VehiclesTable({ items }: { items: Vehicle[] }) {
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min overflow-auto">
+        <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min overflow-auto">
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Vehicle ID
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Plate Number
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Display Name

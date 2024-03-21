@@ -186,3 +186,5 @@ export const SUPPORTED_AUTHENTICATOR_TRANSPORT_TYPES = [
 
 // Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html
 export const MYSQL_TEXT_COLUMN_DEFAULT_LIMIT = 65_535
+
+export const MYSQL_ERROR_DUPLICATE_ENTRY = 1062

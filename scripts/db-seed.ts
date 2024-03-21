@@ -113,6 +113,7 @@ const newVehicles: NewVehicle[] = [
     displayName: "Truck 1",
     type: "TRUCK",
     isExpressAllowed: 0,
+    plateNumber: "ABC 123",
     createdAt,
   },
   {
@@ -120,6 +121,7 @@ const newVehicles: NewVehicle[] = [
     displayName: "Truck 2",
     type: "TRUCK",
     isExpressAllowed: 0,
+    plateNumber: "XYZ 456",
     createdAt,
   },
   {
@@ -127,6 +129,7 @@ const newVehicles: NewVehicle[] = [
     displayName: "Truck 3",
     type: "TRUCK",
     isExpressAllowed: 0,
+    plateNumber: "DEF 789",
     createdAt,
   },
   {
@@ -134,6 +137,7 @@ const newVehicles: NewVehicle[] = [
     displayName: "Van 1",
     type: "VAN",
     isExpressAllowed: 1,
+    plateNumber: "GHI 012",
     createdAt,
   },
   {
@@ -141,6 +145,7 @@ const newVehicles: NewVehicle[] = [
     displayName: "Van 2",
     type: "VAN",
     isExpressAllowed: 1,
+    plateNumber: "JKL 345",
     createdAt,
   },
 ]

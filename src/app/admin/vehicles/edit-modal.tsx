@@ -6,13 +6,15 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"
+import toast from "react-hot-toast"
 import { z } from "zod"
 
 const formSchema = z.object({
   type: z.custom<VehicleType>((val) =>
     SUPPORTED_VEHICLE_TYPES.includes(val as VehicleType),
   ),
-  displayName: z.string().min(1).max(255),
+  displayName: z.string().min(1).max(100),
+  plateNumber: z.string().min(1).max(15),
   isExpressAllowed: z.boolean(),
 })
 
@@ -29,6 +31,7 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
     defaultValues: {
       type: vehicle.type,
       displayName: vehicle.displayName,
+      plateNumber: vehicle.plateNumber,
       isExpressAllowed: vehicle.isExpressAllowed === 1,
     },
   })
@@ -42,6 +45,9 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
       apiUtils.vehicle.getAll.invalidate()
       close()
       reset()
+    },
+    onError: (error) => {
+      toast.error(error.message)
     },
   })
 
@@ -64,6 +70,17 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
         />
         {errors.displayName && (
           <div className="mt-1 text-red-500">{errors.displayName.message}.</div>
+        )}
+      </div>
+      <div className="grid mb-3">
+        <label className="font-medium mb-1">Plate No.</label>
+        <input
+          type="text"
+          className="px-2 py-1 border border-gray-300"
+          {...register("plateNumber")}
+        />
+        {errors.plateNumber && (
+          <div className="mt-1 text-red-500">{errors.plateNumber.message}.</div>
         )}
       </div>
       <div className="grid mb-3">

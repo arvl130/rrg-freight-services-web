@@ -220,6 +220,11 @@ export const vehicles = mysqlTable("vehicles", {
   displayName: varchar("display_name", {
     length: 100,
   }).notNull(),
+  plateNumber: varchar("plate_number", {
+    length: 15,
+  })
+    .notNull()
+    .unique(),
   isExpressAllowed: tinyint("is_express_allowed").notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
   createdAt: varchar("created_at", {
