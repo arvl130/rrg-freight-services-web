@@ -1,6 +1,14 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
-import { shipments, deliveryShipments, users } from "@/server/db/schema"
+import {
+  shipments,
+  deliveryShipments,
+  users,
+  warehouseStaffs,
+  drivers,
+  overseasAgents,
+  domesticAgents,
+} from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { and, count, eq, inArray, isNull, like } from "drizzle-orm"
 import { getStorage } from "firebase-admin/storage"
@@ -8,6 +16,7 @@ import { clientEnv } from "@/utils/env.mjs"
 import type { Gender, UserRole } from "@/utils/constants"
 import {
   MYSQL_TEXT_COLUMN_DEFAULT_LIMIT,
+  REGEX_HTML_INPUT_DATESTR,
   SUPPORTED_GENDERS,
   SUPPORTED_USER_ROLES,
 } from "@/utils/constants"
@@ -15,6 +24,14 @@ import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
 import { Scrypt } from "lucia"
 import { generateUserId } from "@/utils/uuid"
+
+const createInputSchema = z.object({
+  displayName: z.string().min(1),
+  contactNumber: z.string().min(1),
+  emailAddress: z.string().min(1).max(100).email(),
+  password: z.string().min(8),
+  gender: z.custom<Gender>((val) => SUPPORTED_GENDERS.includes(val as Gender)),
+})
 
 export const userRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -55,18 +72,26 @@ export const userRouter = router({
     }),
   create: protectedProcedure
     .input(
-      z.object({
-        displayName: z.string().min(1),
-        contactNumber: z.string().min(1),
-        emailAddress: z.string().min(1).max(100).email(),
-        password: z.string().min(8),
-        gender: z.custom<Gender>((val) =>
-          SUPPORTED_GENDERS.includes(val as Gender),
-        ),
-        role: z.custom<UserRole>((val) =>
-          SUPPORTED_USER_ROLES.includes(val as UserRole),
-        ),
-      }),
+      z.discriminatedUnion("role", [
+        createInputSchema.extend({ role: z.literal("ADMIN") }),
+        createInputSchema.extend({
+          role: z.literal("WAREHOUSE"),
+          warehouseId: z.number(),
+        }),
+        createInputSchema.extend({
+          role: z.literal("DRIVER"),
+          licenseNumber: z.string().min(1).max(100),
+          licenseRegistrationDate: z.string().regex(REGEX_HTML_INPUT_DATESTR),
+        }),
+        createInputSchema.extend({
+          role: z.literal("OVERSEAS_AGENT"),
+          companyName: z.string().min(1).max(100),
+        }),
+        createInputSchema.extend({
+          role: z.literal("DOMESTIC_AGENT"),
+          companyName: z.string().min(1).max(100),
+        }),
+      ]),
     )
     .mutation(async ({ ctx, input }) => {
       const createdAt = DateTime.now().toISO()
@@ -87,15 +112,40 @@ export const userRouter = router({
       const hashedPassword = await scrypt.hash(input.password)
       const userId = generateUserId()
 
-      await ctx.db.insert(users).values({
-        id: userId,
-        displayName: input.displayName,
-        contactNumber: input.contactNumber,
-        emailAddress: input.emailAddress,
-        hashedPassword,
-        gender: input.gender,
-        role: input.role,
-        createdAt,
+      await ctx.db.transaction(async (tx) => {
+        await tx.insert(users).values({
+          id: userId,
+          displayName: input.displayName,
+          contactNumber: input.contactNumber,
+          emailAddress: input.emailAddress,
+          hashedPassword,
+          gender: input.gender,
+          role: input.role,
+          createdAt,
+        })
+
+        if (input.role === "WAREHOUSE") {
+          await tx.insert(warehouseStaffs).values({
+            userId,
+            warehouseId: input.warehouseId,
+          })
+        } else if (input.role === "DRIVER") {
+          await tx.insert(drivers).values({
+            userId,
+            licenseNumber: input.licenseNumber,
+            licenseRegistrationDate: input.licenseRegistrationDate,
+          })
+        } else if (input.role === "OVERSEAS_AGENT") {
+          await tx.insert(overseasAgents).values({
+            userId,
+            companyName: input.companyName,
+          })
+        } else if (input.role === "DOMESTIC_AGENT") {
+          await tx.insert(domesticAgents).values({
+            userId,
+            companyName: input.companyName,
+          })
+        }
       })
     }),
   updateDetails: protectedProcedure

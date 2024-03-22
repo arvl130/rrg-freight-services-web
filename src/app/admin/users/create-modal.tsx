@@ -1,157 +1,13 @@
 import * as Dialog from "@radix-ui/react-dialog"
-import { useForm } from "react-hook-form"
-import type { Gender, UserRole } from "@/utils/constants"
-import { SUPPORTED_GENDERS, SUPPORTED_USER_ROLES } from "@/utils/constants"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { api } from "@/utils/api"
+import type { UserRole } from "@/utils/constants"
+import { SUPPORTED_USER_ROLES } from "@/utils/constants"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
-
-const createUserFormSchema = z.object({
-  displayName: z.string().min(1),
-  contactNumber: z.string().min(1),
-  emailAddress: z.string().min(1).max(100).email(),
-  password: z.string().min(8),
-  gender: z.custom<Gender>((val) => SUPPORTED_GENDERS.includes(val as Gender)),
-  role: z.custom<UserRole>((val) =>
-    SUPPORTED_USER_ROLES.includes(val as UserRole),
-  ),
-})
-
-type CreateUserFormSchema = z.infer<typeof createUserFormSchema>
-
-function CreateUserForm(props: { close: () => void }) {
-  const {
-    handleSubmit,
-    register,
-    reset,
-    formState: { errors },
-  } = useForm<CreateUserFormSchema>({
-    resolver: zodResolver(createUserFormSchema),
-  })
-
-  const apiUtils = api.useUtils()
-  const { mutate, status, error } = api.user.create.useMutation({
-    onSuccess: () => {
-      apiUtils.user.getAll.invalidate()
-      props.close()
-      reset()
-    },
-  })
-
-  return (
-    <form
-      className="px-4 py-3"
-      onSubmit={handleSubmit((formData) => mutate(formData))}
-    >
-      {status === "error" && (
-        <div>
-          <p className="text-red-500 text-center text-sm">{error.message}</p>
-        </div>
-      )}
-      <div className="grid grid-cols-[auto_1fr] gap-x-3">
-        <div className="flex items-center justify-end">
-          <label>Display name:</label>
-        </div>
-        <input
-          type="text"
-          className="block mt-2 w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
-          {...register("displayName")}
-        />
-        {errors.displayName && (
-          <div className="mt-1 text-red-500 col-start-2">
-            {errors.displayName.message}.
-          </div>
-        )}
-
-        <div className="flex items-center justify-end">
-          <label>Email:</label>
-        </div>
-        <input
-          type="email"
-          className="block mt-2 w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
-          {...register("emailAddress")}
-        />
-        {errors.emailAddress && (
-          <div className="mt-1 text-red-500 col-start-2">
-            {errors.emailAddress.message}.
-          </div>
-        )}
-
-        <div className="flex items-center justify-end">
-          <label>Password:</label>
-        </div>
-        <input
-          type="password"
-          className="block mt-2 w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
-          {...register("password")}
-        />
-        {errors.password && (
-          <div className="mt-1 text-red-500 col-start-2">
-            {errors.password.message}.
-          </div>
-        )}
-
-        <div className="flex items-center justify-end">
-          <label>Contact number:</label>
-        </div>
-        <input
-          type="text"
-          className="block mt-2 w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
-          {...register("contactNumber")}
-        />
-        {errors.contactNumber && (
-          <div className="mt-1 text-red-500 col-start-2">
-            {errors.contactNumber.message}.
-          </div>
-        )}
-
-        <div className="flex items-center justify-end">
-          <label>Gender:</label>
-        </div>
-        <select
-          className="block mt-2 w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
-          {...register("gender")}
-        >
-          {SUPPORTED_GENDERS.map((gender) => (
-            <option key={gender}>{gender}</option>
-          ))}
-        </select>
-        {errors.gender && (
-          <div className="mt-1 text-red-500 col-start-2">
-            {errors.gender.message}.
-          </div>
-        )}
-
-        <div className="flex items-center justify-end">
-          <label>Role:</label>
-        </div>
-        <select
-          className="block mt-2 w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
-          {...register("role")}
-        >
-          {SUPPORTED_USER_ROLES.map((role) => (
-            <option key={role}>{role}</option>
-          ))}
-        </select>
-        {errors.role && (
-          <div className="mt-1 text-red-500 col-start-2">
-            {errors.role.message}.
-          </div>
-        )}
-      </div>
-      <div className="flex justify-end mt-3">
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-500 disabled:bg-blue-300 hover:bg-blue-400 rounded-md font-medium transition-colors duration-200 text-white"
-          disabled={status === "loading"}
-        >
-          Create
-        </button>
-      </div>
-    </form>
-  )
-}
+import { useState } from "react"
+import { CreateAdminForm } from "./create-admin-form"
+import { CreateWarehouseStaffForm } from "./create-warehouse-staff-form"
+import { CreateDriverForm } from "./create-driver-form"
+import { CreateOverseasAgentForm } from "./create-overseas-agent-form"
+import { CreateDomesticAgentForm } from "./create-domestic-agent-form"
 
 export function CreateModal({
   isOpen,
@@ -160,6 +16,8 @@ export function CreateModal({
   isOpen: boolean
   close: () => void
 }) {
+  const [selectedRole, setSelectedRole] = useState<UserRole>("ADMIN")
+
   return (
     <Dialog.Root open={isOpen}>
       <Dialog.Portal>
@@ -171,7 +29,33 @@ export function CreateModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             New User
           </Dialog.Title>
-          <CreateUserForm close={close} />
+          <div className="px-4 py-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 max-h-[80dvh] overflow-auto">
+            <div className="flex items-center justify-end">
+              <label>Role:</label>
+            </div>
+            <select
+              className="block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+              value={selectedRole}
+              onChange={(e) => {
+                setSelectedRole(e.currentTarget.value as UserRole)
+              }}
+            >
+              {SUPPORTED_USER_ROLES.map((role) => (
+                <option key={role}>{role}</option>
+              ))}
+            </select>
+            {selectedRole === "ADMIN" && <CreateAdminForm onClose={close} />}
+            {selectedRole === "WAREHOUSE" && (
+              <CreateWarehouseStaffForm onClose={close} />
+            )}
+            {selectedRole === "DRIVER" && <CreateDriverForm onClose={close} />}
+            {selectedRole === "OVERSEAS_AGENT" && (
+              <CreateOverseasAgentForm onClose={close} />
+            )}
+            {selectedRole === "DOMESTIC_AGENT" && (
+              <CreateDomesticAgentForm onClose={close} />
+            )}
+          </div>
           <Dialog.Close asChild>
             <button
               type="button"

@@ -71,8 +71,8 @@ export const drivers = mysqlTable("drivers", {
   licenseNumber: varchar("license_number", {
     length: 100,
   }).notNull(),
-  licenseRegisteredAt: varchar("license_registered_at", {
-    length: 255,
+  licenseRegistrationDate: varchar("license_registration_date", {
+    length: 10,
   }).notNull(),
 })
 
