@@ -24,10 +24,10 @@ function TableItem({ item }: { item: Vehicle }) {
         {item.id}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        {item.displayName}
+        {item.plateNumber}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        {item.plateNumber}
+        {item.displayName}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {item.type}
