@@ -295,6 +295,7 @@ export const packageCategories = mysqlTable("package_categories", {
 
 export const packages = mysqlTable("packages", {
   id: varchar("id", { length: 36 }).primaryKey(),
+  preassignedId: varchar("preassigned_id", { length: 100 }).primaryKey(),
   shippingMode: mysqlEnum(
     "shipping_mode",
     SUPPORTED_PACKAGE_SHIPPING_MODES,

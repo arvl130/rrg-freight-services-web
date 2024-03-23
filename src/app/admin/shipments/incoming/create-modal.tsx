@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { ZodError, z } from "zod"
 import type { WorkBook } from "xlsx"
 import { utils, read } from "xlsx"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import type {
   PackageReceptionMode,
   PackageShippingMode,
@@ -111,32 +111,34 @@ function SelectSheetNameForm({
 }
 
 const expectedColumns = [
+  "Received Number",
   "Shipping Mode",
   "Shipping Type",
   "Reception Mode",
-  "Weight In ",
-  "Sender Full ",
-  "Sender Contact ",
-  "Sender Email ",
-  "Sender Street ",
+  "Weight In Kg",
+  "Sender Full Name",
+  "Sender Contact Number",
+  "Sender Email Address",
+  "Sender Street Address",
   "Sender City",
-  "Sender State/",
-  "Sender Country ",
-  "Sender Postal ",
-  "Receiver Full ",
-  "Receiver Contact ",
-  "Receiver Email ",
-  "Receiver Street ",
+  "Sender State/Province",
+  "Sender Country Code",
+  "Sender Postal Code",
+  "Receiver Full Name",
+  "Receiver Contact Number",
+  "Receiver Email Address",
+  "Receiver Street Address",
   "Receiver Barangay",
   "Receiver City",
-  "Receiver State/",
-  "Receiver Country ",
-  "Receiver Postal ",
+  "Receiver State/Province",
+  "Receiver Country Code",
+  "Receiver Postal Code",
   "Fragile?",
   "Declared Value",
 ]
 
 const sheetRowSchema = z.object({
+  "Received Number": z.string().min(1).max(100),
   "Shipping Mode": z.custom<PackageShippingMode>((val) =>
     SUPPORTED_PACKAGE_SHIPPING_MODES.includes(val as PackageShippingMode),
   ),
@@ -211,6 +213,7 @@ function ChooseAgentForm({
         mutate({
           sentByAgentId: formData.sentByAgentId,
           newPackages: sheetRows.map((newPackage) => ({
+            preassignedId: newPackage["Received Number"],
             shippingMode: newPackage["Shipping Mode"],
             shippingType: newPackage["Shipping Type"],
             receptionMode: newPackage["Reception Mode"],
@@ -240,10 +243,8 @@ function ChooseAgentForm({
       className="flex justify-between gap-3 pt-2"
     >
       <div>
-        <select {...register("sentByAgentId")}>
-          <option value={undefined} selected>
-            Select an agent ...
-          </option>
+        <select {...register("sentByAgentId")} defaultValue="">
+          <option value="">Select an agent ...</option>
           {agents.map((agent) => (
             <option key={agent.id} value={agent.id}>
               {agent.displayName}
@@ -296,26 +297,31 @@ function CreatePackagesForm({
 
     return (
       <div className="px-4 grid grid-rows-[1fr_auto] overflow-auto">
-        <div className="h-full overflow-auto border border-gray-300">
-          <div className={`grid grid-cols-[repeat(23,_13rem)] font-medium`}>
-            {expectedColumns.map((key) => (
-              <div key={key} className="px-1.5 py-1">
-                {key}
-              </div>
-            ))}
-          </div>
-          {parseArrayResult.data.map((newPackage, index) => (
-            <div key={index} className={`grid grid-cols-[repeat(23,_13rem)]`}>
-              {Object.keys(newPackage).map((key) => (
-                <div
-                  key={key}
-                  className="w-full overflow-hidden text-ellipsis px-1.5 py-1"
-                >
-                  {newPackage[key as keyof typeof newPackage]}
-                </div>
-              ))}
+        <div
+          className="h-full overflow-auto border border-gray-300 grid auto-rows-min"
+          style={{
+            gridTemplateColumns: `repeat(${expectedColumns.length}, auto)`,
+          }}
+        >
+          {expectedColumns.map((key) => (
+            <div
+              key={key}
+              className="px-1.5 py-1 font-medium whitespace-nowrap"
+            >
+              {key}
             </div>
           ))}
+          {parseArrayResult.data.map((newPackage, index) => {
+            return (
+              <Fragment key={index}>
+                {expectedColumns.map((key) => (
+                  <div key={key} className="w-full px-1.5 py-1">
+                    {newPackage[key as keyof typeof newPackage]}
+                  </div>
+                ))}
+              </Fragment>
+            )
+          })}
         </div>
         {status === "loading" && <div>Loading agents ...</div>}
         {status === "error" && (
@@ -342,14 +348,20 @@ function CreatePackagesForm({
           One or more or rows in this sheet contains errors. Please recheck its
           contents.
         </p>
-        <div className="h-full overflow-auto border border-gray-300">
-          <div className={`grid grid-cols-[repeat(23,_13rem)] font-medium`}>
-            {expectedColumns.map((column) => (
-              <div key={column} className="px-1.5 py-1">
-                {column}
-              </div>
-            ))}
-          </div>
+        <div
+          className="h-full overflow-auto border border-gray-300 grid auto-rows-min"
+          style={{
+            gridTemplateColumns: `repeat(${expectedColumns.length}, auto)`,
+          }}
+        >
+          {expectedColumns.map((column) => (
+            <div
+              key={column}
+              className="px-1.5 py-1 font-medium whitespace-nowrap"
+            >
+              {column}
+            </div>
+          ))}
           {rowsWithErrors.map((row) => {
             const parseRowResult = sheetRowSchema.safeParse(
               sheetRowsRaw[row as keyof typeof sheetRowsRaw],
@@ -362,7 +374,7 @@ function CreatePackagesForm({
               const newPackage = sheetRowsRaw[row as any] as SheetRow
 
               return (
-                <div key={row} className={`grid grid-cols-[repeat(23,_13rem)]`}>
+                <Fragment key={row}>
                   {expectedColumns.map((column) => (
                     <div
                       key={column}
@@ -374,7 +386,7 @@ function CreatePackagesForm({
                         "undefined" && newPackage[column as keyof SheetRow]}
                     </div>
                   ))}
-                </div>
+                </Fragment>
               )
             }
           })}

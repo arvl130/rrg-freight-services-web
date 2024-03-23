@@ -150,6 +150,7 @@ export const packageRouter = router({
       z.object({
         newPackages: z
           .object({
+            preassignedId: z.string().min(1).max(100),
             shippingMode: z.custom<PackageShippingMode>((val) =>
               SUPPORTED_PACKAGE_SHIPPING_MODES.includes(
                 val as PackageShippingMode,
