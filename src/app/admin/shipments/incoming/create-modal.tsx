@@ -286,12 +286,14 @@ function CreatePackagesForm({
   const sheetRowsRaw = utils.sheet_to_json<Record<string, unknown>>(
     selectedWorkBook.Sheets[selectedSheetName],
   )
+
   const { status, data: agents, error } = api.user.getOverseasAgents.useQuery()
+  const parseArrayResult = sheetRowSchema.array().safeParse(sheetRowsRaw)
 
-  try {
-    const sheetRows = sheetRowSchema.array().parse(sheetRowsRaw)
+  if (parseArrayResult.success) {
+    if (parseArrayResult.data.length === 0)
+      return <div>Selected sheet has no rows.</div>
 
-    if (sheetRows.length === 0) return <div>Selected sheet has no rows.</div>
     return (
       <div className="px-4 grid grid-rows-[1fr_auto] overflow-auto">
         <div className="h-full overflow-auto border border-gray-300">
@@ -302,7 +304,7 @@ function CreatePackagesForm({
               </div>
             ))}
           </div>
-          {sheetRows.map((newPackage, index) => (
+          {parseArrayResult.data.map((newPackage, index) => (
             <div key={index} className={`grid grid-cols-[repeat(23,_13rem)]`}>
               {Object.keys(newPackage).map((key) => (
                 <div
@@ -322,74 +324,72 @@ function CreatePackagesForm({
         {status === "success" && (
           <ChooseAgentForm
             agents={agents}
-            sheetRows={sheetRows}
+            sheetRows={parseArrayResult.data}
             reset={() => reset()}
             close={() => close()}
           />
         )}
       </div>
     )
-  } catch (e) {
-    if (e instanceof ZodError) {
-      const rowsWithErrors = Object.keys(e.flatten().fieldErrors)
+  } else {
+    const rowsWithErrors = Object.keys(
+      parseArrayResult.error.flatten().fieldErrors,
+    )
 
-      return (
-        <div className="px-4 grid grid-rows-[auto_1fr] overflow-auto">
-          <p className="mb-3">
-            One or more or rows in this sheet contains errors. Please recheck
-            its contents.
-          </p>
-          <div className="h-full overflow-auto border border-gray-300">
-            <div className={`grid grid-cols-[repeat(23,_13rem)] font-medium`}>
-              {expectedColumns.map((column) => (
-                <div key={column} className="px-1.5 py-1">
-                  {column}
-                </div>
-              ))}
-            </div>
-            {rowsWithErrors.map((row) => {
-              try {
-                sheetRowSchema.parse(
-                  sheetRowsRaw[row as keyof typeof sheetRowsRaw],
-                )
-              } catch (e) {
-                if (e instanceof ZodError) {
-                  const fieldsWithErrors = Object.keys(e.flatten().fieldErrors)
-                  const newPackage = sheetRowsRaw[row as any] as SheetRow
+    return (
+      <div className="px-4 grid grid-rows-[auto_1fr] overflow-auto">
+        <p className="mb-3">
+          One or more or rows in this sheet contains errors. Please recheck its
+          contents.
+        </p>
+        <div className="h-full overflow-auto border border-gray-300">
+          <div className={`grid grid-cols-[repeat(23,_13rem)] font-medium`}>
+            {expectedColumns.map((column) => (
+              <div key={column} className="px-1.5 py-1">
+                {column}
+              </div>
+            ))}
+          </div>
+          {rowsWithErrors.map((row) => {
+            const parseRowResult = sheetRowSchema.safeParse(
+              sheetRowsRaw[row as keyof typeof sheetRowsRaw],
+            )
 
-                  return (
-                    <div className={`grid grid-cols-[repeat(23,_13rem)]`}>
-                      {expectedColumns.map((column) => (
-                        <div
-                          key={column}
-                          className={`px-1.5 py-1 ${
-                            fieldsWithErrors.includes(column)
-                              ? "bg-red-300"
-                              : ""
-                          }`}
-                        >
-                          {typeof newPackage[column as keyof SheetRow] !==
-                            "undefined" && newPackage[column as keyof SheetRow]}
-                        </div>
-                      ))}
+            if (!parseRowResult.success) {
+              const fieldsWithErrors = Object.keys(
+                parseRowResult.error.flatten().fieldErrors,
+              )
+              const newPackage = sheetRowsRaw[row as any] as SheetRow
+
+              return (
+                <div key={row} className={`grid grid-cols-[repeat(23,_13rem)]`}>
+                  {expectedColumns.map((column) => (
+                    <div
+                      key={column}
+                      className={`px-1.5 py-1 ${
+                        fieldsWithErrors.includes(column) ? "bg-red-300" : ""
+                      }`}
+                    >
+                      {typeof newPackage[column as keyof SheetRow] !==
+                        "undefined" && newPackage[column as keyof SheetRow]}
                     </div>
-                  )
-                }
-              }
-            })}
-          </div>
-          <div className="pt-2 flex justify-end">
-            <button
-              type="button"
-              className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
-              onClick={reset}
-            >
-              Change File
-            </button>
-          </div>
+                  ))}
+                </div>
+              )
+            }
+          })}
         </div>
-      )
-    } else return <div>An unknown error occured while parsing this sheet.</div>
+        <div className="pt-2 flex justify-end">
+          <button
+            type="button"
+            className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
+            onClick={reset}
+          >
+            Change File
+          </button>
+        </div>
+      </div>
+    )
   }
 }
 
