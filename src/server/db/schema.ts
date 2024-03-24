@@ -238,6 +238,9 @@ export const deliveryShipments = mysqlTable("delivery_shipments", {
     mode: "number",
   }).notNull(),
   isExpress: tinyint("is_express").notNull(),
+  departureAt: varchar("departure_at", {
+    length: 100,
+  }).notNull(),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),

@@ -5,6 +5,8 @@ import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"
 import type { PackageShippingType } from "@/utils/constants"
 import {
+  CLIENT_TIMEZONE,
+  REGEX_HTML_INPUT_DATESTR,
   REGEX_ONE_OR_MORE_DIGITS,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
@@ -14,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
+import { DateTime } from "luxon"
 
 function PackagesTableItem({
   selectedPackageIds,
@@ -185,9 +188,21 @@ const createDeliveryFormSchema = z.object({
   ),
   vehicleId: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
   driverId: z.string().length(28),
+  departureAt: z.string().regex(REGEX_HTML_INPUT_DATESTR, {
+    message: "Please choose a valid date.",
+  }),
 })
 
 type CreateDeliveryFormType = z.infer<typeof createDeliveryFormSchema>
+
+function filterByVehiclesDeliveryType(
+  vehicles: Vehicle[],
+  deliveryType: PackageShippingType,
+) {
+  return deliveryType === "EXPRESS"
+    ? vehicles.filter((vehicle) => vehicle.isExpressAllowed)
+    : vehicles
+}
 
 function CreateDeliveryForm({ close }: { close: () => void }) {
   const utils = api.useUtils()
@@ -211,6 +226,10 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
   } = api.user.getAvailableDrivers.useQuery()
 
   const [selectedPackageIds, setSelectedPackageIds] = useState<string[]>([])
+  const dateTimeToday = DateTime.now().setZone(CLIENT_TIMEZONE).startOf("day")
+  const htmlInputDateStrToday = `${dateTimeToday.year}-${dateTimeToday.month
+    .toString()
+    .padStart(2, "0")}-${dateTimeToday.day.toString().padStart(2, "0")}`
 
   const {
     watch,
@@ -221,32 +240,48 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
     resolver: zodResolver(createDeliveryFormSchema),
     defaultValues: {
       deliveryType: "STANDARD",
+      departureAt: htmlInputDateStrToday,
     },
   })
-
-  function filterByVehiclesDeliveryType(
-    vehicles: Vehicle[],
-    deliveryType: PackageShippingType,
-  ) {
-    return deliveryType === "EXPRESS"
-      ? vehicles.filter((vehicle) => vehicle.isExpressAllowed)
-      : vehicles
-  }
 
   return (
     <form
       className="grid grid-rows-[1fr_auto] px-4 py-2"
-      onSubmit={handleSubmit((formData) =>
+      onSubmit={handleSubmit((formData) => {
+        const [year, month, day] = formData.departureAt.split("-")
+        const departureAt = DateTime.fromObject({
+          year: Number(year),
+          month: Number(month),
+          day: Number(day),
+        })
+
+        if (!departureAt.isValid) {
+          toast.error("Please choose a valid date.")
+          return
+        }
+
         mutate({
           driverId: formData.driverId,
           vehicleId: Number(formData.vehicleId),
           isExpress: formData.deliveryType === "EXPRESS",
           packageIds: [selectedPackageIds[0], ...selectedPackageIds.slice(1)],
-        }),
-      )}
+          departureAt: departureAt.toISO(),
+        })
+      })}
     >
       <div className="grid grid-cols-[auto_1fr] gap-3">
         <div>
+          <div>
+            <label className="block">Departure Date</label>
+            <input
+              type="date"
+              min={htmlInputDateStrToday}
+              {...register("departureAt")}
+            />
+            {errors.departureAt && (
+              <p className="text-red-500">{errors.departureAt.message}</p>
+            )}
+          </div>
           <div>
             <label className="block">Delivery Type</label>
             <select className="w-full" {...register("deliveryType")}>
