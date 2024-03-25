@@ -5,10 +5,14 @@ import * as schema from "@/server/db/schema"
 import mysql from "mysql2/promise"
 import { drizzle } from "drizzle-orm/mysql2"
 import type {
+  NewDomesticAgent,
+  NewDriver,
+  NewOverseasAgent,
   NewPackageCategory,
   NewUser,
   NewVehicle,
   NewWarehouse,
+  NewWarehouseStaff,
 } from "@/server/db/entities"
 import { DateTime } from "luxon"
 import { Scrypt } from "lucia"
@@ -94,6 +98,35 @@ const newUsers: NewUser[] = [
   },
 ]
 
+const newWarehouseStaffs: NewWarehouseStaff[] = [
+  {
+    userId: seedEnv.TEST_WAREHOUSE_USER_ID,
+    warehouseId: 1,
+  },
+]
+
+const newDrivers: NewDriver[] = [
+  {
+    userId: seedEnv.TEST_DRIVER_USER_ID,
+    licenseNumber: "N03-12-123456",
+    licenseRegistrationDate: "2024-02-02",
+  },
+]
+
+const newOverseasAgents: NewOverseasAgent[] = [
+  {
+    userId: seedEnv.TEST_OVERSEAS_USER_ID,
+    companyName: "ABC Company",
+  },
+]
+
+const newDomesticAgents: NewDomesticAgent[] = [
+  {
+    userId: seedEnv.TEST_DOMESTIC_USER_ID,
+    companyName: "XYZ Company",
+  },
+]
+
 const newWarehouses: NewWarehouse[] = [
   {
     id: 1,
@@ -169,6 +202,10 @@ const newPackageCategories: NewPackageCategory[] = [
 ]
 
 await db.insert(schema.users).values(newUsers)
+await db.insert(schema.warehouseStaffs).values(newWarehouseStaffs)
+await db.insert(schema.drivers).values(newDrivers)
+await db.insert(schema.overseasAgents).values(newOverseasAgents)
+await db.insert(schema.domesticAgents).values(newDomesticAgents)
 await db.insert(schema.vehicles).values(newVehicles)
 await db.insert(schema.warehouses).values(newWarehouses)
 await db.insert(schema.packageCategories).values(newPackageCategories)
