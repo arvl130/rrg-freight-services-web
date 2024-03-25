@@ -3,7 +3,7 @@ import Image from "next/image"
 import { useState } from "react"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
-import { supportedRoleToHumanized } from "@/utils/humanize"
+import { getHumanizedOfUserRole } from "@/utils/humanize"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { EditModal } from "./edit-modal"
 
@@ -30,7 +30,7 @@ export function TableItem({ user }: { user: User }) {
         {user.emailAddress}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        {supportedRoleToHumanized(user.role)}
+        {getHumanizedOfUserRole(user.role)}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div

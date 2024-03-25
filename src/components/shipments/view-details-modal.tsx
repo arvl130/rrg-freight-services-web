@@ -3,7 +3,7 @@ import { X } from "@phosphor-icons/react/dist/ssr/X"
 import { ArrowsClockwise } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise"
 import { api } from "@/utils/api"
 import { getColorFromPackageStatus } from "@/utils/colors"
-import { supportedPackageStatusToHumanized } from "@/utils/humanize"
+import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 
 export function ViewDetailsModal({
   shipmentId,
@@ -73,7 +73,7 @@ export function ViewDetailsModal({
                             _package.status,
                           )}`}
                         >
-                          {supportedPackageStatusToHumanized(_package.status)}
+                          {getHumanizedOfPackageStatus(_package.status)}
                         </span>
                       </div>
                     </div>

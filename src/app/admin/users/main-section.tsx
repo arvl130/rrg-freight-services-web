@@ -11,7 +11,7 @@ import { usePaginatedItems } from "@/hooks/paginated-items"
 import { useState } from "react"
 import type { UserRole } from "@/utils/constants"
 import { SUPPORTED_USER_ROLES } from "@/utils/constants"
-import { supportedRoleToHumanized } from "@/utils/humanize"
+import { getHumanizedOfUserRole } from "@/utils/humanize"
 import { CreateModal } from "./create-modal"
 
 function filterBySearchTerm(items: User[], searchTerm: string) {
@@ -93,7 +93,7 @@ function UsersTable({ items }: { items: User[] }) {
               <option value="ALL">All Roles</option>
               {SUPPORTED_USER_ROLES.map((role) => (
                 <option key={role} value={role}>
-                  {supportedRoleToHumanized(role)}
+                  {getHumanizedOfUserRole(role)}
                 </option>
               ))}
             </select>

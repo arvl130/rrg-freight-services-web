@@ -3,7 +3,7 @@ import type { PackageStatus, UserRole, PackageShippingType } from "./constants"
 export function toTitleCase(word: string) {
   return word[0].toUpperCase() + word.slice(1).toLowerCase()
 }
-export function supportedRoleToHumanized(supportedRole: UserRole) {
+export function getHumanizedOfUserRole(supportedRole: UserRole) {
   return supportedRole
     .toLowerCase()
     .split("_")
@@ -11,9 +11,7 @@ export function supportedRoleToHumanized(supportedRole: UserRole) {
     .join(" ")
 }
 
-export function supportedPackageStatusToHumanized(
-  packageStatus: PackageStatus,
-) {
+export function getHumanizedOfPackageStatus(packageStatus: PackageStatus) {
   return packageStatus
     .toLowerCase()
     .split("_")
@@ -26,7 +24,7 @@ const displayNameOfshippingTypes: Record<PackageShippingType, string> = {
   EXPRESS: "Express",
 }
 
-export function supportedShippingTypeToHumanized(
+export function getHumanizedOfPackageShippingType(
   shippingType: PackageShippingType,
 ) {
   return displayNameOfshippingTypes[shippingType]

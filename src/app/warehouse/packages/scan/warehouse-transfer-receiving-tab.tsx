@@ -1,6 +1,6 @@
 import { api } from "@/utils/api"
 import { getColorFromPackageStatus } from "@/utils/colors"
-import { supportedPackageStatusToHumanized } from "@/utils/humanize"
+import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -117,7 +117,7 @@ function TableItem(props: {
               props.item.status,
             )}`}
           >
-            {supportedPackageStatusToHumanized(props.item.status)}
+            {getHumanizedOfPackageStatus(props.item.status)}
           </span>
           <ArrowRight size={24} />
           <span
@@ -125,7 +125,7 @@ function TableItem(props: {
               "IN_WAREHOUSE",
             )}`}
           >
-            {supportedPackageStatusToHumanized("IN_WAREHOUSE")}
+            {getHumanizedOfPackageStatus("IN_WAREHOUSE")}
           </span>
         </div>
       ) : (
@@ -135,7 +135,7 @@ function TableItem(props: {
               props.item.status,
             )}`}
           >
-            {supportedPackageStatusToHumanized(props.item.status)}
+            {getHumanizedOfPackageStatus(props.item.status)}
           </span>
         </div>
       )}

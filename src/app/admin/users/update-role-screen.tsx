@@ -1,7 +1,7 @@
 import type { User } from "@/server/db/entities"
 import type { UserRole } from "@/utils/constants"
 import { SUPPORTED_USER_ROLES } from "@/utils/constants"
-import { supportedRoleToHumanized } from "@/utils/humanize"
+import { getHumanizedOfUserRole } from "@/utils/humanize"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
 import { useState } from "react"
 import { UpdateDriverForm } from "./update-driver-form"
@@ -37,7 +37,7 @@ export function UpdateRoleScreen({
         >
           {SUPPORTED_USER_ROLES.map((supportedRole, index) => (
             <option key={`${index}-${supportedRole}`} value={supportedRole}>
-              {supportedRoleToHumanized(supportedRole)}
+              {getHumanizedOfUserRole(supportedRole)}
             </option>
           ))}
         </select>

@@ -10,7 +10,7 @@ import {
   REGEX_ONE_OR_MORE_DIGITS,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
-import { supportedShippingTypeToHumanized } from "@/utils/humanize"
+import { getHumanizedOfPackageShippingType } from "@/utils/humanize"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
@@ -287,7 +287,7 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
             <select className="w-full" {...register("deliveryType")}>
               {SUPPORTED_PACKAGE_SHIPPING_TYPES.map((shippingType) => (
                 <option key={shippingType} value={shippingType}>
-                  {supportedShippingTypeToHumanized(
+                  {getHumanizedOfPackageShippingType(
                     shippingType as PackageShippingType,
                   )}
                 </option>

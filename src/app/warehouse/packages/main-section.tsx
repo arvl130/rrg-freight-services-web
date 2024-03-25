@@ -12,7 +12,7 @@ import { ViewDetailsModal } from "@/components/packages/view-details-modal"
 import type { PackageShippingType } from "@/utils/constants"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { getColorFromPackageStatus } from "@/utils/colors"
-import { supportedPackageStatusToHumanized } from "@/utils/humanize"
+import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 
 function TableItem({ package: _package }: { package: Package }) {
   const [visibleModal, setVisibleModal] = useState<
@@ -55,7 +55,7 @@ function TableItem({ package: _package }: { package: Package }) {
             ${getColorFromPackageStatus(_package.status)}
           `}
         >
-          {supportedPackageStatusToHumanized(_package.status)}
+          {getHumanizedOfPackageStatus(_package.status)}
         </div>
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">

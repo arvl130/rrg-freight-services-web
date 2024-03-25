@@ -1,6 +1,6 @@
 import { api } from "@/utils/api"
 import { getColorFromPackageStatus } from "@/utils/colors"
-import { supportedPackageStatusToHumanized } from "@/utils/humanize"
+import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Fragment, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -161,7 +161,7 @@ function PackagesTable({
                     _package.status,
                   )}`}
                 >
-                  {supportedPackageStatusToHumanized(_package.status)}
+                  {getHumanizedOfPackageStatus(_package.status)}
                 </span>
                 <ArrowRight size={24} />
                 <span
@@ -169,7 +169,7 @@ function PackagesTable({
                     "TRANSFERRING_WAREHOUSE",
                   )}`}
                 >
-                  {supportedPackageStatusToHumanized("TRANSFERRING_WAREHOUSE")}
+                  {getHumanizedOfPackageStatus("TRANSFERRING_WAREHOUSE")}
                 </span>
               </div>
             ) : (
@@ -179,7 +179,7 @@ function PackagesTable({
                     _package.status,
                   )}`}
                 >
-                  {supportedPackageStatusToHumanized(_package.status)}
+                  {getHumanizedOfPackageStatus(_package.status)}
                 </span>
               </div>
             )}

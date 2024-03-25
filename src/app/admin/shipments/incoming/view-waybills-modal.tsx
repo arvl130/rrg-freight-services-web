@@ -4,7 +4,7 @@ import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple"
 import { ArrowsClockwise } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise"
 import { api } from "@/utils/api"
 import { getColorFromPackageStatus } from "@/utils/colors"
-import { supportedPackageStatusToHumanized } from "@/utils/humanize"
+import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import { PDFDownloadLink } from "@react-pdf/renderer"
 import WaybillsPdf from "./pdf-waybills"
 
