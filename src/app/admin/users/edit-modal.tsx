@@ -17,12 +17,17 @@ export function EditModal(props: {
   const [selectedScreen, setSelectedScreen] =
     useState<UsersTableItemScreen>("MENU")
 
+  function onClose() {
+    props.onClose()
+    setSelectedScreen("MENU")
+  }
+
   return (
     <Dialog.Root open={props.isOpen}>
       <Dialog.Portal>
         <Dialog.Overlay className="bg-black/40 fixed inset-0" />
         <Dialog.Content
-          onEscapeKeyDown={props.onClose}
+          onEscapeKeyDown={onClose}
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_24rem)] rounded-2xl bg-white"
         >
           <div className="px-4 py-3 gap-x-3 gap-y-2 max-h-[80dvh] overflow-auto">
@@ -32,7 +37,6 @@ export function EditModal(props: {
                 setSelectedScreen={(selectedScreen) =>
                   setSelectedScreen(selectedScreen)
                 }
-                close={props.onClose}
               />
             )}
             {selectedScreen === "OVERVIEW" && (
@@ -65,7 +69,7 @@ export function EditModal(props: {
             <button
               type="button"
               className="absolute top-3 right-4"
-              onClick={props.onClose}
+              onClick={onClose}
             >
               <X size={20} />
               <span className="sr-only">Close</span>

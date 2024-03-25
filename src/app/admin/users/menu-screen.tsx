@@ -2,17 +2,14 @@ import type { User } from "@/server/db/entities"
 import type { UsersTableItemScreen } from "@/utils/constants"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
-import { X } from "@phosphor-icons/react/dist/ssr/X"
 import Image from "next/image"
 
 export function MenuScreen({
   user,
   setSelectedScreen,
-  close,
 }: {
   user: User
   setSelectedScreen: (selectedScreen: UsersTableItemScreen) => void
-  close: () => void
 }) {
   return (
     <>
