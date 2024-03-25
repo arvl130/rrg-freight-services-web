@@ -304,7 +304,7 @@ export function HeaderSection() {
           onClick={() => setIsOpenCreateModal(true)}
         >
           <Plus size={16} />
-          <span>Create Delivery</span>
+          <span>Schedule Delivery</span>
         </button>
       </div>
       <CreateModal
