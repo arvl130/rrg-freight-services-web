@@ -305,21 +305,6 @@ export const deliveryShipmentRouter = router({
           otp: generateOtp(),
         }))
 
-        const packageReceiverEmailNotifications = packageResultsWithOtp.map(
-          ({ id, receiverEmailAddress, otp }) => ({
-            to: receiverEmailAddress,
-            subject: `Your package will be delivered soon`,
-            htmlBody: `<p>Your package with ID ${id} will be delivered soon. Upon receiving, please enter the following code ${otp} in our driver app for verification. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
-          }),
-        )
-
-        const packageReceiverSmsNotifications = packageResultsWithOtp.map(
-          ({ id, receiverContactNumber, otp }) => ({
-            to: receiverContactNumber,
-            body: `Your package ${id} will be delivered soon. Enter the code ${otp} for verification.`,
-          }),
-        )
-
         const [{ insertId: shipmentId }] = await tx.insert(shipments).values({
           type: "DELIVERY",
           status: "PREPARING",
@@ -360,10 +345,6 @@ export const deliveryShipmentRouter = router({
           })
           .where(inArray(packages.id, input.packageIds))
         await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
-        await Promise.all([
-          ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
-          ...packageReceiverSmsNotifications.map((s) => notifyBySms(s)),
-        ])
       })
 
       await createLog(ctx.db, {
