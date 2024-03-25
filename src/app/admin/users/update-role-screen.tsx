@@ -71,7 +71,6 @@ export function UpdateRoleScreen({
         <button type="button" onClick={goBack}>
           <CaretLeft size={20} />
         </button>
-        <X size={20} onClick={close} />
       </div>
       <div className="font-semibold text-lg mb-3">Role</div>
       <div className="mb-3">

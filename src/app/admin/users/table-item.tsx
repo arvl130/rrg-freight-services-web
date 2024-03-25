@@ -52,9 +52,9 @@ export function TableItem({ user }: { user: User }) {
           </DropdownMenu.Trigger>
 
           <DropdownMenu.Portal>
-            <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm font-medium">
+            <DropdownMenu.Content className="drop-shadow-lg text-sm font-medium">
               <DropdownMenu.Item
-                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                className="transition-colors bg-white rounded-md hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("EDIT")}
               >
                 Edit

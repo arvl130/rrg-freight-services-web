@@ -22,9 +22,6 @@ export function OverviewScreen({
           <button type="button" onClick={goBack}>
             <CaretLeft size={20} />
           </button>
-          <button type="button" onClick={close}>
-            <X size={20} />
-          </button>
         </div>
         <div className="aspect-square h-40">
           {user.photoUrl === null ? (
@@ -43,16 +40,16 @@ export function OverviewScreen({
         <div className="text-sm">{user.role}</div>
       </div>
       <div className="mt-3">
-        <div className="grid grid-cols-2">
-          <div>Name</div>
+        <div className="grid grid-cols-[auto_1fr] gap-x-2 overflow-auto">
+          <div className="text-right">Name:</div>
           <div>{user.displayName}</div>
-          <div>Email Address</div>
+          <div className="text-right">Email Address:</div>
           <div>{user.emailAddress}</div>
-          <div>Mobile Number</div>
+          <div className="text-right">Mobile Number:</div>
           <div>{user.contactNumber}</div>
-          <div>Gender</div>
+          <div className="text-right">Gender:</div>
           <div>{user.gender}</div>
-          <div>Role</div>
+          <div className="text-right">Role:</div>
           <div>{user.role}</div>
         </div>
         <button

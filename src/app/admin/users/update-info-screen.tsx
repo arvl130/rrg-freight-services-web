@@ -70,9 +70,6 @@ export function UpdateInformationScreen({
         <button type="button" onClick={goBack}>
           <CaretLeft size={20} />
         </button>
-        <button type="button" onClick={close}>
-          <X size={20} />
-        </button>
       </div>
       <div className="font-semibold text-lg mb-3">Personal Information</div>
       <div className="mb-3">

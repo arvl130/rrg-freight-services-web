@@ -17,11 +17,6 @@ export function MenuScreen({
   return (
     <>
       <div className="flex flex-col items-center justify-center">
-        <div className="w-full mb-2 flex justify-end">
-          <button type="button" onClick={close}>
-            <X size={20} />
-          </button>
-        </div>
         <div className="aspect-square h-40">
           {user.photoUrl === null ? (
             <UserCircle size={160} />
@@ -38,7 +33,7 @@ export function MenuScreen({
         <div className="text-xl font-semibold mt-2">{user.displayName}</div>
         <div className="text-sm">{user.role}</div>
       </div>
-      <div className="flex flex-col mt-8">
+      <div className="flex flex-col mt-6">
         <button
           type="button"
           className="bg-cyan-400 text-white font-medium flex justify-between text-left px-4 py-3 border-b border-cyan-500 rounded-t-lg"
