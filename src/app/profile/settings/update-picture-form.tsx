@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import { useFormState } from "react-dom"
 import { removePhotoUrlAction, updatePhotoUrlAction } from "./actions"
+import { getHumanizedOfUserRole } from "@/utils/humanize"
 
 const updatePictureFormSchema = z.object({
   imageFiles: z.custom<FileList>(
@@ -126,7 +127,9 @@ export function UpdatePictureForm({ user }: { user: User }) {
           </div>
           <div>
             <h2 className="font-semibold">{user.displayName}</h2>
-            <p className="text-sm	text-gray-400">{user.role}</p>
+            <p className="text-sm	text-gray-400">
+              {getHumanizedOfUserRole(user.role)}
+            </p>
           </div>
         </div>
         <div className="text-sm pl-2 mt-3">

@@ -8,6 +8,7 @@ import { CreateWarehouseStaffForm } from "./create-warehouse-staff-form"
 import { CreateDriverForm } from "./create-driver-form"
 import { CreateOverseasAgentForm } from "./create-overseas-agent-form"
 import { CreateDomesticAgentForm } from "./create-domestic-agent-form"
+import { getHumanizedOfUserRole } from "@/utils/humanize"
 
 export function CreateModal({
   isOpen,
@@ -41,7 +42,7 @@ export function CreateModal({
               }}
             >
               {SUPPORTED_USER_ROLES.map((role) => (
-                <option key={role}>{role}</option>
+                <option key={role}>{getHumanizedOfUserRole(role)}</option>
               ))}
             </select>
             {selectedRole === "ADMIN" && <CreateAdminForm onClose={close} />}
