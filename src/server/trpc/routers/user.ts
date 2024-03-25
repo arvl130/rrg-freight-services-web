@@ -18,7 +18,6 @@ import {
   MYSQL_TEXT_COLUMN_DEFAULT_LIMIT,
   REGEX_HTML_INPUT_DATESTR,
   SUPPORTED_GENDERS,
-  SUPPORTED_USER_ROLES,
 } from "@/utils/constants"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
@@ -31,6 +30,15 @@ const createInputSchema = z.object({
   emailAddress: z.string().min(1).max(100).email(),
   password: z.string().min(8),
   gender: z.custom<Gender>((val) => SUPPORTED_GENDERS.includes(val as Gender)),
+})
+
+const updateByIdInputSchema = z.object({
+  id: z.string().length(28),
+  displayName: z.string().min(1),
+  contactNumber: z.string().min(1),
+  emailAddress: z.string().min(1).max(100).email(),
+  gender: z.custom<Gender>((val) => SUPPORTED_GENDERS.includes(val as Gender)),
+  isEnabled: z.boolean(),
 })
 
 export const userRouter = router({
@@ -60,6 +68,90 @@ export const userRouter = router({
         .select()
         .from(users)
         .where(eq(users.id, input.id))
+
+      if (results.length === 0) return null
+      if (results.length > 1)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Expected 1 result, but got multiple.",
+        })
+
+      return results[0]
+    }),
+  getWarehouseStaffDetailsById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().length(28),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(warehouseStaffs)
+        .where(eq(warehouseStaffs.userId, input.id))
+
+      if (results.length === 0) return null
+      if (results.length > 1)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Expected 1 result, but got multiple.",
+        })
+
+      return results[0]
+    }),
+  getDriverDetailsById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().length(28),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(drivers)
+        .where(eq(drivers.userId, input.id))
+
+      if (results.length === 0) return null
+      if (results.length > 1)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Expected 1 result, but got multiple.",
+        })
+
+      return results[0]
+    }),
+  getOverseasAgentDetailsById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().length(28),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(overseasAgents)
+        .where(eq(overseasAgents.userId, input.id))
+
+      if (results.length === 0) return null
+      if (results.length > 1)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Expected 1 result, but got multiple.",
+        })
+
+      return results[0]
+    }),
+  getDomesticAgentDetailsById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().length(28),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(domesticAgents)
+        .where(eq(domesticAgents.userId, input.id))
 
       if (results.length === 0) return null
       if (results.length > 1)
@@ -154,9 +246,9 @@ export const userRouter = router({
         displayName: z.string().min(1).max(100),
         contactNumber: z.string().min(1).max(15),
         emailAddress: z.string().min(1).max(100).email(),
-        gender: z
-          .union([z.literal("MALE"), z.literal("FEMALE"), z.literal("OTHER")])
-          .nullable(),
+        gender: z.custom<Gender>((val) =>
+          SUPPORTED_GENDERS.includes(val as Gender),
+        ),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -185,9 +277,9 @@ export const userRouter = router({
         displayName: z.string().min(1).max(100),
         contactNumber: z.string().min(1).max(15),
         emailAddress: z.string().min(1).max(100).email(),
-        gender: z
-          .union([z.literal("MALE"), z.literal("FEMALE"), z.literal("OTHER")])
-          .nullable(),
+        gender: z.custom<Gender>((val) =>
+          SUPPORTED_GENDERS.includes(val as Gender),
+        ),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -304,32 +396,105 @@ export const userRouter = router({
 
       return result
     }),
-  updateRoleAndEnabledById: protectedProcedure
+  updateById: protectedProcedure
     .input(
-      z.object({
-        id: z.string().length(28),
-        role: z.custom<UserRole>((val) => {
-          return SUPPORTED_USER_ROLES.includes(val as UserRole)
+      z.discriminatedUnion("role", [
+        updateByIdInputSchema.extend({
+          role: z.literal("ADMIN"),
         }),
-        isEnabled: z.boolean(),
-      }),
+        updateByIdInputSchema.extend({
+          role: z.literal("WAREHOUSE"),
+          warehouseId: z.number(),
+        }),
+        updateByIdInputSchema.extend({
+          role: z.literal("DRIVER"),
+          licenseNumber: z.string().min(1).max(100),
+          licenseRegistrationDate: z.string().regex(REGEX_HTML_INPUT_DATESTR),
+        }),
+        updateByIdInputSchema.extend({
+          role: z.literal("OVERSEAS_AGENT"),
+          companyName: z.string().min(1).max(100),
+        }),
+        updateByIdInputSchema.extend({
+          role: z.literal("DOMESTIC_AGENT"),
+          companyName: z.string().min(1).max(100),
+        }),
+      ]),
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db
-        .update(users)
-        .set({
-          role: input.role,
-          isEnabled: input.isEnabled ? 1 : 0,
+      return await ctx.db.transaction(async (tx) => {
+        const result = await tx
+          .update(users)
+          .set({
+            displayName: input.displayName,
+            emailAddress: input.emailAddress,
+            contactNumber: input.contactNumber,
+            gender: input.gender,
+            role: input.role,
+            isEnabled: input.isEnabled ? 1 : 0,
+          })
+          .where(eq(users.id, input.id))
+
+        if (input.role === "WAREHOUSE") {
+          await tx
+            .insert(warehouseStaffs)
+            .values({
+              userId: input.id,
+              warehouseId: input.warehouseId,
+            })
+            .onDuplicateKeyUpdate({
+              set: {
+                warehouseId: input.warehouseId,
+              },
+            })
+        } else if (input.role === "DRIVER") {
+          await tx
+            .insert(drivers)
+            .values({
+              userId: input.id,
+              licenseNumber: input.licenseNumber,
+              licenseRegistrationDate: input.licenseRegistrationDate,
+            })
+            .onDuplicateKeyUpdate({
+              set: {
+                licenseNumber: input.licenseNumber,
+                licenseRegistrationDate: input.licenseRegistrationDate,
+              },
+            })
+        } else if (input.role === "OVERSEAS_AGENT") {
+          await tx
+            .insert(overseasAgents)
+            .values({
+              userId: input.id,
+              companyName: input.companyName,
+            })
+            .onDuplicateKeyUpdate({
+              set: {
+                companyName: input.companyName,
+              },
+            })
+        } else if (input.role === "DOMESTIC_AGENT") {
+          await tx
+            .insert(domesticAgents)
+            .values({
+              userId: input.id,
+              companyName: input.companyName,
+            })
+            .onDuplicateKeyUpdate({
+              set: {
+                companyName: input.companyName,
+              },
+            })
+        }
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "USER",
+          createdById: ctx.user.id,
         })
-        .where(eq(users.id, input.id))
 
-      await createLog(ctx.db, {
-        verb: "UPDATE",
-        entity: "USER",
-        createdById: ctx.user.id,
+        return result
       })
-
-      return result
     }),
   updatePassword: protectedProcedure
     .input(

@@ -3,6 +3,10 @@ import type * as schema from "@/server/db/schema"
 
 import type {
   users,
+  warehouseStaffs,
+  drivers,
+  overseasAgents,
+  domesticAgents,
   shipments,
   shipmentPackages,
   shipmentLocations,
@@ -22,6 +26,18 @@ import type {
 
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
+
+export type WarehouseStaff = typeof warehouseStaffs.$inferSelect
+export type NewWarehouseStaff = typeof warehouseStaffs.$inferInsert
+
+export type Driver = typeof drivers.$inferSelect
+export type NewDriver = typeof drivers.$inferInsert
+
+export type OverseasAgent = typeof overseasAgents.$inferSelect
+export type NewOverseasAgent = typeof overseasAgents.$inferInsert
+
+export type DomesticAgent = typeof domesticAgents.$inferSelect
+export type NewDomesticAgent = typeof domesticAgents.$inferInsert
 
 export type Shipment = typeof shipments.$inferSelect
 export type NewShipment = typeof shipments.$inferInsert

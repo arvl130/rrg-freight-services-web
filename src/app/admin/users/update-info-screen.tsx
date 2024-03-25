@@ -4,20 +4,17 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
+import type { Gender } from "@/utils/constants"
+import { SUPPORTED_GENDERS } from "@/utils/constants"
 
 const updateInformationFormSchema = z.object({
   displayName: z.string().min(1).max(100),
   emailAddress: z.string().min(1).max(100).email(),
   contactNumber: z.string().min(1).max(15),
-  gender: z.union([
-    z.literal("MALE"),
-    z.literal("FEMALE"),
-    z.literal("OTHER"),
-    z.literal("UNKNOWN"),
-  ]),
+  gender: z.custom<Gender>((val) => SUPPORTED_GENDERS.includes(val as Gender)),
 })
 
-type UpdateInformationFormType = z.infer<typeof updateInformationFormSchema>
+type UpdateInformationFormSchema = z.infer<typeof updateInformationFormSchema>
 
 export function UpdateInformationScreen({
   user,
@@ -31,13 +28,13 @@ export function UpdateInformationScreen({
     register,
     formState: { errors, isDirty, isValid },
     handleSubmit,
-  } = useForm<UpdateInformationFormType>({
+  } = useForm<UpdateInformationFormSchema>({
     resolver: zodResolver(updateInformationFormSchema),
     defaultValues: {
       displayName: user.displayName,
       contactNumber: user.contactNumber,
       emailAddress: user.emailAddress,
-      gender: user.gender === null ? "UNKNOWN" : user.gender,
+      gender: user.gender,
     },
     resetOptions: {
       keepDirtyValues: true,
@@ -60,7 +57,7 @@ export function UpdateInformationScreen({
           displayName: formData.displayName,
           contactNumber: formData.contactNumber,
           emailAddress: formData.emailAddress,
-          gender: formData.gender === "UNKNOWN" ? null : formData.gender,
+          gender: formData.gender,
         })
       })}
     >
@@ -125,7 +122,6 @@ export function UpdateInformationScreen({
           <option value="MALE">Male</option>
           <option value="FEMALE">Female</option>
           <option value="OTHER">Other</option>
-          <option value="UNKNOWN">Rather not say</option>
         </select>
       </div>
       <button

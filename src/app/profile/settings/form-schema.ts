@@ -1,3 +1,5 @@
+import type { Gender } from "@/utils/constants"
+import { SUPPORTED_GENDERS } from "@/utils/constants"
 import { z } from "zod"
 
 export const updateDetailsInputSchema = z.object({
@@ -28,17 +30,5 @@ export const updateDetailsInputSchema = z.object({
     .email({
       message: "Email has invalid format.",
     }),
-  gender: z.union(
-    [
-      z.literal("MALE"),
-      z.literal("FEMALE"),
-      z.literal("OTHER"),
-      z.literal("UNKNOWN"),
-    ],
-    {
-      errorMap: () => ({
-        message: "Gender is invalid.",
-      }),
-    },
-  ),
+  gender: z.custom<Gender>((val) => SUPPORTED_GENDERS.includes(val as Gender)),
 })

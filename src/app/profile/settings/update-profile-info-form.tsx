@@ -29,7 +29,7 @@ export function UpdateInformationForm({ user }: { user: User }) {
       displayName: user.displayName,
       contactNumber: user.contactNumber,
       emailAddress: user.emailAddress,
-      gender: user.gender === null ? "UNKNOWN" : user.gender,
+      gender: user.gender,
     },
     resetOptions: {
       keepDirtyValues: true,
@@ -132,7 +132,6 @@ export function UpdateInformationForm({ user }: { user: User }) {
               <option value="MALE">Male</option>
               <option value="FEMALE">Female</option>
               <option value="OTHER">Other</option>
-              <option value="UNKNOWN">Rather not say</option>
             </select>
           </div>
           <button

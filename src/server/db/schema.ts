@@ -33,7 +33,7 @@ export const users = mysqlTable("users", {
   emailAddress: varchar("email_address", { length: 100 }).notNull(),
   hashedPassword: varchar("hashed_password", { length: 255 }).notNull(),
   contactNumber: varchar("contact_number", { length: 15 }).notNull(),
-  gender: mysqlEnum("gender", SUPPORTED_GENDERS),
+  gender: mysqlEnum("gender", SUPPORTED_GENDERS).notNull(),
   role: mysqlEnum("role", SUPPORTED_USER_ROLES).notNull(),
   isEnabled: tinyint("is_enabled").notNull().default(1),
   createdAt: varchar("created_at", {

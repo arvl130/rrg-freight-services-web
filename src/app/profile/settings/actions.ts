@@ -56,7 +56,7 @@ export async function updateDetailsAction(_: FormState, formData: FormData) {
       displayName,
       contactNumber,
       emailAddress,
-      gender: gender === "UNKNOWN" ? null : gender,
+      gender,
     })
     .where(eq(users.id, user.id))
 

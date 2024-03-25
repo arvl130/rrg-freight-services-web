@@ -1,5 +1,6 @@
 import type { User } from "@/server/db/entities"
 import type { UsersTableItemScreen } from "@/utils/constants"
+import { supportedRoleToHumanized } from "@/utils/humanize"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import Image from "next/image"
@@ -28,7 +29,7 @@ export function MenuScreen({
           )}
         </div>
         <div className="text-xl font-semibold mt-2">{user.displayName}</div>
-        <div className="text-sm">{user.role}</div>
+        <div className="text-sm">{supportedRoleToHumanized(user.role)}</div>
       </div>
       <div className="flex flex-col mt-6">
         <button

@@ -1,27 +1,14 @@
 import type { User } from "@/server/db/entities"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { api } from "@/utils/api"
 import type { UserRole } from "@/utils/constants"
 import { SUPPORTED_USER_ROLES } from "@/utils/constants"
-import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
-import { X } from "@phosphor-icons/react/dist/ssr/X"
 import { supportedRoleToHumanized } from "@/utils/humanize"
-
-const updateRoleFormSchema = z.object({
-  role: z.custom<UserRole>(
-    (val) => {
-      return SUPPORTED_USER_ROLES.includes(val as UserRole)
-    },
-    {
-      message: "Please select a valid role.",
-    },
-  ),
-  isEnabled: z.union([z.literal("YES"), z.literal("NO")]),
-})
-
-type UpdateRoleFormType = z.infer<typeof updateRoleFormSchema>
+import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
+import { useState } from "react"
+import { UpdateDriverForm } from "./update-driver-form"
+import { UpdateOverseasAgentForm } from "./update-overseas-agent-form"
+import { UpdateDomesticAgentForm } from "./update-domestic-agent-form"
+import { UpdateWarehouseStaffForm } from "./update-warehouse-staff-form"
+import { UpdateAdminForm } from "./update-admin-form"
 
 export function UpdateRoleScreen({
   user,
@@ -30,41 +17,10 @@ export function UpdateRoleScreen({
   user: User
   goBack: () => void
 }) {
-  const {
-    reset,
-    register,
-    formState: { errors, isDirty, isValid },
-    handleSubmit,
-  } = useForm<UpdateRoleFormType>({
-    resolver: zodResolver(updateRoleFormSchema),
-    defaultValues: {
-      role: user.role,
-      isEnabled: user.isEnabled === 1 ? "YES" : "NO",
-    },
-    resetOptions: {
-      keepDirtyValues: true,
-    },
-  })
-
-  const utils = api.useUtils()
-  const { isLoading, mutate } = api.user.updateRoleAndEnabledById.useMutation({
-    onSuccess: () => {
-      reset()
-      utils.user.getAll.invalidate()
-    },
-  })
+  const [selectedRole, setSelectedRole] = useState<UserRole>(user.role)
 
   return (
-    <form
-      className="grid grid-rows-[1fr_auto]"
-      onSubmit={handleSubmit((formData) => {
-        mutate({
-          id: user.id,
-          role: formData.role,
-          isEnabled: formData.isEnabled === "YES",
-        })
-      })}
-    >
+    <div className="grid grid-rows-[1fr_auto]">
       <div className="mb-2 flex justify-between">
         <button type="button" onClick={goBack}>
           <CaretLeft size={20} />
@@ -72,61 +28,29 @@ export function UpdateRoleScreen({
       </div>
       <div className="font-semibold text-lg mb-3">Role</div>
       <div className="mb-3">
-        <label className="block text-sm	text-gray-500 mb-1">Gender</label>
         <select
-          className="block rounded-lg text-sm w-full px-4 py-2 text-gray-700 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-          {...register("role")}
+          className="block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+          value={selectedRole}
+          onChange={(e) => {
+            setSelectedRole(e.currentTarget.value as UserRole)
+          }}
         >
           {SUPPORTED_USER_ROLES.map((supportedRole, index) => (
             <option key={`${index}-${supportedRole}`} value={supportedRole}>
               {supportedRoleToHumanized(supportedRole)}
             </option>
           ))}
-          <option value="UNKNOWN" disabled>
-            N/A
-          </option>
         </select>
-        {errors.role && (
-          <div className="text-sm text-red-500 mt-1">{errors.role.message}</div>
-        )}
       </div>
-      <div className="mb-6">
-        <p className="block text-sm	text-gray-500 mb-1 ">Status</p>
-        <div className="flex gap-4">
-          <label className="inline-flex gap-1">
-            <input
-              type="radio"
-              className="rounded-lg text-sm px-4 py-2 text-gray-700 read-only:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-              readOnly={isLoading}
-              value="YES"
-              {...register("isEnabled")}
-            />
-            <span>Enabled</span>
-          </label>
-          <label className="inline-flex gap-1">
-            <input
-              type="radio"
-              className="rounded-lg text-sm px-4 py-2 text-gray-700 read-only:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-              readOnly={isLoading}
-              value="NO"
-              {...register("isEnabled")}
-            />
-            <span>Disabled</span>
-          </label>
-        </div>
-        {errors.isEnabled && (
-          <div className="text-sm text-red-500 mt-1">
-            {errors.isEnabled.message}
-          </div>
-        )}
-      </div>
-      <button
-        type="submit"
-        className="p-2 text-white	w-full bg-cyan-500 transition-colors disabled:bg-cyan-300 hover:bg-cyan-400 rounded-lg font-medium"
-        disabled={isLoading || !isDirty || !isValid}
-      >
-        {isLoading ? "Saving ..." : "Save"}
-      </button>
-    </form>
+      {selectedRole === "ADMIN" && <UpdateAdminForm user={user} />}
+      {selectedRole === "WAREHOUSE" && <UpdateWarehouseStaffForm user={user} />}
+      {selectedRole === "DRIVER" && <UpdateDriverForm user={user} />}
+      {selectedRole === "OVERSEAS_AGENT" && (
+        <UpdateOverseasAgentForm user={user} />
+      )}
+      {selectedRole === "DOMESTIC_AGENT" && (
+        <UpdateDomesticAgentForm user={user} />
+      )}
+    </div>
   )
 }

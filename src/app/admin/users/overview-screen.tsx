@@ -1,4 +1,5 @@
 import type { User } from "@/server/db/entities"
+import { supportedRoleToHumanized } from "@/utils/humanize"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import Image from "next/image"
@@ -34,7 +35,7 @@ export function OverviewScreen({
           )}
         </div>
         <div className="text-xl font-semibold mt-2">{user.displayName}</div>
-        <div className="text-sm">{user.role}</div>
+        <div className="text-sm">{supportedRoleToHumanized(user.role)}</div>
       </div>
       <div className="mt-3">
         <div className="grid grid-cols-[auto_1fr] gap-x-2 overflow-auto">
