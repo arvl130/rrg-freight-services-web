@@ -1,20 +1,14 @@
 import type { User } from "@/server/db/entities"
 import Image from "next/image"
-import { useRef, useState } from "react"
+import { useState } from "react"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
-import type { UsersTableItemScreen } from "@/utils/constants"
 import { supportedRoleToHumanized } from "@/utils/humanize"
-import { MenuScreen } from "./menu-screen"
-import { UpdateInformationScreen } from "./update-info-screen"
-import { UpdateRoleScreen } from "./update-role-screen"
-import { UpdatePhotoScreen } from "./update-photo-screen"
-import { OverviewScreen } from "./overview-screen"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import { EditModal } from "./edit-modal"
 
 export function TableItem({ user }: { user: User }) {
-  const detailsModal = useRef<null | HTMLDialogElement>(null)
-  const [selectedScreen, setSelectedScreen] =
-    useState<UsersTableItemScreen>("MENU")
+  const [visibleModal, setVisibleModal] = useState<null | "EDIT">(null)
 
   return (
     <>
@@ -49,55 +43,33 @@ export function TableItem({ user }: { user: User }) {
         </div>
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        <button type="button" onClick={() => detailsModal.current?.showModal()}>
-          <span className="sr-only">Actions</span>
-          <DotsThree size={16} />
-        </button>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button type="button">
+              <span className="sr-only">Actions</span>
+              <DotsThree size={16} />
+            </button>
+          </DropdownMenu.Trigger>
+
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm font-medium">
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("EDIT")}
+              >
+                Edit
+              </DropdownMenu.Item>
+              <DropdownMenu.Arrow className="fill-white" />
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
+
+        <EditModal
+          userRecord={user}
+          onClose={() => setVisibleModal(null)}
+          isOpen={visibleModal === "EDIT"}
+        />
       </div>
-      <dialog
-        ref={detailsModal}
-        onClose={() => setSelectedScreen("MENU")}
-        className="bg-white w-[min(calc(100%),_28rem)] mx-auto px-6 pt-7 pb-7 rounded-2xl mt-24"
-      >
-        {selectedScreen === "MENU" && (
-          <MenuScreen
-            user={user}
-            setSelectedScreen={(selectedScreen) =>
-              setSelectedScreen(selectedScreen)
-            }
-            close={() => detailsModal.current?.close()}
-          />
-        )}
-        {selectedScreen === "OVERVIEW" && (
-          <OverviewScreen
-            user={user}
-            goBack={() => setSelectedScreen("MENU")}
-            goToUpdateInfo={() => setSelectedScreen("UPDATE_INFO")}
-            close={() => detailsModal.current?.close()}
-          />
-        )}
-        {selectedScreen === "UPDATE_INFO" && (
-          <UpdateInformationScreen
-            user={user}
-            goBack={() => setSelectedScreen("OVERVIEW")}
-            close={() => detailsModal.current?.close()}
-          />
-        )}
-        {selectedScreen === "UPDATE_ROLE" && (
-          <UpdateRoleScreen
-            user={user}
-            goBack={() => setSelectedScreen("MENU")}
-            close={() => detailsModal.current?.close()}
-          />
-        )}
-        {selectedScreen === "UPDATE_PHOTO" && (
-          <UpdatePhotoScreen
-            user={user}
-            goBack={() => setSelectedScreen("MENU")}
-            close={() => detailsModal.current?.close()}
-          />
-        )}
-      </dialog>
     </>
   )
 }
