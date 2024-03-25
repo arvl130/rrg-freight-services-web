@@ -8,6 +8,7 @@ import {
   packages,
   users,
   activities,
+  overseasAgents,
 } from "@/server/db/schema"
 import type {
   PackageReceptionMode,
@@ -77,17 +78,21 @@ export const incomingShipmentRouter = router({
       .from(incomingShipments)
       .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
       .innerJoin(users, eq(incomingShipments.sentByAgentId, users.id))
+      .innerJoin(overseasAgents, eq(users.id, overseasAgents.userId))
       .where(eq(shipments.status, "IN_TRANSIT"))
 
-    return results.map(({ shipments, incoming_shipments, users }) => {
-      const { shipmentId, ...other } = incoming_shipments
+    return results.map(
+      ({ shipments, incoming_shipments, users, overseas_agents }) => {
+        const { shipmentId, ...other } = incoming_shipments
 
-      return {
-        ...shipments,
-        ...other,
-        agentDisplayName: users.displayName,
-      }
-    })
+        return {
+          ...shipments,
+          ...other,
+          agentDisplayName: users.displayName,
+          agentCompanyName: overseas_agents.companyName,
+        }
+      },
+    )
   }),
   getTotalInTransitSentByAgentId: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db

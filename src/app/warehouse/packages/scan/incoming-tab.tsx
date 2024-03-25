@@ -312,7 +312,7 @@ function ShipmentSelector({
                       {shipment.type}
                     </p>
                     <p className="border-y border-gray-300 px-2 py-2">
-                      {shipment.agentDisplayName}
+                      {shipment.agentDisplayName} ({shipment.agentCompanyName})
                     </p>
                     <p className="border-y border-r rounded-r-lg border-gray-300 text-left text-gray-500 px-2 py-2">
                       <span className="invisible group-hover:visible">
