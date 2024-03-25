@@ -27,11 +27,9 @@ type UpdatePictureFormType = z.infer<typeof updatePictureFormSchema>
 export function UpdatePhotoScreen({
   user,
   goBack,
-  close,
 }: {
   user: User
   goBack: () => void
-  close: () => void
 }) {
   const {
     reset,

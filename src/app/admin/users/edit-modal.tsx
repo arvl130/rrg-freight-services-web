@@ -40,28 +40,24 @@ export function EditModal(props: {
                 user={props.userRecord}
                 goBack={() => setSelectedScreen("MENU")}
                 goToUpdateInfo={() => setSelectedScreen("UPDATE_INFO")}
-                close={props.onClose}
               />
             )}
             {selectedScreen === "UPDATE_INFO" && (
               <UpdateInformationScreen
                 user={props.userRecord}
                 goBack={() => setSelectedScreen("OVERVIEW")}
-                close={props.onClose}
               />
             )}
             {selectedScreen === "UPDATE_ROLE" && (
               <UpdateRoleScreen
                 user={props.userRecord}
                 goBack={() => setSelectedScreen("MENU")}
-                close={props.onClose}
               />
             )}
             {selectedScreen === "UPDATE_PHOTO" && (
               <UpdatePhotoScreen
                 user={props.userRecord}
                 goBack={() => setSelectedScreen("MENU")}
-                close={props.onClose}
               />
             )}
           </div>

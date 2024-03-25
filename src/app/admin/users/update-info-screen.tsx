@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
-import { X } from "@phosphor-icons/react/dist/ssr/X"
 
 const updateInformationFormSchema = z.object({
   displayName: z.string().min(1).max(100),
@@ -23,11 +22,9 @@ type UpdateInformationFormType = z.infer<typeof updateInformationFormSchema>
 export function UpdateInformationScreen({
   user,
   goBack,
-  close,
 }: {
   user: User
   goBack: () => void
-  close: () => void
 }) {
   const {
     reset,
@@ -48,7 +45,7 @@ export function UpdateInformationScreen({
   })
 
   const utils = api.useUtils()
-  const { isLoading, mutate } = api.user.updateDetails.useMutation({
+  const { isLoading, mutate } = api.user.updateDetailsById.useMutation({
     onSuccess: () => {
       reset()
       utils.user.getAll.invalidate()
@@ -57,8 +54,9 @@ export function UpdateInformationScreen({
 
   return (
     <form
-      onSubmit={handleSubmit((formData) => {
+      onSubmit={handleSubmit(async (formData) => {
         mutate({
+          id: user.id,
           displayName: formData.displayName,
           contactNumber: formData.contactNumber,
           emailAddress: formData.emailAddress,
@@ -75,9 +73,12 @@ export function UpdateInformationScreen({
       <div className="mb-3">
         <label className="block text-sm	text-gray-500 mb-1">Full Name</label>
         <input
-          className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+          className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 read-only:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+          // Use the `readonly` attribute instead of `disabled`, because
+          // disabled fields have the value `undefined` during form submission.
+          // For more info, see: https://github.com/react-hook-form/react-hook-form/issues/2782
+          readOnly={isLoading}
           {...register("displayName")}
-          disabled={isLoading}
         />
         {errors.displayName && (
           <div className="text-sm text-red-500 mt-1">
@@ -90,9 +91,9 @@ export function UpdateInformationScreen({
           Email Address
         </label>
         <input
-          className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+          className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 read-only:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+          readOnly={isLoading}
           {...register("emailAddress")}
-          disabled={isLoading}
         />
         {errors.emailAddress && (
           <div className="text-sm text-red-500 mt-1">
@@ -105,9 +106,9 @@ export function UpdateInformationScreen({
           Mobile Number
         </label>
         <input
-          className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+          className="rounded-lg text-sm w-full px-4 py-2 text-gray-700 read-only:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+          readOnly={isLoading}
           {...register("contactNumber")}
-          disabled={isLoading}
         />
         {errors.contactNumber && (
           <div className="text-sm text-red-500 mt-1">
@@ -118,9 +119,8 @@ export function UpdateInformationScreen({
       <div className="mb-6">
         <label className="block text-sm	text-gray-500 mb-1">Gender</label>
         <select
-          className="block rounded-lg text-sm w-full px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+          className="block rounded-lg text-sm w-full px-4 py-2 text-gray-700 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
           {...register("gender")}
-          disabled={isLoading}
         >
           <option value="MALE">Male</option>
           <option value="FEMALE">Female</option>

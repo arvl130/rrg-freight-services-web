@@ -26,11 +26,9 @@ type UpdateRoleFormType = z.infer<typeof updateRoleFormSchema>
 export function UpdateRoleScreen({
   user,
   goBack,
-  close,
 }: {
   user: User
   goBack: () => void
-  close: () => void
 }) {
   const {
     reset,
@@ -76,8 +74,7 @@ export function UpdateRoleScreen({
       <div className="mb-3">
         <label className="block text-sm	text-gray-500 mb-1">Gender</label>
         <select
-          className="block rounded-lg text-sm w-full px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-          disabled={isLoading}
+          className="block rounded-lg text-sm w-full px-4 py-2 text-gray-700 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
           {...register("role")}
         >
           {SUPPORTED_USER_ROLES.map((supportedRole, index) => (
@@ -99,8 +96,8 @@ export function UpdateRoleScreen({
           <label className="inline-flex gap-1">
             <input
               type="radio"
-              className="rounded-lg text-sm px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-              disabled={isLoading}
+              className="rounded-lg text-sm px-4 py-2 text-gray-700 read-only:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+              readOnly={isLoading}
               value="YES"
               {...register("isEnabled")}
             />
@@ -109,8 +106,8 @@ export function UpdateRoleScreen({
           <label className="inline-flex gap-1">
             <input
               type="radio"
-              className="rounded-lg text-sm px-4 py-2 text-gray-700 disabled:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-              disabled={isLoading}
+              className="rounded-lg text-sm px-4 py-2 text-gray-700 read-only:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+              readOnly={isLoading}
               value="NO"
               {...register("isEnabled")}
             />

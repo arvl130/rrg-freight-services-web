@@ -178,6 +178,37 @@ export const userRouter = router({
 
       return result
     }),
+  updateDetailsById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().length(28),
+        displayName: z.string().min(1).max(100),
+        contactNumber: z.string().min(1).max(15),
+        emailAddress: z.string().min(1).max(100).email(),
+        gender: z
+          .union([z.literal("MALE"), z.literal("FEMALE"), z.literal("OTHER")])
+          .nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .update(users)
+        .set({
+          displayName: input.displayName,
+          contactNumber: input.contactNumber,
+          emailAddress: input.emailAddress,
+          gender: input.gender,
+        })
+        .where(eq(users.id, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "USER",
+        createdById: input.id,
+      })
+
+      return result
+    }),
   updatePhotoUrl: protectedProcedure
     .input(
       z.object({
