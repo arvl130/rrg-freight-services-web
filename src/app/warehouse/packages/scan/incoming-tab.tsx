@@ -11,6 +11,7 @@ import type { Package, PackageCategory } from "@/server/db/entities"
 import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
 import { DateTime } from "luxon"
+import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
@@ -101,7 +102,6 @@ function TableItem(props: {
   item: Package
   isScanned: boolean
   isUpdatingStatus: boolean
-  packageCategories: PackageCategory[]
   undoScan: () => void
 }) {
   return (
@@ -121,7 +121,7 @@ function TableItem(props: {
           </span>
           <ArrowRight size={24} />
           <span
-            className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
+            className={`inline-block px-2 py-1 text-white rounded-full whitespace-nowrap ${getColorFromPackageStatus(
               "IN_WAREHOUSE",
             )}`}
           >
@@ -143,7 +143,7 @@ function TableItem(props: {
         {props.isScanned && (
           <button
             type="button"
-            className="font-medium bg-red-500 hover:bg-red-400 disabled:bg-red-300 text-white transition-colors px-2 py-1 rounded-md"
+            className="font-medium bg-red-500 hover:bg-red-400 disabled:bg-red-300 text-white transition-colors px-2 py-1 rounded-md whitespace-nowrap"
             disabled={props.isUpdatingStatus}
             onClick={props.undoScan}
           >
@@ -151,6 +151,138 @@ function TableItem(props: {
           </button>
         )}
       </div>
+    </>
+  )
+}
+
+function PackagesTableTabs(props: {
+  scannedPackageIds: string[]
+  isUpdatingStatus: boolean
+  packages: Package[]
+  onUndoScan: (packageId: string) => void
+}) {
+  const [visibleView, setVisibleView] = useState<"SORTED" | "ALL">("SORTED")
+  const luzonPackages = props.packages.filter((_package) =>
+    DELIVERABLE_PROVINCES_IN_PH.includes(
+      _package.receiverStateOrProvince.toUpperCase(),
+    ),
+  )
+  const nonLuzonPackages = props.packages.filter(
+    (_package) =>
+      !DELIVERABLE_PROVINCES_IN_PH.includes(
+        _package.receiverStateOrProvince.toUpperCase(),
+      ),
+  )
+
+  return (
+    <>
+      <div className="flex justify-end gap-x-3">
+        <button
+          type="button"
+          onClick={() => {
+            setVisibleView("SORTED")
+          }}
+          className={`uppercase font-semibold transition-colors border-b-2 border-green-500 ${
+            visibleView === "SORTED"
+              ? "bg-green-500 hover:bg-green-400 text-white"
+              : "text-green-500 hover:bg-green-100"
+          } px-2 py-1`}
+        >
+          Sorted
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setVisibleView("ALL")
+          }}
+          className={`uppercase font-semibold transition-colors border-b-2 border-green-500 ${
+            visibleView === "ALL"
+              ? "bg-green-500 hover:bg-green-400 text-white"
+              : "text-green-500 hover:bg-green-100"
+          } px-2 py-1`}
+        >
+          All
+        </button>
+      </div>
+
+      {visibleView === "ALL" && (
+        <div className="grid grid-cols-[repeat(3,_auto)_1fr] gap-3 overflow-auto">
+          <div className="font-medium">Package ID</div>
+          <div className="font-medium">Receiver</div>
+          <div className="font-medium">Status</div>
+          <div className="font-medium">Actions</div>
+          {props.packages.map((_package) => (
+            <TableItem
+              key={_package.id}
+              item={_package}
+              isScanned={props.scannedPackageIds.includes(_package.id)}
+              isUpdatingStatus={props.isUpdatingStatus}
+              undoScan={() => {
+                props.onUndoScan(_package.id)
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {visibleView === "SORTED" && (
+        <div className="grid grid-cols-2">
+          <div className="font-medium pr-3">Going to Luzon</div>
+          <div className="font-medium border-l border-gray-300 pl-3">
+            Going to Visayas/Mindanao
+          </div>
+          <div className="grid grid-cols-[repeat(3,_auto)_1fr] gap-3 overflow-auto pr-3">
+            <div className="font-medium">Package ID</div>
+            <div className="font-medium">Receiver</div>
+            <div className="font-medium">Status</div>
+            <div className="font-medium">Actions</div>
+            {luzonPackages.length === 9 ? (
+              <p className="text-center text-gray-500 col-span-4">
+                No packages in this category.
+              </p>
+            ) : (
+              <>
+                {luzonPackages.map((_package) => (
+                  <TableItem
+                    key={_package.id}
+                    item={_package}
+                    isScanned={props.scannedPackageIds.includes(_package.id)}
+                    isUpdatingStatus={props.isUpdatingStatus}
+                    undoScan={() => {
+                      props.onUndoScan(_package.id)
+                    }}
+                  />
+                ))}
+              </>
+            )}
+          </div>
+          <div className="grid grid-cols-[repeat(3,_auto)_1fr] auto-rows-min gap-3 overflow-auto border-l border-gray-300 pl-3">
+            <div className="font-medium">Package ID</div>
+            <div className="font-medium">Receiver</div>
+            <div className="font-medium">Status</div>
+            <div className="font-medium">Actions</div>
+            {nonLuzonPackages.length === 0 ? (
+              <p className="text-center text-gray-500 col-span-4">
+                No packages in this category.
+              </p>
+            ) : (
+              <>
+                {nonLuzonPackages.map((_package) => (
+                  <TableItem
+                    key={_package.id}
+                    item={_package}
+                    isScanned={props.scannedPackageIds.includes(_package.id)}
+                    isUpdatingStatus={props.isUpdatingStatus}
+                    undoScan={() => {
+                      props.onUndoScan(_package.id)
+                    }}
+                  />
+                ))}
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }
@@ -165,7 +297,6 @@ function PackagesTable({
   const packagesQuery = api.package.getWithLatestStatusByShipmentId.useQuery({
     shipmentId,
   })
-  const packageCategoriesQuery = api.packageCategory.getAll.useQuery()
   const [scannedPackageIds, setScannedPackageIds] = useState<string[]>([])
 
   const utils = api.useUtils()
@@ -184,10 +315,6 @@ function PackagesTable({
   if (packagesQuery.status === "error")
     return <div>Error: {packagesQuery.error.message}</div>
 
-  if (packageCategoriesQuery.status === "loading") return <div>Loading ...</div>
-  if (packageCategoriesQuery.status === "error")
-    return <div>Error: {packageCategoriesQuery.error.message}</div>
-
   return (
     <div>
       <ScanPackageForm
@@ -203,26 +330,17 @@ function PackagesTable({
           ])
         }
       />
-      <div className="grid grid-cols-[repeat(3,_auto)_1fr] gap-3 overflow-auto">
-        <div className="font-medium">Package ID</div>
-        <div className="font-medium">Receiver</div>
-        <div className="font-medium">Status</div>
-        <div className="font-medium">Actions</div>
-        {packagesQuery.data.map((_package) => (
-          <TableItem
-            key={_package.id}
-            item={_package}
-            isScanned={scannedPackageIds.includes(_package.id)}
-            isUpdatingStatus={isLoading}
-            packageCategories={packageCategoriesQuery.data}
-            undoScan={() => {
-              setScannedPackageIds((currScannedPackages) =>
-                currScannedPackages.filter((id) => id !== _package.id),
-              )
-            }}
-          />
-        ))}
-      </div>
+
+      <PackagesTableTabs
+        packages={packagesQuery.data}
+        scannedPackageIds={scannedPackageIds}
+        isUpdatingStatus={isLoading}
+        onUndoScan={(packageId) => {
+          setScannedPackageIds((currScannedPackages) =>
+            currScannedPackages.filter((id) => id !== packageId),
+          )
+        }}
+      />
 
       <div className="flex justify-end">
         <button
