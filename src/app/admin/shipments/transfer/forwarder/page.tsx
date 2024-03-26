@@ -17,7 +17,7 @@ export default async function TransferForwarderShipmentsPage() {
   }
 
   return (
-    <AdminLayout title="Shipments" user={user}>
+    <AdminLayout title={["Shipments", "Forwarder Transfer"]} user={user}>
       <Page.Header>
         <HeaderSection />
       </Page.Header>

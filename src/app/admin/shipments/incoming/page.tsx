@@ -17,7 +17,7 @@ export default async function IncomingShipmentsPage() {
   }
 
   return (
-    <AdminLayout title="Shipments" user={user}>
+    <AdminLayout title={["Shipments", "Incoming"]} user={user}>
       <Page.Header>
         <HeaderSection />
       </Page.Header>
