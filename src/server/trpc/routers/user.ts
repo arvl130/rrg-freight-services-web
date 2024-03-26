@@ -8,6 +8,7 @@ import {
   drivers,
   overseasAgents,
   domesticAgents,
+  webpushSubscriptions,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { and, count, eq, inArray, isNull, like } from "drizzle-orm"
@@ -162,6 +163,12 @@ export const userRouter = router({
 
       return results[0]
     }),
+  getWebPushSubscriptions: protectedProcedure.query(async ({ ctx, input }) => {
+    return await ctx.db
+      .select()
+      .from(webpushSubscriptions)
+      .where(eq(webpushSubscriptions.userId, ctx.user.id))
+  }),
   create: protectedProcedure
     .input(
       z.discriminatedUnion("role", [

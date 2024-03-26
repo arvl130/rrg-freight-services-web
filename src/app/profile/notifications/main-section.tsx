@@ -13,10 +13,15 @@ import {
   subscribeToPushNotifications,
   unsubscribeToPushNotifications,
 } from "@/utils/service-workers"
+import { stringToSha256Hash } from "@/utils/hash"
 
 function ToggleButtons(props: {
   serviceWorkerRegistration: ServiceWorkerRegistration
 }) {
+  const utils = api.useUtils()
+  const userWebPushSubscriptionsQuery =
+    api.user.getWebPushSubscriptions.useQuery()
+
   const queryClient = useQueryClient()
   const {
     status,
@@ -41,8 +46,12 @@ function ToggleButtons(props: {
           },
         },
         {
-          onSettled: () =>
-            queryClient.setQueryData(["getPushSubscription"], data),
+          onSuccess: () => {
+            utils.user.getWebPushSubscriptions.invalidate()
+          },
+          onSettled: () => {
+            queryClient.setQueryData(["getPushSubscription"], data)
+          },
         },
       )
     },
@@ -60,6 +69,9 @@ function ToggleButtons(props: {
           endpoint: variables.endpoint,
         },
         {
+          onSuccess: () => {
+            utils.user.getWebPushSubscriptions.invalidate()
+          },
           onSettled: () =>
             queryClient.setQueryData(["getPushSubscription"], null),
         },
@@ -76,6 +88,8 @@ function ToggleButtons(props: {
     unsubscribeMutation.isLoading ||
     deletePushSubscriptionMutation.isLoading
 
+  if (userWebPushSubscriptionsQuery.status === "loading") return <>...</>
+  if (userWebPushSubscriptionsQuery.status === "error") return <>error</>
   if (status === "loading") return <>...</>
   if (status === "error") return <>error</>
   if (pushSubscription === null)
@@ -92,23 +106,58 @@ function ToggleButtons(props: {
       </button>
     )
 
-  return (
-    <div className="flex gap-3">
-      <TestNotificationsButton
-        endpoint={pushSubscription.endpoint}
-        isMutating={isButtonDisabled}
-      />
+  const isRegistered = userWebPushSubscriptionsQuery.data.some(
+    (webpushSubscription) =>
+      webpushSubscription.endpointHashed ===
+      stringToSha256Hash(pushSubscription.endpoint),
+  )
 
+  if (isRegistered) {
+    return (
+      <div className="flex gap-3">
+        <TestNotificationsButton
+          endpoint={pushSubscription.endpoint}
+          isMutating={isButtonDisabled}
+        />
+
+        <button
+          type="button"
+          className="text-gray-700 disabled:text-gray-300 transition-colors duration-200"
+          disabled={isButtonDisabled}
+          onClick={() => unsubscribeMutation.mutate(pushSubscription)}
+        >
+          <ToggleRight size={32} weight="fill" />
+        </button>
+      </div>
+    )
+  } else {
+    return (
       <button
         type="button"
         className="text-gray-700 disabled:text-gray-300 transition-colors duration-200"
         disabled={isButtonDisabled}
-        onClick={() => unsubscribeMutation.mutate(pushSubscription)}
+        onClick={() =>
+          createPushSubscriptionMutation.mutate(
+            {
+              endpoint: pushSubscription.endpoint,
+              expirationTime: pushSubscription.expirationTime,
+              keys: {
+                auth: pushSubscription.toJSON().keys?.auth!,
+                p256dh: pushSubscription.toJSON().keys?.p256dh!,
+              },
+            },
+            {
+              onSuccess: () => {
+                utils.user.getWebPushSubscriptions.invalidate()
+              },
+            },
+          )
+        }
       >
-        <ToggleRight size={32} weight="fill" />
+        <ToggleLeft size={32} />
       </button>
-    </div>
-  )
+    )
+  }
 }
 
 function TogglePushNotifications() {
