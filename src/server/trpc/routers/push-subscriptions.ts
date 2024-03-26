@@ -1,18 +1,10 @@
-import { serverEnv } from "@/server/env.mjs"
 import { protectedProcedure, router } from "../trpc"
 import { webpushSubscriptions } from "@/server/db/schema"
-import { clientEnv } from "@/utils/env.mjs"
-import { sendNotification, setVapidDetails } from "web-push"
 import { z } from "zod"
 import { eq, inArray } from "drizzle-orm"
 import { stringToSha256Hash } from "@/utils/hash"
 import { DateTime } from "luxon"
-
-setVapidDetails(
-  "mailto:test@example.com",
-  clientEnv.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
-  serverEnv.WEB_PUSH_PRIVATE_KEY,
-)
+import { notifyByWebPush } from "@/server/notification"
 
 export const webpushSubscriptionRouter = router({
   testPublish: protectedProcedure
@@ -32,25 +24,12 @@ export const webpushSubscriptionRouter = router({
           ),
         )
 
-      const sendPromises = subscriptions.map((s) => {
-        const payload = JSON.stringify({
-          title: "Hi there!",
-          body: "This is a test notification.",
-        })
-
-        return sendNotification(
-          {
-            endpoint: s.endpoint,
-            keys: {
-              auth: s.keyAuth,
-              p256dh: s.keyP256dh,
-            },
-          },
-          payload,
-        )
+      const results = await notifyByWebPush({
+        subscriptions,
+        title: "Hi there!",
+        body: "This is a test notification.",
       })
 
-      const results = await Promise.allSettled(sendPromises)
       const failedEndpoints = results
         .filter(
           (result): result is PromiseRejectedResult =>

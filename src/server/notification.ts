@@ -1,5 +1,8 @@
 import { serverEnv } from "@/server/env.mjs"
 import { Resend } from "resend"
+import type { WebpushSubscription } from "./db/entities"
+import { sendNotification, setVapidDetails } from "web-push"
+import { clientEnv } from "@/utils/env.mjs"
 
 const resend = new Resend(serverEnv.RESEND_API_KEY)
 
@@ -40,4 +43,39 @@ export async function notifyBySms({ to, body }: { to: string; body: string }) {
       },
     )
   }
+}
+
+setVapidDetails(
+  "mailto:test@example.com",
+  clientEnv.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY,
+  serverEnv.WEB_PUSH_PRIVATE_KEY,
+)
+
+export async function notifyByWebPush(options: {
+  subscriptions: WebpushSubscription[]
+  title: string
+  body: string
+}) {
+  if (serverEnv.OFFLINE_MODE === "1") return []
+
+  const sendPromises = options.subscriptions.map((s) => {
+    const payload = JSON.stringify({
+      title: options.title,
+      body: options.body,
+      userId: s.userId,
+    })
+
+    return sendNotification(
+      {
+        endpoint: s.endpoint,
+        keys: {
+          auth: s.keyAuth,
+          p256dh: s.keyP256dh,
+        },
+      },
+      payload,
+    )
+  })
+
+  return await Promise.allSettled(sendPromises)
 }
