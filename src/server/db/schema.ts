@@ -412,18 +412,31 @@ export const activities = mysqlTable("activities", {
   isArchived: tinyint("is_archived").notNull().default(0),
 })
 
-export const webpushSubscriptions = mysqlTable("webpush_subscriptions", {
-  id: varchar("id", {
-    length: 64,
-  }).primaryKey(),
-  endpoint: text("endpoint").notNull(),
-  expirationTime: int("expiration_time"),
-  keyAuth: text("key_auth").notNull(),
-  keyP256dh: text("key_p256dh").notNull(),
-  createdAt: varchar("created_at", {
-    length: 255,
-  }).notNull(),
-})
+export const webpushSubscriptions = mysqlTable(
+  "webpush_subscriptions",
+  {
+    userId: varchar("user_id", {
+      length: 28,
+    }).notNull(),
+    endpointHashed: varchar("endpoint_hashed", {
+      length: 64,
+    }).notNull(),
+    endpoint: text("endpoint").notNull(),
+    expirationTime: int("expiration_time"),
+    keyAuth: text("key_auth").notNull(),
+    keyP256dh: text("key_p256dh").notNull(),
+    createdAt: varchar("created_at", {
+      length: 255,
+    }).notNull(),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({
+        columns: [table.userId, table.endpointHashed],
+      }),
+    }
+  },
+)
 
 export const webauthnChallenges = mysqlTable("webauthn_challenges", {
   userId: varchar("user_id", { length: 28 }).primaryKey(),

@@ -25,7 +25,12 @@ export const webpushSubscriptionRouter = router({
       const subscriptions = await ctx.db
         .select()
         .from(webpushSubscriptions)
-        .where(eq(webpushSubscriptions.id, stringToSha256Hash(input.endpoint)))
+        .where(
+          eq(
+            webpushSubscriptions.endpointHashed,
+            stringToSha256Hash(input.endpoint),
+          ),
+        )
 
       const sendPromises = subscriptions.map((s) => {
         const payload = JSON.stringify({
@@ -56,7 +61,7 @@ export const webpushSubscriptionRouter = router({
       if (failedEndpoints.length > 0)
         await ctx.db
           .delete(webpushSubscriptions)
-          .where(inArray(webpushSubscriptions.id, failedEndpoints))
+          .where(inArray(webpushSubscriptions.endpointHashed, failedEndpoints))
 
       return results
     }),
@@ -75,7 +80,8 @@ export const webpushSubscriptionRouter = router({
       const createdAt = DateTime.now().toISO()
 
       return ctx.db.insert(webpushSubscriptions).values({
-        id: stringToSha256Hash(input.endpoint),
+        userId: ctx.user.id,
+        endpointHashed: stringToSha256Hash(input.endpoint),
         endpoint: input.endpoint,
         expirationTime: input.expirationTime,
         keyAuth: input.keys.auth,
