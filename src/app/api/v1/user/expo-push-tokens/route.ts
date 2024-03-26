@@ -3,6 +3,7 @@ import { db } from "@/server/db/client"
 import { expopushTokens } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import { ZodError, z } from "zod"
+import { Expo } from "expo-server-sdk"
 
 export async function GET(req: Request) {
   const { session } = await validateSessionWithHeaders({ req })
@@ -58,6 +59,17 @@ export async function POST(req: Request) {
     const { token } = inputSchema.parse({
       token: body.token,
     })
+
+    if (!Expo.isExpoPushToken(token)) {
+      return Response.json(
+        {
+          message: "Invalid token.",
+        },
+        {
+          status: 400,
+        },
+      )
+    }
 
     await db
       .insert(expopushTokens)
