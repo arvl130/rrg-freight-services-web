@@ -26,7 +26,9 @@ export function SideNav() {
               <h3 className="font-bold">Account Setting</h3>
             </div>
             <div>
-              <p className="text-sm	">Lorem Ipsum Dolor Sit Amet</p>
+              <p className="text-sm text-gray-500">
+                Lorem Ipsum Dolor Sit Amet
+              </p>
             </div>
           </div>
         </div>
@@ -46,7 +48,9 @@ export function SideNav() {
               <h3 className="font-bold">Notification</h3>
             </div>
             <div>
-              <p className="text-sm	">Lorem Ipsum Dolor Sit Amet</p>
+              <p className="text-sm text-gray-500">
+                Lorem Ipsum Dolor Sit Amet
+              </p>
             </div>
           </div>
         </div>
@@ -66,7 +70,9 @@ export function SideNav() {
               <h3 className="font-bold">Password & Security</h3>
             </div>
             <div>
-              <p className="text-sm	">Lorem Ipsum Dolor Sit Amet</p>
+              <p className="text-sm text-gray-500">
+                Lorem Ipsum Dolor Sit Amet
+              </p>
             </div>
           </div>
         </div>
