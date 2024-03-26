@@ -448,3 +448,22 @@ export const webauthnCredentials = mysqlTable("webauthn_credentials", {
     length: 255,
   }).notNull(),
 })
+
+export const expopushTokens = mysqlTable(
+  "expopush_tokens",
+  {
+    userId: varchar("user_id", {
+      length: 28,
+    }).notNull(),
+    data: varchar("data", {
+      length: 100,
+    }).notNull(),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({
+        columns: [table.userId, table.data],
+      }),
+    }
+  },
+)
