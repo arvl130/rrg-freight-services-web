@@ -17,10 +17,10 @@ export default async function ActivitiesPage() {
   }
 
   return (
-    <AdminLayout title="Packages" user={user}>
+    <AdminLayout title="Activity Logs" user={user}>
       <Page.Header>
         <h1 className="text-2xl font-black [color:_#00203F] mb-2">
-          Activities
+          Activity Logs
         </h1>
       </Page.Header>
       <MainSection />

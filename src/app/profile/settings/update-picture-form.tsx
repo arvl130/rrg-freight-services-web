@@ -127,7 +127,7 @@ export function UpdatePictureForm({ user }: { user: User }) {
           </div>
           <div>
             <h2 className="font-semibold">{user.displayName}</h2>
-            <p className="text-sm	text-gray-400">
+            <p className="text-sm	text-gray-500">
               {getHumanizedOfUserRole(user.role)}
             </p>
           </div>

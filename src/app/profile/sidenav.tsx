@@ -23,7 +23,7 @@ export function SideNav() {
           </div>
           <div className="flex flex-col	justify-center	">
             <div>
-              <h3 className="font-bold">Account Setting</h3>
+              <h3 className="font-bold">Account Settings</h3>
             </div>
             <div>
               <p className="text-sm text-gray-500">
@@ -45,7 +45,7 @@ export function SideNav() {
           </div>
           <div className="flex flex-col	justify-center	">
             <div>
-              <h3 className="font-bold">Notification</h3>
+              <h3 className="font-bold">Notifications</h3>
             </div>
             <div>
               <p className="text-sm text-gray-500">

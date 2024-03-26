@@ -17,7 +17,7 @@ export default async function VehiclesPage() {
   }
 
   return (
-    <AdminLayout title="Packages" user={user}>
+    <AdminLayout title="Vehicles" user={user}>
       <Page.Header>
         <HeaderSection />
       </Page.Header>
