@@ -9,13 +9,20 @@ import {
   packages,
   users,
   vehicles,
+  expopushTokens,
+  webpushSubscriptions,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { DateTime } from "luxon"
 import { generateOtp } from "@/utils/uuid"
-import { notifyByEmail, notifyBySms } from "@/server/notification"
+import {
+  notifyByEmail,
+  notifyByExpoPush,
+  notifyBySms,
+  notifyByWebPush,
+} from "@/server/notification"
 import { createLog } from "@/utils/logging"
 
 export const deliveryShipmentRouter = router({
@@ -283,6 +290,16 @@ export const deliveryShipmentRouter = router({
       }))
 
       await ctx.db.transaction(async (tx) => {
+        const webPushSubscriptionResults = await tx
+          .select()
+          .from(webpushSubscriptions)
+          .where(eq(webpushSubscriptions.userId, input.driverId))
+
+        const expoPushTokenResults = await tx
+          .select()
+          .from(expopushTokens)
+          .where(eq(expopushTokens.userId, input.driverId))
+
         const packageResults = await tx
           .select()
           .from(packages)
@@ -345,12 +362,25 @@ export const deliveryShipmentRouter = router({
           })
           .where(inArray(packages.id, input.packageIds))
         await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
-      })
+        await createLog(tx, {
+          verb: "CREATE",
+          entity: "DELIVERY_SHIPMENT",
+          createdById: ctx.user.id,
+        })
 
-      await createLog(ctx.db, {
-        verb: "CREATE",
-        entity: "DELIVERY_SHIPMENT",
-        createdById: ctx.user.id,
+        if (webPushSubscriptionResults.length > 0)
+          await notifyByWebPush({
+            subscriptions: webPushSubscriptionResults,
+            title: "New delivery assigned",
+            body: `Delivery with ID ${shipmentId} has been assigned to you.`,
+          })
+
+        if (expoPushTokenResults.length > 0)
+          await notifyByExpoPush({
+            to: expoPushTokenResults.map((token) => token.data),
+            title: "New delivery assigned",
+            body: `Delivery with ID ${shipmentId} has been assigned to you.`,
+          })
       })
     }),
 })

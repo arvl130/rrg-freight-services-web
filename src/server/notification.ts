@@ -3,8 +3,8 @@ import { Resend } from "resend"
 import type { WebpushSubscription } from "./db/entities"
 import { sendNotification, setVapidDetails } from "web-push"
 import { clientEnv } from "@/utils/env.mjs"
-import type { ExpoPushMessage, ExpoPushTicket } from "expo-server-sdk"
-import { Expo, type ExpoPushToken } from "expo-server-sdk"
+import type { ExpoPushMessage } from "expo-server-sdk"
+import { Expo } from "expo-server-sdk"
 
 const resend = new Resend(serverEnv.RESEND_API_KEY)
 
@@ -87,18 +87,9 @@ const expo = new Expo({
   useFcmV1: true,
 })
 
-export async function notifyByExpoPush(options: {
-  tokens: ExpoPushToken[]
-  messages: ExpoPushMessage[]
-}) {
-  if (serverEnv.OFFLINE_MODE === "1") return []
+export async function notifyByExpoPush(message: ExpoPushMessage) {
+  if (serverEnv.OFFLINE_MODE === "1") return null
 
-  const chunks = expo.chunkPushNotifications(options.messages)
-  const tickets: ExpoPushTicket[] = []
-  for (const chunk of chunks) {
-    const ticket = await expo.sendPushNotificationsAsync(chunk)
-    tickets.push(...ticket)
-  }
-
-  return tickets
+  const [ticket] = await expo.sendPushNotificationsAsync([message])
+  return ticket
 }
