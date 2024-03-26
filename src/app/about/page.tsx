@@ -185,13 +185,7 @@ export default async function AboutUsPage() {
           </div>
         </section>
 
-        <section
-          style={{
-            background:
-              "linear-gradient(#FFFFFF 0%, #79CFDC 10%, #79CFDC 95%, #FFFFFF 100%)",
-          }}
-          className="py-10  mb-20"
-        >
+        <section className="py-10 bg-[#79CFDC] mb-20">
           <div className="block px-10 md:flex md:justify-center">
             <div className="m-0 mb-5 md:mr-10">
               <Image
