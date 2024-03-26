@@ -87,8 +87,8 @@ const domesticPages = [
     path: "/domestic/packages",
   },
   {
-    title: "Transfer Forwarder Shipments",
-    path: "/domestic/transfer-forwarder-shipments",
+    title: "Forwarder Transfer Shipments",
+    path: "/domestic/shipments/transfer/forwarder",
   },
   {
     title: "Profile",

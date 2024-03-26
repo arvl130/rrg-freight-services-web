@@ -1,4 +1,9 @@
-import type { PackageStatus, UserRole, PackageShippingType } from "./constants"
+import type {
+  PackageStatus,
+  UserRole,
+  PackageShippingType,
+  ShipmentStatus,
+} from "./constants"
 
 export function toTitleCase(word: string) {
   return word[0].toUpperCase() + word.slice(1).toLowerCase()
@@ -13,6 +18,14 @@ export function getHumanizedOfUserRole(supportedRole: UserRole) {
 
 export function getHumanizedOfPackageStatus(packageStatus: PackageStatus) {
   return packageStatus
+    .toLowerCase()
+    .split("_")
+    .map((word) => toTitleCase(word))
+    .join(" ")
+}
+
+export function getHumanizedOfShipmentStatus(shipmentStatus: ShipmentStatus) {
+  return shipmentStatus
     .toLowerCase()
     .split("_")
     .map((word) => toTitleCase(word))
