@@ -28,6 +28,7 @@ export const serverEnv = createEnv({
     GEOAPIFY_API_URL: z.string().min(1).url(),
     GEOAPIFY_API_KEY: z.string().min(1),
     WEB_PUSH_PRIVATE_KEY: z.string().min(1),
+    OFFLINE_MODE: z.union([z.literal("0"), z.literal("1")]).optional(),
   },
   runtimeEnv: {
     APP_NAME: process.env.APP_NAME,
@@ -49,5 +50,6 @@ export const serverEnv = createEnv({
     GEOAPIFY_API_URL: process.env.GEOAPIFY_API_URL,
     GEOAPIFY_API_KEY: process.env.GEOAPIFY_API_KEY,
     WEB_PUSH_PRIVATE_KEY: process.env.WEB_PUSH_PRIVATE_KEY,
+    OFFLINE_MODE: process.env.OFFLINE_MODE,
   },
 })

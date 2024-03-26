@@ -12,6 +12,7 @@ export async function notifyByEmail({
   subject: string
   htmlBody: string
 }) {
+  if (serverEnv.OFFLINE_MODE === "1") return
   if (serverEnv.IS_EMAIL_ENABLED === "1") {
     await resend.emails.send({
       from: `RRG Freight Services Updates <noreply@${serverEnv.MAIL_FROM_URL}>`,
@@ -23,6 +24,7 @@ export async function notifyByEmail({
 }
 
 export async function notifyBySms({ to, body }: { to: string; body: string }) {
+  if (serverEnv.OFFLINE_MODE === "1") return
   if (serverEnv.IS_SMS_ENABLED === "1") {
     await fetch(
       `${serverEnv.SMS_API_URL}/sms?apiKey=${serverEnv.SMS_API_KEY}`,
