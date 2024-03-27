@@ -23,8 +23,10 @@ const config: Config = {
         "brand-red": "#ff9e9e",
         "brand-cyan": {
           "100": "#eff8f8",
+          "350": "#a9dbe2",
           "450": "#acdee2",
           "500": "#79cfdc",
+          "600": "#6BB6C1",
         },
         "brand-teal": "#a4d8d8",
       },
