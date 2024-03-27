@@ -92,11 +92,15 @@ function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
           close={() => setVisibleModal(null)}
         />
 
-        <ConfirmTransferModal
-          isOpen={visibleModal === "CONFIRM_TRANSFER"}
-          close={() => setVisibleModal(null)}
-          transferShipmentId={item.id}
-        />
+        {item.proofOfTransferImgUrl !== null &&
+          item.isTransferConfirmed === 0 && (
+            <ConfirmTransferModal
+              isOpen={visibleModal === "CONFIRM_TRANSFER"}
+              onClose={() => setVisibleModal(null)}
+              shipmentId={item.id}
+              proofOfTransferImgUrl={item.proofOfTransferImgUrl}
+            />
+          )}
       </div>
     </>
   )
