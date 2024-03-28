@@ -16,7 +16,7 @@ import {
   warehouseTransferShipments,
   warehouses,
 } from "@/server/db/schema"
-import { and, count, eq, inArray, sql } from "drizzle-orm"
+import { and, count, eq, gte, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import type { DbWithEntities } from "@/server/db/entities"
 
@@ -114,8 +114,30 @@ export const shipmentPackageRouter = router({
         createdById: input.createdById,
       }))
 
+      const packagesCandidateForPickUpResults = await ctx.db
+        .select({
+          id: packages.id,
+        })
+        .from(packages)
+        .where(
+          and(
+            inArray(packages.id, input.packageIds),
+            gte(packages.failedAttempts, 2),
+          ),
+        )
+
+      const packageIdsCandidateForPickUp =
+        packagesCandidateForPickUpResults.map(({ id }) => id)
+
       await ctx.db.transaction(async (tx) => {
-        await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
+        if (packageIdsCandidateForPickUp.length > 0)
+          await tx
+            .update(packages)
+            .set({
+              receptionMode: "FOR_PICKUP",
+            })
+            .where(inArray(packages.id, packageIdsCandidateForPickUp))
+
         await tx
           .update(packages)
           .set({
@@ -125,6 +147,7 @@ export const shipmentPackageRouter = router({
               : undefined,
           })
           .where(inArray(packages.id, input.packageIds))
+
         await tx
           .update(shipmentPackages)
           .set({
@@ -136,12 +159,13 @@ export const shipmentPackageRouter = router({
               inArray(shipmentPackages.packageId, input.packageIds),
             ),
           )
-      })
 
-      await createLog(ctx.db, {
-        verb: "UPDATE",
-        entity: "SHIPMENT_PACKAGE",
-        createdById: ctx.user.id,
+        await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "SHIPMENT_PACKAGE",
+          createdById: ctx.user.id,
+        })
       })
     }),
 
