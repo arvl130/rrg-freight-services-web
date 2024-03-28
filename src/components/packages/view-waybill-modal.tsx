@@ -1,6 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import Image from "next/image"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import QRCode from "react-qr-code"
 import type { Package } from "@/server/db/entities"
 import { PDFDownloadLink } from "@react-pdf/renderer"
@@ -15,7 +15,6 @@ export function ViewWaybillModal({
   isOpen: boolean
   close: () => void
 }) {
-  const [isGenerating, setIsGenerating] = useState(false)
   const waybillRef = useRef<null | HTMLDivElement>(null)
 
   return (
@@ -58,8 +57,8 @@ export function ViewWaybillModal({
               </div>
               <table className="border border-black w-full mb-2">
                 <tr>
-                  <th className="border border-black pb-4">Ship To</th>
-                  <td className="border border-black px-2 pb-4" colSpan={3}>
+                  <th className="border border-black">Ship To</th>
+                  <td className="border border-black px-2" colSpan={3}>
                     <p className="text-xs font-semibold">
                       {_package.receiverFullName}
                     </p>
@@ -81,8 +80,8 @@ export function ViewWaybillModal({
                   </td>
                 </tr>
                 <tr>
-                  <th className="border border-black pb-4">Shipped From</th>
-                  <td className="border border-black px-2 pb-4" colSpan={3}>
+                  <th className="border border-black">Shipped From</th>
+                  <td className="border border-black px-2" colSpan={3}>
                     <p className="text-xs font-semibold">
                       {_package.senderFullName}
                     </p>
@@ -102,9 +101,9 @@ export function ViewWaybillModal({
                   </td>
                 </tr>
                 <tr>
-                  <th className="border border-black pb-4">Package Info</th>
+                  <th className="border border-black">Package Info</th>
                   <td
-                    className="border border-black text-center px-2 pb-4 text-sm"
+                    className="border border-black text-center px-2 text-sm"
                     colSpan={2}
                   >
                     <p className="font-semibold">Delivery Type</p>
@@ -113,41 +112,42 @@ export function ViewWaybillModal({
                       {_package.shippingType.toLowerCase()}
                     </p>
                   </td>
-                  <td className="text-center pb-4 text-sm">
+                  <td className="text-center text-sm">
                     {_package.receptionMode === "FOR_PICKUP"
                       ? "For Pickup"
                       : "Door to Door"}
                   </td>
                 </tr>
                 <tr>
-                  <th className="border border-black pb-4">Package ID</th>
+                  <th className="border border-black">Tracking Number</th>
                   <td
-                    className="border border-black text-center px-2 pb-4 text-sm"
+                    className="border border-black text-center text-sm"
                     colSpan={3}
                   >
-                    {_package.id.toString().padStart(4, "0")}
+                    <p>{_package.id} (from RRG)</p>
+                    <p>{_package.preassignedId} (from agent)</p>
                   </td>
                 </tr>
                 <tr>
-                  <th className="border border-black pb-4">Fragile?</th>
+                  <th className="border border-black">Fragile?</th>
                   <td
-                    className="border border-black text-center px-2 pb-4 text-sm"
+                    className="border border-black text-center px-2 text-sm"
                     colSpan={3}
                   >
                     {_package.isFragile === 1 ? "Yes" : "No"}
                   </td>
                 </tr>
                 <tr>
-                  <th className="border border-black pb-4">Weight (KG)</th>
-                  <td className="border border-black pb-4 text-center w-[80px]">
+                  <th className="border border-black">Weight (KG)</th>
+                  <td className="border border-black text-center w-[80px]">
                     {_package.weightInKg}
                   </td>
-                  <th className="border border-black pb-4">
+                  <th className="border border-black">
                     Receiver
                     <br />
                     Signature
                   </th>
-                  <td className="border border-black text-center px-2 pb-4 text-sm"></td>
+                  <td className="border border-black text-center px-2 text-sm"></td>
                 </tr>
               </table>
             </div>
