@@ -12,6 +12,7 @@ import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
 import { DateTime } from "luxon"
 import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
+import { ViewWaybillsModal } from "@/components/shipments/incoming/view-waybills-modal"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
@@ -509,6 +510,7 @@ export function IncomingTab({
   setSelectedTab: (tab: SelectedTab) => void
   userId: string
 }) {
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false)
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
     null,
   )
@@ -526,7 +528,17 @@ export function IncomingTab({
           <div>
             <button
               type="button"
-              className="px-4 py-2 mb-3 sm:mb-0 bg-gray-700 text-white hover:bg-gray-600 rounded-md transition-colors mr-3"
+              className="px-4 py-2 mb-3 sm:mb-0 bg-purple-700 text-white hover:bg-purple-600 rounded-md font-medium transition-colors mr-3"
+              onClick={() => {
+                setIsPrintModalOpen(true)
+              }}
+            >
+              Print Waybills
+            </button>
+
+            <button
+              type="button"
+              className="px-4 py-2 mb-3 sm:mb-0 bg-gray-700 text-white hover:bg-gray-600 rounded-md font-medium transition-colors mr-3"
               onClick={() => {
                 setSelectedShipmentId(null)
               }}
@@ -540,6 +552,14 @@ export function IncomingTab({
               />
             )}
           </div>
+
+          <ViewWaybillsModal
+            isOpen={isPrintModalOpen}
+            onClose={() => {
+              setIsPrintModalOpen(false)
+            }}
+            shipmentId={selectedShipmentId}
+          />
         </div>
       )}
 

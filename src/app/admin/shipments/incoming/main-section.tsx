@@ -15,7 +15,7 @@ import { DateTime } from "luxon"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { UserDisplayName } from "@/components/user-display-name"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
-import { ViewWaybillsModal } from "./view-waybills-modal"
+import { ViewWaybillsModal } from "@/components/shipments/incoming/view-waybills-modal"
 
 function TableItem({ item }: { item: NormalizedIncomingShipment }) {
   const [visibleModal, setVisibleModal] = useState<
@@ -82,7 +82,7 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
         <ViewWaybillsModal
           shipmentId={item.id}
           isOpen={visibleModal === "PRINT_WAYBILLS"}
-          close={() => setVisibleModal(null)}
+          onClose={() => setVisibleModal(null)}
         />
       </div>
     </>

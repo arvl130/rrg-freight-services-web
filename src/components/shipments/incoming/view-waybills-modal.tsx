@@ -1,37 +1,36 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple"
-import { ArrowsClockwise } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise"
 import { api } from "@/utils/api"
-import { getColorFromPackageStatus } from "@/utils/colors"
-import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import { PDFDownloadLink } from "@react-pdf/renderer"
 import WaybillsPdf from "./pdf-waybills"
 
 export function ViewWaybillsModal({
   shipmentId,
   isOpen,
-  close,
+  onClose,
 }: {
   shipmentId: number
   isOpen: boolean
-  close: () => void
+  onClose: () => void
 }) {
   const {
     status,
     data: packages,
     error,
-    refetch,
-    isRefetching,
   } = api.package.getWithLatestStatusByShipmentId.useQuery({
     shipmentId,
   })
+
   return (
     <Dialog.Root open={isOpen}>
       <Dialog.Portal>
-        <Dialog.Overlay className="bg-black/40 fixed inset-0" onClick={close} />
+        <Dialog.Overlay
+          className="bg-black/40 fixed inset-0"
+          onClick={onClose}
+        />
         <Dialog.Content
-          onEscapeKeyDown={close}
+          onEscapeKeyDown={onClose}
           className="fixed pb-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_32rem)] h-[min(calc(100%_-_3rem),_50rem)]  grid grid-rows-[auto_1fr] bg-white rounded-2xl"
         >
           <Dialog.Title className="text-white font-bold px-4 py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
@@ -99,7 +98,7 @@ export function ViewWaybillsModal({
           </div>
           <div className="flex justify-between mt-3 px-5 ">
             <Dialog.Close asChild>
-              <button onClick={close} className="Button green">
+              <button onClick={onClose} className="Button green">
                 Close
               </button>
             </Dialog.Close>
@@ -122,7 +121,7 @@ export function ViewWaybillsModal({
             <button
               type="button"
               className="text-white absolute top-3 right-3"
-              onClick={close}
+              onClick={onClose}
             >
               <X size={20} />
               <span className="sr-only">Close</span>
