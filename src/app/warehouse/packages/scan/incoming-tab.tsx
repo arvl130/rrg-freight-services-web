@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { z } from "zod"
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight"
-import type { Package, PackageCategory } from "@/server/db/entities"
+import type { Package } from "@/server/db/entities"
 import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
 import { DateTime } from "luxon"
@@ -15,7 +15,7 @@ import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
-    message: "Please enter a package ID.",
+    message: "Please enter a tracking number.",
   }),
 })
 
@@ -80,7 +80,7 @@ function ScanPackageForm({
       <div className="grid sm:grid-cols-[1fr_auto] gap-3">
         <input
           type="text"
-          placeholder="Enter a package ID ..."
+          placeholder="Enter a tracking number ..."
           className="text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
           {...register("packageId")}
         />
@@ -106,7 +106,8 @@ function TableItem(props: {
 }) {
   return (
     <>
-      <div>{props.item.id}</div>
+      <div className="whitespace-nowrap">{props.item.preassignedId}</div>
+      <div className="whitespace-nowrap">{props.item.id}</div>
       <div>
         <div>{props.item.receiverFullName}</div>
       </div>
@@ -206,8 +207,9 @@ function PackagesTableTabs(props: {
       </div>
 
       {visibleView === "ALL" && (
-        <div className="grid grid-cols-[repeat(3,_auto)_1fr] gap-3 overflow-auto">
-          <div className="font-medium">Package ID</div>
+        <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto">
+          <div className="font-medium whitespace-nowrap">Received Number</div>
+          <div className="font-medium whitespace-nowrap">Tracking Number</div>
           <div className="font-medium">Receiver</div>
           <div className="font-medium">Status</div>
           <div className="font-medium">Actions</div>
@@ -231,13 +233,14 @@ function PackagesTableTabs(props: {
           <div className="font-medium border-l border-gray-300 pl-3">
             Going to Visayas/Mindanao
           </div>
-          <div className="grid grid-cols-[repeat(3,_auto)_1fr] gap-3 overflow-auto pr-3">
-            <div className="font-medium">Package ID</div>
+          <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto pr-3">
+            <div className="font-medium whitespace-nowrap">Received Number</div>
+            <div className="font-medium whitespace-nowrap">Tracking Number</div>
             <div className="font-medium">Receiver</div>
             <div className="font-medium">Status</div>
             <div className="font-medium">Actions</div>
             {luzonPackages.length === 9 ? (
-              <p className="text-center text-gray-500 col-span-4">
+              <p className="text-center text-gray-500 col-span-5">
                 No packages in this category.
               </p>
             ) : (
@@ -256,13 +259,14 @@ function PackagesTableTabs(props: {
               </>
             )}
           </div>
-          <div className="grid grid-cols-[repeat(3,_auto)_1fr] auto-rows-min gap-3 overflow-auto border-l border-gray-300 pl-3">
-            <div className="font-medium">Package ID</div>
+          <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min gap-3 overflow-auto border-l border-gray-300 pl-3">
+            <div className="font-medium whitespace-nowrap">Received Number</div>
+            <div className="font-medium whitespace-nowrap">Tracking Number</div>
             <div className="font-medium">Receiver</div>
             <div className="font-medium">Status</div>
             <div className="font-medium">Actions</div>
             {nonLuzonPackages.length === 0 ? (
-              <p className="text-center text-gray-500 col-span-4">
+              <p className="text-center text-gray-500 col-span-5">
                 No packages in this category.
               </p>
             ) : (
