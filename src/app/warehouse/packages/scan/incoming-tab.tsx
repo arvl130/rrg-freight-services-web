@@ -16,7 +16,7 @@ import { ViewWaybillsModal } from "@/components/shipments/incoming/view-waybills
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
-    message: "Please enter a tracking number.",
+    message: "Please enter an RRG tracking number.",
   }),
 })
 
@@ -81,7 +81,7 @@ function ScanPackageForm({
       <div className="grid sm:grid-cols-[1fr_auto] gap-3">
         <input
           type="text"
-          placeholder="Enter a tracking number ..."
+          placeholder="Enter an RRG tracking number ..."
           className="text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
           {...register("packageId")}
         />
