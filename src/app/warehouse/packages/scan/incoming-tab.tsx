@@ -209,8 +209,12 @@ function PackagesTableTabs(props: {
 
       {visibleView === "ALL" && (
         <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto">
-          <div className="font-medium whitespace-nowrap">Received Number</div>
-          <div className="font-medium whitespace-nowrap">Tracking Number</div>
+          <div className="font-medium whitespace-nowrap">
+            Tracking No. (from agent)
+          </div>
+          <div className="font-medium whitespace-nowrap">
+            Tracking No. (from RRG)
+          </div>
           <div className="font-medium">Receiver</div>
           <div className="font-medium">Status</div>
           <div className="font-medium">Actions</div>
@@ -235,8 +239,12 @@ function PackagesTableTabs(props: {
             Going to Visayas/Mindanao
           </div>
           <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto pr-3">
-            <div className="font-medium whitespace-nowrap">Received Number</div>
-            <div className="font-medium whitespace-nowrap">Tracking Number</div>
+            <div className="font-medium whitespace-nowrap">
+              Tracking No. (from agent)
+            </div>
+            <div className="font-medium whitespace-nowrap">
+              Tracking No. (from RRG)
+            </div>
             <div className="font-medium">Receiver</div>
             <div className="font-medium">Status</div>
             <div className="font-medium">Actions</div>
@@ -261,8 +269,12 @@ function PackagesTableTabs(props: {
             )}
           </div>
           <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min gap-3 overflow-auto border-l border-gray-300 pl-3">
-            <div className="font-medium whitespace-nowrap">Received Number</div>
-            <div className="font-medium whitespace-nowrap">Tracking Number</div>
+            <div className="font-medium whitespace-nowrap">
+              Tracking No. (from agent)
+            </div>
+            <div className="font-medium whitespace-nowrap">
+              Tracking No. (from RRG)
+            </div>
             <div className="font-medium">Receiver</div>
             <div className="font-medium">Status</div>
             <div className="font-medium">Actions</div>
