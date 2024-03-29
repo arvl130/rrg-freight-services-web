@@ -26,6 +26,7 @@ import type {
 
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
+export type PublicUser = Omit<User, "hashedPassword">
 
 export type WarehouseStaff = typeof warehouseStaffs.$inferSelect
 export type NewWarehouseStaff = typeof warehouseStaffs.$inferInsert
