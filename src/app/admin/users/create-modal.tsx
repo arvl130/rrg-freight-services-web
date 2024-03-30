@@ -42,7 +42,9 @@ export function CreateModal({
               }}
             >
               {SUPPORTED_USER_ROLES.map((role) => (
-                <option key={role}>{getHumanizedOfUserRole(role)}</option>
+                <option key={role} value={role}>
+                  {getHumanizedOfUserRole(role)}
+                </option>
               ))}
             </select>
             {selectedRole === "ADMIN" && <CreateAdminForm onClose={close} />}
