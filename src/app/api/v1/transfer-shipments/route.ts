@@ -21,6 +21,7 @@ export async function GET(req: Request) {
       shipments,
       eq(forwarderTransferShipments.shipmentId, shipments.id),
     )
+    .where(eq(forwarderTransferShipments.driverId, user.id))
 
   return Response.json({
     message: "Transfer shipments retrieved",

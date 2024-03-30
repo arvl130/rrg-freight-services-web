@@ -9,7 +9,7 @@ import {
   SUPPORTED_SHIPMENT_PACKAGE_STATUSES,
   type ShipmentStatus,
 } from "@/utils/constants"
-import { eq, getTableColumns } from "drizzle-orm"
+import { and, eq, getTableColumns } from "drizzle-orm"
 import { sql } from "drizzle-orm"
 import type { NextRequest } from "next/server"
 import { ZodError, z } from "zod"
@@ -55,7 +55,12 @@ export async function GET(req: NextRequest) {
         shipmentPackages,
         eq(deliveryShipments.shipmentId, shipmentPackages.shipmentId),
       )
-      .where(status ? eq(shipments.status, status) : undefined)
+      .where(
+        and(
+          eq(deliveryShipments.driverId, user.id),
+          status ? eq(shipments.status, status) : undefined,
+        ),
+      )
       .groupBy(deliveryShipments.shipmentId)
 
     return Response.json({
