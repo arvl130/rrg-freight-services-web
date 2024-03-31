@@ -87,5 +87,17 @@ export async function signInWithWebauthnResponseAction(
   await createSessionForUserId(userRecord.id)
 
   const redirectPath = getUserRoleRedirectPath(userRecord.role)
-  return redirect(redirectPath)
+
+  return {
+    message: "Login succeeded.",
+    data: {
+      redirectPath,
+      user: {
+        id: userRecord.id,
+        displayName: userRecord.displayName,
+        email: userRecord.emailAddress,
+        photoUrl: userRecord.photoUrl,
+      },
+    },
+  }
 }

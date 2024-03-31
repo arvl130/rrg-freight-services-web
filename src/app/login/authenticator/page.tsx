@@ -1,44 +1,19 @@
 "use client"
 
-import { api } from "@/utils/api"
-import { startAuthentication } from "@simplewebauthn/browser"
 import Image from "next/image"
 import Link from "next/link"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import type { z } from "zod"
-import { useState } from "react"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
-import { signInWithWebauthnResponseAction } from "./actions"
-import toast from "react-hot-toast"
-import { formSchema } from "./form-schema"
-
-type FormType = z.infer<typeof formSchema>
+import { useSavedUser } from "@/components/saved-users"
+import { LoginForm } from "./login-form"
+import { LoadingSpinner } from "@/components/spinner"
 
 export default function Page() {
-  const generateAuthenticationOptionsMutation =
-    api.webauthn.generateAuthenticationOptions.useMutation({
-      onSuccess: async (options) => {
-        setIsSigningIn(true)
-        try {
-          const response = await startAuthentication(options)
-          await signInWithWebauthnResponseAction(response)
-        } catch {
-          setIsSigningIn(false)
-          toast.error("Sign in error occured.")
-        }
-      },
-    })
-
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormType>({
-    resolver: zodResolver(formSchema),
-  })
-
-  const [isSigningIn, setIsSigningIn] = useState(false)
+    isLoading,
+    savedUsers,
+    addUser,
+    removeUserById: removeUserByEmail,
+  } = useSavedUser()
 
   return (
     <>
@@ -72,36 +47,18 @@ export default function Page() {
                 Enter Your Credentials
               </p>
             </div>
-            <form
-              onSubmit={handleSubmit(async (formData) => {
-                generateAuthenticationOptionsMutation.mutate({
-                  email: formData.email,
-                })
-              })}
-            >
-              <div>
-                <label className="font-medium block mb-1">Email</label>
-                <input
-                  type="text"
-                  className="text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-                  {...register("email")}
-                />
-                {errors.email && (
-                  <p className="text-red-600 mt-1 text-sm">
-                    {errors.email.message}
-                  </p>
-                )}
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center">
+                <p className="mb-3 text-sm">Loading your options ...</p>
+                <LoadingSpinner />
               </div>
-              <button
-                type="submit"
-                disabled={
-                  generateAuthenticationOptionsMutation.isLoading || isSigningIn
-                }
-                className="font-semibold w-full mt-4 px-8 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-blue-500 rounded-md hover:bg-blue-400 focus:outline-none focus:bg-blue-400 disabled:bg-blue-300"
-              >
-                Sign in
-              </button>
-            </form>
+            ) : (
+              <LoginForm
+                savedUsers={savedUsers?.users ?? []}
+                onAddUser={addUser}
+                onRemoveUser={removeUserByEmail}
+              />
+            )}
           </div>
           <div className="text-sm flex justify-between">
             <Link href="/" className="inline-flex items-center">
