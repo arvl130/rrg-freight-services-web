@@ -5,10 +5,22 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
 import { createAdminFormSchema } from "./create-admin-form"
+import { generateRandomPassword } from "@/utils/uuid"
+import { useEffect } from "react"
 
-const createOverseasAgentFormSchema = createAdminFormSchema.extend({
-  companyName: z.string().min(1).max(100),
-})
+const createOverseasAgentFormSchema = createAdminFormSchema
+  .extend({
+    companyName: z.string().min(1).max(100),
+  })
+  .superRefine(({ isPasswordRandom, password }, ctx) => {
+    if (!isPasswordRandom && typeof password === "undefined") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Password must be supplied.",
+        path: ["password"],
+      })
+    }
+  })
 
 type CreateOverseasAgentFormSchema = z.infer<
   typeof createOverseasAgentFormSchema
@@ -16,13 +28,25 @@ type CreateOverseasAgentFormSchema = z.infer<
 
 export function CreateOverseasAgentForm(props: { onClose: () => void }) {
   const {
+    watch,
+    resetField,
     handleSubmit,
     register,
     reset,
     formState: { errors },
   } = useForm<CreateOverseasAgentFormSchema>({
     resolver: zodResolver(createOverseasAgentFormSchema),
+    defaultValues: {
+      isPasswordRandom: true,
+    },
   })
+
+  const isPasswordRandomWatched = watch("isPasswordRandom")
+  useEffect(() => {
+    if (isPasswordRandomWatched) {
+      resetField("password")
+    }
+  }, [isPasswordRandomWatched, resetField])
 
   const apiUtils = api.useUtils()
   const createUserMutation = api.user.create.useMutation({
@@ -37,12 +61,21 @@ export function CreateOverseasAgentForm(props: { onClose: () => void }) {
   return (
     <form
       className="grid grid-cols-subgrid col-span-2 gap-y-2"
-      onSubmit={handleSubmit((formData) =>
-        createUserMutation.mutate({
-          role: "OVERSEAS_AGENT",
-          ...formData,
-        }),
-      )}
+      onSubmit={handleSubmit((formData) => {
+        if (formData.isPasswordRandom) {
+          createUserMutation.mutate({
+            role: "OVERSEAS_AGENT",
+            ...formData,
+            password: generateRandomPassword(),
+          })
+        } else {
+          createUserMutation.mutate({
+            role: "OVERSEAS_AGENT",
+            ...formData,
+            password: formData.password!,
+          })
+        }
+      })}
     >
       {createUserMutation.status === "error" && (
         <div className="col-span-2">
@@ -80,18 +113,30 @@ export function CreateOverseasAgentForm(props: { onClose: () => void }) {
         </div>
       )}
 
-      <div className="flex items-center justify-end">
-        <label>Password:</label>
+      <div></div>
+      <div>
+        <label>
+          <input type="checkbox" {...register("isPasswordRandom")} />
+          <span className="ml-2">Use random password</span>
+        </label>
       </div>
-      <input
-        type="password"
-        className="block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
-        {...register("password")}
-      />
-      {errors.password && (
-        <div className="mt-1 text-red-500 col-start-2">
-          {errors.password.message}.
-        </div>
+
+      {!isPasswordRandomWatched && (
+        <>
+          <div className="flex items-center justify-end">
+            <label>Password:</label>
+          </div>
+          <input
+            type="password"
+            className="block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+            {...register("password")}
+          />
+          {errors.password && (
+            <div className="mt-1 text-red-500 col-start-2">
+              {errors.password.message}.
+            </div>
+          )}
+        </>
       )}
 
       <div className="flex items-center justify-end">

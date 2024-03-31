@@ -18,3 +18,7 @@ export function generateUserId() {
 export function generatePasswordResetToken() {
   return generateId(72)
 }
+
+export function generateRandomPassword() {
+  return generateId(64)
+}

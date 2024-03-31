@@ -5,26 +5,53 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
+import { generateRandomPassword } from "@/utils/uuid"
+import { useEffect } from "react"
 
 export const createAdminFormSchema = z.object({
   displayName: z.string().min(1),
   contactNumber: z.string().min(1),
   emailAddress: z.string().min(1).max(100).email(),
-  password: z.string().min(8),
+  password: z.string().min(8).optional(),
   gender: z.custom<Gender>((val) => SUPPORTED_GENDERS.includes(val as Gender)),
+  isPasswordRandom: z.boolean(),
 })
 
-type CreateAdminFormSchema = z.infer<typeof createAdminFormSchema>
+const schemaRefined = createAdminFormSchema.superRefine(
+  ({ isPasswordRandom, password }, ctx) => {
+    if (!isPasswordRandom && typeof password === "undefined") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Password must be supplied.",
+        path: ["password"],
+      })
+    }
+  },
+)
+
+type CreateAdminFormSchema = z.infer<typeof schemaRefined>
 
 export function CreateAdminForm(props: { onClose: () => void }) {
   const {
+    watch,
+    resetField,
     handleSubmit,
     register,
     reset,
     formState: { errors },
   } = useForm<CreateAdminFormSchema>({
-    resolver: zodResolver(createAdminFormSchema),
+    resolver: zodResolver(schemaRefined),
+    defaultValues: {
+      isPasswordRandom: true,
+    },
   })
+
+  const isPasswordRandomWatched = watch("isPasswordRandom")
+  useEffect(() => {
+    if (isPasswordRandomWatched) {
+      resetField("password")
+    }
+  }, [isPasswordRandomWatched, resetField])
 
   const apiUtils = api.useUtils()
   const { mutate, status, error } = api.user.create.useMutation({
@@ -35,16 +62,24 @@ export function CreateAdminForm(props: { onClose: () => void }) {
       toast.success("User created successfully.")
     },
   })
-
   return (
     <form
       className="grid grid-cols-subgrid col-span-2 gap-y-2"
-      onSubmit={handleSubmit((formData) =>
-        mutate({
-          role: "ADMIN",
-          ...formData,
-        }),
-      )}
+      onSubmit={handleSubmit((formData) => {
+        if (formData.isPasswordRandom) {
+          mutate({
+            role: "ADMIN",
+            ...formData,
+            password: generateRandomPassword(),
+          })
+        } else {
+          mutate({
+            role: "ADMIN",
+            ...formData,
+            password: formData.password!,
+          })
+        }
+      })}
     >
       {status === "error" && (
         <div className="col-span-2">
@@ -79,18 +114,30 @@ export function CreateAdminForm(props: { onClose: () => void }) {
         </div>
       )}
 
-      <div className="flex items-center justify-end">
-        <label>Password:</label>
+      <div></div>
+      <div>
+        <label>
+          <input type="checkbox" {...register("isPasswordRandom")} />
+          <span className="ml-2">Use random password</span>
+        </label>
       </div>
-      <input
-        type="password"
-        className="block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
-        {...register("password")}
-      />
-      {errors.password && (
-        <div className="mt-1 text-red-500 col-start-2">
-          {errors.password.message}.
-        </div>
+
+      {!isPasswordRandomWatched && (
+        <>
+          <div className="flex items-center justify-end">
+            <label>Password:</label>
+          </div>
+          <input
+            type="password"
+            className="block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+            {...register("password")}
+          />
+          {errors.password && (
+            <div className="mt-1 text-red-500 col-start-2">
+              {errors.password.message}.
+            </div>
+          )}
+        </>
       )}
 
       <div className="flex items-center justify-end">

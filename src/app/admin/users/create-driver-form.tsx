@@ -5,25 +5,49 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
 import { createAdminFormSchema } from "./create-admin-form"
+import { generateRandomPassword } from "@/utils/uuid"
+import { useEffect } from "react"
 
-const createDriverFormSchema = createAdminFormSchema.extend({
-  licenseNumber: z.string().min(1).max(100),
-  licenseRegistrationDate: z.string().regex(REGEX_HTML_INPUT_DATESTR, {
-    message: "Please choose a date.",
-  }),
-})
+const createDriverFormSchema = createAdminFormSchema
+  .extend({
+    licenseNumber: z.string().min(1).max(100),
+    licenseRegistrationDate: z.string().regex(REGEX_HTML_INPUT_DATESTR, {
+      message: "Please choose a date.",
+    }),
+  })
+  .superRefine(({ isPasswordRandom, password }, ctx) => {
+    if (!isPasswordRandom && typeof password === "undefined") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Password must be supplied.",
+        path: ["password"],
+      })
+    }
+  })
 
 type CreateDriverFormSchema = z.infer<typeof createDriverFormSchema>
 
 export function CreateDriverForm(props: { onClose: () => void }) {
   const {
+    watch,
+    resetField,
     handleSubmit,
     register,
     reset,
     formState: { errors },
   } = useForm<CreateDriverFormSchema>({
     resolver: zodResolver(createDriverFormSchema),
+    defaultValues: {
+      isPasswordRandom: true,
+    },
   })
+
+  const isPasswordRandomWatched = watch("isPasswordRandom")
+  useEffect(() => {
+    if (isPasswordRandomWatched) {
+      resetField("password")
+    }
+  }, [isPasswordRandomWatched, resetField])
 
   const apiUtils = api.useUtils()
   const createUserMutation = api.user.create.useMutation({
@@ -38,12 +62,21 @@ export function CreateDriverForm(props: { onClose: () => void }) {
   return (
     <form
       className="grid grid-cols-subgrid col-span-2 gap-y-2"
-      onSubmit={handleSubmit((formData) =>
-        createUserMutation.mutate({
-          role: "DRIVER",
-          ...formData,
-        }),
-      )}
+      onSubmit={handleSubmit((formData) => {
+        if (formData.isPasswordRandom) {
+          createUserMutation.mutate({
+            role: "DRIVER",
+            ...formData,
+            password: generateRandomPassword(),
+          })
+        } else {
+          createUserMutation.mutate({
+            role: "DRIVER",
+            ...formData,
+            password: formData.password!,
+          })
+        }
+      })}
     >
       {createUserMutation.status === "error" && (
         <div className="col-span-2">
@@ -81,18 +114,30 @@ export function CreateDriverForm(props: { onClose: () => void }) {
         </div>
       )}
 
-      <div className="flex items-center justify-end">
-        <label>Password:</label>
+      <div></div>
+      <div>
+        <label>
+          <input type="checkbox" {...register("isPasswordRandom")} />
+          <span className="ml-2">Use random password</span>
+        </label>
       </div>
-      <input
-        type="password"
-        className="block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
-        {...register("password")}
-      />
-      {errors.password && (
-        <div className="mt-1 text-red-500 col-start-2">
-          {errors.password.message}.
-        </div>
+
+      {!isPasswordRandomWatched && (
+        <>
+          <div className="flex items-center justify-end">
+            <label>Password:</label>
+          </div>
+          <input
+            type="password"
+            className="block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+            {...register("password")}
+          />
+          {errors.password && (
+            <div className="mt-1 text-red-500 col-start-2">
+              {errors.password.message}.
+            </div>
+          )}
+        </>
       )}
 
       <div className="flex items-center justify-end">
