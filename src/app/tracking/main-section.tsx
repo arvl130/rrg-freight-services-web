@@ -19,15 +19,7 @@ import { BrowsingPhoneVector } from "@/components/vector/browsing-phone"
 import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 
 function TrackingPageHead() {
-  return (
-    <>
-      <title>Tracking &#x2013; RRG Freight Services</title>
-      <meta
-        name="description"
-        content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-      />
-    </>
-  )
+  return <title>Tracking &#x2013; RRG Freight Services</title>
 }
 
 function First() {

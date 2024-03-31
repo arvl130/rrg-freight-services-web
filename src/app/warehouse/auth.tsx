@@ -98,10 +98,6 @@ export function WarehouseLayout({
   return (
     <>
       <title>{titleContent}</title>
-      <meta
-        name="description"
-        content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-      />
       <div
         className={`transition-all grid ${
           isLayoutMinimized

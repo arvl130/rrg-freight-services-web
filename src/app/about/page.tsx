@@ -38,10 +38,6 @@ export default async function AboutUsPage() {
   return (
     <>
       <title>About Us &#x2013; RRG Freight Services</title>
-      <meta
-        name="description"
-        content="RRG Freight Services is an international freight forwarding company. Contact us at +632 8461 6027 for any of your cargo needs."
-      />
       <Navbar user={user} />
       <main>
         <HeroSection />
