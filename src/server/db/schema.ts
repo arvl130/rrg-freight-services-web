@@ -30,7 +30,7 @@ export const users = mysqlTable("users", {
   id: varchar("id", { length: 28 }).primaryKey(),
   displayName: varchar("display_name", { length: 100 }).notNull(),
   photoUrl: text("photo_url"),
-  emailAddress: varchar("email_address", { length: 100 }).notNull(),
+  emailAddress: varchar("email_address", { length: 100 }).notNull().unique(),
   hashedPassword: varchar("hashed_password", { length: 255 }).notNull(),
   contactNumber: varchar("contact_number", { length: 15 }).notNull(),
   gender: mysqlEnum("gender", SUPPORTED_GENDERS).notNull(),
@@ -476,6 +476,29 @@ export const expopushTokens = mysqlTable(
     return {
       pk: primaryKey({
         columns: [table.userId, table.data],
+      }),
+    }
+  },
+)
+
+export const passwordResetTokens = mysqlTable(
+  "password_reset_tokens",
+  {
+    userId: varchar("user_id", {
+      length: 28,
+    }).notNull(),
+    tokenHashed: varchar("token_hashed", {
+      length: 64,
+    }).notNull(),
+    isValid: tinyint("is_valid").notNull().default(1),
+    expireAt: varchar("expire_at", {
+      length: 100,
+    }).notNull(),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({
+        columns: [table.userId, table.tokenHashed],
       }),
     }
   },

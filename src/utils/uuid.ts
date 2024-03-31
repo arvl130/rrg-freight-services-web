@@ -14,3 +14,7 @@ export function generateOtp() {
 export function generateUserId() {
   return generateId(28)
 }
+
+export function generatePasswordResetToken() {
+  return generateId(72)
+}

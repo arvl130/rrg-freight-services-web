@@ -166,3 +166,9 @@ export async function invalidateSessionById(sessionId: string) {
 export async function invalidateSessionByIdWithoutCookie(sessionId: string) {
   await lucia.invalidateSession(sessionId)
 }
+
+export async function invalidateAllSessionsByUserIdWithoutCookie(
+  userId: string,
+) {
+  await lucia.invalidateUserSessions(userId)
+}

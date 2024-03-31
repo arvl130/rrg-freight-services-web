@@ -10,6 +10,7 @@ import { packageCategoryRouter } from "./package-categories"
 import { webpushSubscriptionRouter } from "./push-subscriptions"
 import { activityRouter } from "./activity"
 import { webauthnRouter } from "./webauthn"
+import { passwordResetRouter } from "./password-reset"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -33,6 +34,7 @@ export const rootRouter = router({
   webpushSubscription: webpushSubscriptionRouter,
   activity: activityRouter,
   webauthn: webauthnRouter,
+  passwordReset: passwordResetRouter,
 })
 
 export type RootRouter = typeof rootRouter
