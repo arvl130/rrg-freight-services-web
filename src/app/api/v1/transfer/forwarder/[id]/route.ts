@@ -55,7 +55,7 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
 
   return Response.json({
     message: "Transfer shipment retrieved",
-    transferShipment: {
+    shipment: {
       ...results[0].shipments,
       ...other,
     },
