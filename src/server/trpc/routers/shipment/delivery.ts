@@ -17,12 +17,7 @@ import { z } from "zod"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { DateTime } from "luxon"
 import { generateOtp } from "@/utils/uuid"
-import {
-  notifyByEmail,
-  notifyByExpoPush,
-  notifyBySms,
-  notifyByWebPush,
-} from "@/server/notification"
+import { notifyByExpoPush, notifyByWebPush } from "@/server/notification"
 import { createLog } from "@/utils/logging"
 
 export const deliveryShipmentRouter = router({
