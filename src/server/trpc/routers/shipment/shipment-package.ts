@@ -19,6 +19,8 @@ import {
 import { and, count, eq, gte, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import type { DbWithEntities } from "@/server/db/entities"
+import { getHumanizedOfPackageStatus } from "@/utils/humanize"
+import { notifyByEmail, notifyBySms } from "@/server/notification"
 
 async function getDescriptionForStatus(options: {
   db: DbWithEntities
@@ -114,20 +116,52 @@ export const shipmentPackageRouter = router({
         createdById: input.createdById,
       }))
 
-      const packagesCandidateForPickUpResults = await ctx.db
-        .select({
-          id: packages.id,
-        })
+      const packageDetails = await ctx.db
+        .select()
         .from(packages)
-        .where(
-          and(
-            inArray(packages.id, input.packageIds),
-            gte(packages.failedAttempts, 2),
-          ),
-        )
+        .where(and(inArray(packages.id, input.packageIds)))
 
-      const packageIdsCandidateForPickUp =
-        packagesCandidateForPickUpResults.map(({ id }) => id)
+      const packageIdsCandidateForPickUp = packageDetails
+        .filter(({ failedAttempts }) => failedAttempts >= 2)
+        .map(({ id }) => id)
+
+      const packageSenderEmailNotifications = packageDetails.map(
+        ({ id, senderEmailAddress }) => ({
+          to: senderEmailAddress,
+          subject: `The status of your package was updated.`,
+          htmlBody: `<p>Your package with tracking number ${id} now has the status <b>${getHumanizedOfPackageStatus(
+            input.packageStatus,
+          )}</b>. For more information, check the <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">tracking page</a> for your package.</p>`,
+        }),
+      )
+
+      const packageSenderSmsNotifications = packageDetails.map(
+        ({ id, senderContactNumber }) => ({
+          to: senderContactNumber,
+          body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+            input.packageStatus,
+          )}. For more info, you may monitor your package on our website.`,
+        }),
+      )
+
+      const packageReceiverEmailNotifications = packageDetails.map(
+        ({ id, receiverEmailAddress }) => ({
+          to: receiverEmailAddress,
+          subject: `The status of your package was updated.`,
+          htmlBody: `<p>Your package with tracking number ${id} now has the status <b>${getHumanizedOfPackageStatus(
+            input.packageStatus,
+          )}</b>. For more information, check the <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">tracking page</a> for your package.</p>`,
+        }),
+      )
+
+      const packageReceiverSmsNotifications = packageDetails.map(
+        ({ id, receiverContactNumber }) => ({
+          to: receiverContactNumber,
+          body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+            input.packageStatus,
+          )}. For more info, you may monitor your package on our website.`,
+        }),
+      )
 
       await ctx.db.transaction(async (tx) => {
         if (packageIdsCandidateForPickUp.length > 0)
@@ -167,6 +201,13 @@ export const shipmentPackageRouter = router({
           createdById: ctx.user.id,
         })
       })
+
+      await Promise.allSettled([
+        ...packageSenderEmailNotifications.map((e) => notifyByEmail(e)),
+        ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
+        ...packageSenderSmsNotifications.map((e) => notifyBySms(e)),
+        ...packageReceiverSmsNotifications.map((e) => notifyBySms(e)),
+      ])
     }),
 
   getTotalShipmentShipped: protectedProcedure.query(async ({ ctx }) => {
