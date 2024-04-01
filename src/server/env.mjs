@@ -30,6 +30,7 @@ export const serverEnv = createEnv({
     WEB_PUSH_PRIVATE_KEY: z.string().min(1),
     OFFLINE_MODE: z.union([z.literal("0"), z.literal("1")]).optional(),
     EXPO_ACCESS_TOKEN: z.string().min(1),
+    SURVEY_URL: z.string().min(1).url(),
   },
   runtimeEnv: {
     APP_NAME: process.env.APP_NAME,
@@ -53,5 +54,6 @@ export const serverEnv = createEnv({
     WEB_PUSH_PRIVATE_KEY: process.env.WEB_PUSH_PRIVATE_KEY,
     OFFLINE_MODE: process.env.OFFLINE_MODE,
     EXPO_ACCESS_TOKEN: process.env.EXPO_ACCESS_TOKEN,
+    SURVEY_URL: process.env.SURVEY_URL,
   },
 })

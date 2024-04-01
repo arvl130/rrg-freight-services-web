@@ -6,6 +6,8 @@ import {
   shipmentPackageOtps,
   shipmentPackages,
 } from "@/server/db/schema"
+import { serverEnv } from "@/server/env.mjs"
+import { notifyByEmail } from "@/server/notification"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { HttpError } from "@/utils/errors"
 import {
@@ -159,6 +161,19 @@ export async function POST(
         }),
         status: "DELIVERED",
       })
+
+      await Promise.allSettled([
+        notifyByEmail({
+          to: _package.senderEmailAddress,
+          subject: "Your package has been delivered",
+          htmlBody: `<p>Your package with ID ${_package.id} has been delivered. Kindly fill up our survey form: click <a href="${serverEnv.SURVEY_URL}">here</a>.</p>`,
+        }),
+        notifyByEmail({
+          to: _package.receiverEmailAddress,
+          subject: "Your package has been delivered",
+          htmlBody: `<p>Your package with ID ${_package.id} has been delivered. Kindly fill up our survey form: click <a href="${serverEnv.SURVEY_URL}">here</a>.</p>`,
+        }),
+      ])
 
       return {
         package: {
