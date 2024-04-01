@@ -20,6 +20,8 @@
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@react-email/components": "0.0.16",
+    "@react-email/render": "0.0.12",
     "@react-pdf/renderer": "^3.1.14",
     "@simplewebauthn/browser": "^9.0.1",
     "@simplewebauthn/server": "^9.0.3",
