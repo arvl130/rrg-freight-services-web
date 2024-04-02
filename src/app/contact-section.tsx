@@ -12,7 +12,7 @@ export function ContactSection() {
       id="contact-us"
       style={{
         background:
-          "linear-gradient(#FFFFFF 5%, #79CFDC 15%, #79CFDC 85%, #FFFFFF 95%)",
+          "linear-gradient(#FFFFFF 10%, #79CFDC 5%, #79CFDC 90%, #FFFFFF 90%)",
       }}
       key="section5"
       className=" w-1920 my-20"
