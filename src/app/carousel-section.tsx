@@ -54,17 +54,18 @@ export function CarouselSection() {
               Philippines, inspired by the New Heroes the OFW&apos;s.
             </p>
           </div>
-          <Link href="/about"
-          style={{ borderRadius: "20px" }}
-          className="group p-3 px-4 w-[152px] bg-[#FFFFFF] text-[#79CFDC] font-bold hover:bg-slate-200 flex items-center transition duration-500">
-              Learn More{" "}
-              <CaretRight
-                className=" group-hover:ml-[10px]  duration-500"
-                size={22}
-                color="#79CFDC"
-                weight="thin"
-              />
-            
+          <Link
+            href="/about"
+            style={{ borderRadius: "20px" }}
+            className="group p-3 px-4 w-[152px] bg-[#FFFFFF] text-[#79CFDC] font-bold hover:bg-slate-200 flex items-center transition duration-500"
+          >
+            Learn More{" "}
+            <CaretRight
+              className=" group-hover:ml-[10px]  duration-500"
+              size={22}
+              color="#79CFDC"
+              weight="thin"
+            />
           </Link>
         </div>
       </div>
