@@ -84,11 +84,11 @@ export default async function AboutUsPage() {
             <Image
               src="/assets/img/about/ceo.png"
               alt="..."
-              className="w-11/12 items-center m-auto "
-              width={600}
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] shadow hover:shadow-[20px_0_25px_0_rgba(0,0,0,0.7)] hover:bg-sky-400"
+              width={700}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Rafael C. Fabia
               <div className="font-bold">Chief Executive Officer</div>
             </div>
@@ -98,11 +98,11 @@ export default async function AboutUsPage() {
             <Image
               src="/assets/img/about/om.png"
               alt="..."
-              className="w-11/12 items-center m-auto"
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] shadow hover:shadow-[20px_0_25px_0_rgba(0,0,0,0.7)] hover:bg-sky-400"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Gina F. Mengote
               <div className="font-bold">Operation Manager</div>
             </div>
@@ -112,11 +112,11 @@ export default async function AboutUsPage() {
             <Image
               src="/assets/img/about/sec.png"
               alt="..."
-              className="w-11/12 items-center m-auto"
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] shadow hover:shadow-[20px_0_25px_0_rgba(0,0,0,0.7)] hover:bg-sky-400"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Clarissa E. Fabia
               <div className="font-bold">Secretary</div>
             </div>
@@ -126,11 +126,11 @@ export default async function AboutUsPage() {
             <Image
               src="/assets/img/about/billing.png"
               alt="..."
-              className="w-11/12 items-center m-auto"
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] shadow hover:shadow-[20px_0_25px_0_rgba(0,0,0,0.7)] hover:bg-sky-400"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Joanne B. Dacuba
               <div className="font-bold">Billing Incharge</div>
             </div>
@@ -142,11 +142,11 @@ export default async function AboutUsPage() {
             <Image
               src="/assets/img/about/import.png"
               alt="..."
-              className="w-11/12 items-center m-auto "
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] shadow hover:shadow-[20px_0_25px_0_rgba(0,0,0,0.7)] hover:bg-sky-400"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               John Jerecho C. Valenzuela
               <div className="font-bold">Import Incharge</div>
             </div>
@@ -156,11 +156,11 @@ export default async function AboutUsPage() {
             <Image
               src="/assets/img/about/messenger.png"
               alt="..."
-              className="w-11/12 items-center m-auto"
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] shadow hover:shadow-[20px_0_25px_0_rgba(0,0,0,0.7)] hover:bg-sky-400"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Mark Sherwin Valenzuela
               <div className="font-bold">Messenger</div>
             </div>
@@ -170,11 +170,11 @@ export default async function AboutUsPage() {
             <Image
               src="/assets/img/about/csr.png"
               alt="..."
-              className="w-11/12 items-center m-auto"
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] shadow hover:shadow-[20px_0_25px_0_rgba(0,0,0,0.7)] hover:bg-sky-400"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Henry D. Lumansoc
               <div className="font-bold">Customs Reprenstative</div>
             </div>
