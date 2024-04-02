@@ -8,7 +8,7 @@ export default async function NotFound() {
         <div className="flex flex-col">
           <Image
             src="/assets/img/not-found/error-404.png"
-            alt="..."
+            alt="Page not found"
             className="self-center mt-10 mb-5"
             width={800}
             height={800}
