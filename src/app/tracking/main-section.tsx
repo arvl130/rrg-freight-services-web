@@ -196,8 +196,17 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
 
   if (status === "error")
     return (
-      <div className="flex justify-center py-10">
-        <p className="text-xl text-red font-semibold">Package not found.</p>
+      <div className="flex flex-col items-center justify-center py-10">
+        <Image
+          src="/assets/img/tracking/package-not-found.png" //FIXME: Replace with HD image
+          alt="Package not found."
+          className="w-[30%] h-[40%] object-contain"
+          width={100}
+          height={100}
+        />
+        <p className="text-xl text-[#CEC6C6] font-semibold mt-auto">
+          Package not found
+        </p>
       </div>
     )
 
