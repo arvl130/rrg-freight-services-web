@@ -21,7 +21,7 @@ export default async function NotFound() {
         <div className="flex justify-center">
           <Link
             href="/"
-            className="rounded-lg bg-[#1A6480] text-white font-bold px-5 py-3"
+            className="rounded-lg bg-[#1A6480] text-white font-bold px-9 py-3 mt-10 hover:text-[#1A6480] hover:bg-white border-solid border 2 border-[#1A6480]"
           >
             Go to our Home
           </Link>
