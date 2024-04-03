@@ -8,13 +8,16 @@ import {
   packages,
   users,
   vehicles,
+  webpushSubscriptions,
+  expopushTokens,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
-import { and, count, eq } from "drizzle-orm"
+import { and, count, eq, inArray } from "drizzle-orm"
 import { alias } from "drizzle-orm/mysql-core"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
+import { notifyByExpoPush, notifyByWebPush } from "@/server/notification"
 
 export const forwarderTransferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -186,49 +189,77 @@ export const forwarderTransferShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const createdAt = DateTime.now().toISO()
-      const [{ insertId: shipmentId }] = await ctx.db.insert(shipments).values({
-        type: "TRANSFER_FORWARDER",
-        status: "PREPARING",
-      })
-
-      await ctx.db.insert(forwarderTransferShipments).values({
-        shipmentId,
-        sentToAgentId: input.sentToAgentId,
-        driverId: input.driverId,
-        vehicleId: input.vehicleId,
+      const newPackageStatusLogs = input.packageIds.map((packageId) => ({
+        packageId,
+        createdById: ctx.user.id,
+        description: getDescriptionForNewPackageStatusLog({
+          status: "SORTING",
+        }),
+        status: "SORTING" as const,
         createdAt,
-      })
+      }))
 
-      for (const packageId of input.packageIds) {
-        await ctx.db.insert(shipmentPackages).values({
-          packageId,
+      await ctx.db.transaction(async (tx) => {
+        const webPushSubscriptionResults = await tx
+          .select()
+          .from(webpushSubscriptions)
+          .where(eq(webpushSubscriptions.userId, input.driverId))
+
+        const expoPushTokenResults = await tx
+          .select()
+          .from(expopushTokens)
+          .where(eq(expopushTokens.userId, input.driverId))
+
+        const [{ insertId: shipmentId }] = await ctx.db
+          .insert(shipments)
+          .values({
+            type: "TRANSFER_FORWARDER",
+            status: "PREPARING",
+          })
+
+        await ctx.db.insert(forwarderTransferShipments).values({
           shipmentId,
-          status: "PREPARING",
+          sentToAgentId: input.sentToAgentId,
+          driverId: input.driverId,
+          vehicleId: input.vehicleId,
           createdAt,
         })
 
-        await ctx.db
+        const newShipmentPackages = input.packageIds.map((packageId) => ({
+          shipmentId,
+          packageId,
+          status: "PREPARING" as const,
+          createdAt,
+        }))
+
+        await tx.insert(shipmentPackages).values(newShipmentPackages)
+
+        await tx
           .update(packages)
           .set({
             status: "SORTING",
           })
-          .where(eq(packages.id, packageId))
-
-        await ctx.db.insert(packageStatusLogs).values({
-          packageId,
+          .where(inArray(packages.id, input.packageIds))
+        await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
+        await createLog(tx, {
+          verb: "CREATE",
+          entity: "TRANSFER_FORWARDER_SHIPMENT",
           createdById: ctx.user.id,
-          status: "SORTING",
-          description: getDescriptionForNewPackageStatusLog({
-            status: "SORTING",
-          }),
-          createdAt,
         })
-      }
 
-      await createLog(ctx.db, {
-        verb: "CREATE",
-        entity: "TRANSFER_FORWARDER_SHIPMENT",
-        createdById: ctx.user.id,
+        if (webPushSubscriptionResults.length > 0)
+          await notifyByWebPush({
+            subscriptions: webPushSubscriptionResults,
+            title: "New delivery assigned",
+            body: `Delivery with ID ${shipmentId} has been assigned to you.`,
+          })
+
+        if (expoPushTokenResults.length > 0)
+          await notifyByExpoPush({
+            to: expoPushTokenResults.map((token) => token.data),
+            title: "New delivery assigned",
+            body: `Delivery with ID ${shipmentId} has been assigned to you.`,
+          })
       })
     }),
   confirmTransferById: protectedProcedure
