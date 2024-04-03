@@ -51,6 +51,7 @@ export async function signInWithWebauthnResponseAction(
         credentialID: isoUint8Array.fromHex(credential.id),
         counter: credential.counter,
       },
+      requireUserVerification: false,
     })
 
   if (!verified || !info) {
