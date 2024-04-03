@@ -15,25 +15,31 @@ import {
   users,
   warehouseTransferShipments,
   warehouses,
+  warehouseStaffs,
 } from "@/server/db/schema"
 import { and, count, eq, gte, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import type { DbWithEntities } from "@/server/db/entities"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import { notifyByEmail, notifyBySms } from "@/server/notification"
+import type { User } from "lucia"
 
 async function getDescriptionForStatus(options: {
   db: DbWithEntities
+  currentUser: User
   shipmentId: number
   status: PackageStatus
 }) {
   if (options.status === "IN_WAREHOUSE") {
-    // TODO: Retrieve the actual new warehouse, instead
-    // of assuming all packages go to warehouse id 1.
-    const [{ displayName }] = await options.db
+    const [
+      {
+        warehouses: { displayName },
+      },
+    ] = await options.db
       .select()
-      .from(warehouses)
-      .where(eq(warehouses.id, 1))
+      .from(warehouseStaffs)
+      .innerJoin(warehouses, eq(warehouseStaffs.warehouseId, warehouses.id))
+      .where(eq(warehouseStaffs.userId, options.currentUser.id))
 
     return getDescriptionForNewPackageStatusLog({
       status: options.status,
@@ -104,6 +110,7 @@ export const shipmentPackageRouter = router({
     .mutation(async ({ ctx, input }) => {
       const description = await getDescriptionForStatus({
         db: ctx.db,
+        currentUser: ctx.user,
         shipmentId: input.shipmentId,
         status: input.packageStatus,
       })
