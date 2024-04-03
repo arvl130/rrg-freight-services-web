@@ -72,7 +72,7 @@ export const vehicleRouter = router({
         ),
         displayName: z.string().min(1).max(100),
         plateNumber: z.string().min(1).max(15),
-        weightCapacityInKg: z.number(),
+        weightCapacityInKg: z.number().gt(0),
         isExpressAllowed: z.boolean(),
       }),
     )
@@ -112,7 +112,7 @@ export const vehicleRouter = router({
         ),
         displayName: z.string().min(1).max(100),
         plateNumber: z.string().min(1).max(15),
-        weightCapacityInKg: z.number(),
+        weightCapacityInKg: z.number().gt(0),
         isExpressAllowed: z.boolean(),
       }),
     )
