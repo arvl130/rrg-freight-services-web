@@ -1,4 +1,4 @@
-import { and, count, eq, lt, sql } from "drizzle-orm"
+import { and, asc, count, desc, eq, lt } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   forwarderTransferShipments,
@@ -247,6 +247,7 @@ export const packageRouter = router({
             ),
           )
           .optional(),
+        sortOrder: z.union([z.literal("ASC"), z.literal("DESC")]),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -261,6 +262,11 @@ export const packageRouter = router({
               ? eq(packages.shippingType, input.shippingType)
               : undefined,
           ),
+        )
+        .orderBy(
+          input.sortOrder === "DESC"
+            ? desc(packages.expectedHasDeliveryAt)
+            : asc(packages.expectedHasDeliveryAt),
         )
 
       return results.filter((_package) =>

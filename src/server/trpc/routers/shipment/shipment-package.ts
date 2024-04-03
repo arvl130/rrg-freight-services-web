@@ -17,12 +17,14 @@ import {
   warehouses,
   warehouseStaffs,
 } from "@/server/db/schema"
-import { and, count, eq, gte, inArray, sql } from "drizzle-orm"
+import { and, count, eq, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import type { DbWithEntities } from "@/server/db/entities"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import { notifyByEmail, notifyBySms } from "@/server/notification"
 import type { User } from "lucia"
+import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
+import { DateTime } from "luxon"
 
 async function getDescriptionForStatus(options: {
   db: DbWithEntities
@@ -108,6 +110,13 @@ export const shipmentPackageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const now = DateTime.now()
+      const nowPlusThreeDays = now
+        .plus({
+          days: 3,
+        })
+        .endOf("day")
+
       const description = await getDescriptionForStatus({
         db: ctx.db,
         currentUser: ctx.user,
@@ -131,6 +140,17 @@ export const shipmentPackageRouter = router({
       const packageIdsCandidateForPickUp = packageDetails
         .filter(({ failedAttempts }) => failedAttempts >= 2)
         .map(({ id }) => id)
+
+      const packageIdsCanBeDelivered =
+        input.packageStatus === "IN_WAREHOUSE"
+          ? packageDetails
+              .filter(({ receiverStateOrProvince }) =>
+                DELIVERABLE_PROVINCES_IN_PH.includes(
+                  receiverStateOrProvince.toUpperCase(),
+                ),
+              )
+              .map(({ id }) => id)
+          : []
 
       const packageSenderEmailNotifications = packageDetails.map(
         ({ id, senderEmailAddress }) => ({
@@ -170,6 +190,24 @@ export const shipmentPackageRouter = router({
             })
             .where(inArray(packages.id, packageIdsCandidateForPickUp))
 
+        // Update expected_has_delivery_at if we're receiving a package.
+        if (packageIdsCanBeDelivered.length > 0)
+          await tx
+            .update(packages)
+            .set({
+              expectedHasDeliveryAt: nowPlusThreeDays.toISO(),
+            })
+            .where(inArray(packages.id, packageIdsCanBeDelivered))
+
+        // Update expected_is_delivered_at if a package is out for delivery.
+        if (input.packageStatus === "DELIVERING")
+          await tx
+            .update(packages)
+            .set({
+              expectedIsDeliveredAt: nowPlusThreeDays.toISO(),
+            })
+            .where(inArray(packages.id, packageIdsCanBeDelivered))
+
         await tx
           .update(packages)
           .set({
@@ -206,7 +244,6 @@ export const shipmentPackageRouter = router({
         ...packageReceiverSmsNotifications.map((e) => notifyBySms(e)),
       ])
     }),
-
   getTotalShipmentShipped: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db
       .select({

@@ -16,6 +16,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
+import { SortAscending } from "@phosphor-icons/react/dist/ssr/SortAscending"
+import { SortDescending } from "@phosphor-icons/react/dist/ssr/SortDescending"
 import { DateTime } from "luxon"
 
 function PackagesTableItem({
@@ -82,6 +84,7 @@ function ChoosePackageTable({
     "ALL" | PackageShippingType
   >(initialDeliveryType)
   const [searchTerm, setSearchTerm] = useState("")
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("DESC")
 
   useEffect(() => {
     setSelectedDeliveryType(initialDeliveryType)
@@ -94,32 +97,51 @@ function ChoosePackageTable({
   } = api.package.getInWarehouseAndCanBeDelivered.useQuery({
     shippingType:
       selectedDeliveryType === "ALL" ? undefined : selectedDeliveryType,
+    sortOrder,
   })
 
   return (
     <div>
-      <div className="flex justify-between mb-3">
-        <p className="font-medium text-gray-700">
-          Showing
-          <select
-            value={selectedDeliveryType}
-            onChange={(e) => {
-              setSelectedDeliveryType(
-                e.currentTarget.value as PackageShippingType,
+      <div className="grid grid-cols-[1fr_auto] items-center mb-3">
+        <div className="flex justify-between font-medium text-gray-700">
+          <p>
+            Showing
+            <select
+              value={selectedDeliveryType}
+              onChange={(e) => {
+                setSelectedDeliveryType(
+                  e.currentTarget.value as PackageShippingType,
+                )
+              }}
+            >
+              <option value="ALL">All</option>
+              {SUPPORTED_PACKAGE_SHIPPING_TYPES.map((shippingType) => (
+                <option key={shippingType} value={shippingType}>
+                  {getHumanizedOfPackageShippingType(
+                    shippingType as PackageShippingType,
+                  )}
+                </option>
+              ))}
+            </select>
+            Packages
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setSortOrder((currSortOrder) =>
+                currSortOrder === "DESC" ? "ASC" : "DESC",
               )
             }}
           >
-            <option value="ALL">All</option>
-            {SUPPORTED_PACKAGE_SHIPPING_TYPES.map((shippingType) => (
-              <option key={shippingType} value={shippingType}>
-                {getHumanizedOfPackageShippingType(
-                  shippingType as PackageShippingType,
-                )}
-              </option>
-            ))}
-          </select>
-          Packages
-        </p>
+            {sortOrder === "DESC" ? (
+              <>
+                <SortAscending size={24} />
+              </>
+            ) : (
+              <SortDescending size={24} />
+            )}
+          </button>
+        </div>
         <div className="flex justify-end">
           <div className="flex-col grid grid-cols-[1fr_2.25rem] h-[2.375rem] ml-2">
             <input
