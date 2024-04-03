@@ -101,13 +101,16 @@ export async function GET(
       const [{ id, receiverEmailAddress, receiverContactNumber }] =
         packagesResults
 
-      await tx.insert(shipmentPackageOtps).values({
-        shipmentId,
-        packageId,
-        code,
-        expireAt,
-        createdAt,
-      })
+      await tx
+        .insert(shipmentPackageOtps)
+        .values({
+          shipmentId,
+          packageId,
+          code,
+          expireAt,
+          createdAt,
+        })
+        .onDuplicateKeyUpdate({ set: { code, expireAt, createdAt } })
 
       await Promise.all([
         notifyByEmail({

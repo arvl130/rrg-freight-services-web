@@ -128,25 +128,30 @@ export const shipmentPackages = mysqlTable(
   }),
 )
 
-export const shipmentPackageOtps = mysqlTable("shipment_package_otps", {
-  id: bigint("id", {
-    mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
-  shipmentId: bigint("shipment_id", {
-    mode: "number",
-  }).notNull(),
-  packageId: varchar("package_id", { length: 36 }).notNull(),
-  isValid: tinyint("is_valid").notNull().default(1),
-  code: int("code").notNull(),
-  expireAt: varchar("expire_at", {
-    length: 255,
-  }).notNull(),
-  createdAt: varchar("created_at", {
-    length: 255,
-  }).notNull(),
-})
+export const shipmentPackageOtps = mysqlTable(
+  "shipment_package_otps",
+  {
+    shipmentId: bigint("shipment_id", {
+      mode: "number",
+    }).notNull(),
+    packageId: varchar("package_id", { length: 36 }).notNull(),
+    isValid: tinyint("is_valid").notNull().default(1),
+    code: int("code").notNull(),
+    expireAt: varchar("expire_at", {
+      length: 255,
+    }).notNull(),
+    createdAt: varchar("created_at", {
+      length: 255,
+    }).notNull(),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({
+        columns: [table.shipmentId, table.packageId],
+      }),
+    }
+  },
+)
 
 export const shipmentLocations = mysqlTable("shipment_locations", {
   id: bigint("id", {
