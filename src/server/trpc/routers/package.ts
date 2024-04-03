@@ -237,23 +237,38 @@ export const packageRouter = router({
       .from(packages)
       .where(eq(packages.status, "IN_WAREHOUSE"))
   }),
-  getInWarehouseAndCanBeDelivered: protectedProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
-      .from(packages)
-      .where(
-        and(
-          eq(packages.status, "IN_WAREHOUSE"),
-          lt(packages.failedAttempts, 3),
+  getInWarehouseAndCanBeDelivered: protectedProcedure
+    .input(
+      z.object({
+        shippingType: z
+          .custom<PackageShippingType>((val) =>
+            SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(
+              val as PackageShippingType,
+            ),
+          )
+          .optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(packages)
+        .where(
+          and(
+            eq(packages.status, "IN_WAREHOUSE"),
+            lt(packages.failedAttempts, 3),
+            input.shippingType
+              ? eq(packages.shippingType, input.shippingType)
+              : undefined,
+          ),
+        )
+
+      return results.filter((_package) =>
+        DELIVERABLE_PROVINCES_IN_PH.includes(
+          _package.receiverStateOrProvince.trim().toUpperCase(),
         ),
       )
-
-    return results.filter((_package) =>
-      DELIVERABLE_PROVINCES_IN_PH.includes(
-        _package.receiverStateOrProvince.trim().toUpperCase(),
-      ),
-    )
-  }),
+    }),
   getWithLatestStatusByShipmentId: protectedProcedure
     .input(
       z.object({

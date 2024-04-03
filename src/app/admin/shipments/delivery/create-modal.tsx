@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import type { Package, Vehicle } from "@/server/db/entities"
 import * as Dialog from "@radix-ui/react-dialog"
@@ -66,28 +66,60 @@ function filterBySearchTerm(items: Package[], searchTerm: string) {
 }
 
 function ChoosePackageTable({
+  initialDeliveryType,
   selectedPackageIds,
   onSelectAll,
   onCheckboxChange,
   onResetSelection,
 }: {
+  initialDeliveryType: PackageShippingType
   selectedPackageIds: string[]
   onSelectAll: (props: { isChecked: boolean; packageIds: string[] }) => void
   onCheckboxChange: (props: { isChecked: boolean; packageId: string }) => void
   onResetSelection: () => void
 }) {
+  const [selectedDeliveryType, setSelectedDeliveryType] = useState<
+    "ALL" | PackageShippingType
+  >(initialDeliveryType)
   const [searchTerm, setSearchTerm] = useState("")
+
+  useEffect(() => {
+    setSelectedDeliveryType(initialDeliveryType)
+  }, [initialDeliveryType])
 
   const {
     refetch,
     status,
     data: packages,
-  } = api.package.getInWarehouseAndCanBeDelivered.useQuery()
+  } = api.package.getInWarehouseAndCanBeDelivered.useQuery({
+    shippingType:
+      selectedDeliveryType === "ALL" ? undefined : selectedDeliveryType,
+  })
 
   return (
     <div>
       <div className="flex justify-between mb-3">
-        <p className="font-medium text-gray-700">Packages</p>
+        <p className="font-medium text-gray-700">
+          Showing
+          <select
+            value={selectedDeliveryType}
+            onChange={(e) => {
+              setSelectedDeliveryType(
+                e.currentTarget.value as PackageShippingType,
+              )
+            }}
+          >
+            <option value="ALL">All</option>
+            {SUPPORTED_PACKAGE_SHIPPING_TYPES.map((shippingType) => (
+              <option key={shippingType} value={shippingType}>
+                {getHumanizedOfPackageShippingType(
+                  shippingType as PackageShippingType,
+                )}
+              </option>
+            ))}
+          </select>
+          Packages
+        </p>
         <div className="flex justify-end">
           <div className="flex-col grid grid-cols-[1fr_2.25rem] h-[2.375rem] ml-2">
             <input
@@ -204,12 +236,12 @@ function filterByVehiclesDeliveryType(
     : vehicles
 }
 
-function CreateDeliveryForm({ close }: { close: () => void }) {
+function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
   const utils = api.useUtils()
   const { isLoading, mutate } = api.shipment.delivery.create.useMutation({
     onSuccess: () => {
       utils.shipment.delivery.getAll.invalidate()
-      close()
+      onClose()
       toast.success("Delivery Created")
     },
   })
@@ -244,6 +276,8 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
     },
   })
 
+  const deliveryTypeWatched = watch("deliveryType")
+
   return (
     <form
       className="grid grid-rows-[1fr_auto] px-4 py-2"
@@ -271,17 +305,6 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
     >
       <div className="grid grid-cols-[auto_1fr] gap-3">
         <div>
-          <div>
-            <label className="block">Departure Date</label>
-            <input
-              type="date"
-              min={htmlInputDateStrToday}
-              {...register("departureAt")}
-            />
-            {errors.departureAt && (
-              <p className="text-red-500">{errors.departureAt.message}</p>
-            )}
-          </div>
           <div>
             <label className="block">Delivery Type</label>
             <select className="w-full" {...register("deliveryType")}>
@@ -344,9 +367,21 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
               </>
             )}
           </div>
+          <div>
+            <label className="block">Departure Date</label>
+            <input
+              type="date"
+              min={htmlInputDateStrToday}
+              {...register("departureAt")}
+            />
+            {errors.departureAt && (
+              <p className="text-red-500">{errors.departureAt.message}</p>
+            )}
+          </div>
         </div>
         <div>
           <ChoosePackageTable
+            initialDeliveryType={deliveryTypeWatched}
             selectedPackageIds={selectedPackageIds}
             onSelectAll={({ isChecked, packageIds }) => {
               if (isChecked) {
@@ -387,28 +422,28 @@ function CreateDeliveryForm({ close }: { close: () => void }) {
 
 export function CreateModal({
   isOpen,
-  close,
+  onClose,
 }: {
   isOpen: boolean
-  close: () => void
+  onClose: () => void
 }) {
   return (
     <Dialog.Root open={isOpen}>
       <Dialog.Portal>
         <Dialog.Overlay className="bg-black/40 fixed inset-0" />
         <Dialog.Content
-          onEscapeKeyDown={close}
+          onEscapeKeyDown={onClose}
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_56rem)] h-[32rem] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
         >
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             Schedule Delivery
           </Dialog.Title>
-          <CreateDeliveryForm close={close} />
+          <CreateDeliveryForm onClose={onClose} />
           <Dialog.Close asChild>
             <button
               type="button"
               className="text-white absolute top-3 right-3"
-              onClick={close}
+              onClick={onClose}
             >
               <X size={20} />
               <span className="sr-only">Close</span>
