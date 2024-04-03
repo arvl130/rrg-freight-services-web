@@ -43,6 +43,15 @@ function NoUsers(props: { onAddUser: (newUser: SavedUser) => void }) {
           setIsSigningIn(false)
         }
       },
+      onError: async (error) => {
+        if (error.data?.code === "NOT_FOUND") {
+          toast.error(
+            "This user may be invalid or fingerprint sign in has not been configured.",
+          )
+        } else {
+          toast.error(error.message)
+        }
+      },
     })
 
   const {
@@ -141,9 +150,7 @@ function LoginWithSelection(props: {
 
   const [isSigningIn, setIsSigningIn] = useState(false)
   const isBtnDisabled =
-    generateAuthenticationOptionsMutation.isLoading ||
-    isSigningIn ||
-    selectedUserId === null
+    generateAuthenticationOptionsMutation.isLoading || isSigningIn
 
   return (
     <form
@@ -215,27 +222,35 @@ function LoginWithSelection(props: {
         ))}
       </div>
 
-      {isBtnDisabled ? (
-        <div className="flex flex-col items-center mt-4">
-          <p className="text-center text-lg font-semibold">
-            Please scan your fingerprint now
-          </p>
-          <Fingerprint size={72} className="text-brand-cyan-500" />
-        </div>
+      {selectedUserId === null ? (
+        <p className="mt-4 text-center font-semibold">
+          Please choose a user to sign in.
+        </p>
       ) : (
-        <button
-          type="submit"
-          className="grid grid-cols-[3rem_1fr_3rem] font-medium w-full mt-4 px-6 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-brand-cyan-500 rounded-md hover:bg-brand-cyan-600 focus:outline-none focus:bg-brand-cyan-600 disabled:bg-brand-cyan-350"
-        >
-          <div className="flex justify-center items-center">
-            <FingerprintSimple size={36} />
-          </div>
-          <div>
-            <p>Click here &</p>
-            <p className="font-bold">Scan your Fingerprint</p>
-          </div>
-          <div></div>
-        </button>
+        <>
+          {isBtnDisabled ? (
+            <div className="flex flex-col items-center mt-4">
+              <p className="text-center text-lg font-semibold">
+                Please scan your fingerprint now
+              </p>
+              <Fingerprint size={72} className="text-brand-cyan-500" />
+            </div>
+          ) : (
+            <button
+              type="submit"
+              className="grid grid-cols-[3rem_1fr_3rem] font-medium w-full mt-4 px-6 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-brand-cyan-500 rounded-md hover:bg-brand-cyan-600 focus:outline-none focus:bg-brand-cyan-600 disabled:bg-brand-cyan-350"
+            >
+              <div className="flex justify-center items-center">
+                <FingerprintSimple size={36} />
+              </div>
+              <div>
+                <p>Click here &</p>
+                <p className="font-bold">Scan your Fingerprint</p>
+              </div>
+              <div></div>
+            </button>
+          )}
+        </>
       )}
     </form>
   )
