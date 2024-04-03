@@ -5,6 +5,8 @@ import { sendNotification, setVapidDetails } from "web-push"
 import { clientEnv } from "@/utils/env.mjs"
 import type { ExpoPushMessage } from "expo-server-sdk"
 import { Expo } from "expo-server-sdk"
+import type { JSXElementConstructor, ReactElement, ReactNode } from "react"
+import { render } from "@react-email/render"
 
 const resend = new Resend(serverEnv.RESEND_API_KEY)
 
@@ -24,6 +26,33 @@ export async function notifyByEmail({
       to,
       subject,
       html: htmlBody,
+    })
+  }
+}
+
+export async function notifyByEmailWithHtmlifiedComponent({
+  to,
+  subject,
+  component,
+}: {
+  to: string
+  subject: string
+  component: ReactElement<any, string | JSXElementConstructor<any>>
+}) {
+  if (serverEnv.OFFLINE_MODE === "1") return
+  if (serverEnv.IS_EMAIL_ENABLED === "1") {
+    // For now, we're not able to use this feature in Turpoback
+    // because of this bug: https://github.com/vercel/next.js/issues/57936
+    const componentTextVersion = render(component, {
+      plainText: true,
+    })
+
+    await resend.emails.send({
+      from: `RRG Freight Services Updates <noreply@${serverEnv.MAIL_FROM_URL}>`,
+      to,
+      subject,
+      react: component,
+      text: componentTextVersion,
     })
   }
 }

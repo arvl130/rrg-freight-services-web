@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { ZodError, z } from "zod"
 import type { WorkBook } from "xlsx"
 import { utils, read } from "xlsx"
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useCallback, useEffect, useState } from "react"
 import type {
   PackageReceptionMode,
   PackageShippingMode,
@@ -18,67 +18,97 @@ import {
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
+import { CloudArrowUp } from "@phosphor-icons/react/dist/ssr/CloudArrowUp"
+import { ArrowCircleDown } from "@phosphor-icons/react/dist/ssr/ArrowCircleDown"
 import type { User } from "@/server/db/entities"
-
-const selectFileFormSchema = z.object({
-  sheetFiles: z.custom<FileList>(
-    (val) => {
-      return (val as FileList)?.length === 1
-    },
-    {
-      message: "Please select a file.",
-    },
-  ),
-})
-
-type SelectFileFormType = z.infer<typeof selectFileFormSchema>
+import type { FileRejection } from "react-dropzone"
+import { useDropzone } from "react-dropzone"
 
 function SelectFileForm({
   setSelectedWorkBook,
 }: {
   setSelectedWorkBook: (wb: WorkBook) => void
 }) {
-  const {
-    register,
-    formState: { isValid },
-    handleSubmit,
-  } = useForm<SelectFileFormType>({
-    resolver: zodResolver(selectFileFormSchema),
+  const onDrop = useCallback(
+    async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+      const combinedFiles = [...acceptedFiles, ...rejectedFiles]
+      if (combinedFiles.length === 0) return
+      if (combinedFiles.length > 1) {
+        toast.error("Please drop only one (1) file.")
+        return
+      }
+
+      if (acceptedFiles.length === 0) return
+      if (acceptedFiles.length > 1) {
+        toast.error("Please drop only one (1) file.")
+        return
+      }
+
+      const [sheetFile] = acceptedFiles
+      const buffer = await sheetFile.arrayBuffer()
+      const workBook = read(buffer)
+
+      setSelectedWorkBook(workBook)
+    },
+    [setSelectedWorkBook],
+  )
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "application/vnd.ms-excel": [".xls"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+        ".xlsx",
+      ],
+      "application/vnd.oasis.opendocument.spreadsheet": [".ods"],
+    },
   })
 
   return (
-    <form
-      className="px-4 py-2"
-      onSubmit={handleSubmit(async (formData) => {
-        const [sheetFile] = formData.sheetFiles
-        const buffer = await sheetFile.arrayBuffer()
-        const workBook = read(buffer)
-
-        setSelectedWorkBook(workBook)
-      })}
-    >
-      <p className="mb-1">
-        Select an .xlsx, .xls., or .csv file to be imported
-      </p>
-      <input
-        type="file"
-        className="block w-full text-sm border border-gray-300 px-1.5 py-1.5 mb-3 rounded-lg"
-        accept="
-      application/vnd.ms-excel,
-      application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
-      application/vnd.oasis.opendocument.spreadsheet,
-      text/csv
-    "
-        {...register("sheetFiles")}
-      />
-      <button
-        type="submit"
-        className="bg-cyan-500 disabled:bg-cyan-300 hover:bg-cyan-400 transition-colors text-white font-medium px-4 py-2 rounded-md"
-        disabled={!isValid}
+    <div className="px-4 pt-2 pb-4 grid grid-rows-[auto_1fr]">
+      <div className="mb-3">
+        <p className="font-semibold text-lg">Choose a file to import</p>
+        <p className="text-gray-500">
+          Supported file formats <code>.xlsx</code>, <code>.xls</code>, and{" "}
+          <code>.ods</code> are supported.
+        </p>
+      </div>
+      <div
+        {...getRootProps({
+          className: `px-4 py-2 border-4 border-dashed border-cyan-300 rounded-2xl ${
+            isDragActive ? "bg-cyan-100" : "bg-cyan-50"
+          } transition-colors duration-75 flex items-center justify-center`,
+        })}
       >
-        Select File
-      </button>
-    </form>
+        <input
+          {...getInputProps({
+            className:
+              "block w-full text-sm border border-gray-300 px-1.5 py-1.5 mb-3 rounded-lg",
+          })}
+        />
+
+        <div className="flex flex-col items-center">
+          {isDragActive ? (
+            <>
+              <ArrowCircleDown size={96} className="text-gray-700" />
+
+              <p className="font-semibold mb-3 text-center">Drop it here!</p>
+            </>
+          ) : (
+            <>
+              <CloudArrowUp size={96} className="text-gray-700" />
+
+              <p className="font-semibold mb-3 text-center">
+                Drag & Drop your file here
+              </p>
+              <span className="bg-cyan-500 disabled:bg-cyan-300 hover:bg-cyan-400 transition-colors text-white font-medium px-4 py-2 rounded-md">
+                Select File
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -437,32 +467,34 @@ export function CreateModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             New Incoming Shipment
           </Dialog.Title>
-          <div className="px-4 py-2 grid grid-rows-[auto_1fr] overflow-auto">
-            {selectedWorkbook === null ? (
-              <SelectFileForm
-                setSelectedWorkBook={(wb) => setSelectedWorkBook(wb)}
-              />
-            ) : (
-              <SelectSheetNameForm
-                selectedWorkBook={selectedWorkbook}
-                setSelectedSheetName={(sheetName) =>
-                  setSelectedSheetName(sheetName)
-                }
-              />
-            )}
+          {selectedWorkbook === null ? (
+            <SelectFileForm
+              setSelectedWorkBook={(wb) => setSelectedWorkBook(wb)}
+            />
+          ) : (
+            <>
+              <div className="px-4 py-2 grid grid-rows-[auto_1fr] overflow-auto">
+                <SelectSheetNameForm
+                  selectedWorkBook={selectedWorkbook}
+                  setSelectedSheetName={(sheetName) =>
+                    setSelectedSheetName(sheetName)
+                  }
+                />
+                {selectedWorkbook && selectedSheetName && (
+                  <CreatePackagesForm
+                    selectedWorkBook={selectedWorkbook}
+                    selectedSheetName={selectedSheetName}
+                    reset={() => {
+                      setSelectedWorkBook(null)
+                      setSelectedSheetName(null)
+                    }}
+                    close={close}
+                  />
+                )}
+              </div>
+            </>
+          )}
 
-            {selectedWorkbook && selectedSheetName && (
-              <CreatePackagesForm
-                selectedWorkBook={selectedWorkbook}
-                selectedSheetName={selectedSheetName}
-                reset={() => {
-                  setSelectedWorkBook(null)
-                  setSelectedSheetName(null)
-                }}
-                close={close}
-              />
-            )}
-          </div>
           <Dialog.Close asChild>
             <button
               type="button"
