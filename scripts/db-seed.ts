@@ -131,11 +131,13 @@ const newWarehouses: NewWarehouse[] = [
   {
     id: 1,
     displayName: "Warehouse 1",
+    weightCapacityInKg: 10000,
     createdAt,
   },
   {
     id: 2,
     displayName: "Warehouse 2",
+    weightCapacityInKg: 10000,
     createdAt,
   },
 ]

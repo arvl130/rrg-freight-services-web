@@ -260,6 +260,11 @@ export const warehouses = mysqlTable("warehouses", {
   displayName: varchar("display_name", {
     length: 100,
   }).notNull(),
+  weightCapacityInKg: double("weight_capacity_in_kg", {
+    precision: 8,
+    scale: 2,
+  }).notNull(),
+  isArchived: tinyint("is_archived").notNull().default(0),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
