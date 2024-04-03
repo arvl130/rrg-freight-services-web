@@ -117,6 +117,7 @@ function SelectSheetNameForm({
   setSelectedSheetName,
 }: {
   selectedWorkBook: WorkBook
+  selectedSheetName: string
   setSelectedSheetName: (sheetName: string) => void
 }) {
   return (
@@ -127,9 +128,6 @@ function SelectSheetNameForm({
         onChange={(e) => setSelectedSheetName(e.currentTarget.value)}
         defaultValue=""
       >
-        <option value="" disabled>
-          Select ...
-        </option>
         {selectedWorkBook.SheetNames.map((sheetName) => (
           <option key={sheetName} value={sheetName}>
             {sheetName}
@@ -435,6 +433,36 @@ function CreatePackagesForm({
   }
 }
 
+function HasValidWorkBook(props: {
+  workbook: WorkBook
+  onReset: () => void
+  onClose: () => void
+}) {
+  const [selectedSheetName, setSelectedSheetName] = useState(
+    props.workbook.SheetNames[0],
+  )
+
+  return (
+    <>
+      <div className="px-4 py-2 grid grid-rows-[auto_1fr] overflow-auto">
+        <SelectSheetNameForm
+          selectedWorkBook={props.workbook}
+          selectedSheetName={selectedSheetName}
+          setSelectedSheetName={(sheetName) => setSelectedSheetName(sheetName)}
+        />
+        {props.workbook && selectedSheetName && (
+          <CreatePackagesForm
+            selectedWorkBook={props.workbook}
+            selectedSheetName={selectedSheetName}
+            reset={props.onReset}
+            close={close}
+          />
+        )}
+      </div>
+    </>
+  )
+}
+
 export function CreateModal({
   isOpen,
   close,
@@ -445,14 +473,10 @@ export function CreateModal({
   const [selectedWorkbook, setSelectedWorkBook] = useState<null | WorkBook>(
     null,
   )
-  const [selectedSheetName, setSelectedSheetName] = useState<null | string>(
-    null,
-  )
 
   useEffect(() => {
     if (!isOpen) {
       setSelectedWorkBook(null)
-      setSelectedSheetName(null)
     }
   }, [isOpen])
 
@@ -473,25 +497,24 @@ export function CreateModal({
             />
           ) : (
             <>
-              <div className="px-4 py-2 grid grid-rows-[auto_1fr] overflow-auto">
-                <SelectSheetNameForm
-                  selectedWorkBook={selectedWorkbook}
-                  setSelectedSheetName={(sheetName) =>
-                    setSelectedSheetName(sheetName)
-                  }
+              {selectedWorkbook.SheetNames.length === 0 ? (
+                <div className="px-4 py-2 flex justify-center items-center">
+                  <p className="max-w-md">
+                    This file selected seems to be broken (no sheets were
+                    found). Please try using another file.
+                  </p>
+                </div>
+              ) : (
+                <HasValidWorkBook
+                  workbook={selectedWorkbook}
+                  onReset={() => {
+                    setSelectedWorkBook(null)
+                  }}
+                  onClose={() => {
+                    close()
+                  }}
                 />
-                {selectedWorkbook && selectedSheetName && (
-                  <CreatePackagesForm
-                    selectedWorkBook={selectedWorkbook}
-                    selectedSheetName={selectedSheetName}
-                    reset={() => {
-                      setSelectedWorkBook(null)
-                      setSelectedSheetName(null)
-                    }}
-                    close={close}
-                  />
-                )}
-              </div>
+              )}
             </>
           )}
 
