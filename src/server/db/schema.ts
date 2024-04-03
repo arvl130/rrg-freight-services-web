@@ -448,7 +448,7 @@ export const webauthnChallenges = mysqlTable("webauthn_challenges", {
 
 export const webauthnCredentials = mysqlTable("webauthn_credentials", {
   id: varchar("id", {
-    length: 255,
+    length: 256,
   }).primaryKey(),
   deviceName: varchar("device_name", {
     length: 100,

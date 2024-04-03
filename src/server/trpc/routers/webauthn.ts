@@ -119,6 +119,7 @@ export const webauthnRouter = router({
           expectedRPID: url.hostname,
           expectedOrigin: url.origin,
           expectedChallenge: challenge.challenge,
+          requireUserVerification: false,
         })
 
       if (!verified || !info)
