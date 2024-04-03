@@ -46,7 +46,7 @@ export default async function AboutUsPage() {
           <div className="text-3xl font-bold mb-6">Company Profile</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
             {/* About RRG */}
-            <div className="bg-white p-6 rounded-lg drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+            <div className="bg-white p-6 rounded-lg drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] shadow hover:shadow-[20px_20px_25px_0_rgba(0,0,0,0.3)]">
               <h2 className="text-xl font-bold mb-2">About RRG</h2>
               <p className="text-sm">
                 RRG FREIGHT SERVICES is a Domestic and International Freight
@@ -56,7 +56,7 @@ export default async function AboutUsPage() {
               </p>
             </div>
             {/* Mission */}
-            <div className="bg-white p-6 rounded-lg drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+            <div className="bg-white p-6 rounded-lg drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] shadow hover:shadow-[20px_20px_25px_0_rgba(0,0,0,0.3)]">
               <h2 className="text-xl font-bold mb-2">Mission</h2>
               <p className="text-sm">
                 To import an exemplary service in the domestic and international
@@ -66,7 +66,7 @@ export default async function AboutUsPage() {
               </p>
             </div>
             {/* Vision */}
-            <div className="bg-white p-6 rounded-lg drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+            <div className="bg-white p-6 rounded-lg drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] shadow hover:shadow-[20px_20px_25px_0_rgba(0,0,0,0.3)]">
               <h2 className="text-xl font-bold mb-2">Vision</h2>
               <p className="text-sm">
                 To be one of the best and most trusted companies both nationally
