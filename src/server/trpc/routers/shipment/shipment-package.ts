@@ -135,15 +135,6 @@ export const shipmentPackageRouter = router({
         }),
       )
 
-      const packageSenderSmsNotifications = packageDetails.map(
-        ({ id, senderContactNumber }) => ({
-          to: senderContactNumber,
-          body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
-            input.packageStatus,
-          )}. For more info, you may monitor your package on our website.`,
-        }),
-      )
-
       const packageReceiverEmailNotifications = packageDetails.map(
         ({ id, receiverEmailAddress }) => ({
           to: receiverEmailAddress,
@@ -205,7 +196,6 @@ export const shipmentPackageRouter = router({
       await Promise.allSettled([
         ...packageSenderEmailNotifications.map((e) => notifyByEmail(e)),
         ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
-        ...packageSenderSmsNotifications.map((e) => notifyBySms(e)),
         ...packageReceiverSmsNotifications.map((e) => notifyBySms(e)),
       ])
     }),
