@@ -3,7 +3,7 @@ import { startAuthentication } from "@simplewebauthn/browser"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { z } from "zod"
-import { Fragment, useState } from "react"
+import { useState } from "react"
 import { formSchema } from "./form-schema"
 import { signInWithWebauthnResponseAction } from "./actions"
 import toast from "react-hot-toast"
@@ -13,6 +13,8 @@ import Image from "next/image"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { Trash } from "@phosphor-icons/react/dist/ssr/Trash"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { Fingerprint } from "@phosphor-icons/react/dist/ssr/Fingerprint"
+import { FingerprintSimple } from "@phosphor-icons/react/dist/ssr/FingerprintSimple"
 
 type FormType = z.infer<typeof formSchema>
 
@@ -36,8 +38,9 @@ function NoUsers(props: { onAddUser: (newUser: SavedUser) => void }) {
             })
           }
         } catch {
-          setIsSigningIn(false)
           toast.error("Sign in error occured.")
+        } finally {
+          setIsSigningIn(false)
         }
       },
     })
@@ -51,6 +54,8 @@ function NoUsers(props: { onAddUser: (newUser: SavedUser) => void }) {
   })
 
   const [isSigningIn, setIsSigningIn] = useState(false)
+  const isBtnDisabled =
+    generateAuthenticationOptionsMutation.isLoading || isSigningIn
 
   return (
     <form
@@ -71,15 +76,30 @@ function NoUsers(props: { onAddUser: (newUser: SavedUser) => void }) {
           <p className="text-red-600 mt-1 text-sm">{errors.email.message}</p>
         )}
       </div>
-      <button
-        type="submit"
-        disabled={
-          generateAuthenticationOptionsMutation.isLoading || isSigningIn
-        }
-        className="font-semibold w-full mt-4 px-8 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-brand-cyan-500 rounded-md hover:bg-brand-cyan-600 focus:outline-none focus:bg-brand-cyan-600 disabled:bg-brand-cyan-350"
-      >
-        Sign in
-      </button>
+
+      {isBtnDisabled ? (
+        <div className="flex flex-col items-center mt-4">
+          <p className="text-center text-lg font-semibold">
+            Please scan your fingerprint now
+            {JSON.stringify(generateAuthenticationOptionsMutation.status)}
+          </p>
+          <Fingerprint size={72} className="text-brand-cyan-500" />
+        </div>
+      ) : (
+        <button
+          type="submit"
+          className="grid grid-cols-[3rem_1fr_3rem] font-medium w-full mt-4 px-6 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-brand-cyan-500 rounded-md hover:bg-brand-cyan-600 focus:outline-none focus:bg-brand-cyan-600 disabled:bg-brand-cyan-350"
+        >
+          <div className="flex justify-center items-center">
+            <FingerprintSimple size={36} />
+          </div>
+          <div>
+            <p>Click here &</p>
+            <p className="font-bold">Scan your Fingerprint</p>
+          </div>
+          <div></div>
+        </button>
+      )}
     </form>
   )
 }
@@ -112,13 +132,18 @@ function LoginWithSelection(props: {
             })
           }
         } catch {
-          setIsSigningIn(false)
           toast.error("Sign in error occured.")
+        } finally {
+          setIsSigningIn(false)
         }
       },
     })
 
   const [isSigningIn, setIsSigningIn] = useState(false)
+  const isBtnDisabled =
+    generateAuthenticationOptionsMutation.isLoading ||
+    isSigningIn ||
+    selectedUserId === null
 
   return (
     <form
@@ -190,17 +215,28 @@ function LoginWithSelection(props: {
         ))}
       </div>
 
-      <button
-        type="submit"
-        disabled={
-          generateAuthenticationOptionsMutation.isLoading ||
-          isSigningIn ||
-          selectedUserId === null
-        }
-        className="font-semibold w-full mt-4 px-8 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-brand-cyan-500 rounded-md hover:bg-brand-cyan-600 focus:outline-none focus:bg-brand-cyan-600 disabled:bg-brand-cyan-350"
-      >
-        Sign in
-      </button>
+      {isBtnDisabled ? (
+        <div className="flex flex-col items-center mt-4">
+          <p className="text-center text-lg font-semibold">
+            Please scan your fingerprint now
+          </p>
+          <Fingerprint size={72} className="text-brand-cyan-500" />
+        </div>
+      ) : (
+        <button
+          type="submit"
+          className="grid grid-cols-[3rem_1fr_3rem] font-medium w-full mt-4 px-6 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-brand-cyan-500 rounded-md hover:bg-brand-cyan-600 focus:outline-none focus:bg-brand-cyan-600 disabled:bg-brand-cyan-350"
+        >
+          <div className="flex justify-center items-center">
+            <FingerprintSimple size={36} />
+          </div>
+          <div>
+            <p>Click here &</p>
+            <p className="font-bold">Scan your Fingerprint</p>
+          </div>
+          <div></div>
+        </button>
+      )}
     </form>
   )
 }
