@@ -90,7 +90,6 @@ function NoUsers(props: { onAddUser: (newUser: SavedUser) => void }) {
         <div className="flex flex-col items-center mt-4">
           <p className="text-center text-lg font-semibold">
             Please scan your fingerprint now
-            {JSON.stringify(generateAuthenticationOptionsMutation.status)}
           </p>
           <Fingerprint size={72} className="text-brand-cyan-500" />
         </div>
