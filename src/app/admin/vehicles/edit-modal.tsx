@@ -1,7 +1,10 @@
 import type { Vehicle } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import type { VehicleType } from "@/utils/constants"
-import { SUPPORTED_VEHICLE_TYPES } from "@/utils/constants"
+import {
+  REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS,
+  SUPPORTED_VEHICLE_TYPES,
+} from "@/utils/constants"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
@@ -15,6 +18,7 @@ const formSchema = z.object({
   ),
   displayName: z.string().min(1).max(100),
   plateNumber: z.string().min(1).max(15),
+  weightCapacityInKg: z.string().regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS),
   isExpressAllowed: z.boolean(),
 })
 
@@ -32,6 +36,7 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
       type: vehicle.type,
       displayName: vehicle.displayName,
       plateNumber: vehicle.plateNumber,
+      weightCapacityInKg: vehicle.weightCapacityInKg.toString(),
       isExpressAllowed: vehicle.isExpressAllowed === 1,
     },
   })
@@ -39,6 +44,7 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
   const apiUtils = api.useUtils()
   const { mutate, isLoading } = api.vehicle.updateById.useMutation({
     onSuccess: () => {
+      toast.success("Vehicle updated.")
       apiUtils.vehicle.getById.invalidate({
         id: vehicle.id,
       })
@@ -58,6 +64,7 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
         mutate({
           ...formData,
           id: vehicle.id,
+          weightCapacityInKg: Number(formData.weightCapacityInKg),
         }),
       )}
     >
@@ -81,6 +88,21 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
         />
         {errors.plateNumber && (
           <div className="mt-1 text-red-500">{errors.plateNumber.message}.</div>
+        )}
+      </div>
+      <div className="grid mb-3">
+        <label className="font-medium mb-1">Weight Capacity (in KG)</label>
+        <input
+          type="number"
+          step={0.1}
+          min={0.1}
+          className="px-2 py-1 border border-gray-300"
+          {...register("weightCapacityInKg")}
+        />
+        {errors.weightCapacityInKg && (
+          <div className="mt-1 text-red-500">
+            {errors.weightCapacityInKg.message}.
+          </div>
         )}
       </div>
       <div className="grid mb-3">

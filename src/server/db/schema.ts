@@ -280,6 +280,10 @@ export const vehicles = mysqlTable("vehicles", {
   })
     .notNull()
     .unique(),
+  weightCapacityInKg: double("weight_capacity_in_kg", {
+    precision: 8,
+    scale: 2,
+  }).notNull(),
   isExpressAllowed: tinyint("is_express_allowed").notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
   createdAt: varchar("created_at", {
