@@ -15,7 +15,7 @@ export function TestimonialSection() {
         <div className="max-w-6xl mx-auto flex flex-wrap justify-center">
           {/* Testimonial Card 1 */}
           <div className="w-full md:w-1/2 lg:w-1/3 p-5 md:p-5">
-            <div className="min-h-[100%] drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] hover:shadow-[20px_20px_25px_0_rgba(0,0,0,0.3)] bg-white rounded-lg p-6 shadow-md">
+            <div className="min-h-[100%] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] bg-white rounded-lg p-6">
               <div className="text-3xl text-gray-600 mb-4">
                 <Quotes size={32} weight="fill" /> {/* Quotation Icon */}
               </div>
@@ -35,7 +35,7 @@ export function TestimonialSection() {
 
           {/* Testimonial Card 2 */}
           <div className="w-full md:w-1/2 lg:w-1/3 p-4">
-            <div className="min-h-[100%] drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] hover:shadow-[20px_20px_25px_0_rgba(0,0,0,0.3)] bg-white rounded-lg p-6 shadow-md">
+            <div className="min-h-[100%] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] bg-white rounded-lg p-6">
               <div className="text-3xl text-gray-600 mb-4">
                 <Quotes size={32} weight="fill" /> {/* Quotation Icon */}
               </div>
@@ -56,7 +56,7 @@ export function TestimonialSection() {
 
           {/* Testimonial Card 3 */}
           <div className="w-full md:w-1/2 lg:w-1/3 p-4">
-            <div className="min-h-[100%] drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] hover:shadow-[20px_20px_25px_0_rgba(0,0,0,0.3)] bg-white rounded-lg p-6 shadow-md">
+            <div className="min-h-[100%] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)] bg-white rounded-lg p-6">
               <div className="text-3xl text-gray-600 mb-4">
                 <Quotes size={32} weight="fill" /> {/* Quotation Icon */}
               </div>
