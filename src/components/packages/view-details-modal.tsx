@@ -12,15 +12,13 @@ import { Check } from "@phosphor-icons/react/dist/ssr/Check"
 import { useState } from "react"
 import { DateTime } from "luxon"
 import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
+import { getEstimatedDeliveryOfPackage } from "@/utils/estimated-delivery"
 
 function TopLayer({ package: _package }: { package: Package }) {
   const { status, data: statusLog } =
     api.packageStatusLog.getLatestByPackageId.useQuery({
       packageId: _package.id,
     })
-  const hasDeliverableDestination = DELIVERABLE_PROVINCES_IN_PH.includes(
-    _package.receiverStateOrProvince.trim().toUpperCase(),
-  )
 
   return (
     <div className="grid grid-cols-3 px-16 py-3 [background-color:_#54BCCC] text-white">
@@ -39,29 +37,7 @@ function TopLayer({ package: _package }: { package: Package }) {
       </div>
       <div>
         <p className="font-medium">Estimated Delivery</p>
-        <p>
-          {_package.status === "INCOMING" && <>30-45 days</>}
-
-          {hasDeliverableDestination ? (
-            <>
-              {_package.status === "IN_WAREHOUSE" && <>2-3 days</>}
-              {_package.status === "SORTING" && <>2-3 days</>}
-            </>
-          ) : (
-            <>
-              {_package.status === "IN_WAREHOUSE" && <>N/A</>}
-              {_package.status === "SORTING" && <>N/A</>}
-            </>
-          )}
-
-          {_package.status === "DELIVERING" && <>2-3 days</>}
-          {_package.status === "DELIVERED" && <>N/A</>}
-
-          {_package.status === "TRANSFERRING_FORWARDER" && <>N/A</>}
-          {_package.status === "TRANSFERRED_FORWARDER" && <>N/A</>}
-
-          {_package.status === "TRANSFERRING_WAREHOUSE" && <>4-5 days</>}
-        </p>
+        <p>{getEstimatedDeliveryOfPackage(_package)}</p>
       </div>
     </div>
   )

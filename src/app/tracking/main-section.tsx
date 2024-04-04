@@ -17,6 +17,7 @@ import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { BrowsingPhoneVector } from "@/components/vector/browsing-phone"
 import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
+import { getEstimatedDeliveryOfPackage } from "@/utils/estimated-delivery"
 
 function TrackingPageHead() {
   return <title>Tracking &#x2013; RRG Freight Services</title>
@@ -227,27 +228,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
             <CheckCircle size={96} color="#1E1E1E" />
             <div className="text-center font-semibold">Estimated Delivery</div>
             <div className="text-center">
-              {_package.status === "INCOMING" && <>30-45 days</>}
-
-              {hasDeliverableDestination ? (
-                <>
-                  {_package.status === "IN_WAREHOUSE" && <>2-3 days</>}
-                  {_package.status === "SORTING" && <>2-3 days</>}
-                </>
-              ) : (
-                <>
-                  {_package.status === "IN_WAREHOUSE" && <>N/A</>}
-                  {_package.status === "SORTING" && <>N/A</>}
-                </>
-              )}
-
-              {_package.status === "DELIVERING" && <>2-3 days</>}
-              {_package.status === "DELIVERED" && <>N/A</>}
-
-              {_package.status === "TRANSFERRING_FORWARDER" && <>N/A</>}
-              {_package.status === "TRANSFERRED_FORWARDER" && <>N/A</>}
-
-              {_package.status === "TRANSFERRING_WAREHOUSE" && <>4-5 days</>}
+              {getEstimatedDeliveryOfPackage(_package)}
             </div>
           </div>
 
