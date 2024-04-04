@@ -206,7 +206,7 @@ export const shipmentPackageRouter = router({
             .set({
               expectedIsDeliveredAt: nowPlusThreeDays.toISO(),
             })
-            .where(inArray(packages.id, packageIdsCanBeDelivered))
+            .where(inArray(packages.id, input.packageIds))
 
         await tx
           .update(packages)
