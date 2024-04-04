@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, lt } from "drizzle-orm"
+import { and, asc, count, desc, eq, like, lt } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   forwarderTransferShipments,
@@ -240,6 +240,7 @@ export const packageRouter = router({
   getInWarehouseAndCanBeDelivered: protectedProcedure
     .input(
       z.object({
+        searchTerm: z.string(),
         shippingType: z
           .custom<PackageShippingType>((val) =>
             SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(
@@ -261,6 +262,9 @@ export const packageRouter = router({
             input.shippingType
               ? eq(packages.shippingType, input.shippingType)
               : undefined,
+            input.searchTerm === ""
+              ? undefined
+              : like(packages.id, `%${input.searchTerm}%`),
           ),
         )
         .orderBy(
