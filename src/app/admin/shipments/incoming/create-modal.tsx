@@ -179,7 +179,12 @@ const sheetRowSchema = z.object({
   "Weight In Kg": z.number(),
   "Sender Full Name": z.string().min(1).max(100),
   "Sender Contact Number": z.string().min(1).max(15),
-  "Sender Email Address": z.string().min(1).max(100),
+  "Sender Email Address": z
+    .string()
+    .min(1)
+    .max(100)
+    .endsWith("@gmail.com")
+    .email(),
   "Sender Street Address": z.string().min(1).max(255),
   "Sender City": z.string().min(1).max(100),
   "Sender State/Province": z.string().min(1).max(100),
@@ -187,7 +192,12 @@ const sheetRowSchema = z.object({
   "Sender Postal Code": z.number(),
   "Receiver Full Name": z.string().min(1).max(100),
   "Receiver Contact Number": z.string().min(1).max(15),
-  "Receiver Email Address": z.string().min(1).max(100),
+  "Receiver Email Address": z
+    .string()
+    .min(1)
+    .max(100)
+    .endsWith("@gmail.com")
+    .email(),
   "Receiver Street Address": z.string().min(1).max(255),
   "Receiver Barangay": z.string().min(1).max(100),
   "Receiver City": z.string().min(1).max(100),
