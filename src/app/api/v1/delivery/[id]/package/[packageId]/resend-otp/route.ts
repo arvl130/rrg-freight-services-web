@@ -112,7 +112,7 @@ export async function GET(
         })
         .onDuplicateKeyUpdate({ set: { code, expireAt, createdAt } })
 
-      await Promise.all([
+      await Promise.allSettled([
         notifyByEmail({
           to: receiverEmailAddress,
           subject: `Your package will be delivered soon`,

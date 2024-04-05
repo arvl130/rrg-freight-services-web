@@ -239,7 +239,7 @@ export const incomingShipmentRouter = router({
         }))
 
         await tx.insert(shipmentPackages).values(newShipmentPackages)
-        await Promise.all([
+        await Promise.allSettled([
           ...packageSenderEmailNotifications.map((e) => notifyByEmail(e)),
           ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
         ])
