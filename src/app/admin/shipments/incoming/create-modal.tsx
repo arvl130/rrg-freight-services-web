@@ -210,12 +210,12 @@ function ChooseAgentForm({
   agents,
   sheetRows,
   reset,
-  close,
+  onClose,
 }: {
   agents: User[]
   sheetRows: SheetRow[]
   reset: () => void
-  close: () => void
+  onClose: () => void
 }) {
   const apiUtils = api.useUtils()
   const { isLoading, mutate } = api.shipment.incoming.create.useMutation({
@@ -223,7 +223,7 @@ function ChooseAgentForm({
       apiUtils.shipment.incoming.getAll.invalidate()
       apiUtils.package.getInWarehouse.invalidate()
       apiUtils.package.getAll.invalidate()
-      close()
+      onClose()
       toast.success("Shipment Created")
     },
   })
@@ -305,12 +305,12 @@ function CreatePackagesForm({
   selectedWorkBook,
   selectedSheetName,
   reset,
-  close,
+  onClose,
 }: {
   selectedWorkBook: WorkBook
   selectedSheetName: string
   reset: () => void
-  close: () => void
+  onClose: () => void
 }) {
   const sheetRowsRaw = utils.sheet_to_json<Record<string, unknown>>(
     selectedWorkBook.Sheets[selectedSheetName],
@@ -360,7 +360,7 @@ function CreatePackagesForm({
             agents={agents}
             sheetRows={parseArrayResult.data}
             reset={() => reset()}
-            close={() => close()}
+            onClose={onClose}
           />
         )}
       </div>
@@ -455,7 +455,7 @@ function HasValidWorkBook(props: {
             selectedWorkBook={props.workbook}
             selectedSheetName={selectedSheetName}
             reset={props.onReset}
-            close={close}
+            onClose={props.onClose}
           />
         )}
       </div>
@@ -465,10 +465,10 @@ function HasValidWorkBook(props: {
 
 export function CreateModal({
   isOpen,
-  close,
+  onClose,
 }: {
   isOpen: boolean
-  close: () => void
+  onClose: () => void
 }) {
   const [selectedWorkbook, setSelectedWorkBook] = useState<null | WorkBook>(
     null,
@@ -485,7 +485,7 @@ export function CreateModal({
       <Dialog.Portal>
         <Dialog.Overlay className="bg-black/40 fixed inset-0" />
         <Dialog.Content
-          onEscapeKeyDown={close}
+          onEscapeKeyDown={onClose}
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_56rem)] h-[32rem] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
         >
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
@@ -510,9 +510,7 @@ export function CreateModal({
                   onReset={() => {
                     setSelectedWorkBook(null)
                   }}
-                  onClose={() => {
-                    close()
-                  }}
+                  onClose={onClose}
                 />
               )}
             </>
@@ -522,7 +520,7 @@ export function CreateModal({
             <button
               type="button"
               className="text-white absolute top-3 right-3"
-              onClick={close}
+              onClick={onClose}
             >
               <X size={20} />
               <span className="sr-only">Close</span>
