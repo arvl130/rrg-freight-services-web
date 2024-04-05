@@ -77,22 +77,34 @@ function DesktopNav(props: { user: User | null }) {
 
       <ul className="text-white flex gap-6">
         <li>
-          <Link className="py-2" href="/" passHref>
+          <Link className="py-2 hover:text-[#389AA9]" href="/" passHref>
             Home
           </Link>
         </li>
         <li className="relative group">
-          <Link className=" text-white py-2" href="/about" passHref>
+          <Link
+            className=" text-white py-2 hover:text-[#389AA9]"
+            href="/about"
+            passHref
+          >
             About Us
           </Link>
         </li>
         <li>
-          <Link className="text-white py-2" href="/#contact-us" passHref>
+          <Link
+            className="text-white py-2 hover:text-[#389AA9]"
+            href="/#contact-us"
+            passHref
+          >
             Contact Us
           </Link>
         </li>
         <li>
-          <Link className="text-white py-2" href="/tracking" passHref>
+          <Link
+            className="text-white py-2 hover:text-[#389AA9]"
+            href="/tracking"
+            passHref
+          >
             Track Package
           </Link>
         </li>
