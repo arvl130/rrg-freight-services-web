@@ -10,7 +10,7 @@ export default async function NotFound() {
             src="/assets/img/not-found/error-404.png"
             alt="Page not found"
             className="w-[50%] h-[70%] self-center mt-10 mb-5"
-            width={1000}
+            width={19200}
             height={800}
           />
           <p className="font-bold text-center text-2xl mb-10">
