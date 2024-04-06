@@ -27,25 +27,49 @@ function First() {
   return (
     <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
       <div className="border-2 border-black rounded-full p-4">
-        <Package size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/package.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={50}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Truck size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/truck.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Path size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/path.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <MapPin size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/mappin.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="text-center">Handed Over</div>
       <div></div>
@@ -62,25 +86,49 @@ function Second() {
   return (
     <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
       <div className="border-2 border-black rounded-full p-4">
-        <Package size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/package.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={50}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Truck size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/truck.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Path size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/path.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <MapPin size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/mappin.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="text-center">Handed Over</div>
       <div></div>
@@ -97,25 +145,49 @@ function Third() {
   return (
     <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
       <div className="border-2 border-black rounded-full p-4">
-        <Package size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/package.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={50}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Truck size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/truck.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Path size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/path.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <MapPin size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/mappin.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="text-center">Handed Over</div>
       <div></div>
@@ -132,25 +204,49 @@ function Fourth() {
   return (
     <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
       <div className="border-2 border-black rounded-full p-4">
-        <Package size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/package.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={50}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Truck size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/truck.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Path size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/path.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <MapPin size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/mappin.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="text-center">Handed Over</div>
       <div></div>

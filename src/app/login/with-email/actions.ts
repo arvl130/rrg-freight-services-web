@@ -45,7 +45,7 @@ export async function signInWithEmailAndPasswordAction(
     }
 
     return {
-      message: "Username or password has invalid format.",
+      message: "Email or Password has invalid format.",
       fields,
       issues: parseResult.error.issues.map((issue) => issue.message),
     }
@@ -59,7 +59,7 @@ export async function signInWithEmailAndPasswordAction(
 
   if (userRecords.length !== 1) {
     return {
-      message: "Incorrect username or password.",
+      message: "Incorrect Email or Password.",
       fields: parseResult.data,
     }
   }
@@ -72,7 +72,7 @@ export async function signInWithEmailAndPasswordAction(
 
   if (!passwordIsValid) {
     return {
-      message: "Incorrect username or password.",
+      message: "Incorrect Email or Password.",
       fields: parseResult.data,
     }
   }
