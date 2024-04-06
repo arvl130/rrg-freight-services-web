@@ -69,8 +69,8 @@ function SelectFileForm({
       <div className="mb-3">
         <p className="font-semibold text-lg">Choose a file to import</p>
         <p className="text-gray-500">
-          Supported file formats <code>.xlsx</code>, <code>.xls</code>, and{" "}
-          <code>.ods</code> are supported.
+          Supported file formats are <code>.xlsx</code>, <code>.xls</code>, and{" "}
+          <code>.ods</code>.
         </p>
       </div>
       <div
