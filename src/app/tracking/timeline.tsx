@@ -1,10 +1,10 @@
 import type { PackageStatusLog } from "@/server/db/entities"
-import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
 import { DropboxLogo } from "@phosphor-icons/react/dist/ssr/DropboxLogo"
 import { Package } from "@phosphor-icons/react/dist/ssr/Package"
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { Moped } from "@phosphor-icons/react/dist/ssr/Moped"
 import { DateTime } from "luxon"
+import Image from "next/image"
 
 function TimelineItem({
   packageStatusLog,
@@ -26,7 +26,13 @@ function TimelineItem({
         {(packageStatusLog.status === "INCOMING" ||
           packageStatusLog.status === "TRANSFERRING_FORWARDER" ||
           packageStatusLog.status === "TRANSFERRING_WAREHOUSE") && (
-          <Truck size={44} color="#1d798b" />
+          <Image
+            src="/assets/img/tracking/truck.gif"
+            alt="RRG Freight Services logo with its name on the right"
+            className="w-[50%] h-[50%] object-contain"
+            width={44}
+            height={44}
+          />
         )}
         {packageStatusLog.status === "IN_WAREHOUSE" && (
           <Package size={44} color="#1d798b" />
