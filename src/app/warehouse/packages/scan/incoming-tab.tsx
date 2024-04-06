@@ -432,10 +432,12 @@ function ShipmentSelector({
                 <div className="font-medium px-2 py-1">Status</div>
                 <div className="font-medium px-2 py-1">Sent by</div>
                 <div></div>
-                {shipments.map((shipment) => (
+                {shipments.map((shipment, index) => (
                   <button
                     key={shipment.id}
-                    className="group grid grid-cols-subgrid col-span-4 hover:bg-gray-100 hover:border-gray-100 rounded-lg transition-colors duration-200"
+                    className={`${
+                      index === 0 ? "" : "mt-3"
+                    } group grid grid-cols-subgrid col-span-4 hover:bg-gray-100 hover:border-gray-100 rounded-lg transition-colors duration-200`}
                     onClick={() => {
                       onSelectShipmentId(shipment.id)
                     }}
