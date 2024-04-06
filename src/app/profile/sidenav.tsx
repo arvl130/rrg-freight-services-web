@@ -46,7 +46,7 @@ export function SideNav() {
               <h3 className="font-bold">Notifications</h3>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Manage Your Notification</p>
+              <p className="text-sm text-gray-500">Manage Your Notifications</p>
             </div>
           </div>
         </div>
