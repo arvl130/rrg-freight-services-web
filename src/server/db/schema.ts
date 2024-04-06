@@ -128,25 +128,30 @@ export const shipmentPackages = mysqlTable(
   }),
 )
 
-export const shipmentPackageOtps = mysqlTable("shipment_package_otps", {
-  id: bigint("id", {
-    mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
-  shipmentId: bigint("shipment_id", {
-    mode: "number",
-  }).notNull(),
-  packageId: varchar("package_id", { length: 36 }).notNull(),
-  isValid: tinyint("is_valid").notNull().default(1),
-  code: int("code").notNull(),
-  expireAt: varchar("expire_at", {
-    length: 255,
-  }).notNull(),
-  createdAt: varchar("created_at", {
-    length: 255,
-  }).notNull(),
-})
+export const shipmentPackageOtps = mysqlTable(
+  "shipment_package_otps",
+  {
+    shipmentId: bigint("shipment_id", {
+      mode: "number",
+    }).notNull(),
+    packageId: varchar("package_id", { length: 36 }).notNull(),
+    isValid: tinyint("is_valid").notNull().default(1),
+    code: int("code").notNull(),
+    expireAt: varchar("expire_at", {
+      length: 255,
+    }).notNull(),
+    createdAt: varchar("created_at", {
+      length: 255,
+    }).notNull(),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({
+        columns: [table.shipmentId, table.packageId],
+      }),
+    }
+  },
+)
 
 export const shipmentLocations = mysqlTable("shipment_locations", {
   id: bigint("id", {
@@ -255,6 +260,11 @@ export const warehouses = mysqlTable("warehouses", {
   displayName: varchar("display_name", {
     length: 100,
   }).notNull(),
+  weightCapacityInKg: double("weight_capacity_in_kg", {
+    precision: 8,
+    scale: 2,
+  }).notNull(),
+  isArchived: tinyint("is_archived").notNull().default(0),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
@@ -275,6 +285,10 @@ export const vehicles = mysqlTable("vehicles", {
   })
     .notNull()
     .unique(),
+  weightCapacityInKg: double("weight_capacity_in_kg", {
+    precision: 8,
+    scale: 2,
+  }).notNull(),
   isExpressAllowed: tinyint("is_express_allowed").notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
   createdAt: varchar("created_at", {
@@ -375,8 +389,11 @@ export const packages = mysqlTable("packages", {
   lastWarehouseId: bigint("last_warehouse_id", {
     mode: "number",
   }),
-  expectedDeliveryAt: varchar("expected_delivery_at", {
-    length: 255,
+  expectedHasDeliveryAt: varchar("expected_has_delivery_at", {
+    length: 100,
+  }),
+  expectedIsDeliveredAt: varchar("expected_is_delivered_at", {
+    length: 100,
   }),
   isFragile: tinyint("is_fragile").notNull(),
   status: mysqlEnum("status", SUPPORTED_PACKAGE_STATUSES).notNull(),
@@ -448,7 +465,7 @@ export const webauthnChallenges = mysqlTable("webauthn_challenges", {
 
 export const webauthnCredentials = mysqlTable("webauthn_credentials", {
   id: varchar("id", {
-    length: 255,
+    length: 256,
   }).primaryKey(),
   deviceName: varchar("device_name", {
     length: 100,

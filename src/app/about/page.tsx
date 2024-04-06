@@ -46,9 +46,9 @@ export default async function AboutUsPage() {
           <div className="text-3xl font-bold mb-6">Company Profile</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
             {/* About RRG */}
-            <div className="bg-white p-6 rounded-lg drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+            <div className="bg-white p-6 rounded-lg hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
               <h2 className="text-xl font-bold mb-2">About RRG</h2>
-              <p className="text-sm">
+              <p className="text-sm text-justify">
                 RRG FREIGHT SERVICES is a Domestic and International Freight
                 Forwarder founded by its proprietor Mr. Rafael C. Fabia located
                 in Blk 213 Lot 41 Yuan Street Phase 8 North Fairview, Quezon
@@ -56,9 +56,9 @@ export default async function AboutUsPage() {
               </p>
             </div>
             {/* Mission */}
-            <div className="bg-white p-6 rounded-lg drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+            <div className="bg-white p-6 rounded-lg hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
               <h2 className="text-xl font-bold mb-2">Mission</h2>
-              <p className="text-sm">
+              <p className="text-sm text-justify">
                 To import an exemplary service in the domestic and international
                 transportation and logistics service in the market, by working
                 hard we accord to our valued customer the greatest satisfaction
@@ -66,9 +66,9 @@ export default async function AboutUsPage() {
               </p>
             </div>
             {/* Vision */}
-            <div className="bg-white p-6 rounded-lg drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
+            <div className="bg-white p-6 rounded-lg hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]">
               <h2 className="text-xl font-bold mb-2">Vision</h2>
-              <p className="text-sm">
+              <p className="text-sm text-justify">
                 To be one of the best and most trusted companies both nationally
                 and internationally in the field of forwarding company.
               </p>
@@ -82,13 +82,13 @@ export default async function AboutUsPage() {
         <section className="bg-white  grid grid-cols-2 gap-10 flex-col  mx-8 my-10 lg:px-28 md:grid-cols-4 ">
           <div className="w-full">
             <Image
-              src="/assets/img/about/ceo.png"
+              src="/assets/img/about/ceo1.png"
               alt="..."
-              className="w-11/12 items-center m-auto "
-              width={600}
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              width={700}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Rafael C. Fabia
               <div className="font-bold">Chief Executive Officer</div>
             </div>
@@ -96,13 +96,13 @@ export default async function AboutUsPage() {
 
           <div>
             <Image
-              src="/assets/img/about/om.png"
+              src="/assets/img/about/om1.png"
               alt="..."
-              className="w-11/12 items-center m-auto"
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Gina F. Mengote
               <div className="font-bold">Operation Manager</div>
             </div>
@@ -110,13 +110,13 @@ export default async function AboutUsPage() {
 
           <div>
             <Image
-              src="/assets/img/about/sec.png"
+              src="/assets/img/about/sec1.png"
               alt="..."
-              className="w-11/12 items-center m-auto"
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Clarissa E. Fabia
               <div className="font-bold">Secretary</div>
             </div>
@@ -124,13 +124,13 @@ export default async function AboutUsPage() {
 
           <div>
             <Image
-              src="/assets/img/about/billing.png"
+              src="/assets/img/about/billing1.png"
               alt="..."
-              className="w-11/12 items-center m-auto"
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Joanne B. Dacuba
               <div className="font-bold">Billing Incharge</div>
             </div>
@@ -140,13 +140,13 @@ export default async function AboutUsPage() {
         <section className="bg-white  grid grid-cols-3 gap-10 flex-col  mx-12 my-10 lg:px-28 md:mx-40 ">
           <div className="w-full">
             <Image
-              src="/assets/img/about/import.png"
+              src="/assets/img/about/import1.png"
               alt="..."
-              className="w-11/12 items-center m-auto "
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               John Jerecho C. Valenzuela
               <div className="font-bold">Import Incharge</div>
             </div>
@@ -154,13 +154,13 @@ export default async function AboutUsPage() {
 
           <div>
             <Image
-              src="/assets/img/about/messenger.png"
+              src="/assets/img/about/messenger1.png"
               alt="..."
-              className="w-11/12 items-center m-auto"
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Mark Sherwin Valenzuela
               <div className="font-bold">Messenger</div>
             </div>
@@ -168,28 +168,34 @@ export default async function AboutUsPage() {
 
           <div>
             <Image
-              src="/assets/img/about/csr.png"
+              src="/assets/img/about/csr1.png"
               alt="..."
-              className="w-11/12 items-center m-auto"
+              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
-            <div className="text-center text-[12px] md:text-[16px]">
+            <div className="text-center text-[12px] md:text-[16px] mt-3">
               Henry D. Lumansoc
               <div className="font-bold">Customs Reprenstative</div>
             </div>
           </div>
         </section>
 
-        <section className="py-10 bg-[#79CFDC] mb-20">
+        <section
+          className="py-10 mb-20"
+          style={{
+            background:
+              "linear-gradient(#FFFFFF 20%, #79CFDC 5%, #79CFDC 80%, #FFFFFF 80%)",
+          }}
+        >
           <div className="block px-10 md:flex md:justify-center">
             <div className="m-0 mb-5 md:mr-10">
               <Image
                 src="/assets/img/about/office.jpg"
                 alt="..."
                 className="m-auto rounded-lg drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
-                width={500}
-                height={450}
+                width={800}
+                height={800}
               />
             </div>
             <div className="flex justify-center items-center ">

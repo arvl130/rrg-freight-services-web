@@ -15,23 +15,33 @@ import {
   users,
   warehouseTransferShipments,
   warehouses,
+  warehouseStaffs,
 } from "@/server/db/schema"
-import { and, count, eq, gte, inArray, sql } from "drizzle-orm"
+import { and, count, eq, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import type { DbWithEntities } from "@/server/db/entities"
+import { getHumanizedOfPackageStatus } from "@/utils/humanize"
+import { notifyByEmail, notifyBySms } from "@/server/notification"
+import type { User } from "lucia"
+import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
+import { DateTime } from "luxon"
 
 async function getDescriptionForStatus(options: {
   db: DbWithEntities
+  currentUser: User
   shipmentId: number
   status: PackageStatus
 }) {
   if (options.status === "IN_WAREHOUSE") {
-    // TODO: Retrieve the actual new warehouse, instead
-    // of assuming all packages go to warehouse id 1.
-    const [{ displayName }] = await options.db
+    const [
+      {
+        warehouses: { displayName },
+      },
+    ] = await options.db
       .select()
-      .from(warehouses)
-      .where(eq(warehouses.id, 1))
+      .from(warehouseStaffs)
+      .innerJoin(warehouses, eq(warehouseStaffs.warehouseId, warehouses.id))
+      .where(eq(warehouseStaffs.userId, options.currentUser.id))
 
     return getDescriptionForNewPackageStatusLog({
       status: options.status,
@@ -100,8 +110,16 @@ export const shipmentPackageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const now = DateTime.now()
+      const nowPlusThreeDays = now
+        .plus({
+          days: 3,
+        })
+        .endOf("day")
+
       const description = await getDescriptionForStatus({
         db: ctx.db,
+        currentUser: ctx.user,
         shipmentId: input.shipmentId,
         status: input.packageStatus,
       })
@@ -114,20 +132,54 @@ export const shipmentPackageRouter = router({
         createdById: input.createdById,
       }))
 
-      const packagesCandidateForPickUpResults = await ctx.db
-        .select({
-          id: packages.id,
-        })
+      const packageDetails = await ctx.db
+        .select()
         .from(packages)
-        .where(
-          and(
-            inArray(packages.id, input.packageIds),
-            gte(packages.failedAttempts, 2),
-          ),
-        )
+        .where(and(inArray(packages.id, input.packageIds)))
 
-      const packageIdsCandidateForPickUp =
-        packagesCandidateForPickUpResults.map(({ id }) => id)
+      const packageIdsCandidateForPickUp = packageDetails
+        .filter(({ failedAttempts }) => failedAttempts >= 2)
+        .map(({ id }) => id)
+
+      const packageIdsCanBeDelivered =
+        input.packageStatus === "IN_WAREHOUSE"
+          ? packageDetails
+              .filter(({ receiverStateOrProvince }) =>
+                DELIVERABLE_PROVINCES_IN_PH.includes(
+                  receiverStateOrProvince.toUpperCase(),
+                ),
+              )
+              .map(({ id }) => id)
+          : []
+
+      const packageSenderEmailNotifications = packageDetails.map(
+        ({ id, senderEmailAddress }) => ({
+          to: senderEmailAddress,
+          subject: `The status of your package was updated.`,
+          htmlBody: `<p>Your package with tracking number ${id} now has the status <b>${getHumanizedOfPackageStatus(
+            input.packageStatus,
+          )}</b>. For more information, check the <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">tracking page</a> for your package.</p>`,
+        }),
+      )
+
+      const packageReceiverEmailNotifications = packageDetails.map(
+        ({ id, receiverEmailAddress }) => ({
+          to: receiverEmailAddress,
+          subject: `The status of your package was updated.`,
+          htmlBody: `<p>Your package with tracking number ${id} now has the status <b>${getHumanizedOfPackageStatus(
+            input.packageStatus,
+          )}</b>. For more information, check the <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">tracking page</a> for your package.</p>`,
+        }),
+      )
+
+      const packageReceiverSmsNotifications = packageDetails.map(
+        ({ id, receiverContactNumber }) => ({
+          to: receiverContactNumber,
+          body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+            input.packageStatus,
+          )}. For more info, you may monitor your package on our website.`,
+        }),
+      )
 
       await ctx.db.transaction(async (tx) => {
         if (packageIdsCandidateForPickUp.length > 0)
@@ -137,6 +189,24 @@ export const shipmentPackageRouter = router({
               receptionMode: "FOR_PICKUP",
             })
             .where(inArray(packages.id, packageIdsCandidateForPickUp))
+
+        // Update expected_has_delivery_at if we're receiving a package.
+        if (packageIdsCanBeDelivered.length > 0)
+          await tx
+            .update(packages)
+            .set({
+              expectedHasDeliveryAt: nowPlusThreeDays.toISO(),
+            })
+            .where(inArray(packages.id, packageIdsCanBeDelivered))
+
+        // Update expected_is_delivered_at if a package is out for delivery.
+        if (input.packageStatus === "DELIVERING")
+          await tx
+            .update(packages)
+            .set({
+              expectedIsDeliveredAt: nowPlusThreeDays.toISO(),
+            })
+            .where(inArray(packages.id, input.packageIds))
 
         await tx
           .update(packages)
@@ -167,8 +237,13 @@ export const shipmentPackageRouter = router({
           createdById: ctx.user.id,
         })
       })
-    }),
 
+      await Promise.allSettled([
+        ...packageSenderEmailNotifications.map((e) => notifyByEmail(e)),
+        ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
+        ...packageReceiverSmsNotifications.map((e) => notifyBySms(e)),
+      ])
+    }),
   getTotalShipmentShipped: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db
       .select({

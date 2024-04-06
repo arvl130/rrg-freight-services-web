@@ -30,6 +30,10 @@ const adminPages = [
     path: "/admin/vehicles",
   },
   {
+    title: "Warehouses",
+    path: "/admin/warehouses",
+  },
+  {
     title: "Activity Logs",
     path: "/admin/logs",
   },

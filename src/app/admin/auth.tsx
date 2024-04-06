@@ -158,7 +158,7 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
                 <SidebarAccordionTrigger
                   isMinimized={props.isMinimized}
                   name="Asset Management"
-                  matchingRouteNames={["/admin/vehicles"]}
+                  matchingRouteNames={["/admin/vehicles", "/admin/warehouses"]}
                 >
                   <ChartDonut size={32} />
                 </SidebarAccordionTrigger>
@@ -169,6 +169,12 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
                   icon={<Truck size={32} />}
                   name="Vehicles"
                   href="/admin/vehicles"
+                />
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<Warehouse size={32} />}
+                  name="Warehouses"
+                  href="/admin/warehouses"
                 />
               </Accordion.Content>
             </Accordion.Item>

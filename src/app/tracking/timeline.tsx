@@ -1,10 +1,10 @@
 import type { PackageStatusLog } from "@/server/db/entities"
-import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
 import { DropboxLogo } from "@phosphor-icons/react/dist/ssr/DropboxLogo"
 import { Package } from "@phosphor-icons/react/dist/ssr/Package"
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { Moped } from "@phosphor-icons/react/dist/ssr/Moped"
 import { DateTime } from "luxon"
+import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
 
 function TimelineItem({
   packageStatusLog,

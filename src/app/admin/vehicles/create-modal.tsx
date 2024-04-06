@@ -1,6 +1,9 @@
 import { api } from "@/utils/api"
 import type { VehicleType } from "@/utils/constants"
-import { SUPPORTED_VEHICLE_TYPES } from "@/utils/constants"
+import {
+  REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS,
+  SUPPORTED_VEHICLE_TYPES,
+} from "@/utils/constants"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
@@ -14,6 +17,7 @@ const formSchema = z.object({
   ),
   displayName: z.string().min(1).max(100),
   plateNumber: z.string().min(1).max(15),
+  weightCapacityInKg: z.string().regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS),
   isExpressAllowed: z.boolean(),
 })
 
@@ -27,11 +31,15 @@ function CreateForm({ close }: { close: () => void }) {
     formState: { errors },
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      weightCapacityInKg: "1",
+    },
   })
 
   const apiUtils = api.useUtils()
   const { mutate, isLoading } = api.vehicle.create.useMutation({
     onSuccess: () => {
+      toast.success("Vehicle updated.")
       apiUtils.vehicle.getAll.invalidate()
       close()
       reset()
@@ -44,7 +52,12 @@ function CreateForm({ close }: { close: () => void }) {
   return (
     <form
       className="px-4 pt-2 pb-4"
-      onSubmit={handleSubmit((formData) => mutate(formData))}
+      onSubmit={handleSubmit((formData) =>
+        mutate({
+          ...formData,
+          weightCapacityInKg: Number(formData.weightCapacityInKg),
+        }),
+      )}
     >
       <div className="grid mb-3">
         <label className="font-medium mb-1">Display Name</label>
@@ -66,6 +79,21 @@ function CreateForm({ close }: { close: () => void }) {
         />
         {errors.plateNumber && (
           <div className="mt-1 text-red-500">{errors.plateNumber.message}.</div>
+        )}
+      </div>
+      <div className="grid mb-3">
+        <label className="font-medium mb-1">Weight Capacity (in KG)</label>
+        <input
+          type="number"
+          step={0.1}
+          min={0.1}
+          className="px-2 py-1 border border-gray-300"
+          {...register("weightCapacityInKg")}
+        />
+        {errors.weightCapacityInKg && (
+          <div className="mt-1 text-red-500">
+            {errors.weightCapacityInKg.message}.
+          </div>
         )}
       </div>
       <div className="grid mb-3">

@@ -1,4 +1,4 @@
-import { and, count, eq, lt, sql } from "drizzle-orm"
+import { and, asc, count, desc, eq, like, lt } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import {
   forwarderTransferShipments,
@@ -82,7 +82,12 @@ export const packageRouter = router({
         weightInKg: z.number(),
         senderFullName: z.string().min(1).max(100),
         senderContactNumber: z.string().min(1).max(15),
-        senderEmailAddress: z.string().min(1).max(100),
+        senderEmailAddress: z
+          .string()
+          .min(1)
+          .max(100)
+          .endsWith("@gmail.com")
+          .email(),
         senderStreetAddress: z.string().min(1).max(255),
         senderCity: z.string().min(1).max(100),
         senderStateOrProvince: z.string().min(1).max(100),
@@ -90,7 +95,12 @@ export const packageRouter = router({
         senderPostalCode: z.number(),
         receiverFullName: z.string().min(1).max(100),
         receiverContactNumber: z.string().min(1).max(15),
-        receiverEmailAddress: z.string().min(1).max(100),
+        receiverEmailAddress: z
+          .string()
+          .min(1)
+          .max(100)
+          .endsWith("@gmail.com")
+          .email(),
         receiverStreetAddress: z.string().min(1).max(255),
         receiverBarangay: z.string().min(1).max(100),
         receiverCity: z.string().min(1).max(100),
@@ -237,23 +247,48 @@ export const packageRouter = router({
       .from(packages)
       .where(eq(packages.status, "IN_WAREHOUSE"))
   }),
-  getInWarehouseAndCanBeDelivered: protectedProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
-      .from(packages)
-      .where(
-        and(
-          eq(packages.status, "IN_WAREHOUSE"),
-          lt(packages.failedAttempts, 3),
+  getInWarehouseAndCanBeDelivered: protectedProcedure
+    .input(
+      z.object({
+        searchTerm: z.string(),
+        shippingType: z
+          .custom<PackageShippingType>((val) =>
+            SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(
+              val as PackageShippingType,
+            ),
+          )
+          .optional(),
+        sortOrder: z.union([z.literal("ASC"), z.literal("DESC")]),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(packages)
+        .where(
+          and(
+            eq(packages.status, "IN_WAREHOUSE"),
+            lt(packages.failedAttempts, 3),
+            input.shippingType
+              ? eq(packages.shippingType, input.shippingType)
+              : undefined,
+            input.searchTerm === ""
+              ? undefined
+              : like(packages.id, `%${input.searchTerm}%`),
+          ),
+        )
+        .orderBy(
+          input.sortOrder === "DESC"
+            ? desc(packages.expectedHasDeliveryAt)
+            : asc(packages.expectedHasDeliveryAt),
+        )
+
+      return results.filter((_package) =>
+        DELIVERABLE_PROVINCES_IN_PH.includes(
+          _package.receiverStateOrProvince.trim().toUpperCase(),
         ),
       )
-
-    return results.filter((_package) =>
-      DELIVERABLE_PROVINCES_IN_PH.includes(
-        _package.receiverStateOrProvince.trim().toUpperCase(),
-      ),
-    )
-  }),
+    }),
   getWithLatestStatusByShipmentId: protectedProcedure
     .input(
       z.object({

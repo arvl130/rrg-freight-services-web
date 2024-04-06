@@ -157,7 +157,12 @@ export const incomingShipmentRouter = router({
             weightInKg: z.number(),
             senderFullName: z.string().min(1).max(100),
             senderContactNumber: z.string().min(1).max(15),
-            senderEmailAddress: z.string().min(1).max(100),
+            senderEmailAddress: z
+              .string()
+              .min(1)
+              .max(100)
+              .endsWith("@gmail.com")
+              .email(),
             senderStreetAddress: z.string().min(1).max(255),
             senderCity: z.string().min(1).max(100),
             senderStateOrProvince: z.string().min(1).max(100),
@@ -165,7 +170,12 @@ export const incomingShipmentRouter = router({
             senderPostalCode: z.number(),
             receiverFullName: z.string().min(1).max(100),
             receiverContactNumber: z.string().min(1).max(15),
-            receiverEmailAddress: z.string().min(1).max(100),
+            receiverEmailAddress: z
+              .string()
+              .min(1)
+              .max(100)
+              .endsWith("@gmail.com")
+              .email(),
             receiverStreetAddress: z.string().min(1).max(255),
             receiverBarangay: z.string().min(1).max(100),
             receiverCity: z.string().min(1).max(100),
@@ -239,7 +249,7 @@ export const incomingShipmentRouter = router({
         }))
 
         await tx.insert(shipmentPackages).values(newShipmentPackages)
-        await Promise.all([
+        await Promise.allSettled([
           ...packageSenderEmailNotifications.map((e) => notifyByEmail(e)),
           ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
         ])

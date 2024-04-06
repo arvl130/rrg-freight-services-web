@@ -18,7 +18,6 @@ import { LoadingSpinner } from "@/components/spinner"
 import { BrowsingPhoneVector } from "@/components/vector/browsing-phone"
 import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 import { getEstimatedDeliveryOfPackage } from "@/utils/estimated-delivery"
-import { PackageNotFound } from "@/components/vector/package-not-found"
 
 function TrackingPageHead() {
   return <title>Tracking &#x2013; RRG Freight Services</title>
@@ -28,25 +27,49 @@ function First() {
   return (
     <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
       <div className="border-2 border-black rounded-full p-4">
-        <Package size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/package.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={50}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Truck size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/truck.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Path size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/path.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <MapPin size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/mappin.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="text-center">Handed Over</div>
       <div></div>
@@ -63,25 +86,49 @@ function Second() {
   return (
     <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
       <div className="border-2 border-black rounded-full p-4">
-        <Package size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/package.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={50}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Truck size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/truck.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Path size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/path.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <MapPin size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/mappin.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="text-center">Handed Over</div>
       <div></div>
@@ -98,25 +145,49 @@ function Third() {
   return (
     <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
       <div className="border-2 border-black rounded-full p-4">
-        <Package size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/package.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={50}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Truck size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/truck.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Path size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/path.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <MapPin size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/mappin.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="text-center">Handed Over</div>
       <div></div>
@@ -133,25 +204,49 @@ function Fourth() {
   return (
     <section className="max-w-4xl mx-auto grid grid-cols-[5rem_1fr_5rem_1fr_5rem_1fr_5rem] justify-between mb-6">
       <div className="border-2 border-black rounded-full p-4">
-        <Package size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/package.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={50}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Truck size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/truck.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <Path size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/path.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="flex items-center">
         <div className="h-1 w-full bg-[#A4D8D8]"></div>
       </div>
       <div className="border-2 border-black rounded-full p-4">
-        <MapPin size={44} color="#1d798b" />
+        <Image
+          src="/assets/img/tracking/mappin.gif"
+          alt="RRG Freight Services logo with its name on the right"
+          className="w-[100%] h-[100%] object-contain"
+          width={100}
+          height={50}
+        />
       </div>
       <div className="text-center">Handed Over</div>
       <div></div>
@@ -199,7 +294,13 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
   if (status === "error")
     return (
       <div className="flex flex-col items-center justify-center py-10">
-        <PackageNotFound />
+        <Image
+          src="/assets/img/tracking/package-not-found.png"
+          alt="Package not found."
+          className="w-[30%] h-[40%] object-contain"
+          width={400}
+          height={400}
+        />
         <p className="text-xl text-[#CEC6C6] font-semibold mt-auto">
           Package not found
         </p>
@@ -223,27 +324,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
             <CheckCircle size={96} color="#1E1E1E" />
             <div className="text-center font-semibold">Estimated Delivery</div>
             <div className="text-center">
-              {_package.status === "INCOMING" && <>30-45 days</>}
-
-              {hasDeliverableDestination ? (
-                <>
-                  {_package.status === "IN_WAREHOUSE" && <>2-3 days</>}
-                  {_package.status === "SORTING" && <>2-3 days</>}
-                </>
-              ) : (
-                <>
-                  {_package.status === "IN_WAREHOUSE" && <>N/A</>}
-                  {_package.status === "SORTING" && <>N/A</>}
-                </>
-              )}
-
-              {_package.status === "DELIVERING" && <>2-3 days</>}
-              {_package.status === "DELIVERED" && <>N/A</>}
-
-              {_package.status === "TRANSFERRING_FORWARDER" && <>N/A</>}
-              {_package.status === "TRANSFERRED_FORWARDER" && <>N/A</>}
-
-              {_package.status === "TRANSFERRING_WAREHOUSE" && <>4-5 days</>}
+              {getEstimatedDeliveryOfPackage(_package)}
             </div>
           </div>
 

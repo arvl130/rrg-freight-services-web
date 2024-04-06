@@ -1,32 +1,26 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
-import { validateSessionWithCookies } from "@/server/auth"
-import { redirect } from "next/navigation"
-import { getUserRoleRedirectPath } from "@/utils/redirects"
+import { useSavedUser } from "@/components/saved-users"
 import { LoginForm } from "./login-form"
+import { LoadingSpinner } from "@/components/spinner"
 
-export default async function LoginPage() {
-  const { user } = await validateSessionWithCookies()
-  if (user) {
-    const redirectPath = getUserRoleRedirectPath(user.role)
-    return redirect(redirectPath)
-  }
+export default function Page() {
+  const {
+    isLoading,
+    savedUsers,
+    addUser,
+    removeUserById: removeUserByEmail,
+  } = useSavedUser()
 
   return (
     <>
       <title>Login &#x2013; RRG Freight Services</title>
       <main className="min-h-dvh bg-brand-cyan-450 px-3 py-24 pb-3 relative">
         <div className="absolute inset-0 h-full sm:grid grid-cols-2 hidden">
-          <div className="flex justify-center items-end">
-            <Image
-              src="/assets/img/login/right-bg.png"
-              alt="Ship, truck, and plane on a globe"
-              className="w-[500px] h-80 object-contain object-bottom"
-              width={500}
-              height={320}
-            />
-          </div>
+          <div className="flex justify-center items-end"></div>
           <div></div>
         </div>
         <section className="max-w-[26rem] mx-auto bg-white px-4 py-3 rounded-md shadow-lg relative">
@@ -45,14 +39,25 @@ export default async function LoginPage() {
                 Enter Your Credentials
               </p>
             </div>
-            <LoginForm />
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center">
+                <p className="mb-3 text-sm">Loading your options ...</p>
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <LoginForm
+                savedUsers={savedUsers?.users ?? []}
+                onAddUser={addUser}
+                onRemoveUser={removeUserByEmail}
+              />
+            )}
           </div>
           <div className="text-sm flex justify-between">
             <Link href="/" className="inline-flex items-center">
               <CaretLeft height={12} /> Back to Homepage
             </Link>
 
-            <Link href="/login/authenticator">Use an Authenticator</Link>
+            <Link href="/login/with-email">Use your Email</Link>
           </div>
         </section>
       </main>

@@ -131,11 +131,13 @@ const newWarehouses: NewWarehouse[] = [
   {
     id: 1,
     displayName: "Warehouse 1",
+    weightCapacityInKg: 10000,
     createdAt,
   },
   {
     id: 2,
     displayName: "Warehouse 2",
+    weightCapacityInKg: 10000,
     createdAt,
   },
 ]
@@ -147,6 +149,7 @@ const newVehicles: NewVehicle[] = [
     type: "TRUCK",
     isExpressAllowed: 0,
     plateNumber: "ABC 123",
+    weightCapacityInKg: 1000.1,
     createdAt,
   },
   {
@@ -155,6 +158,7 @@ const newVehicles: NewVehicle[] = [
     type: "TRUCK",
     isExpressAllowed: 0,
     plateNumber: "XYZ 456",
+    weightCapacityInKg: 1000.2,
     createdAt,
   },
   {
@@ -163,6 +167,7 @@ const newVehicles: NewVehicle[] = [
     type: "TRUCK",
     isExpressAllowed: 0,
     plateNumber: "DEF 789",
+    weightCapacityInKg: 1000.3,
     createdAt,
   },
   {
@@ -171,6 +176,7 @@ const newVehicles: NewVehicle[] = [
     type: "VAN",
     isExpressAllowed: 1,
     plateNumber: "GHI 012",
+    weightCapacityInKg: 500.4,
     createdAt,
   },
   {
@@ -179,6 +185,7 @@ const newVehicles: NewVehicle[] = [
     type: "VAN",
     isExpressAllowed: 1,
     plateNumber: "JKL 345",
+    weightCapacityInKg: 500.5,
     createdAt,
   },
 ]
