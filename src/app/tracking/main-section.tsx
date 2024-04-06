@@ -18,7 +18,7 @@ import { LoadingSpinner } from "@/components/spinner"
 import { BrowsingPhoneVector } from "@/components/vector/browsing-phone"
 import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 import { getEstimatedDeliveryOfPackage } from "@/utils/estimated-delivery"
-
+import { PackageNotFound } from "@/components/vector/package-not-found"
 function TrackingPageHead() {
   return <title>Tracking &#x2013; RRG Freight Services</title>
 }
@@ -294,13 +294,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
   if (status === "error")
     return (
       <div className="flex flex-col items-center justify-center py-10">
-        <Image
-          src="/assets/img/tracking/package-not-found.png"
-          alt="Package not found."
-          className="w-[30%] h-[40%] object-contain"
-          width={400}
-          height={400}
-        />
+        <PackageNotFound />
         <p className="text-xl text-[#CEC6C6] font-semibold mt-auto">
           Package not found
         </p>
