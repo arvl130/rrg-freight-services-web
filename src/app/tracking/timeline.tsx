@@ -29,9 +29,9 @@ function TimelineItem({
           <Image
             src="/assets/img/tracking/truck.gif"
             alt="RRG Freight Services logo with its name on the right"
-            className="w-[80%] h-[00%] object-contain"
-            width={80}
-            height={80}
+            className="w-[50%] h-[50%] object-contain"
+            width={44}
+            height={44}
           />
         )}
         {packageStatusLog.status === "IN_WAREHOUSE" && (
