@@ -1,10 +1,4 @@
-"use client"
-
-import { useId } from "react"
-
 export function PackageNotFound() {
-  const id = useId()
-
   return (
     <svg
       width="500"
