@@ -285,7 +285,7 @@ function ShipmentSelector({
                     key={shipment.id}
                     className={`${
                       index === 0 ? "" : "mt-3"
-                    } group grid grid-cols-subgrid col-span-4 hover:bg-gray-100 hover:border-gray-100 rounded-lg transition-colors duration-200`}
+                    } group grid grid-cols-subgrid col-span-7 hover:bg-gray-100 hover:border-gray-100 rounded-lg transition-colors duration-200`}
                     onClick={() => {
                       onSelectShipmentId(shipment.id)
                     }}
