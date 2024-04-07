@@ -26,6 +26,10 @@ const adminPages = [
     path: "/admin/shipments/transfer/warehouse",
   },
   {
+    title: "Deliverable Provinces",
+    path: "/admin/deliverable-provinces",
+  },
+  {
     title: "Vehicles",
     path: "/admin/vehicles",
   },

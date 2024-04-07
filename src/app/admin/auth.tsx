@@ -6,6 +6,7 @@ import { Scroll } from "@phosphor-icons/react/dist/ssr/Scroll"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { UsersThree } from "@phosphor-icons/react/dist/ssr/UsersThree"
 import { Motorcycle } from "@phosphor-icons/react/dist/ssr/Motorcycle"
+import { MapPinArea } from "@phosphor-icons/react/dist/ssr/MapPinArea"
 import { ClipboardText } from "@phosphor-icons/react/dist/ssr/ClipboardText"
 import { Boat } from "@phosphor-icons/react/dist/ssr/Boat"
 import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
@@ -150,6 +151,12 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
                   icon={<Warehouse size={32} />}
                   name="Warehouse Transfer"
                   href="/admin/shipments/transfer/warehouse"
+                />
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<MapPinArea size={32} />}
+                  name="Deliverable Provinces"
+                  href="/admin/deliverable-provinces"
                 />
               </Accordion.Content>
             </Accordion.Item>
