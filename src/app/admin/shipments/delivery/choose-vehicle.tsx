@@ -1,7 +1,7 @@
 import type { Vehicle } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import type { PackageShippingType } from "@/utils/constants"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 function filterByVehiclesDeliveryType(
   vehicles: Vehicle[],
@@ -12,12 +12,15 @@ function filterByVehiclesDeliveryType(
     : vehicles
 }
 
-export function ChooseVehicle(props: {
+export function ChooseVehicle({
+  vehicle,
+  deliveryType,
+  onChange,
+}: {
   vehicle: null | Vehicle
   deliveryType: PackageShippingType
   onChange: (vehicle: Vehicle) => void
 }) {
-  const [hasLoadedPreselection, setHasLoadedPreselection] = useState(false)
   const {
     status,
     data: availableVehicles,
@@ -25,15 +28,10 @@ export function ChooseVehicle(props: {
   } = api.vehicle.getAvailable.useQuery()
 
   useEffect(() => {
-    if (
-      !hasLoadedPreselection &&
-      availableVehicles &&
-      availableVehicles.length > 0
-    ) {
-      props.onChange(availableVehicles[0])
-      setHasLoadedPreselection(true)
+    if (vehicle === null && availableVehicles && availableVehicles.length > 0) {
+      onChange(availableVehicles[0])
     }
-  }, [hasLoadedPreselection, availableVehicles, props])
+  }, [availableVehicles, vehicle, onChange])
 
   return (
     <div className="mt-3">
@@ -42,24 +40,24 @@ export function ChooseVehicle(props: {
       {status === "error" && <p>Error: {error.message}</p>}
       {status === "success" && (
         <>
-          {filterByVehiclesDeliveryType(availableVehicles, props.deliveryType)
+          {filterByVehiclesDeliveryType(availableVehicles, deliveryType)
             .length === 0 ? (
             <p>No available vehicles.</p>
           ) : (
             <select
               className="w-full bg-white px-3 py-1.5 border border-gray-300 rounded-md"
-              value={props.vehicle === null ? "" : props.vehicle.id.toString()}
+              value={vehicle === null ? "" : vehicle.id.toString()}
               onChange={(e) => {
                 const selectedVehicle = availableVehicles.find(
                   (vehicle) => vehicle.id === Number(e.currentTarget.value),
                 )
 
-                if (selectedVehicle) props.onChange(selectedVehicle)
+                if (selectedVehicle) onChange(selectedVehicle)
               }}
             >
               {filterByVehiclesDeliveryType(
                 availableVehicles,
-                props.deliveryType,
+                deliveryType,
               ).map((vehicle) => (
                 <option key={vehicle.id} value={vehicle.id.toString()}>
                   {vehicle.displayName}

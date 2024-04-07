@@ -1,17 +1,20 @@
 import { api } from "@/utils/api"
 import { useEffect } from "react"
 
-export function ChooseDriver(props: {
+export function ChooseDriver({
+  driverId,
+  onChange,
+}: {
   driverId: string
   onChange: (driverId: string) => void
 }) {
   const { status, data, error } = api.user.getAvailableDrivers.useQuery()
 
   useEffect(() => {
-    if (data && data.length > 0) {
-      props.onChange(data[0].id)
+    if (driverId === "" && data && data.length > 0) {
+      onChange(data[0].id)
     }
-  }, [data, props])
+  }, [data, onChange, driverId])
 
   return (
     <div className="text-gray-700 mt-3">
@@ -25,9 +28,9 @@ export function ChooseDriver(props: {
           ) : (
             <select
               className="w-full bg-white px-3 py-1.5 border border-gray-300 rounded-md"
-              value={props.driverId}
+              value={driverId}
               onChange={(e) => {
-                props.onChange(e.currentTarget.value)
+                onChange(e.currentTarget.value)
               }}
             >
               {data.map((driver) => (
