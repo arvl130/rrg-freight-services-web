@@ -5,6 +5,7 @@ import * as schema from "@/server/db/schema"
 import mysql from "mysql2/promise"
 import { drizzle } from "drizzle-orm/mysql2"
 import type {
+  NewDeliverableProvince,
   NewDomesticAgent,
   NewDriver,
   NewOverseasAgent,
@@ -208,6 +209,46 @@ const newPackageCategories: NewPackageCategory[] = [
   },
 ]
 
+const newDeliverableProvinces: NewDeliverableProvince[] = [
+  { displayName: "Abra", createdAt },
+  { displayName: "Albay", createdAt },
+  { displayName: "Aurora", createdAt },
+  { displayName: "Bataan", createdAt },
+  { displayName: "Batanes", createdAt },
+  { displayName: "Batangas", createdAt },
+  { displayName: "Benguet", createdAt },
+  { displayName: "Bulacan", createdAt },
+  { displayName: "Cagayan", createdAt },
+  { displayName: "Camarines Norte", createdAt },
+  { displayName: "Camarines Sur", createdAt },
+  { displayName: "Catanduanes", createdAt },
+  { displayName: "Cavite", createdAt },
+  { displayName: "Ifugao", createdAt },
+  { displayName: "Ilocos Norte", createdAt },
+  { displayName: "Ilocos Sur", createdAt },
+  { displayName: "Isabela", createdAt },
+  { displayName: "Kalinga", createdAt },
+  { displayName: "La Union", createdAt },
+  { displayName: "Laguna", createdAt },
+  { displayName: "Marinduque", createdAt },
+  { displayName: "Masbate", createdAt },
+  { displayName: "Mountain Province", createdAt },
+  { displayName: "Nueva Ecija", createdAt },
+  { displayName: "Nueva Vizcaya", createdAt },
+  { displayName: "Occidental Mindoro", createdAt },
+  { displayName: "Oriental Mindoro", createdAt },
+  { displayName: "Palawan", createdAt },
+  { displayName: "Pampanga", createdAt },
+  { displayName: "Pangasinan", createdAt },
+  { displayName: "Quezon", createdAt },
+  { displayName: "Quirino", createdAt },
+  { displayName: "Rizal", createdAt },
+  { displayName: "Romblon", createdAt },
+  { displayName: "Tarlac", createdAt },
+  { displayName: "Zambales", createdAt },
+  { displayName: "National Capital Region", createdAt },
+]
+
 await db.insert(schema.users).values(newUsers)
 await db.insert(schema.warehouseStaffs).values(newWarehouseStaffs)
 await db.insert(schema.drivers).values(newDrivers)
@@ -216,6 +257,7 @@ await db.insert(schema.domesticAgents).values(newDomesticAgents)
 await db.insert(schema.vehicles).values(newVehicles)
 await db.insert(schema.warehouses).values(newWarehouses)
 await db.insert(schema.packageCategories).values(newPackageCategories)
+await db.insert(schema.deliverableProvinces).values(newDeliverableProvinces)
 
 await pool
   .end()

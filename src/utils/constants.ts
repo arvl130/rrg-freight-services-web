@@ -173,6 +173,7 @@ export const SUPPORTED_ACTIVITY_ENTITY = [
   "VEHICLE",
   "WAREHOUSE",
   "PACKAGE_CATEGORY",
+  "DELIVERABLE_PROVINCE",
 ] as const
 export type ActivityEntity = (typeof SUPPORTED_ACTIVITY_ENTITY)[number]
 

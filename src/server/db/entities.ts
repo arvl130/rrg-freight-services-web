@@ -22,6 +22,7 @@ import type {
   packageCategories,
   webpushSubscriptions,
   webauthnCredentials,
+  deliverableProvinces,
 } from "./schema"
 
 export type User = typeof users.$inferSelect
@@ -106,3 +107,6 @@ export type WebauthnCredential = typeof webauthnCredentials.$inferSelect
 export type NewWebauthnCredential = typeof webauthnCredentials.$inferInsert
 
 export type DbWithEntities = MySql2Database<typeof schema>
+
+export type DeliverableProvince = typeof deliverableProvinces.$inferSelect
+export type NewDeliverableProvince = typeof deliverableProvinces.$inferInsert

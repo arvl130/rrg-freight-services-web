@@ -520,3 +520,17 @@ export const passwordResetTokens = mysqlTable(
     }
   },
 )
+
+export const deliverableProvinces = mysqlTable("deliverable_provinces", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  displayName: varchar("display_name", {
+    length: 100,
+  }).notNull(),
+  createdAt: varchar("created_at", {
+    length: 100,
+  }).notNull(),
+})

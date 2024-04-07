@@ -11,6 +11,7 @@ import { webpushSubscriptionRouter } from "./push-subscriptions"
 import { activityRouter } from "./activity"
 import { webauthnRouter } from "./webauthn"
 import { passwordResetRouter } from "./password-reset"
+import { deliverableProvinceRouter } from "./deliverable-provinces"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -35,6 +36,7 @@ export const rootRouter = router({
   activity: activityRouter,
   webauthn: webauthnRouter,
   passwordReset: passwordResetRouter,
+  deliverableProvince: deliverableProvinceRouter,
 })
 
 export type RootRouter = typeof rootRouter
