@@ -302,6 +302,33 @@ export const packageRouter = router({
 
       return results.filter(({ isDeliverable }) => isDeliverable)
     }),
+  getInWarehouseAndCanBeForwarderTransferred: protectedProcedure
+    .input(
+      z.object({
+        searchTerm: z.string(),
+        sortOrder: z.union([z.literal("ASC"), z.literal("DESC")]),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(packages)
+        .where(
+          and(
+            eq(packages.status, "IN_WAREHOUSE"),
+            input.searchTerm === ""
+              ? undefined
+              : like(packages.id, `%${input.searchTerm}%`),
+          ),
+        )
+        .orderBy(
+          input.sortOrder === "DESC"
+            ? desc(packages.createdAt)
+            : asc(packages.createdAt),
+        )
+
+      return results.filter(({ isDeliverable }) => !isDeliverable)
+    }),
   getWithLatestStatusByShipmentId: protectedProcedure
     .input(
       z.object({

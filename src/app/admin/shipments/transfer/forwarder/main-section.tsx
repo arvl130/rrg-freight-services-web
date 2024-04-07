@@ -14,7 +14,7 @@ import type { NormalizedForwarderTransferShipment } from "@/server/db/entities"
 import type { ShipmentStatus } from "@/utils/constants"
 import { UserDisplayName } from "@/components/user-display-name"
 import { usePaginatedItems } from "@/hooks/paginated-items"
-import { CreateModal } from "@/components/shipments/transfer/forwarder/create-modal"
+import { CreateModal } from "./create-modal"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
 
@@ -253,7 +253,7 @@ export function HeaderSection() {
       </div>
       <CreateModal
         isOpen={isOpenCreateModal}
-        close={() => setIsOpenCreateModal(false)}
+        onClose={() => setIsOpenCreateModal(false)}
       />
     </>
   )
