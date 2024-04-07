@@ -204,7 +204,7 @@ export const incomingShipmentRouter = router({
         status: "INCOMING" as const,
         createdAt,
         isDeliverable: deliverableProvinces.includes(
-          newPackage.receiverStateOrProvince,
+          newPackage.receiverStateOrProvince.trim().toUpperCase(),
         )
           ? 1
           : 0,

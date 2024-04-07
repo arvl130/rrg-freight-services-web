@@ -141,7 +141,7 @@ export const packageRouter = router({
           updatedById: ctx.user.id,
           updatedAt: new Date(),
           isDeliverable: deliverableProvinces.includes(
-            input.receiverStateOrProvince,
+            input.receiverStateOrProvince.trim().toUpperCase(),
           )
             ? 1
             : 0,
@@ -226,7 +226,7 @@ export const packageRouter = router({
           updatedById: ctx.user.id,
           isFragile: newPackage.isFragile ? 1 : 0,
           isDeliverable: deliverableProvinces.includes(
-            newPackage.receiverStateOrProvince,
+            newPackage.receiverStateOrProvince.trim().toUpperCase(),
           )
             ? 1
             : 0,
