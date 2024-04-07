@@ -50,6 +50,12 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
     <div className="grid grid-rows-[1fr_auto] overflow-auto gap-y-3 px-4 py-2">
       <div className="grid grid-cols-[auto_1fr] gap-3">
         <div>
+          <ChooseDeliveryType
+            onChange={(deliveryType) => {
+              setSelectedDeliveryType(deliveryType)
+              setSelectedPackages([])
+            }}
+          />
           <ChooseDriver
             driverId={selectedDriverId}
             onChange={(driverId) => {
@@ -60,9 +66,6 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
             vehicle={selectedVehicle}
             deliveryType={selectedDeliveryType}
             onChange={(vehicle) => setSelectedVehicle(vehicle)}
-          />
-          <ChooseDeliveryType
-            onChange={(deliveryType) => setSelectedDeliveryType(deliveryType)}
           />
           <ChooseDepartureDate
             minDate={htmlInputDateStrToday}
@@ -76,12 +79,76 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
           selectedDeliveryType={selectedDeliveryType}
           selectedPackageIds={selectedPackages.map(({ id }) => id)}
           selectedVehicle={selectedVehicle}
-          onSelectAll={({ isChecked, packages }) => {
-            if (isChecked) {
-              setSelectedPackages(packages)
-            } else {
-              setSelectedPackages([])
+          onAutoSelect={(packages) => {
+            if (packages.length === 0) {
+              toast.error("No packages to choose from.")
+              return
             }
+
+            if (selectedVehicle === null) {
+              toast.error("No vehicle selected.")
+              return
+            }
+
+            const sortedPackages = packages.toSorted((a, b) => {
+              if (
+                a.expectedHasDeliveryAt === null ||
+                b.expectedHasDeliveryAt === null
+              )
+                return 0
+
+              const firstExpectedHasDeliveryAt = DateTime.fromISO(
+                a.expectedHasDeliveryAt,
+              )
+              const secondExpectedHasDeliveryAt = DateTime.fromISO(
+                b.expectedHasDeliveryAt,
+              )
+
+              if (
+                !firstExpectedHasDeliveryAt.isValid ||
+                !secondExpectedHasDeliveryAt.isValid
+              )
+                return 0
+
+              if (
+                firstExpectedHasDeliveryAt.toMillis() >
+                secondExpectedHasDeliveryAt.toMillis()
+              )
+                return 1
+
+              return -1
+            })
+
+            const { packages: autoSelectedPackages } = sortedPackages.reduce(
+              (prev, curr) => {
+                if (
+                  curr.weightInKg + prev.totalWeight >
+                  selectedVehicle.weightCapacityInKg
+                )
+                  return prev
+
+                return {
+                  totalWeight: prev.totalWeight + curr.weightInKg,
+                  packages: [...prev.packages, curr],
+                }
+              },
+              {
+                totalWeight: 0,
+                packages: [] as Package[],
+              },
+            )
+
+            if (autoSelectedPackages.length === 0) {
+              toast.error(
+                "No packages could be auto-selected. Please try choosing another vehicle.",
+              )
+              return
+            }
+
+            setSelectedPackages(autoSelectedPackages)
+            toast.success(
+              "Packages were auto-selected based on Needs Schedule By date.",
+            )
           }}
           onResetSelection={() => setSelectedPackages([])}
           onCheckboxChange={({ isChecked, package: _package }) => {
