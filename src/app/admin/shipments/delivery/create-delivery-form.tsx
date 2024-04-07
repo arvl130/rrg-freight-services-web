@@ -179,7 +179,7 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
           }
           onClick={() => {
             if (selectedDriverId === null) {
-              toast.error("Please choose a driver")
+              toast.error("Please choose a driver.")
               return
             }
 
