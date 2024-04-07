@@ -386,6 +386,7 @@ export const packages = mysqlTable("packages", {
     .defaultNow(),
   updatedById: varchar("updated_by_id", { length: 28 }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
+  isDeliverable: tinyint("is_deliverable").notNull(),
   lastWarehouseId: bigint("last_warehouse_id", {
     mode: "number",
   }),

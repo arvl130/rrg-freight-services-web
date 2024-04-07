@@ -25,6 +25,7 @@ import {
 import { generateUniqueId } from "@/utils/uuid"
 import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 import { DateTime } from "luxon"
+import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -110,6 +111,10 @@ export const packageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const deliverableProvinces = await getDeliverableProvinceNames({
+        db: ctx.db,
+      })
+
       return await ctx.db
         .update(packages)
         .set({
@@ -136,6 +141,11 @@ export const packageRouter = router({
           receiverPostalCode: input.receiverPostalCode,
           updatedById: ctx.user.id,
           updatedAt: new Date(),
+          isDeliverable: deliverableProvinces.includes(
+            input.receiverStateOrProvince,
+          )
+            ? 1
+            : 0,
         })
         .where(eq(packages.id, input.id))
     }),
@@ -204,6 +214,9 @@ export const packageRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const createdAt = DateTime.now().toISO()
+      const deliverableProvinces = await getDeliverableProvinceNames({
+        db: ctx.db,
+      })
 
       await ctx.db.insert(packages).values(
         input.newPackages.map((newPackage) => ({
@@ -213,6 +226,11 @@ export const packageRouter = router({
           createdById: ctx.user.id,
           updatedById: ctx.user.id,
           isFragile: newPackage.isFragile ? 1 : 0,
+          isDeliverable: deliverableProvinces.includes(
+            newPackage.receiverStateOrProvince,
+          )
+            ? 1
+            : 0,
         })),
       )
     }),

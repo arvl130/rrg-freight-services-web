@@ -27,6 +27,7 @@ import { generateUniqueId } from "@/utils/uuid"
 import { notifyByEmail } from "@/server/notification"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
+import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
 
 export const incomingShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -190,6 +191,10 @@ export const incomingShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const createdAt = DateTime.now().toISO()
+      const deliverableProvinces = await getDeliverableProvinceNames({
+        db: ctx.db,
+      })
+
       const newPackages = input.newPackages.map((newPackage) => ({
         ...newPackage,
         id: generateUniqueId(),
@@ -198,6 +203,11 @@ export const incomingShipmentRouter = router({
         isFragile: newPackage.isFragile ? 1 : 0,
         status: "INCOMING" as const,
         createdAt,
+        isDeliverable: deliverableProvinces.includes(
+          newPackage.receiverStateOrProvince,
+        )
+          ? 1
+          : 0,
       }))
 
       const newPackageStatusLogs = newPackages.map(({ id }) => ({
