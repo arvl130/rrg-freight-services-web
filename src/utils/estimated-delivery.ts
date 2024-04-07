@@ -1,15 +1,9 @@
 import { DateTime } from "luxon"
-import { DELIVERABLE_PROVINCES_IN_PH } from "./region-code"
 import type { Package } from "@/server/db/entities"
 
 export function getEstimatedDeliveryOfPackage(_package: Package) {
   if (_package.status === "INCOMING") return "N/A"
-
-  const hasDeliverableDestination = DELIVERABLE_PROVINCES_IN_PH.includes(
-    _package.receiverStateOrProvince.trim().toUpperCase(),
-  )
-
-  if (!hasDeliverableDestination) return "N/A"
+  if (!_package.isDeliverable) return "N/A"
   if (_package.status === "DELIVERED") return "N/A"
 
   if (_package.status === "IN_WAREHOUSE" || _package.status === "SORTING") {

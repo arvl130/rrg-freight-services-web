@@ -23,7 +23,6 @@ import {
   SUPPORTED_PACKAGE_STATUSES,
 } from "@/utils/constants"
 import { generateUniqueId } from "@/utils/uuid"
-import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 import { DateTime } from "luxon"
 import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
 
@@ -301,11 +300,7 @@ export const packageRouter = router({
             : asc(packages.expectedHasDeliveryAt),
         )
 
-      return results.filter((_package) =>
-        DELIVERABLE_PROVINCES_IN_PH.includes(
-          _package.receiverStateOrProvince.trim().toUpperCase(),
-        ),
-      )
+      return results.filter(({ isDeliverable }) => isDeliverable)
     }),
   getWithLatestStatusByShipmentId: protectedProcedure
     .input(

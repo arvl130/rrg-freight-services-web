@@ -23,7 +23,6 @@ import type { DbWithEntities } from "@/server/db/entities"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import { notifyByEmail, notifyBySms } from "@/server/notification"
 import type { User } from "lucia"
-import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 import { DateTime } from "luxon"
 
 async function getDescriptionForStatus(options: {
@@ -144,11 +143,7 @@ export const shipmentPackageRouter = router({
       const packageIdsCanBeDelivered =
         input.packageStatus === "IN_WAREHOUSE"
           ? packageDetails
-              .filter(({ receiverStateOrProvince }) =>
-                DELIVERABLE_PROVINCES_IN_PH.includes(
-                  receiverStateOrProvince.toUpperCase(),
-                ),
-              )
+              .filter(({ isDeliverable }) => isDeliverable)
               .map(({ id }) => id)
           : []
 

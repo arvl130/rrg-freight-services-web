@@ -1,14 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import { Footer } from "@/components/footer"
-import { Navbar } from "@/components/navbar"
 import { VerticalTimeline } from "./timeline"
-import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
-import { Path } from "@phosphor-icons/react/dist/ssr/Path"
-import { MapPin } from "@phosphor-icons/react/dist/ssr/MapPin"
 import { CheckCircle } from "@phosphor-icons/react/dist/ssr/CheckCircle"
-import { Package } from "@phosphor-icons/react/dist/ssr/Package"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -16,13 +10,9 @@ import { z } from "zod"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import { BrowsingPhoneVector } from "@/components/vector/browsing-phone"
-import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 import { getEstimatedDeliveryOfPackage } from "@/utils/estimated-delivery"
 import { PackageNotFound } from "@/components/vector/package-not-found"
 import { DeliveryTruckWithPeople } from "@/components/vector/delivery-truck-with-people"
-function TrackingPageHead() {
-  return <title>Tracking &#x2013; RRG Freight Services</title>
-}
 
 function First() {
   return (
@@ -277,13 +267,6 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
       retry: false,
     },
   )
-
-  const hasDeliverableDestination =
-    _package === undefined
-      ? false
-      : DELIVERABLE_PROVINCES_IN_PH.includes(
-          _package.receiverStateOrProvince.trim().toUpperCase(),
-        )
 
   if (status === "loading")
     return (

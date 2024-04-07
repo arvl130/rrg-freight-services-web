@@ -11,7 +11,6 @@ import { CaretUp } from "@phosphor-icons/react/dist/ssr/CaretUp"
 import { Check } from "@phosphor-icons/react/dist/ssr/Check"
 import { useState } from "react"
 import { DateTime } from "luxon"
-import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 import { getEstimatedDeliveryOfPackage } from "@/utils/estimated-delivery"
 
 function TopLayer({ package: _package }: { package: Package }) {

@@ -11,7 +11,6 @@ import type { Package } from "@/server/db/entities"
 import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
 import { DateTime } from "luxon"
-import { DELIVERABLE_PROVINCES_IN_PH } from "@/utils/region-code"
 import { ViewWaybillsModal } from "@/components/shipments/incoming/view-waybills-modal"
 
 const scanPackageSchemaFormSchema = z.object({
@@ -164,16 +163,11 @@ function PackagesTableTabs(props: {
   onUndoScan: (packageId: string) => void
 }) {
   const [visibleView, setVisibleView] = useState<"SORTED" | "ALL">("SORTED")
-  const luzonPackages = props.packages.filter((_package) =>
-    DELIVERABLE_PROVINCES_IN_PH.includes(
-      _package.receiverStateOrProvince.toUpperCase(),
-    ),
+  const luzonPackages = props.packages.filter(
+    ({ isDeliverable }) => isDeliverable,
   )
   const nonLuzonPackages = props.packages.filter(
-    (_package) =>
-      !DELIVERABLE_PROVINCES_IN_PH.includes(
-        _package.receiverStateOrProvince.toUpperCase(),
-      ),
+    ({ isDeliverable }) => !isDeliverable,
   )
 
   return (
