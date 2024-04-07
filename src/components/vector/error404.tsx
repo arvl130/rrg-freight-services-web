@@ -1,5 +1,4 @@
 import { useId } from "react"
-
 export function Error404() {
   const id = useId()
 
