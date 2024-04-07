@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import type { Package, Vehicle } from "@/server/db/entities"
 import type { PackageShippingType } from "@/utils/constants"
-import { SUPPORTED_PACKAGE_SHIPPING_TYPES } from "@/utils/constants"
 import { getHumanizedOfPackageShippingType } from "@/utils/humanize"
 import { api } from "@/utils/api"
 import { SortAscending } from "@phosphor-icons/react/dist/ssr/SortAscending"
@@ -70,7 +69,7 @@ function filterBySearchTerm(items: Package[], searchTerm: string) {
 export function ChoosePackageTable({
   hasExceededWeightLimit,
   totalWeightOfSelectedPackages,
-  initialDeliveryType,
+  selectedDeliveryType,
   selectedPackageIds,
   selectedVehicle,
   onSelectAll,
@@ -79,30 +78,22 @@ export function ChoosePackageTable({
 }: {
   hasExceededWeightLimit: boolean
   totalWeightOfSelectedPackages: number
-  initialDeliveryType: PackageShippingType
+  selectedDeliveryType: PackageShippingType
   selectedPackageIds: string[]
   selectedVehicle: Vehicle | null
   onSelectAll: (props: { isChecked: boolean; packages: Package[] }) => void
   onCheckboxChange: (props: { isChecked: boolean; package: Package }) => void
   onResetSelection: () => void
 }) {
-  const [selectedDeliveryType, setSelectedDeliveryType] = useState<
-    "ALL" | PackageShippingType
-  >(initialDeliveryType)
   const [searchTerm, setSearchTerm] = useState("")
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("DESC")
-
-  useEffect(() => {
-    setSelectedDeliveryType(initialDeliveryType)
-  }, [initialDeliveryType])
 
   const {
     refetch,
     status,
     data: packages,
   } = api.package.getInWarehouseAndCanBeDelivered.useQuery({
-    shippingType:
-      selectedDeliveryType === "ALL" ? undefined : selectedDeliveryType,
+    shippingType: selectedDeliveryType,
     sortOrder,
     searchTerm,
   })
@@ -113,26 +104,7 @@ export function ChoosePackageTable({
         <div className="flex justify-between items-center font-medium text-gray-700">
           <div>
             <p>
-              Showing
-              <select
-                className="bg-white px-3 py-1.5 border border-gray-300 rounded-md mx-1.5"
-                value={selectedDeliveryType}
-                onChange={(e) => {
-                  setSelectedDeliveryType(
-                    e.currentTarget.value as PackageShippingType,
-                  )
-                  onResetSelection()
-                }}
-              >
-                <option value="ALL">All</option>
-                {SUPPORTED_PACKAGE_SHIPPING_TYPES.map((shippingType) => (
-                  <option key={shippingType} value={shippingType}>
-                    {getHumanizedOfPackageShippingType(
-                      shippingType as PackageShippingType,
-                    )}
-                  </option>
-                ))}
-              </select>
+              Showing {getHumanizedOfPackageShippingType(selectedDeliveryType)}{" "}
               Packages
             </p>
           </div>

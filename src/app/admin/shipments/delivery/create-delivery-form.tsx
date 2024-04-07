@@ -73,7 +73,7 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <ChoosePackageTable
-          initialDeliveryType={selectedDeliveryType}
+          selectedDeliveryType={selectedDeliveryType}
           selectedPackageIds={selectedPackages.map(({ id }) => id)}
           selectedVehicle={selectedVehicle}
           onSelectAll={({ isChecked, packages }) => {
