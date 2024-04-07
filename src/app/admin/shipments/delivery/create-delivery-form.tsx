@@ -205,13 +205,17 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
               return
             }
 
+            const selectedPackageIds = [
+              ...new Set(selectedPackages.map(({ id }) => id)),
+            ]
+
             mutate({
               driverId: selectedDriverId,
               vehicleId: Number(selectedVehicle.id),
               isExpress: selectedDeliveryType === "EXPRESS",
               packageIds: [
-                selectedPackages[0].id,
-                ...selectedPackages.slice(1).map(({ id }) => id),
+                selectedPackageIds[0],
+                ...selectedPackageIds.slice(1),
               ],
               departureAt: departureAt.toISO(),
             })
