@@ -71,7 +71,7 @@ function TableItem({ item }: { item: DeliverableProvince }) {
 
 function filterBySearchTerm(items: DeliverableProvince[], searchTerm: string) {
   return items.filter((item) =>
-    item.id.toString().toLowerCase().includes(searchTerm),
+    item.displayName.toString().toLowerCase().includes(searchTerm),
   )
 }
 
