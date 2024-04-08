@@ -19,6 +19,17 @@ import { usePaginatedItems } from "@/hooks/paginated-items"
 import { getColorFromPackageStatus } from "@/utils/colors"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 
+function WarehouseDetails(props: { warehouseId: number }) {
+  const { status, data, error } = api.warehouse.getById.useQuery({
+    id: props.warehouseId,
+  })
+
+  if (status === "loading") return <>...</>
+  if (status === "error") return <>Error: {error.message}</>
+
+  return <>{data.displayName}</>
+}
+
 function TableItem({ package: _package }: { package: Package }) {
   const [visibleModal, setVisibleModal] = useState<
     null | "VIEW_DETAILS" | "EDIT_DETAILS" | "VIEW_WAYBILL"
@@ -54,6 +65,13 @@ function TableItem({ package: _package }: { package: Package }) {
             {_package.receiverCountryCode}
           </p>
         </div>
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm text-center">
+        {_package.lastWarehouseId === null ? (
+          "Not Received Yet"
+        ) : (
+          <WarehouseDetails warehouseId={_package.lastWarehouseId} />
+        )}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div
@@ -343,7 +361,7 @@ function PackagesTable({
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min overflow-auto">
+        <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min overflow-auto">
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Package ID
           </div>
@@ -354,13 +372,16 @@ function PackagesTable({
             Receiver
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Last Warehouse
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Status
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Actions
           </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4 col-span-5">
+            <div className="text-center pt-4 col-span-6">
               No packages found.
             </div>
           ) : (
