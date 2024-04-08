@@ -12,11 +12,16 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Table from "@/components/table"
 import { DateTime } from "luxon"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
-import type { PackageShippingType, ShipmentStatus } from "@/utils/constants"
+import {
+  SUPPORTED_SHIPMENT_STATUSES,
+  type PackageShippingType,
+  type ShipmentStatus,
+} from "@/utils/constants"
 import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { UserDisplayName } from "@/components/user-display-name"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
+import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 
 function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
   const [visibleModal, setVisibleModal] = useState<
@@ -118,6 +123,15 @@ function filterByArchiveStatus(
   return items.filter((item) => item.isArchived === 0)
 }
 
+function filterByShipmentStatus(
+  items: NormalizedDeliveryShipment[],
+  status: "ALL" | ShipmentStatus,
+) {
+  if (status === "ALL") return items
+
+  return items.filter((_package) => _package.status === status)
+}
+
 function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
@@ -127,10 +141,17 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
     "EXPRESS" | "STANDARD" | "ALL"
   >("STANDARD")
 
+  const [selectedStatus, setSelectedStatus] = useState<"ALL" | ShipmentStatus>(
+    "ALL",
+  )
+
   const [searchTerm, setSearchTerm] = useState("")
   const visibleItems = filterBySearchTerm(
     filterBySelectedTab(
-      filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+      filterByShipmentStatus(
+        filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+        selectedStatus,
+      ),
       selectedTab,
     ),
     searchTerm,
@@ -165,8 +186,19 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
             />
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Status</option>
+            <select
+              value={selectedStatus}
+              onChange={(e) => {
+                setSelectedStatus(e.currentTarget.value as ShipmentStatus)
+              }}
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+            >
+              <option value="ALL">All Statuses</option>
+              {SUPPORTED_SHIPMENT_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {getHumanizedOfShipmentStatus(status)}
+                </option>
+              ))}
             </select>
             <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
               <option>Warehouse</option>
