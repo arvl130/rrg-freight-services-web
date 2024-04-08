@@ -7,6 +7,7 @@ import * as Table from "@/components/table"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import type { Activity } from "@/server/db/entities"
 import { getColorFromActivityVerb } from "@/utils/colors"
+import { SUPPORTED_ACTIVITY_VERB, type ActivityVerb } from "@/utils/constants"
 
 function TableItem({ item }: { item: Activity }) {
   return (
@@ -48,14 +49,25 @@ function filterByArchiveStatus(items: Activity[], isArchived: boolean) {
   return items.filter((item) => item.isArchived === 0)
 }
 
+function filterByVerb(items: Activity[], verb: "ALL" | ActivityVerb) {
+  if (verb === "ALL") return items
+
+  return items.filter((_package) => _package.verb === verb)
+}
+
 function ActivitiesTable({ items }: { items: Activity[] }) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")
 
+  const [selectedVerb, setSelectedVerb] = useState<"ALL" | ActivityVerb>("ALL")
+
   const [searchTerm, setSearchTerm] = useState("")
   const visibleItems = filterBySearchTerm(
-    filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+    filterByVerb(
+      filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+      selectedVerb,
+    ),
     searchTerm,
   )
 
@@ -88,8 +100,19 @@ function ActivitiesTable({ items }: { items: Activity[] }) {
             />
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Status</option>
+            <select
+              value={selectedVerb}
+              onChange={(e) => {
+                setSelectedVerb(e.currentTarget.value as ActivityVerb)
+              }}
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+            >
+              <option value="ALL">All Verbs</option>
+              {SUPPORTED_ACTIVITY_VERB.map((verb) => (
+                <option key={verb} value={verb}>
+                  {verb}
+                </option>
+              ))}
             </select>
             <select
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
