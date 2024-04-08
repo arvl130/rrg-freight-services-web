@@ -198,17 +198,19 @@ export function ChoosePackageTable({
 
       {status === "success" && (
         <article className="border border-gray-200 bg-white rounded-t-lg overflow-auto text-sm grid grid-cols-[repeat(6,_auto)_18rem] auto-rows-min">
-          <div className="font-bold bg-gray-100 pl-3 py-2"></div>
-          <div className="font-bold bg-gray-100 px-3 py-2 flex items-center gap-1">
-            Tracking Number
+          <div className="grid grid-cols-subgrid col-span-7 sticky top-0">
+            <div className="font-bold bg-gray-100 pl-3 py-2"></div>
+            <div className="font-bold bg-gray-100 px-3 py-2 flex items-center gap-1">
+              Tracking Number
+            </div>
+            <div className="font-bold bg-gray-100 px-3 py-2 whitespace-nowrap">
+              Needs Schedule By
+            </div>
+            <div className="font-bold bg-gray-100 px-3 py-2">Shipper</div>
+            <div className="font-bold bg-gray-100 px-3 py-2">Consignee</div>
+            <div className="font-bold bg-gray-100 px-3 py-2">Weight</div>
+            <div className="font-bold bg-gray-100 px-3 py-2">Address</div>
           </div>
-          <div className="font-bold bg-gray-100 px-3 py-2 whitespace-nowrap">
-            Needs Schedule By
-          </div>
-          <div className="font-bold bg-gray-100 px-3 py-2">Shipper</div>
-          <div className="font-bold bg-gray-100 px-3 py-2">Consignee</div>
-          <div className="font-bold bg-gray-100 px-3 py-2">Weight</div>
-          <div className="font-bold bg-gray-100 px-3 py-2">Address</div>
           {filterBySearchTerm(packages, searchTerm).length === 0 ? (
             <p className="text-center col-span-7 py-3">No packages available</p>
           ) : (
