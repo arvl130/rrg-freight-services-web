@@ -249,6 +249,9 @@ export const deliveryShipments = mysqlTable("delivery_shipments", {
   departureAt: varchar("departure_at", {
     length: 100,
   }).notNull(),
+  departingWarehouseId: bigint("departing_warehouse_id", {
+    mode: "number",
+  }).notNull(),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),

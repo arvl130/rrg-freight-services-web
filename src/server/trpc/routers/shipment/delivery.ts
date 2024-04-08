@@ -255,6 +255,7 @@ export const deliveryShipmentRouter = router({
         vehicleId: z.number(),
         packageIds: z.string().array().nonempty(),
         departureAt: z.string().min(1).max(100),
+        departingWarehouseId: z.number(),
         isExpress: z.boolean(),
       }),
     )
@@ -328,6 +329,7 @@ export const deliveryShipmentRouter = router({
           vehicleId: input.vehicleId,
           isExpress: input.isExpress ? 1 : 0,
           departureAt: input.departureAt,
+          departingWarehouseId: input.departingWarehouseId,
           createdAt,
         })
 

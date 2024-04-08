@@ -1,7 +1,7 @@
 import { api } from "@/utils/api"
 import { useEffect } from "react"
 
-export function ChooseDestinationWarehouse({
+export function ChooseDepartingWarehouse({
   warehouseId,
   onChange,
 }: {
@@ -18,7 +18,7 @@ export function ChooseDestinationWarehouse({
 
   return (
     <div className="text-gray-700">
-      <label className="block font-medium">Destination Warehouse</label>
+      <label className="block font-medium">Departing Warehouse</label>
       {status === "loading" && <p>Loading ...</p>}
       {status === "error" && <p>Error: {error.message}</p>}
       {status === "success" && (

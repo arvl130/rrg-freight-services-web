@@ -9,6 +9,7 @@ import { ChooseDriver } from "./choose-driver"
 import { ChooseVehicle } from "./choose-vehicle"
 import { ChooseDepartureDate } from "./choose-departure-date"
 import { ChoosePackageTable } from "./choose-packages-table"
+import { ChooseDepartingWarehouse } from "./choose-departing-warehouse"
 
 export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
   const utils = api.useUtils()
@@ -25,6 +26,8 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
     .toString()
     .padStart(2, "0")}-${dateTimeToday.day.toString().padStart(2, "0")}`
 
+  const [selectedDepartingWarehouseId, setSelectedDepartingWarehouseId] =
+    useState<null | number>(null)
   const [selectedDriverId, setSelectedDriverId] = useState("")
   const [selectedVehicle, setSelectedVehicle] = useState<null | Vehicle>(null)
   const [selectedDeliveryType, setSelectedDeliveryType] =
@@ -50,6 +53,13 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
     <div className="grid grid-rows-[1fr_auto] overflow-auto gap-y-3 px-4 py-2">
       <div className="grid grid-cols-[auto_1fr] gap-3 overflow-auto">
         <div>
+          <ChooseDepartingWarehouse
+            warehouseId={selectedDepartingWarehouseId}
+            onChange={(warehouseId) => {
+              setSelectedDepartingWarehouseId(warehouseId)
+              setSelectedPackages([])
+            }}
+          />
           <ChooseDeliveryType
             onChange={(deliveryType) => {
               setSelectedDeliveryType(deliveryType)
@@ -76,6 +86,7 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <ChoosePackageTable
+          selectedDepartingWarehouseId={selectedDepartingWarehouseId}
           selectedDeliveryType={selectedDeliveryType}
           selectedPackageIds={selectedPackages.map(({ id }) => id)}
           selectedVehicle={selectedVehicle}
@@ -178,6 +189,11 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
             hasExceededVehicleWeightCapacity
           }
           onClick={() => {
+            if (selectedDepartingWarehouseId === null) {
+              toast.error("Please choose a departing warehouse.")
+              return
+            }
+
             if (selectedDriverId === null) {
               toast.error("Please choose a driver.")
               return
@@ -210,6 +226,7 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
             ]
 
             mutate({
+              departingWarehouseId: selectedDepartingWarehouseId,
               driverId: selectedDriverId,
               vehicleId: Number(selectedVehicle.id),
               isExpress: selectedDeliveryType === "EXPRESS",

@@ -268,6 +268,7 @@ export const packageRouter = router({
     .input(
       z.object({
         searchTerm: z.string(),
+        warehouseId: z.number().optional(),
         shippingType: z
           .custom<PackageShippingType>((val) =>
             SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(
@@ -286,6 +287,9 @@ export const packageRouter = router({
           and(
             eq(packages.status, "IN_WAREHOUSE"),
             lt(packages.failedAttempts, 3),
+            input.warehouseId
+              ? eq(packages.lastWarehouseId, input.warehouseId)
+              : undefined,
             input.shippingType
               ? eq(packages.shippingType, input.shippingType)
               : undefined,

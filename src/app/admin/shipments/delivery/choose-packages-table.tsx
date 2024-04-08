@@ -91,6 +91,7 @@ function filterBySearchTerm(items: Package[], searchTerm: string) {
 export function ChoosePackageTable({
   hasExceededWeightLimit,
   totalWeightOfSelectedPackages,
+  selectedDepartingWarehouseId,
   selectedDeliveryType,
   selectedPackageIds,
   selectedVehicle,
@@ -100,6 +101,7 @@ export function ChoosePackageTable({
 }: {
   hasExceededWeightLimit: boolean
   totalWeightOfSelectedPackages: number
+  selectedDepartingWarehouseId: null | number
   selectedDeliveryType: PackageShippingType
   selectedPackageIds: string[]
   selectedVehicle: Vehicle | null
@@ -118,6 +120,10 @@ export function ChoosePackageTable({
     shippingType: selectedDeliveryType,
     sortOrder,
     searchTerm,
+    warehouseId:
+      selectedDepartingWarehouseId === null
+        ? undefined
+        : selectedDepartingWarehouseId,
   })
 
   return (
@@ -239,7 +245,7 @@ export function ChoosePackageTable({
               {selectedPackageIds.length === 0 ? (
                 <button
                   type="button"
-                  className="font-medium bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 transition-colors text-white px-4 py-2 rounded-md"
+                  className="font-medium border border-blue-500 bg-blue-500 hover:bg-blue-400 hover:border-blue-400 transition-colors text-white px-4 py-2 rounded-md"
                   onClick={() => {
                     onAutoSelect(packages)
                   }}
@@ -249,7 +255,7 @@ export function ChoosePackageTable({
               ) : (
                 <button
                   type="button"
-                  className="font-medium border border-blue-500 bg-white text-blue-500 hover:bg-blue-500 hover:text-white transition-colors px-4 py-2 rounded-md"
+                  className="font-medium border border-blue-500 bg-white text-blue-500 hover:bg-blue-400 hover:border-blue-400 hover:text-white transition-colors px-4 py-2 rounded-md"
                   onClick={() => {
                     onResetSelection()
                   }}
