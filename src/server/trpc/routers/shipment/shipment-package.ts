@@ -203,6 +203,23 @@ export const shipmentPackageRouter = router({
             })
             .where(inArray(packages.id, input.packageIds))
 
+        if (
+          ctx.user.role === "WAREHOUSE" &&
+          input.packageStatus === "IN_WAREHOUSE"
+        ) {
+          const [{ warehouseId }] = await tx
+            .select()
+            .from(warehouseStaffs)
+            .where(eq(warehouseStaffs.userId, ctx.user.id))
+
+          await tx
+            .update(packages)
+            .set({
+              lastWarehouseId: warehouseId,
+            })
+            .where(inArray(packages.id, input.packageIds))
+        }
+
         await tx
           .update(packages)
           .set({
