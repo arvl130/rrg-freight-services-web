@@ -1,7 +1,7 @@
 "use client"
 
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
-import type { Package } from "@/server/db/entities"
+import type { Package, Warehouse } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
@@ -10,7 +10,11 @@ import * as Table from "@/components/table"
 import { ViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { ViewDetailsModal } from "@/components/packages/view-details-modal"
 import { EditDetailsModal } from "./edit-details-modal"
-import type { PackageShippingType } from "@/utils/constants"
+import {
+  SUPPORTED_PACKAGE_STATUSES,
+  type PackageShippingType,
+  type PackageStatus,
+} from "@/utils/constants"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { getColorFromPackageStatus } from "@/utils/colors"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
@@ -137,19 +141,54 @@ function filterByArchiveStatus(items: Package[], isArchived: boolean) {
   return items.filter((_package) => _package.isArchived === 0)
 }
 
-function PackagesTable({ packages }: { packages: Package[] }) {
+function filterByPackageStatus(
+  items: Package[],
+  status: "ALL" | PackageStatus,
+) {
+  if (status === "ALL") return items
+
+  return items.filter((_package) => _package.status === status)
+}
+
+function filterByWarehouseId(items: Package[], warehouseId: null | number) {
+  if (warehouseId === null) return items
+
+  return items.filter((_package) => _package.lastWarehouseId === warehouseId)
+}
+
+function PackagesTable({
+  packages,
+  warehouses,
+}: {
+  packages: Package[]
+  warehouses: Warehouse[]
+}) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")
 
-  const [selectedTab, setSelectedTab] = useState<
-    "EXPRESS" | "STANDARD" | "ALL"
-  >("STANDARD")
+  const [selectedTab, setSelectedTab] = useState<"ALL" | PackageShippingType>(
+    "STANDARD",
+  )
+
+  const [selectedStatus, setSelectedStatus] = useState<"ALL" | PackageStatus>(
+    "ALL",
+  )
+
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<null | number>(
+    null,
+  )
 
   const [searchTerm, setSearchTerm] = useState("")
   const visiblePackages = filterBySearchTerm(
     filterBySelectedTab(
-      filterByArchiveStatus(packages, visibleArchiveStatus === "ARCHIVED"),
+      filterByPackageStatus(
+        filterByWarehouseId(
+          filterByArchiveStatus(packages, visibleArchiveStatus === "ARCHIVED"),
+          selectedWarehouseId,
+        ),
+        selectedStatus,
+      ),
       selectedTab,
     ),
     searchTerm,
@@ -184,11 +223,41 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             />
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Status</option>
+            <select
+              value={selectedStatus}
+              onChange={(e) => {
+                setSelectedStatus(e.currentTarget.value as PackageStatus)
+              }}
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+            >
+              <option value="ALL">All Statuses</option>
+              {SUPPORTED_PACKAGE_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {getHumanizedOfPackageStatus(status)}
+                </option>
+              ))}
             </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Warehouse</option>
+            <select
+              value={
+                selectedWarehouseId === null
+                  ? "ALL"
+                  : selectedWarehouseId.toString()
+              }
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+              onChange={(e) => {
+                if (e.currentTarget.value === "ALL") {
+                  setSelectedWarehouseId(null)
+                } else {
+                  setSelectedWarehouseId(Number(e.currentTarget.value))
+                }
+              }}
+            >
+              <option value="ALL">All Warehouses</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id.toString()}>
+                  {warehouse.displayName}
+                </option>
+              ))}
             </select>
             <select
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
@@ -308,21 +377,37 @@ function PackagesTable({ packages }: { packages: Package[] }) {
 }
 
 export function MainSection() {
-  const { status, data: packages, error } = api.package.getAll.useQuery()
+  const getAllPackagesQuery = api.package.getAll.useQuery()
+  const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
 
-  if (status === "loading")
+  if (
+    getAllPackagesQuery.status === "loading" ||
+    getAllWarehousesQuery.status === "loading"
+  )
     return (
       <div className="flex justify-center pt-4">
         <LoadingSpinner />
       </div>
     )
 
-  if (status === "error")
+  if (getAllPackagesQuery.status === "error")
     return (
       <div className="flex justify-center pt-4">
-        An error occured: {error.message}
+        An error occured: {getAllPackagesQuery.error.message}{" "}
       </div>
     )
 
-  return <PackagesTable packages={packages} />
+  if (getAllWarehousesQuery.status === "error")
+    return (
+      <div className="flex justify-center pt-4">
+        An error occured: {getAllWarehousesQuery.error.message}{" "}
+      </div>
+    )
+
+  return (
+    <PackagesTable
+      packages={getAllPackagesQuery.data}
+      warehouses={getAllWarehousesQuery.data}
+    />
+  )
 }
