@@ -206,6 +206,9 @@ export const forwarderTransferShipments = mysqlTable(
     sentToAgentId: varchar("sent_to_agent_id", {
       length: 28,
     }).notNull(),
+    departingWarehouseId: bigint("departing_warehouse_id", {
+      mode: "number",
+    }).notNull(),
     proofOfTransferImgUrl: text("proof_of_transfer_img_url"),
     isTransferConfirmed: tinyint("is_transfer_confirmed").notNull().default(0),
     createdAt: varchar("created_at", {

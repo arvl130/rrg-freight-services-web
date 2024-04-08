@@ -7,6 +7,7 @@ import { ChooseDriver } from "./choose-driver"
 import { ChooseVehicle } from "./choose-vehicle"
 import { ChoosePackageTable } from "./choose-packages-table"
 import { ChooseAgent } from "./choose-agent"
+import { ChooseDepartingWarehouse } from "./choose-departing-warehouse"
 
 export function CreateTransferForm({ onClose }: { onClose: () => void }) {
   const utils = api.useUtils()
@@ -21,6 +22,8 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
       },
     })
 
+  const [selectedDepartingWarehouseId, setSelectedDepartingWarehouseId] =
+    useState<null | number>(null)
   const [selectedAgentId, setSelectedAgentId] = useState("")
   const [selectedDriverId, setSelectedDriverId] = useState("")
   const [selectedVehicle, setSelectedVehicle] = useState<null | Vehicle>(null)
@@ -42,6 +45,13 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
     <div className="grid grid-rows-[1fr_auto] overflow-auto gap-y-3 px-4 py-2">
       <div className="grid grid-cols-[auto_1fr] gap-3 overflow-auto">
         <div>
+          <ChooseDepartingWarehouse
+            warehouseId={selectedDepartingWarehouseId}
+            onChange={(warehouseId) => {
+              setSelectedDepartingWarehouseId(warehouseId)
+              setSelectedPackages([])
+            }}
+          />
           <ChooseAgent
             agentId={selectedAgentId}
             onChange={(agentId) => {
@@ -60,6 +70,7 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <ChoosePackageTable
+          selectedDepartingWarehouseId={selectedDepartingWarehouseId}
           selectedPackageIds={selectedPackages.map(({ id }) => id)}
           selectedVehicle={selectedVehicle}
           onAutoSelect={(packages) => {
@@ -130,6 +141,11 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
             hasExceededVehicleWeightCapacity
           }
           onClick={() => {
+            if (selectedDepartingWarehouseId === null) {
+              toast.error("Please choose a departing warehouse.")
+              return
+            }
+
             if (selectedDriverId === null) {
               toast.error("Please choose a driver.")
               return
@@ -145,6 +161,7 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
             ]
 
             mutate({
+              departingWarehouseId: selectedDepartingWarehouseId,
               sentToAgentId: selectedAgentId,
               driverId: selectedDriverId,
               vehicleId: Number(selectedVehicle.id),

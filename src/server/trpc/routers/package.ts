@@ -310,6 +310,7 @@ export const packageRouter = router({
     .input(
       z.object({
         searchTerm: z.string(),
+        warehouseId: z.number().optional(),
         sortOrder: z.union([z.literal("ASC"), z.literal("DESC")]),
       }),
     )
@@ -320,6 +321,9 @@ export const packageRouter = router({
         .where(
           and(
             eq(packages.status, "IN_WAREHOUSE"),
+            input.warehouseId
+              ? eq(packages.lastWarehouseId, input.warehouseId)
+              : undefined,
             input.searchTerm === ""
               ? undefined
               : like(packages.id, `%${input.searchTerm}%`),

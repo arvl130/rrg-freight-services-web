@@ -181,6 +181,7 @@ export const forwarderTransferShipmentRouter = router({
   create: protectedProcedure
     .input(
       z.object({
+        departingWarehouseId: z.number(),
         sentToAgentId: z.string().length(28),
         driverId: z.string().length(28),
         vehicleId: z.number(),
@@ -219,6 +220,7 @@ export const forwarderTransferShipmentRouter = router({
 
         await ctx.db.insert(forwarderTransferShipments).values({
           shipmentId,
+          departingWarehouseId: input.departingWarehouseId,
           sentToAgentId: input.sentToAgentId,
           driverId: input.driverId,
           vehicleId: input.vehicleId,

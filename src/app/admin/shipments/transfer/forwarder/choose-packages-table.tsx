@@ -1,13 +1,10 @@
 import { useState } from "react"
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import type { Package, Vehicle } from "@/server/db/entities"
-import type { PackageShippingType } from "@/utils/constants"
-import { getHumanizedOfPackageShippingType } from "@/utils/humanize"
 import { api } from "@/utils/api"
 import { SortAscending } from "@phosphor-icons/react/dist/ssr/SortAscending"
 import { SortDescending } from "@phosphor-icons/react/dist/ssr/SortDescending"
 import { XCircle } from "@phosphor-icons/react/dist/ssr/XCircle"
-import { DateTime } from "luxon"
 
 function PackagesTableItem({
   isSelected,
@@ -20,7 +17,7 @@ function PackagesTableItem({
 }) {
   return (
     <button
-      className={`grid grid-cols-subgrid col-span-7 border-b border-gray-300 ${
+      className={`grid grid-cols-subgrid col-span-6 border-b border-gray-300 ${
         isSelected
           ? "bg-blue-50 hover:bg-blue-100"
           : "bg-white hover:bg-gray-50"
@@ -73,6 +70,7 @@ function filterBySearchTerm(items: Package[], searchTerm: string) {
 export function ChoosePackageTable({
   hasExceededWeightLimit,
   totalWeightOfSelectedPackages,
+  selectedDepartingWarehouseId,
   selectedPackageIds,
   selectedVehicle,
   onAutoSelect,
@@ -81,6 +79,7 @@ export function ChoosePackageTable({
 }: {
   hasExceededWeightLimit: boolean
   totalWeightOfSelectedPackages: number
+  selectedDepartingWarehouseId: null | number
   selectedPackageIds: string[]
   selectedVehicle: Vehicle | null
   onAutoSelect: (packages: Package[]) => void
@@ -97,6 +96,10 @@ export function ChoosePackageTable({
   } = api.package.getInWarehouseAndCanBeForwarderTransferred.useQuery({
     sortOrder,
     searchTerm,
+    warehouseId:
+      selectedDepartingWarehouseId === null
+        ? undefined
+        : selectedDepartingWarehouseId,
   })
 
   return (
