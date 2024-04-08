@@ -129,13 +129,7 @@ function VehiclesTable({ items }: { items: Vehicle[] }) {
               resetPageNumber={resetPageNumber}
             />
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Status</option>
-            </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Warehouse</option>
-            </select>
+          <div className="grid sm:grid-cols-2 gap-3 text-sm">
             <select
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
               value={visibleArchiveStatus}
