@@ -5,7 +5,10 @@ import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
 import { CreateModal } from "./create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
-import type { NormalizedDeliveryShipment } from "@/server/db/entities"
+import type {
+  NormalizedDeliveryShipment,
+  Warehouse,
+} from "@/server/db/entities"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
@@ -23,6 +26,17 @@ import { UserDisplayName } from "@/components/user-display-name"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 
+function WarehouseDetails(props: { warehouseId: number }) {
+  const { status, data, error } = api.warehouse.getById.useQuery({
+    id: props.warehouseId,
+  })
+
+  if (status === "loading") return <>...</>
+  if (status === "error") return <>Error: {error.message}</>
+
+  return <>{data.displayName}</>
+}
+
 function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
   const [visibleModal, setVisibleModal] = useState<
     null | "VIEW_DETAILS" | "VIEW_LOCATIONS"
@@ -35,6 +49,9 @@ function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <UserDisplayName userId={item.driverId} />
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        <WarehouseDetails warehouseId={item.departingWarehouseId} />
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {DateTime.fromISO(item.createdAt).toLocaleString(
@@ -132,7 +149,22 @@ function filterByShipmentStatus(
   return items.filter((_package) => _package.status === status)
 }
 
-function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
+function filterByWarehouseId(
+  items: NormalizedDeliveryShipment[],
+  warehouseId: "ALL" | number,
+) {
+  if (warehouseId === "ALL") return items
+
+  return items.filter((item) => item.departingWarehouseId === warehouseId)
+}
+
+function ShipmentsTable({
+  items,
+  warehouses,
+}: {
+  items: NormalizedDeliveryShipment[]
+  warehouses: Warehouse[]
+}) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")
@@ -145,11 +177,18 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
     "ALL",
   )
 
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<
+    "ALL" | number
+  >("ALL")
+
   const [searchTerm, setSearchTerm] = useState("")
   const visibleItems = filterBySearchTerm(
     filterBySelectedTab(
       filterByShipmentStatus(
-        filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+        filterByWarehouseId(
+          filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+          selectedWarehouseId,
+        ),
         selectedStatus,
       ),
       selectedTab,
@@ -200,8 +239,27 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
                 </option>
               ))}
             </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Warehouse</option>
+            <select
+              value={
+                typeof selectedWarehouseId === "number"
+                  ? selectedWarehouseId.toString()
+                  : selectedWarehouseId
+              }
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+              onChange={(e) => {
+                if (e.currentTarget.value === "ALL") {
+                  setSelectedWarehouseId(e.currentTarget.value)
+                } else {
+                  setSelectedWarehouseId(Number(e.currentTarget.value))
+                }
+              }}
+            >
+              <option value="ALL">All Warehouses</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id.toString()}>
+                  {warehouse.displayName}
+                </option>
+              ))}
             </select>
             <select
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
@@ -287,12 +345,15 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min overflow-auto">
+        <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min overflow-auto">
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Shipment ID
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Assigned To
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Departing From
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Created At
@@ -304,7 +365,7 @@ function ShipmentsTable({ items }: { items: NormalizedDeliveryShipment[] }) {
             Actions
           </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4 col-span-5">
+            <div className="text-center pt-4 col-span-6">
               No shipments found.
             </div>
           ) : (
@@ -348,25 +409,37 @@ export function HeaderSection() {
 }
 
 export function MainSection() {
-  const {
-    status,
-    data: deliveries,
-    error,
-  } = api.shipment.delivery.getAll.useQuery()
+  const getAllDeliveriesQuery = api.shipment.delivery.getAll.useQuery()
+  const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
 
-  if (status === "loading")
+  if (
+    getAllDeliveriesQuery.status === "loading" ||
+    getAllWarehousesQuery.status === "loading"
+  )
     return (
       <div className="flex justify-center pt-4">
         <LoadingSpinner />
       </div>
     )
 
-  if (status === "error")
+  if (getAllDeliveriesQuery.status === "error")
     return (
       <div className="flex justify-center pt-4">
-        An error occured: {error.message}
+        An error occured: {getAllDeliveriesQuery.error.message}
       </div>
     )
 
-  return <ShipmentsTable items={deliveries} />
+  if (getAllWarehousesQuery.status === "error")
+    return (
+      <div className="flex justify-center pt-4">
+        An error occured: {getAllWarehousesQuery.error.message}
+      </div>
+    )
+
+  return (
+    <ShipmentsTable
+      items={getAllDeliveriesQuery.data}
+      warehouses={getAllWarehousesQuery.data}
+    />
+  )
 }
