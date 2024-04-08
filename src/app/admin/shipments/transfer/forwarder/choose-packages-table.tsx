@@ -10,19 +10,21 @@ import { XCircle } from "@phosphor-icons/react/dist/ssr/XCircle"
 import { DateTime } from "luxon"
 
 function PackagesTableItem({
-  selectedPackageIds,
+  isSelected,
   package: _package,
   onCheckboxChange,
 }: {
-  selectedPackageIds: string[]
+  isSelected: boolean
   package: Package
   onCheckboxChange: (isChecked: boolean) => void
 }) {
-  const isSelected = selectedPackageIds.includes(_package.id)
-
   return (
     <button
-      className="grid grid-cols-subgrid col-span-7 border-b border-gray-300 hover:bg-gray-50 transition-colors text-sm text-justify"
+      className={`grid grid-cols-subgrid col-span-7 border-b border-gray-300 ${
+        isSelected
+          ? "bg-blue-50 hover:bg-blue-100"
+          : "bg-white hover:bg-gray-50"
+      }  transition-colors text-sm text-justify`}
       onClick={() => {
         if (isSelected) onCheckboxChange(false)
         else onCheckboxChange(true)
@@ -188,7 +190,7 @@ export function ChoosePackageTable({
               {filterBySearchTerm(packages, searchTerm).map((_package) => (
                 <PackagesTableItem
                   key={_package.id}
-                  selectedPackageIds={selectedPackageIds}
+                  isSelected={selectedPackageIds.includes(_package.id)}
                   package={_package}
                   onCheckboxChange={(isChecked) => {
                     onCheckboxChange({
@@ -205,15 +207,29 @@ export function ChoosePackageTable({
       <div className="mt-3 grid grid-cols-2">
         <div>
           {status === "success" && packages.length > 0 && (
-            <button
-              type="button"
-              className="font-medium bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 transition-colors text-white px-4 py-2 rounded-md"
-              onClick={() => {
-                if (status === "success") onAutoSelect(packages)
-              }}
-            >
-              Auto-select Packages
-            </button>
+            <>
+              {selectedPackageIds.length === 0 ? (
+                <button
+                  type="button"
+                  className="font-medium bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 transition-colors text-white px-4 py-2 rounded-md"
+                  onClick={() => {
+                    onAutoSelect(packages)
+                  }}
+                >
+                  Auto-select Packages
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="font-medium border border-blue-500 bg-white text-blue-500 hover:bg-blue-500 hover:text-white transition-colors px-4 py-2 rounded-md"
+                  onClick={() => {
+                    onResetSelection()
+                  }}
+                >
+                  Clear Selection
+                </button>
+              )}
+            </>
           )}
         </div>
         <div>
