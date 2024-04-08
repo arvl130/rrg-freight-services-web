@@ -40,7 +40,7 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="grid grid-rows-[1fr_auto] overflow-auto gap-y-3 px-4 py-2">
-      <div className="grid grid-cols-[auto_1fr] gap-3">
+      <div className="grid grid-cols-[auto_1fr] gap-3 overflow-auto">
         <div>
           <ChooseAgent
             agentId={selectedAgentId}
