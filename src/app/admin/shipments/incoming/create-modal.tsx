@@ -281,16 +281,26 @@ function ChooseAgentForm({
       className="flex justify-between gap-3 pt-2"
     >
       <div>
-        <select {...register("sentByAgentId")} defaultValue="">
-          <option value="">Select an agent ...</option>
-          {agents.map((agent) => (
-            <option key={agent.id} value={agent.id}>
-              {agent.displayName}
-            </option>
-          ))}
-        </select>
+        <p className="font-medium">
+          Select the agent that will monitor this shipment:
+          <select
+            {...register("sentByAgentId")}
+            defaultValue=""
+            className="bg-white ml-2 px-3 py-1.5 border border-gray-300 rounded-md"
+          >
+            <option value="">Choose ...</option>
+            {agents.map((agent) => (
+              <option key={agent.id} value={agent.id}>
+                {agent.displayName}
+              </option>
+            ))}
+          </select>
+        </p>
+        <p className="text-gray-500">
+          Typically, this is the agent that sent the file.
+        </p>
       </div>
-      <div className="flex gap-3">
+      <div className="space-x-3">
         <button
           type="button"
           className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
@@ -496,7 +506,7 @@ export function CreateModal({
         <Dialog.Overlay className="bg-black/40 fixed inset-0" />
         <Dialog.Content
           onEscapeKeyDown={onClose}
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_56rem)] h-[32rem] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_72rem)] h-[calc(100svh_-_3rem)] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
         >
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             New Incoming Shipment
