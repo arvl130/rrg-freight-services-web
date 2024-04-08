@@ -168,8 +168,13 @@ function filterByPackageStatus(
   return items.filter((_package) => _package.status === status)
 }
 
-function filterByWarehouseId(items: Package[], warehouseId: null | number) {
-  if (warehouseId === null) return items
+function filterByWarehouseId(
+  items: Package[],
+  warehouseId: "ALL" | "NONE" | number,
+) {
+  if (warehouseId === "ALL") return items
+  if (warehouseId === "NONE")
+    return items.filter(({ lastWarehouseId }) => lastWarehouseId === null)
 
   return items.filter((_package) => _package.lastWarehouseId === warehouseId)
 }
@@ -193,9 +198,9 @@ function PackagesTable({
     "ALL",
   )
 
-  const [selectedWarehouseId, setSelectedWarehouseId] = useState<null | number>(
-    null,
-  )
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<
+    "ALL" | "NONE" | number
+  >("ALL")
 
   const [searchTerm, setSearchTerm] = useState("")
   const visiblePackages = filterBySearchTerm(
@@ -257,14 +262,17 @@ function PackagesTable({
             </select>
             <select
               value={
-                selectedWarehouseId === null
-                  ? "ALL"
-                  : selectedWarehouseId.toString()
+                typeof selectedWarehouseId === "number"
+                  ? selectedWarehouseId.toString()
+                  : selectedWarehouseId
               }
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
               onChange={(e) => {
-                if (e.currentTarget.value === "ALL") {
-                  setSelectedWarehouseId(null)
+                if (
+                  e.currentTarget.value === "ALL" ||
+                  e.currentTarget.value === "NONE"
+                ) {
+                  setSelectedWarehouseId(e.currentTarget.value)
                 } else {
                   setSelectedWarehouseId(Number(e.currentTarget.value))
                 }
@@ -276,6 +284,7 @@ function PackagesTable({
                   {warehouse.displayName}
                 </option>
               ))}
+              <option value="NONE">Not Received Yet</option>
             </select>
             <select
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
