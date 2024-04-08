@@ -11,7 +11,10 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Table from "@/components/table"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
-import type { NormalizedWarehouseTransferShipment } from "@/server/db/entities"
+import type {
+  NormalizedWarehouseTransferShipment,
+  Warehouse,
+} from "@/server/db/entities"
 import {
   SUPPORTED_SHIPMENT_STATUSES,
   type ShipmentStatus,
@@ -31,6 +34,9 @@ function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
     <>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {item.id}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        <WarehouseDisplayName id={item.sentFromWarehouseId} />
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <WarehouseDisplayName id={item.sentToWarehouseId} />
@@ -121,10 +127,32 @@ function filterByShipmentStatus(
   return items.filter((_package) => _package.status === status)
 }
 
+function filterByOriginWarehouseId(
+  items: NormalizedWarehouseTransferShipment[],
+  originWarehouseId: "ALL" | number,
+) {
+  if (originWarehouseId === "ALL") return items
+
+  return items.filter((item) => item.sentFromWarehouseId === originWarehouseId)
+}
+
+function filterByDestinationWarehouseId(
+  items: NormalizedWarehouseTransferShipment[],
+  destinationWarehouseId: "ALL" | number,
+) {
+  if (destinationWarehouseId === "ALL") return items
+
+  return items.filter(
+    (item) => item.sentToWarehouseId === destinationWarehouseId,
+  )
+}
+
 function ShipmentsTable({
   shipments,
+  warehouses,
 }: {
   shipments: NormalizedWarehouseTransferShipment[]
+  warehouses: Warehouse[]
 }) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
@@ -134,10 +162,23 @@ function ShipmentsTable({
     "ALL",
   )
 
+  const [selectedOriginWarehouseId, setSelectedOriginWarehouseId] = useState<
+    "ALL" | number
+  >("ALL")
+
+  const [selectedDestinationWarehouseId, setSelectedDestinationWarehouseId] =
+    useState<"ALL" | number>("ALL")
+
   const [searchTerm, setSearchTerm] = useState("")
   const visibleItems = filterBySearchTerm(
     filterByShipmentStatus(
-      filterByArchiveStatus(shipments, visibleArchiveStatus === "ARCHIVED"),
+      filterByDestinationWarehouseId(
+        filterByOriginWarehouseId(
+          filterByArchiveStatus(shipments, visibleArchiveStatus === "ARCHIVED"),
+          selectedOriginWarehouseId,
+        ),
+        selectedDestinationWarehouseId,
+      ),
       selectedStatus,
     ),
     searchTerm,
@@ -171,7 +212,7 @@ function ShipmentsTable({
               resetPageNumber={resetPageNumber}
             />
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(4,_minmax(0,_1fr))_auto] gap-3 text-sm">
             <select
               value={selectedStatus}
               onChange={(e) => {
@@ -186,8 +227,51 @@ function ShipmentsTable({
                 </option>
               ))}
             </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Warehouse</option>
+            <select
+              value={
+                typeof selectedOriginWarehouseId === "number"
+                  ? selectedOriginWarehouseId.toString()
+                  : selectedOriginWarehouseId
+              }
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+              onChange={(e) => {
+                if (e.currentTarget.value === "ALL") {
+                  setSelectedOriginWarehouseId(e.currentTarget.value)
+                } else {
+                  setSelectedOriginWarehouseId(Number(e.currentTarget.value))
+                }
+              }}
+            >
+              <option value="ALL">All Origins</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id.toString()}>
+                  {warehouse.displayName}
+                </option>
+              ))}
+            </select>
+            <select
+              value={
+                typeof selectedDestinationWarehouseId === "number"
+                  ? selectedDestinationWarehouseId.toString()
+                  : selectedDestinationWarehouseId
+              }
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+              onChange={(e) => {
+                if (e.currentTarget.value === "ALL") {
+                  setSelectedDestinationWarehouseId(e.currentTarget.value)
+                } else {
+                  setSelectedDestinationWarehouseId(
+                    Number(e.currentTarget.value),
+                  )
+                }
+              }}
+            >
+              <option value="ALL">All Destinations</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id.toString()}>
+                  {warehouse.displayName}
+                </option>
+              ))}
             </select>
             <select
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
@@ -229,12 +313,15 @@ function ShipmentsTable({
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min overflow-auto">
+        <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min overflow-auto">
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Shipment ID
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
-            Sent to Warehouse
+            Origin Warehouse
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Destination Warehouse
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Created At
@@ -246,7 +333,7 @@ function ShipmentsTable({
             Actions
           </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4 col-span-5">
+            <div className="text-center pt-4 col-span-6">
               No shipments found.
             </div>
           ) : (
@@ -290,25 +377,38 @@ export function HeaderSection() {
 }
 
 export function MainSection() {
-  const {
-    status,
-    data: shipments,
-    error,
-  } = api.shipment.warehouseTransfer.getAll.useQuery()
+  const getAllWarehouseTransfersQuery =
+    api.shipment.warehouseTransfer.getAll.useQuery()
+  const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
 
-  if (status === "loading")
+  if (
+    getAllWarehouseTransfersQuery.status === "loading" ||
+    getAllWarehousesQuery.status === "loading"
+  )
     return (
       <div className="flex justify-center pt-4">
         <LoadingSpinner />
       </div>
     )
 
-  if (status === "error")
+  if (getAllWarehouseTransfersQuery.status === "error")
     return (
       <div className="flex justify-center pt-4">
-        An error occured: {error.message}
+        An error occured: {getAllWarehouseTransfersQuery.error.message}
       </div>
     )
 
-  return <ShipmentsTable shipments={shipments} />
+  if (getAllWarehousesQuery.status === "error")
+    return (
+      <div className="flex justify-center pt-4">
+        An error occured: {getAllWarehousesQuery.error.message}
+      </div>
+    )
+
+  return (
+    <ShipmentsTable
+      shipments={getAllWarehouseTransfersQuery.data}
+      warehouses={getAllWarehousesQuery.data}
+    />
+  )
 }

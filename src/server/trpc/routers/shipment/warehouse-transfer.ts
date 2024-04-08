@@ -183,6 +183,7 @@ export const warehouseTransferShipmentRouter = router({
         driverId: z.string().length(28),
         vehicleId: z.number(),
         sentToWarehouseId: z.number(),
+        sentFromWarehouseId: z.number(),
         packageIds: z.string().array(),
       }),
     )
@@ -197,6 +198,7 @@ export const warehouseTransferShipmentRouter = router({
         shipmentId,
         driverId: input.driverId,
         vehicleId: input.vehicleId,
+        sentFromWarehouseId: input.sentFromWarehouseId,
         sentToWarehouseId: input.sentToWarehouseId,
         createdAt,
       })

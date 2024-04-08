@@ -2,11 +2,11 @@ import { useMemo, useState } from "react"
 import type { Package, Vehicle } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
-import { DateTime } from "luxon"
 import { ChooseDriver } from "./choose-driver"
 import { ChooseVehicle } from "./choose-vehicle"
 import { ChoosePackageTable } from "./choose-packages-table"
 import { ChooseDestinationWarehouse } from "./choose-destination-warehouse"
+import { ChooseOriginWarehouse } from "./choose-origin-warehouse"
 
 export function CreateTransferForm({ onClose }: { onClose: () => void }) {
   const utils = api.useUtils()
@@ -21,6 +21,9 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
       },
     })
 
+  const [selectedOriginWarehouseId, setSelectedOriginWarehouseId] = useState<
+    null | number
+  >(null)
   const [selectedDestinationWarehouseId, setSelectedDestinationWarehouseId] =
     useState<null | number>(null)
   const [selectedDriverId, setSelectedDriverId] = useState("")
@@ -43,7 +46,16 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
     <div className="grid grid-rows-[1fr_auto] overflow-auto gap-y-3 px-4 py-2">
       <div className="grid grid-cols-[auto_1fr] gap-3 overflow-auto">
         <div>
+          <ChooseOriginWarehouse
+            warehouseId={selectedOriginWarehouseId}
+            onChange={(warehouseId) => {
+              setSelectedOriginWarehouseId(warehouseId)
+              setSelectedDestinationWarehouseId(null)
+              setSelectedPackages([])
+            }}
+          />
           <ChooseDestinationWarehouse
+            originWarehouseId={selectedOriginWarehouseId}
             warehouseId={selectedDestinationWarehouseId}
             onChange={(warehouseId) => {
               setSelectedDestinationWarehouseId(warehouseId)
@@ -61,6 +73,7 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <ChoosePackageTable
+          originWarehouseId={selectedOriginWarehouseId}
           selectedPackageIds={selectedPackages.map(({ id }) => id)}
           selectedVehicle={selectedVehicle}
           onAutoSelect={(packages) => {
@@ -128,9 +141,23 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
           disabled={
             isLoading ||
             selectedPackages.length === 0 ||
-            hasExceededVehicleWeightCapacity
+            hasExceededVehicleWeightCapacity ||
+            selectedOriginWarehouseId === null ||
+            selectedDestinationWarehouseId === null ||
+            selectedDriverId === null ||
+            selectedVehicle === null
           }
           onClick={() => {
+            if (selectedOriginWarehouseId === null) {
+              toast.error("Please choose an origin warehouse.")
+              return
+            }
+
+            if (selectedDestinationWarehouseId === null) {
+              toast.error("Please choose a destination warehouse.")
+              return
+            }
+
             if (selectedDriverId === null) {
               toast.error("Please choose a driver.")
               return
@@ -146,6 +173,7 @@ export function CreateTransferForm({ onClose }: { onClose: () => void }) {
             ]
 
             mutate({
+              sentFromWarehouseId: Number(selectedOriginWarehouseId),
               sentToWarehouseId: Number(selectedDestinationWarehouseId),
               driverId: selectedDriverId,
               vehicleId: Number(selectedVehicle.id),

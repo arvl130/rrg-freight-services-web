@@ -229,6 +229,9 @@ export const warehouseTransferShipments = mysqlTable(
     vehicleId: bigint("vehicle_id", {
       mode: "number",
     }).notNull(),
+    sentFromWarehouseId: bigint("sent_from_warehouse_id", {
+      mode: "number",
+    }).notNull(),
     sentToWarehouseId: bigint("sent_to_warehouse_id", {
       mode: "number",
     }).notNull(),

@@ -258,12 +258,30 @@ export const packageRouter = router({
 
       return results[0]
     }),
-  getInWarehouse: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db
-      .select()
-      .from(packages)
-      .where(eq(packages.status, "IN_WAREHOUSE"))
-  }),
+  getInWarehouse: protectedProcedure
+    .input(
+      z.object({
+        searchTerm: z.string(),
+        warehouseId: z.number().optional(),
+        sortOrder: z.union([z.literal("ASC"), z.literal("DESC")]),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db
+        .select()
+        .from(packages)
+        .where(
+          and(
+            eq(packages.status, "IN_WAREHOUSE"),
+            input.warehouseId
+              ? eq(packages.lastWarehouseId, input.warehouseId)
+              : undefined,
+            input.searchTerm === ""
+              ? undefined
+              : like(packages.id, `%${input.searchTerm}%`),
+          ),
+        )
+    }),
   getInWarehouseAndCanBeDelivered: protectedProcedure
     .input(
       z.object({

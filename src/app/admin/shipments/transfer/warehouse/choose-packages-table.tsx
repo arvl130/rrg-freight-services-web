@@ -71,6 +71,7 @@ function filterBySearchTerm(items: Package[], searchTerm: string) {
 }
 
 export function ChoosePackageTable({
+  originWarehouseId,
   hasExceededWeightLimit,
   totalWeightOfSelectedPackages,
   selectedPackageIds,
@@ -79,6 +80,7 @@ export function ChoosePackageTable({
   onCheckboxChange,
   onResetSelection,
 }: {
+  originWarehouseId: null | number
   hasExceededWeightLimit: boolean
   totalWeightOfSelectedPackages: number
   selectedPackageIds: string[]
@@ -94,9 +96,10 @@ export function ChoosePackageTable({
     refetch,
     status,
     data: packages,
-  } = api.package.getInWarehouseAndCanBeForwarderTransferred.useQuery({
+  } = api.package.getInWarehouse.useQuery({
     sortOrder,
     searchTerm,
+    warehouseId: originWarehouseId === null ? undefined : originWarehouseId,
   })
 
   return (

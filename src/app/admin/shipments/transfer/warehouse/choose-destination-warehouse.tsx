@@ -1,29 +1,35 @@
+import type { Warehouse } from "@/server/db/entities"
 import { api } from "@/utils/api"
-import { useEffect } from "react"
+
+function removeOriginWarehouseIdFromList(
+  warehouses: Warehouse[],
+  originWarehouseId: null | number,
+) {
+  if (originWarehouseId === null) return warehouses
+
+  return warehouses.filter((warehouse) => warehouse.id !== originWarehouseId)
+}
 
 export function ChooseDestinationWarehouse({
+  originWarehouseId,
   warehouseId,
   onChange,
 }: {
+  originWarehouseId: null | number
   warehouseId: null | number
   onChange: (warehouseId: number) => void
 }) {
   const { status, data, error } = api.warehouse.getAll.useQuery()
 
-  useEffect(() => {
-    if (warehouseId === null && data && data.length > 0) {
-      onChange(data[0].id)
-    }
-  }, [warehouseId, data, onChange])
-
   return (
-    <div className="text-gray-700">
+    <div className="text-gray-700 mt-3">
       <label className="block font-medium">Destination Warehouse</label>
       {status === "loading" && <p>Loading ...</p>}
       {status === "error" && <p>Error: {error.message}</p>}
       {status === "success" && (
         <>
-          {data.length === 0 ? (
+          {removeOriginWarehouseIdFromList(data, originWarehouseId).length ===
+          0 ? (
             <p>No available warehouses.</p>
           ) : (
             <select
@@ -33,11 +39,14 @@ export function ChooseDestinationWarehouse({
                 onChange(Number(e.currentTarget.value))
               }}
             >
-              {data.map((warehouse) => (
-                <option key={warehouse.id} value={warehouse.id.toString()}>
-                  {warehouse.displayName}
-                </option>
-              ))}
+              <option value="">Choose ...</option>
+              {removeOriginWarehouseIdFromList(data, originWarehouseId).map(
+                (warehouse) => (
+                  <option key={warehouse.id} value={warehouse.id.toString()}>
+                    {warehouse.displayName}
+                  </option>
+                ),
+              )}
             </select>
           )}
         </>
