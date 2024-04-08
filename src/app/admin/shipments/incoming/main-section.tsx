@@ -22,6 +22,17 @@ import {
 } from "@/utils/constants"
 import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 
+function WarehouseDetails(props: { warehouseId: number }) {
+  const { status, data, error } = api.warehouse.getById.useQuery({
+    id: props.warehouseId,
+  })
+
+  if (status === "loading") return <>...</>
+  if (status === "error") return <>Error: {error.message}</>
+
+  return <>{data.displayName}</>
+}
+
 function TableItem({ item }: { item: NormalizedIncomingShipment }) {
   const [visibleModal, setVisibleModal] = useState<
     null | "VIEW_DETAILS" | "PRINT_WAYBILLS"
@@ -38,6 +49,13 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {DateTime.fromISO(item.createdAt).toLocaleString(
           DateTime.DATETIME_FULL,
+        )}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {item.receivedAtWarehouseId === null ? (
+          "Not Received Yet"
+        ) : (
+          <WarehouseDetails warehouseId={item.receivedAtWarehouseId} />
         )}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
@@ -225,7 +243,7 @@ function ShipmentsTable({ items }: { items: NormalizedIncomingShipment[] }) {
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min overflow-auto">
+        <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min overflow-auto">
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Shipment ID
           </div>
@@ -233,7 +251,10 @@ function ShipmentsTable({ items }: { items: NormalizedIncomingShipment[] }) {
             Sender
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
-            Receiver
+            Created At
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Received at Warehouse
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Status

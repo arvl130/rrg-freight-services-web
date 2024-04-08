@@ -9,6 +9,7 @@ import {
   users,
   activities,
   overseasAgents,
+  warehouseStaffs,
 } from "@/server/db/schema"
 import type {
   PackageReceptionMode,
@@ -118,20 +119,41 @@ export const incomingShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db
-        .update(shipments)
-        .set({
-          status: "COMPLETED",
+      if (ctx.user.role === "WAREHOUSE") {
+        await ctx.db.transaction(async (tx) => {
+          const [{ warehouseId }] = await tx
+            .select()
+            .from(warehouseStaffs)
+            .where(eq(warehouseStaffs.userId, ctx.user.id))
+
+          await tx
+            .update(incomingShipments)
+            .set({
+              receivedAtWarehouseId: warehouseId,
+            })
+            .where(eq(incomingShipments.shipmentId, input.id))
+
+          await tx
+            .update(shipments)
+            .set({
+              status: "COMPLETED",
+            })
+            .where(eq(shipments.id, input.id))
         })
-        .where(eq(shipments.id, input.id))
+      } else {
+        await ctx.db
+          .update(shipments)
+          .set({
+            status: "COMPLETED",
+          })
+          .where(eq(shipments.id, input.id))
+      }
 
       await createLog(ctx.db, {
         verb: "UPDATE",
         entity: "INCOMING_SHIPMENT",
         createdById: ctx.user.id,
       })
-
-      return result
     }),
   create: protectedProcedure
     .input(
