@@ -35,12 +35,13 @@ function getDefaultValue(pathname: string) {
       "/admin/shipments/delivery",
       "/admin/shipments/transfer/forwarder",
       "/admin/shipments/transfer/warehouse",
+      "/admin/deliverable-provinces",
     ].includes(pathname)
   ) {
     return ["shipment-management"]
   }
 
-  if (["/admin/vehicles"].includes(pathname)) {
+  if (["/admin/vehicles", "/admin/warehouses"].includes(pathname)) {
     return ["asset-management"]
   }
 
@@ -122,6 +123,7 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
                     "/admin/shipments/delivery",
                     "/admin/shipments/transfer/forwarder",
                     "/admin/shipments/transfer/warehouse",
+                    "/admin/deliverable-provinces",
                   ]}
                 >
                   <Boat size={32} />
