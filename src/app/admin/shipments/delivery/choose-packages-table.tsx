@@ -119,7 +119,7 @@ export function ChoosePackageTable({
   })
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto]">
+    <div className="grid grid-rows-[auto_1fr_auto] overflow-auto">
       <div className="mb-3">
         <div className="grid grid-cols-[1fr_auto]">
           <div className="flex justify-between items-center font-medium text-gray-700">
