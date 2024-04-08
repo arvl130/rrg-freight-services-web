@@ -5,7 +5,10 @@ import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
 import { CreateModal } from "@/app/admin/shipments/incoming/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
-import type { NormalizedIncomingShipment } from "@/server/db/entities"
+import type {
+  NormalizedIncomingShipment,
+  Warehouse,
+} from "@/server/db/entities"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
@@ -139,7 +142,26 @@ function filterByShipmentStatus(
   return items.filter((_package) => _package.status === status)
 }
 
-function ShipmentsTable({ items }: { items: NormalizedIncomingShipment[] }) {
+function filterByWarehouseId(
+  items: NormalizedIncomingShipment[],
+  warehouseId: "ALL" | "NONE" | number,
+) {
+  if (warehouseId === "ALL") return items
+  if (warehouseId === "NONE")
+    return items.filter(
+      ({ receivedAtWarehouseId }) => receivedAtWarehouseId === null,
+    )
+
+  return items.filter((item) => item.receivedAtWarehouseId === warehouseId)
+}
+
+function ShipmentsTable({
+  items,
+  warehouses,
+}: {
+  items: NormalizedIncomingShipment[]
+  warehouses: Warehouse[]
+}) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")
@@ -148,10 +170,17 @@ function ShipmentsTable({ items }: { items: NormalizedIncomingShipment[] }) {
     "ALL",
   )
 
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<
+    "ALL" | "NONE" | number
+  >("ALL")
+
   const [searchTerm, setSearchTerm] = useState("")
   const visibleItems = filterBySearchTerm(
     filterByShipmentStatus(
-      filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+      filterByWarehouseId(
+        filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+        selectedWarehouseId,
+      ),
       selectedStatus,
     ),
     searchTerm,
@@ -200,8 +229,31 @@ function ShipmentsTable({ items }: { items: NormalizedIncomingShipment[] }) {
                 </option>
               ))}
             </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Warehouse</option>
+            <select
+              value={
+                typeof selectedWarehouseId === "number"
+                  ? selectedWarehouseId.toString()
+                  : selectedWarehouseId
+              }
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+              onChange={(e) => {
+                if (
+                  e.currentTarget.value === "ALL" ||
+                  e.currentTarget.value === "NONE"
+                ) {
+                  setSelectedWarehouseId(e.currentTarget.value)
+                } else {
+                  setSelectedWarehouseId(Number(e.currentTarget.value))
+                }
+              }}
+            >
+              <option value="ALL">All Warehouses</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id.toString()}>
+                  {warehouse.displayName}
+                </option>
+              ))}
+              <option value="NONE">Not Received Yet</option>
             </select>
             <select
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
@@ -263,7 +315,7 @@ function ShipmentsTable({ items }: { items: NormalizedIncomingShipment[] }) {
             Actions
           </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4 col-span-5">
+            <div className="text-center pt-4 col-span-6">
               No shipments found.
             </div>
           ) : (
@@ -307,21 +359,37 @@ export function HeaderSection() {
 }
 
 export function MainSection() {
-  const { status, data: items, error } = api.shipment.incoming.getAll.useQuery()
+  const getAllShipmentsQuery = api.shipment.incoming.getAll.useQuery()
+  const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
 
-  if (status === "loading")
+  if (
+    getAllShipmentsQuery.status === "loading" ||
+    getAllWarehousesQuery.status === "loading"
+  )
     return (
       <div className="flex justify-center pt-4">
         <LoadingSpinner />
       </div>
     )
 
-  if (status === "error")
+  if (getAllShipmentsQuery.status === "error")
     return (
       <div className="flex justify-center pt-4">
-        An error occured: {error.message}
+        An error occured: {getAllShipmentsQuery.error.message}
       </div>
     )
 
-  return <ShipmentsTable items={items} />
+  if (getAllWarehousesQuery.status === "error")
+    return (
+      <div className="flex justify-center pt-4">
+        An error occured: {getAllWarehousesQuery.error.message}
+      </div>
+    )
+
+  return (
+    <ShipmentsTable
+      items={getAllShipmentsQuery.data}
+      warehouses={getAllWarehousesQuery.data}
+    />
+  )
 }
