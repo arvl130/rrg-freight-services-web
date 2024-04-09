@@ -186,6 +186,7 @@ export const packageRouter = router({
               ),
             ),
             weightInKg: z.number(),
+            volumeInCubicMeter: z.number(),
             senderFullName: z.string().min(1).max(100),
             senderContactNumber: z.string().min(1).max(15),
             senderEmailAddress: z.string().min(1).max(100),

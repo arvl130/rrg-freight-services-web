@@ -93,6 +93,8 @@ export const LEAFLET_DEFAULT_ZOOM_LEVEL = 16
 export const REGEX_ONE_OR_MORE_DIGITS = /^\d+$/
 export const REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS = /^\d+\.?\d*$/
 export const REGEX_HTML_INPUT_DATESTR = /^\d{4}-\d{2}-\d{2}$/
+export const REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS_INSIDE_PARENTHESIS =
+  /\((\d*\.?\d+)\s/
 
 type NewPackageStatusDescriptionOptions =
   | {

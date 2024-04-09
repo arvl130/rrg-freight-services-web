@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "react-hook-form"
-import { ZodError, z } from "zod"
+import { z } from "zod"
 import type { WorkBook } from "xlsx"
 import { utils, read } from "xlsx"
 import { Fragment, useCallback, useEffect, useState } from "react"
@@ -11,6 +11,7 @@ import type {
   PackageShippingType,
 } from "@/utils/constants"
 import {
+  REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS_INSIDE_PARENTHESIS,
   SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
@@ -144,6 +145,7 @@ const expectedColumns = [
   "Shipping Type",
   "Reception Mode",
   "Weight In Kg",
+  "Dimensions (Space Use)",
   "Sender Full Name",
   "Sender Contact Number",
   "Sender Email Address",
@@ -177,6 +179,9 @@ const sheetRowSchema = z.object({
     SUPPORTED_PACKAGE_RECEPTION_MODES.includes(val as PackageReceptionMode),
   ),
   "Weight In Kg": z.number(),
+  "Dimensions (Space Use)": z
+    .string()
+    .regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS_INSIDE_PARENTHESIS),
   "Sender Full Name": z.string().min(1).max(100),
   "Sender Contact Number": z.string().min(1).max(15),
   "Sender Email Address": z
@@ -256,6 +261,11 @@ function ChooseAgentForm({
             shippingType: newPackage["Shipping Type"],
             receptionMode: newPackage["Reception Mode"],
             weightInKg: newPackage["Weight In Kg"],
+            volumeInCubicMeter: Number(
+              newPackage["Dimensions (Space Use)"].match(
+                REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS_INSIDE_PARENTHESIS,
+              )![1],
+            ),
             senderFullName: newPackage["Sender Full Name"],
             senderContactNumber: newPackage["Sender Contact Number"],
             senderEmailAddress: newPackage["Sender Email Address"],

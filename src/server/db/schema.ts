@@ -345,6 +345,10 @@ export const packages = mysqlTable("packages", {
     precision: 8,
     scale: 2,
   }).notNull(),
+  volumeInCubicMeter: double("volume_in_cubic_meter", {
+    precision: 8,
+    scale: 2,
+  }).notNull(),
   senderFullName: varchar("sender_full_name", { length: 100 }).notNull(),
   senderContactNumber: varchar("sender_contact_number", {
     length: 15,
