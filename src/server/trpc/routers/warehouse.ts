@@ -39,7 +39,8 @@ export const warehouseRouter = router({
     .input(
       z.object({
         displayName: z.string().min(1).max(100),
-        weightCapacityInKg: z.number().gt(0),
+        volumeCapacityInCubicMeter: z.number().gt(0),
+        targetUtilization: z.number().gte(20).lte(100),
       }),
     )
     .mutation(async ({ ctx, input }) => {

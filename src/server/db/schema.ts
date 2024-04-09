@@ -272,7 +272,11 @@ export const warehouses = mysqlTable("warehouses", {
   displayName: varchar("display_name", {
     length: 100,
   }).notNull(),
-  weightCapacityInKg: double("weight_capacity_in_kg", {
+  volumeCapacityInCubicMeter: double("volume_capacity_in_cubic_meter", {
+    precision: 8,
+    scale: 2,
+  }).notNull(),
+  targetUtilization: double("target_utilization", {
     precision: 8,
     scale: 2,
   }).notNull(),

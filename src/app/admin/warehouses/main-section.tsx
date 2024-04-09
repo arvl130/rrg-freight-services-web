@@ -27,7 +27,10 @@ function TableItem({ item }: { item: Warehouse }) {
         {item.displayName}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        {item.weightCapacityInKg}
+        {item.volumeCapacityInCubicMeter} m³
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {item.targetUtilization}%
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <DropdownMenu.Root>
@@ -164,7 +167,7 @@ function WarehousesTable({ items }: { items: Warehouse[] }) {
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div className="grid grid-cols-[repeat(3,_auto)_1fr] auto-rows-min overflow-auto">
+        <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min overflow-auto">
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Warehouse ID
           </div>
@@ -172,7 +175,10 @@ function WarehousesTable({ items }: { items: Warehouse[] }) {
             Display Name
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
-            Weight Capacity (in KG)
+            Space Capacity
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Target Utilization
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Actions

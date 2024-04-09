@@ -132,13 +132,15 @@ const newWarehouses: NewWarehouse[] = [
   {
     id: 1,
     displayName: "Warehouse 1",
-    weightCapacityInKg: 10000,
+    volumeCapacityInCubicMeter: 10000,
+    targetUtilization: 60,
     createdAt,
   },
   {
     id: 2,
     displayName: "Warehouse 2",
-    weightCapacityInKg: 10000,
+    volumeCapacityInCubicMeter: 10000,
+    targetUtilization: 80,
     createdAt,
   },
 ]
