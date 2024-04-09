@@ -79,13 +79,13 @@ export default async function AboutUsPage() {
         <div className="text-4xl font-bold text-center my-20">
           Meet the Team
         </div>
-        <section className="bg-white  grid grid-cols-2 gap-10 flex-col  mx-8 my-10 lg:px-28 md:grid-cols-4 ">
-          <div className="w-full">
+        <section className="bg-white grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-10 mx-8 my-10 lg:px-24 ">
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/ceo1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
-              width={700}
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
+              width={600}
               height={800}
             />
             <div className="text-center text-[12px] md:text-[16px] mt-3">
@@ -94,11 +94,11 @@ export default async function AboutUsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/om1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
@@ -108,11 +108,11 @@ export default async function AboutUsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/sec1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
@@ -122,11 +122,11 @@ export default async function AboutUsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/billing1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
@@ -137,14 +137,14 @@ export default async function AboutUsPage() {
           </div>
         </section>
 
-        <section className="bg-white  grid grid-cols-3 gap-10 flex-col  mx-12 my-10 lg:px-28 md:mx-40 ">
-          <div className="w-full">
+        <section className="bg-white grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-10 mx-8 my-10 lg:px-28 md:mx-32">
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/import1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
-              height={800}
+              height={700}
             />
             <div className="text-center text-[12px] md:text-[16px] mt-3">
               John Jerecho C. Valenzuela
@@ -152,13 +152,13 @@ export default async function AboutUsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/messenger1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
-              height={800}
+              height={700}
             />
             <div className="text-center text-[12px] md:text-[16px] mt-3">
               Mark Sherwin Valenzuela
@@ -166,17 +166,17 @@ export default async function AboutUsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/csr1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
-              height={800}
+              height={700}
             />
             <div className="text-center text-[12px] md:text-[16px] mt-3">
               Henry D. Lumansoc
-              <div className="font-bold">Customs Reprenstative</div>
+              <div className="font-bold">Customs Representative</div>
             </div>
           </div>
         </section>
