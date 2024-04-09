@@ -179,6 +179,19 @@ function filterByWarehouseId(
   return items.filter((_package) => _package.lastWarehouseId === warehouseId)
 }
 
+type InsuranceStatus = "INSURED" | "NOT_INSURED" | "BOTH"
+
+function filterByInsuranceStatus(
+  items: Package[],
+  insuranceStatus: InsuranceStatus,
+) {
+  if (insuranceStatus === "BOTH") return items
+  if (insuranceStatus === "NOT_INSURED")
+    return items.filter(({ declaredValue }) => declaredValue === null)
+
+  return items.filter(({ declaredValue }) => declaredValue !== null)
+}
+
 function PackagesTable({
   packages,
   warehouses,
@@ -202,15 +215,24 @@ function PackagesTable({
     "ALL" | "NONE" | number
   >("ALL")
 
+  const [selectedInsuranceStatus, setSelectedInsuranceStatus] =
+    useState<InsuranceStatus>("BOTH")
+
   const [searchTerm, setSearchTerm] = useState("")
   const visiblePackages = filterBySearchTerm(
     filterBySelectedTab(
-      filterByPackageStatus(
-        filterByWarehouseId(
-          filterByArchiveStatus(packages, visibleArchiveStatus === "ARCHIVED"),
-          selectedWarehouseId,
+      filterByInsuranceStatus(
+        filterByPackageStatus(
+          filterByWarehouseId(
+            filterByArchiveStatus(
+              packages,
+              visibleArchiveStatus === "ARCHIVED",
+            ),
+            selectedWarehouseId,
+          ),
+          selectedStatus,
         ),
-        selectedStatus,
+        selectedInsuranceStatus,
       ),
       selectedTab,
     ),
@@ -245,7 +267,7 @@ function PackagesTable({
               resetPageNumber={resetPageNumber}
             />
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
+          <div className="flex justify-center gap-x-3 gap-y-2 flex-wrap text-sm">
             <select
               value={selectedStatus}
               onChange={(e) => {
@@ -297,6 +319,19 @@ function PackagesTable({
             >
               <option value="NOT_ARCHIVED">Not Archived</option>
               <option value="ARCHIVED">Archived</option>
+            </select>
+            <select
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+              value={selectedInsuranceStatus}
+              onChange={(e) => {
+                setSelectedInsuranceStatus(
+                  e.currentTarget.value as InsuranceStatus,
+                )
+              }}
+            >
+              <option value="BOTH">Either Insurance</option>
+              <option value="NOT_INSURED">Not Insured</option>
+              <option value="INSURED">Insured</option>
             </select>
             <button
               type="button"
