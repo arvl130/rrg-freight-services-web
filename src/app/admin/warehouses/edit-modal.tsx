@@ -10,7 +10,10 @@ import { z } from "zod"
 
 const formSchema = z.object({
   displayName: z.string().min(1).max(100),
-  weightCapacityInKg: z.string().regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS),
+  volumeCapacityInCubicMeter: z
+    .string()
+    .regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS),
+  targetUtilization: z.string().regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS),
 })
 
 type FormSchema = z.infer<typeof formSchema>
@@ -31,7 +34,9 @@ function EditForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       displayName: warehouse.displayName,
-      weightCapacityInKg: warehouse.weightCapacityInKg.toString(),
+      volumeCapacityInCubicMeter:
+        warehouse.volumeCapacityInCubicMeter.toString(),
+      targetUtilization: warehouse.targetUtilization.toString(),
     },
   })
 
@@ -58,7 +63,10 @@ function EditForm({
         mutate({
           ...formData,
           id: warehouse.id,
-          weightCapacityInKg: Number(formData.weightCapacityInKg),
+          volumeCapacityInCubicMeter: Number(
+            formData.volumeCapacityInCubicMeter,
+          ),
+          targetUtilization: Number(formData.targetUtilization),
         }),
       )}
     >
@@ -74,17 +82,33 @@ function EditForm({
         )}
       </div>
       <div className="grid mb-3">
-        <label className="font-medium mb-1">Weight Capacity (in KG)</label>
+        <label className="font-medium mb-1">Space Capacity (in m³)</label>
         <input
           type="number"
           step={0.1}
           min={0.1}
           className="px-2 py-1 border border-gray-300"
-          {...register("weightCapacityInKg")}
+          {...register("volumeCapacityInCubicMeter")}
         />
-        {errors.weightCapacityInKg && (
+        {errors.volumeCapacityInCubicMeter && (
           <div className="mt-1 text-red-500">
-            {errors.weightCapacityInKg.message}.
+            {errors.volumeCapacityInCubicMeter.message}.
+          </div>
+        )}
+      </div>
+      <div className="grid mb-3">
+        <label className="font-medium mb-1">Target Utilization (in %)</label>
+        <input
+          type="number"
+          step={1}
+          max={100}
+          min={20}
+          className="px-2 py-1 border border-gray-300"
+          {...register("targetUtilization")}
+        />
+        {errors.targetUtilization && (
+          <div className="mt-1 text-red-500">
+            {errors.targetUtilization.message}.
           </div>
         )}
       </div>
