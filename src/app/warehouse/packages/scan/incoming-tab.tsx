@@ -162,7 +162,9 @@ function PackagesTableTabs(props: {
   packages: Package[]
   onUndoScan: (packageId: string) => void
 }) {
-  const [visibleView, setVisibleView] = useState<"SORTED" | "ALL">("SORTED")
+  const [visibleView, setVisibleView] = useState<
+    "SORTED" | "DELIVERABLE_ONLY" | "NON_DELIVERABLE_ONLY" | "ALL"
+  >("SORTED")
   const luzonPackages = props.packages.filter(
     ({ isDeliverable }) => isDeliverable,
   )
@@ -185,6 +187,32 @@ function PackagesTableTabs(props: {
           } px-2 py-1`}
         >
           Sorted
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setVisibleView("DELIVERABLE_ONLY")
+          }}
+          className={`uppercase font-semibold transition-colors border-b-2 border-green-500 ${
+            visibleView === "DELIVERABLE_ONLY"
+              ? "bg-green-500 hover:bg-green-400 text-white"
+              : "text-green-500 hover:bg-green-100"
+          } px-2 py-1`}
+        >
+          Deliverable Only
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setVisibleView("NON_DELIVERABLE_ONLY")
+          }}
+          className={`uppercase font-semibold transition-colors border-b-2 border-green-500 ${
+            visibleView === "NON_DELIVERABLE_ONLY"
+              ? "bg-green-500 hover:bg-green-400 text-white"
+              : "text-green-500 hover:bg-green-100"
+          } px-2 py-1`}
+        >
+          Non-Deliverable Only
         </button>
         <button
           type="button"
@@ -226,11 +254,81 @@ function PackagesTableTabs(props: {
         </div>
       )}
 
+      {visibleView === "DELIVERABLE_ONLY" && (
+        <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto">
+          <div className="font-medium whitespace-nowrap">
+            Tracking No. (from agent)
+          </div>
+          <div className="font-medium whitespace-nowrap">
+            Tracking No. (from RRG)
+          </div>
+          <div className="font-medium">Receiver</div>
+          <div className="font-medium">Status</div>
+          <div className="font-medium">Actions</div>
+          {luzonPackages.length === 0 ? (
+            <p className="text-center text-gray-500 col-span-5">
+              No packages in this category.
+            </p>
+          ) : (
+            <>
+              {luzonPackages.map((_package) => (
+                <TableItem
+                  key={_package.id}
+                  item={_package}
+                  isScanned={props.scannedPackageIds.includes(_package.id)}
+                  isUpdatingStatus={props.isUpdatingStatus}
+                  undoScan={() => {
+                    props.onUndoScan(_package.id)
+                  }}
+                />
+              ))}
+            </>
+          )}
+        </div>
+      )}
+
+      {visibleView === "NON_DELIVERABLE_ONLY" && (
+        <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto">
+          <div className="font-medium whitespace-nowrap">
+            Tracking No. (from agent)
+          </div>
+          <div className="font-medium whitespace-nowrap">
+            Tracking No. (from RRG)
+          </div>
+          <div className="font-medium">Receiver</div>
+          <div className="font-medium">Status</div>
+          <div className="font-medium">Actions</div>
+          {nonLuzonPackages.length === 0 ? (
+            <p className="text-center text-gray-500 col-span-5">
+              No packages in this category.
+            </p>
+          ) : (
+            <>
+              {nonLuzonPackages.map((_package) => (
+                <TableItem
+                  key={_package.id}
+                  item={_package}
+                  isScanned={props.scannedPackageIds.includes(_package.id)}
+                  isUpdatingStatus={props.isUpdatingStatus}
+                  undoScan={() => {
+                    props.onUndoScan(_package.id)
+                  }}
+                />
+              ))}
+            </>
+          )}
+        </div>
+      )}
+
       {visibleView === "SORTED" && (
         <div className="grid grid-cols-2">
-          <div className="font-medium pr-3">Going to Luzon</div>
-          <div className="font-medium border-l border-gray-300 pl-3">
-            Going to Visayas/Mindanao
+          <div className="font-semibold pr-3 py-2">
+            <p className="text-lg">Deliverable Packages</p>
+            <p className="text-gray-500 text-sm">(Going to Luzon)</p>
+          </div>
+          <div className="font-medium border-l border-gray-300 pl-3 py-2">
+            <p className="text-lg">Non-Deliverable Packages</p>
+            <p className="text-gray-500 text-sm">(Going to Visayas/Mindanao)</p>
           </div>
           <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto pr-3">
             <div className="font-medium whitespace-nowrap">
@@ -242,7 +340,7 @@ function PackagesTableTabs(props: {
             <div className="font-medium">Receiver</div>
             <div className="font-medium">Status</div>
             <div className="font-medium">Actions</div>
-            {luzonPackages.length === 9 ? (
+            {luzonPackages.length === 0 ? (
               <p className="text-center text-gray-500 col-span-5">
                 No packages in this category.
               </p>
