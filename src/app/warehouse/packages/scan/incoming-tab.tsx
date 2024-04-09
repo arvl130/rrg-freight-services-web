@@ -326,7 +326,7 @@ function PackagesTableTabs(props: {
             <p className="text-lg">Deliverable Packages</p>
             <p className="text-gray-500 text-sm">(Going to Luzon)</p>
           </div>
-          <div className="font-medium border-l border-gray-300 pl-3 py-2">
+          <div className="font-semibold border-l border-gray-300 pl-3 py-2">
             <p className="text-lg">Non-Deliverable Packages</p>
             <p className="text-gray-500 text-sm">(Going to Visayas/Mindanao)</p>
           </div>
