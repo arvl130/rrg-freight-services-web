@@ -85,8 +85,8 @@ function EditForm({
         <label className="font-medium mb-1">Space Capacity (in m³)</label>
         <input
           type="number"
-          step={0.1}
-          min={0.1}
+          step={1}
+          min={10}
           className="px-2 py-1 border border-gray-300"
           {...register("volumeCapacityInCubicMeter")}
         />
