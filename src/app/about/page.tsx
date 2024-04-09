@@ -182,14 +182,15 @@ export default async function AboutUsPage() {
         </section>
 
         <section
-          className="py-10 mb-20"
+          className="py-36 md:py-20 mb-20 "
           style={{
-            background:
+            backgroundImage:
               "linear-gradient(#FFFFFF 20%, #79CFDC 5%, #79CFDC 80%, #FFFFFF 80%)",
+            backgroundSize: "cover",
           }}
         >
-          <div className="block px-10 md:flex md:justify-center">
-            <div className="m-0 mb-5 md:mr-10">
+          <div className="block px-5 md:px-10 md:flex md:justify-center">
+            <div className="m-5 mb-5 md:mr-10">
               <Image
                 src="/assets/img/about/office.jpg"
                 alt="..."
@@ -200,13 +201,13 @@ export default async function AboutUsPage() {
             </div>
             <div className="flex justify-center items-center ">
               <div>
-                <h1 className="text-[30px] font-semibold">
+                <h1 className="text-[24px] md:text-[30px] font-semibold">
                   RRG Freight Services
                 </h1>
-                <p className="font-medium mb-3">
+                <p className="text-sm md:text-base font-medium mb-3 md:mb-0">
                   Blk 213 Lot 41 Yuan Street Phase 8 North Fairview
                 </p>
-                <ul className="font-medium">
+                <ul className="text-sm md:text-base font-medium">
                   <li className="flex items-center mb-2">
                     <Phone
                       className="mr-3"
@@ -233,8 +234,8 @@ export default async function AboutUsPage() {
                       weight="light"
                     />{" "}
                     <div>
-                      <p>Office Hours</p>
-                      <p>9:00 AM To 6:00PM</p>
+                      <p className="text-sm md:text-base">Office Hours</p>
+                      <p className="text-sm md:text-base">9:00 AM To 6:00PM</p>
                     </div>
                   </li>
                 </ul>
