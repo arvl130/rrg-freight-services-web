@@ -79,13 +79,13 @@ export default async function AboutUsPage() {
         <div className="text-4xl font-bold text-center my-20">
           Meet the Team
         </div>
-        <section className="bg-white  grid grid-cols-2 gap-10 flex-col  mx-8 my-10 lg:px-28 md:grid-cols-4 ">
-          <div className="w-full">
+        <section className="bg-white grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-10 mx-8 my-10 lg:px-24 ">
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/ceo1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
-              width={700}
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
+              width={600}
               height={800}
             />
             <div className="text-center text-[12px] md:text-[16px] mt-3">
@@ -94,11 +94,11 @@ export default async function AboutUsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/om1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
@@ -108,11 +108,11 @@ export default async function AboutUsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/sec1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
@@ -122,11 +122,11 @@ export default async function AboutUsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/billing1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
               height={800}
             />
@@ -137,14 +137,14 @@ export default async function AboutUsPage() {
           </div>
         </section>
 
-        <section className="bg-white  grid grid-cols-3 gap-10 flex-col  mx-12 my-10 lg:px-28 md:mx-40 ">
-          <div className="w-full">
+        <section className="bg-white grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-10 mx-8 my-10 lg:px-28 md:mx-32">
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/import1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
-              height={800}
+              height={700}
             />
             <div className="text-center text-[12px] md:text-[16px] mt-3">
               John Jerecho C. Valenzuela
@@ -152,13 +152,13 @@ export default async function AboutUsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/messenger1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
-              height={800}
+              height={700}
             />
             <div className="text-center text-[12px] md:text-[16px] mt-3">
               Mark Sherwin Valenzuela
@@ -166,30 +166,31 @@ export default async function AboutUsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="w-full md:w-auto">
             <Image
               src="/assets/img/about/csr1.png"
               alt="..."
-              className="w-11/12 items-center m-auto  rounded-br-[126px] rounded-tl-[120px] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.25)]"
+              className="w-full mx-auto rounded-br-[100px] rounded-tl-[90px] hover:drop-shadow-[0_10px_10px_rgba(0,0,0,0.25)]"
               width={600}
-              height={800}
+              height={700}
             />
             <div className="text-center text-[12px] md:text-[16px] mt-3">
               Henry D. Lumansoc
-              <div className="font-bold">Customs Reprenstative</div>
+              <div className="font-bold">Customs Representative</div>
             </div>
           </div>
         </section>
 
         <section
-          className="py-10 mb-20"
+          className="py-36 md:py-20 mb-20 "
           style={{
-            background:
+            backgroundImage:
               "linear-gradient(#FFFFFF 20%, #79CFDC 5%, #79CFDC 80%, #FFFFFF 80%)",
+            backgroundSize: "cover",
           }}
         >
-          <div className="block px-10 md:flex md:justify-center">
-            <div className="m-0 mb-5 md:mr-10">
+          <div className="block px-5 md:px-10 md:flex md:justify-center">
+            <div className="m-5 mb-5 md:mr-10">
               <Image
                 src="/assets/img/about/office.jpg"
                 alt="..."
@@ -200,13 +201,13 @@ export default async function AboutUsPage() {
             </div>
             <div className="flex justify-center items-center ">
               <div>
-                <h1 className="text-[30px] font-semibold">
+                <h1 className="text-[24px] md:text-[30px] font-semibold">
                   RRG Freight Services
                 </h1>
-                <p className="font-medium mb-3">
+                <p className="text-sm md:text-base font-medium mb-3 md:mb-0">
                   Blk 213 Lot 41 Yuan Street Phase 8 North Fairview
                 </p>
-                <ul className="font-medium">
+                <ul className="text-sm md:text-base font-medium">
                   <li className="flex items-center mb-2">
                     <Phone
                       className="mr-3"
@@ -233,8 +234,8 @@ export default async function AboutUsPage() {
                       weight="light"
                     />{" "}
                     <div>
-                      <p>Office Hours</p>
-                      <p>9:00 AM To 6:00PM</p>
+                      <p className="text-sm md:text-base">Office Hours</p>
+                      <p className="text-sm md:text-base">9:00 AM To 6:00PM</p>
                     </div>
                   </li>
                 </ul>
