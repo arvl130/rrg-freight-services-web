@@ -180,10 +180,10 @@ function PackagesTableTabs(props: {
           onClick={() => {
             setVisibleView("SORTED")
           }}
-          className={`uppercase font-semibold transition-colors border-b-2 border-green-500 ${
+          className={`uppercase font-semibold transition-colors border-b-2 border-orange-500 ${
             visibleView === "SORTED"
-              ? "bg-green-500 hover:bg-green-400 text-white"
-              : "text-green-500 hover:bg-green-100"
+              ? "bg-orange-500 hover:bg-orange-400 text-white"
+              : "text-orange-500 hover:bg-orange-100"
           } px-2 py-1`}
         >
           Sorted
@@ -193,10 +193,10 @@ function PackagesTableTabs(props: {
           onClick={() => {
             setVisibleView("DELIVERABLE_ONLY")
           }}
-          className={`uppercase font-semibold transition-colors border-b-2 border-green-500 ${
+          className={`uppercase font-semibold transition-colors border-b-2 border-orange-500 ${
             visibleView === "DELIVERABLE_ONLY"
-              ? "bg-green-500 hover:bg-green-400 text-white"
-              : "text-green-500 hover:bg-green-100"
+              ? "bg-orange-500 hover:bg-orange-400 text-white"
+              : "text-orange-500 hover:bg-orange-100"
           } px-2 py-1`}
         >
           Deliverable Only
@@ -206,10 +206,10 @@ function PackagesTableTabs(props: {
           onClick={() => {
             setVisibleView("NON_DELIVERABLE_ONLY")
           }}
-          className={`uppercase font-semibold transition-colors border-b-2 border-green-500 ${
+          className={`uppercase font-semibold transition-colors border-b-2 border-orange-500 ${
             visibleView === "NON_DELIVERABLE_ONLY"
-              ? "bg-green-500 hover:bg-green-400 text-white"
-              : "text-green-500 hover:bg-green-100"
+              ? "bg-orange-500 hover:bg-orange-400 text-white"
+              : "text-orange-500 hover:bg-orange-100"
           } px-2 py-1`}
         >
           Non-Deliverable Only
@@ -219,10 +219,10 @@ function PackagesTableTabs(props: {
           onClick={() => {
             setVisibleView("ALL")
           }}
-          className={`uppercase font-semibold transition-colors border-b-2 border-green-500 ${
+          className={`uppercase font-semibold transition-colors border-b-2 border-orange-500 ${
             visibleView === "ALL"
-              ? "bg-green-500 hover:bg-green-400 text-white"
-              : "text-green-500 hover:bg-green-100"
+              ? "bg-orange-500 hover:bg-orange-400 text-white"
+              : "text-orange-500 hover:bg-orange-100"
           } px-2 py-1`}
         >
           All
