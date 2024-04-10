@@ -64,7 +64,7 @@ export function UpdatePhotoScreen({
 
   return (
     <form
-      className="grid grid-rows-[1fr_auto]"
+      className="grid-rows-[1fr_auto]"
       onSubmit={handleSubmit(async (formData) => {
         const [imageFile] = formData.imageFiles
 
@@ -107,34 +107,40 @@ export function UpdatePhotoScreen({
             />
           )}
         </div>
-        <input
-          type="file"
-          accept="image/jpg,image/jpeg,image/png"
-          {...register("imageFiles")}
-        />
-      </div>
-      <div>
-        {typeof user.photoUrl === "string" && (
-          <button
-            onClick={() =>
-              removePhotoUrl({
-                id: user.id,
-              })
-            }
-            disabled={isLoading}
-            className="p-2 mb-3 text-white	w-full bg-red-500 transition-colors disabled:bg-red-300 hover:bg-red-400 rounded-lg font-medium"
-          >
-            {isLoadingRemovePhotoUrl || isUploading ? "Deleting ..." : "Delete"}
-          </button>
-        )}
+        <div className="flex flex-col items-center">
+          <div className="w-full mb-3">
+            <input
+              type="file"
+              accept="image/jpg,image/jpeg,image/png"
+              {...register("imageFiles")}
+            />
+          </div>
+          <div className="w-full">
+            {typeof user.photoUrl === "string" && (
+              <button
+                onClick={() =>
+                  removePhotoUrl({
+                    id: user.id,
+                  })
+                }
+                disabled={isLoading}
+                className="w-full p-2 text-white bg-red-500 rounded-lg font-medium transition-colors disabled:bg-red-300 hover:bg-red-400"
+              >
+                {isLoadingRemovePhotoUrl || isUploading
+                  ? "Deleting ..."
+                  : "Delete"}
+              </button>
+            )}
+          </div>
 
-        <button
-          type="submit"
-          className="p-2 text-white	w-full bg-cyan-500 transition-colors disabled:bg-cyan-300 hover:bg-cyan-400 rounded-lg font-medium"
-          disabled={isLoading || !isValid}
-        >
-          {isLoadingUpdatePhotoUrl || isUploading ? "Saving ..." : "Save"}
-        </button>
+          <button
+            type="submit"
+            className="p-2 text-white	w-full bg-cyan-500 transition-colors disabled:bg-cyan-300 hover:bg-cyan-400 rounded-lg font-medium"
+            disabled={isLoading || !isValid}
+          >
+            {isLoadingUpdatePhotoUrl || isUploading ? "Saving ..." : "Save"}
+          </button>
+        </div>
       </div>
     </form>
   )
