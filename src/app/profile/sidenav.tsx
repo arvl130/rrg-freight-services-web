@@ -14,8 +14,12 @@ export function SideNav() {
       <Link href={"/profile/settings"}>
         <div
           className={`
-          bg-white flex p-4 rounded-lg
-            ${pathname === "/profile/settings" ? "shadow-lg" : "shadow"}
+          bg-white flex p-4 rounded-lg  hover:border-2 border-[#6BB6C1] hover:text-[#6BB6C1] hover:shadow-[#6BB6C1] hover:shadow-md
+            ${
+              pathname === "/profile/settings"
+                ? "shadow-md shadow-[#6BB6C1] text-[#6BB6C1] border-2 border-[#6BB6C1]"
+                : "shadow-md"
+            }
           `}
         >
           <div className="pr-5">
@@ -26,7 +30,7 @@ export function SideNav() {
               <h3 className="font-bold">Account Settings</h3>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Personalize Your Profile</p>
+              <p className="text-[12px] ">Personalize Your Profile</p>
             </div>
           </div>
         </div>
@@ -34,8 +38,12 @@ export function SideNav() {
       <Link href={"/profile/notifications"}>
         <div
           className={`
-          bg-white flex p-4 rounded-lg
-            ${pathname === "/profile/notifications" ? "shadow-lg" : "shadow"}
+          bg-white flex p-4 rounded-lg hover:border-2 border-[#6BB6C1] hover:text-[#6BB6C1] hover:shadow-[#6BB6C1] hover:shadow-md
+            ${
+              pathname === "/profile/notifications"
+                ? "shadow-md shadow-[#6BB6C1] text-[#6BB6C1] border-2 border-[#6BB6C1]"
+                : "shadow-md"
+            }
           `}
         >
           <div className="pr-5">
@@ -46,7 +54,7 @@ export function SideNav() {
               <h3 className="font-bold">Notifications</h3>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Manage Your Notifications</p>
+              <p className="text-[12px] ">Manage Your Notifications</p>
             </div>
           </div>
         </div>
@@ -54,8 +62,12 @@ export function SideNav() {
       <Link href={"/profile/change-password"}>
         <div
           className={`
-          bg-white flex p-4 rounded-lg
-            ${pathname === "/profile/change-password" ? "shadow-lg" : "shadow"}
+          bg-white flex p-4 rounded-lg hover:border-2 border-[#6BB6C1] hover:text-[#6BB6C1] hover:shadow-[#6BB6C1] hover:shadow-md
+            ${
+              pathname === "/profile/change-password"
+                ? "shadow-md shadow-[#6BB6C1] text-[#6BB6C1] border-2 border-[#6BB6C1]"
+                : "shadow-md"
+            }
           `}
         >
           <div className="pr-5">
@@ -66,9 +78,7 @@ export function SideNav() {
               <h3 className="font-bold">Password & Security</h3>
             </div>
             <div>
-              <p className="text-sm text-gray-500">
-                Make Your Account More Secured
-              </p>
+              <p className="text-[12px]">Make Your Account More Secured</p>
             </div>
           </div>
         </div>
