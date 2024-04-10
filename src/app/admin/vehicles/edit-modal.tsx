@@ -18,7 +18,16 @@ const formSchema = z.object({
   ),
   displayName: z.string().min(1).max(100),
   plateNumber: z.string().min(1).max(15),
-  weightCapacityInKg: z.string().regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS),
+  weightCapacityInKg: z
+    .string()
+    .regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS)
+    .refine((value) => {
+      const weightCapacity = parseFloat(value)
+      return (
+        (weightCapacity >= 500 && weightCapacity <= 1000) ||
+        (weightCapacity >= 2000 && weightCapacity <= 4000)
+      )
+    }, "Weight capacity must be between 500 and 1000 KG for van, or between 2000 and 4000 KG for truck"),
   isExpressAllowed: z.boolean(),
 })
 
