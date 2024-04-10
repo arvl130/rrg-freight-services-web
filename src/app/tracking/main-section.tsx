@@ -296,8 +296,8 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
       {_package.status === "TRANSFERRING_FORWARDER" && <Third />}
       {_package.status === "TRANSFERRED_FORWARDER" && <Fourth />}
 
-      <section className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-[2fr,_3fr] gap-4">
+      <section className="max-w-4xl md:px-0 px-4 mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-[2fr,_3fr] gap-4">
           <div className="bg-[#EEEAEA] w-full rounded-lg flex flex-col justify-center items-center py-4">
             <CheckCircle size={96} color="#1E1E1E" />
             <div className="text-center font-semibold">Estimated Delivery</div>
@@ -306,7 +306,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
             </div>
           </div>
 
-          <div className="bg-[#ACDEE2] w-full rounded-lg flex flex-col items-center px-6 py-4">
+          <div className="bg-[#ACDEE2] w-full rounded-lg flex flex-col items-center px-6 py-4 md:px-0">
             <div className="text-center mb-3 font-semibold">
               Shipping Details
             </div>
