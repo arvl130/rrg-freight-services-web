@@ -1,15 +1,15 @@
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 import { api } from "@/utils/api"
-import type { VehicleType } from "@/utils/constants"
-import {
-  REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS,
-  SUPPORTED_VEHICLE_TYPES,
-} from "@/utils/constants"
-import { zodResolver } from "@hookform/resolvers/zod"
+import toast from "react-hot-toast"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
-import { useForm } from "react-hook-form"
-import toast from "react-hot-toast"
-import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import type { VehicleType } from "@/utils/constants"
+import {
+  SUPPORTED_VEHICLE_TYPES,
+  REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS,
+} from "@/utils/constants"
 
 const formSchema = z.object({
   type: z.custom<VehicleType>((val) =>
@@ -17,20 +17,54 @@ const formSchema = z.object({
   ),
   displayName: z.string().min(1).max(100),
   plateNumber: z.string().min(1).max(15),
-  weightCapacityInKg: z
-    .string()
-    .regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS)
-    .refine((value) => {
-      const weightCapacity = parseFloat(value)
-      return (
-        (weightCapacity >= 500 && weightCapacity <= 1000) ||
-        (weightCapacity >= 2000 && weightCapacity <= 4000)
-      )
-    }, "Weight capacity must be between 500 and 1000 KG for van, or between 2000 and 4000 KG for truck"),
+  weightCapacityInKg: z.string().regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS),
   isExpressAllowed: z.boolean(),
 })
 
+const schemaRefined = formSchema.superRefine(
+  ({ type, weightCapacityInKg }, ctx) => {
+    if (type === "TRUCK") {
+      const weight = parseFloat(weightCapacityInKg)
+      if (weight < 2000) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a minimum of 2000",
+          path: ["weightCapacityInKg"],
+        })
+      } else if (weight > 4000) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a maximum of 4000",
+          path: ["weightCapacityInKg"],
+        })
+      }
+    }
+
+    if (type === "VAN") {
+      const weight = parseFloat(weightCapacityInKg)
+      if (weight < 500) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a minimum of 500",
+          path: ["weightCapacityInKg"],
+        })
+      } else if (weight > 1000) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a maximum of 1000",
+          path: ["weightCapacityInKg"],
+        })
+      }
+    }
+  },
+)
+
 type FormSchema = z.infer<typeof formSchema>
+
+const defaultWeightCapacityInKg = {
+  VAN: "500",
+  TRUCK: "2000",
+}
 
 function CreateForm({ close }: { close: () => void }) {
   const {
@@ -39,9 +73,10 @@ function CreateForm({ close }: { close: () => void }) {
     reset,
     formState: { errors },
   } = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(schemaRefined),
     defaultValues: {
-      weightCapacityInKg: "1",
+      weightCapacityInKg:
+        defaultWeightCapacityInKg.VAN || defaultWeightCapacityInKg.TRUCK,
     },
   })
 
@@ -93,12 +128,11 @@ function CreateForm({ close }: { close: () => void }) {
       <div className="grid mb-3">
         <label className="font-medium mb-1">Weight Capacity (in KG)</label>
         <input
-          type="number"
-          step={0.1}
-          min={0.1}
+          type="text"
           className="px-2 py-1 border border-gray-300"
           {...register("weightCapacityInKg")}
         />
+
         {errors.weightCapacityInKg && (
           <div className="mt-1 text-red-500">
             {errors.weightCapacityInKg.message}.

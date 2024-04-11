@@ -18,18 +18,47 @@ const formSchema = z.object({
   ),
   displayName: z.string().min(1).max(100),
   plateNumber: z.string().min(1).max(15),
-  weightCapacityInKg: z
-    .string()
-    .regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS)
-    .refine((value) => {
-      const weightCapacity = parseFloat(value)
-      return (
-        (weightCapacity >= 500 && weightCapacity <= 1000) ||
-        (weightCapacity >= 2000 && weightCapacity <= 4000)
-      )
-    }, "Weight capacity must be between 500 and 1000 KG for van, or between 2000 and 4000 KG for truck"),
+  weightCapacityInKg: z.string().regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS),
   isExpressAllowed: z.boolean(),
 })
+
+const schemaRefined = formSchema.superRefine(
+  ({ type, weightCapacityInKg }, ctx) => {
+    if (type === "TRUCK") {
+      const weight = parseFloat(weightCapacityInKg)
+      if (weight < 2000) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a minimum of 2000",
+          path: ["weightCapacityInKg"],
+        })
+      } else if (weight > 4000) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a maximum of 4000",
+          path: ["weightCapacityInKg"],
+        })
+      }
+    }
+
+    if (type === "VAN") {
+      const weight = parseFloat(weightCapacityInKg)
+      if (weight < 500) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a minimum of 500",
+          path: ["weightCapacityInKg"],
+        })
+      } else if (weight > 1000) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a maximum of 1000",
+          path: ["weightCapacityInKg"],
+        })
+      }
+    }
+  },
+)
 
 type FormSchema = z.infer<typeof formSchema>
 
@@ -40,7 +69,7 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
     reset,
     formState: { errors },
   } = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(schemaRefined),
     defaultValues: {
       type: vehicle.type,
       displayName: vehicle.displayName,
