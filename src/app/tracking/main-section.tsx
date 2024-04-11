@@ -13,6 +13,7 @@ import { BrowsingPhoneVector } from "@/components/vector/browsing-phone"
 import { getEstimatedDeliveryOfPackage } from "@/utils/estimated-delivery"
 import { PackageNotFound } from "@/components/vector/package-not-found"
 import { DeliveryTruckWithPeople } from "@/components/vector/delivery-truck-with-people"
+import Link from "next/link"
 
 function First() {
   return (
@@ -457,9 +458,12 @@ export function MainSection(props: { preselectedId: string | null }) {
             Just Contact Us!
           </h1>
           <div className="flex justify-center">
-            <button className="drop-shadow-lg inline-flex items-center bg-red-500 text-white px-6 py-2 text-base rounded-full hover:bg-red-800 font-bold font-family  ">
+            <Link
+              className="drop-shadow-lg inline-flex items-center bg-red-500 text-white px-6 py-2 text-base rounded-full hover:bg-red-800 font-bold font-family"
+              href="/#contact-us"
+            >
               Contact Us
-            </button>
+            </Link>
           </div>
         </div>
       </div>
