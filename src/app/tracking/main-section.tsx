@@ -296,8 +296,8 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
       {_package.status === "TRANSFERRING_FORWARDER" && <Third />}
       {_package.status === "TRANSFERRED_FORWARDER" && <Fourth />}
 
-      <section className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-[2fr,_3fr] gap-4">
+      <section className="max-w-4xl md:px-0 px-4 mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-[2fr,_3fr] gap-4">
           <div className="bg-[#EEEAEA] w-full rounded-lg flex flex-col justify-center items-center py-4">
             <CheckCircle size={96} color="#1E1E1E" />
             <div className="text-center font-semibold">Estimated Delivery</div>
@@ -306,7 +306,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
             </div>
           </div>
 
-          <div className="bg-[#ACDEE2] w-full rounded-lg flex flex-col items-center px-6 py-4">
+          <div className="bg-[#ACDEE2] w-full rounded-lg flex flex-col items-center px-6 py-4 md:px-0">
             <div className="text-center mb-3 font-semibold">
               Shipping Details
             </div>
@@ -357,7 +357,7 @@ function ChoosePackageForm({
   })
 
   return (
-    <div className="px-16 mb-14 w-full md:w-full md:mx-auto md:grid md:grid-cols-[auto_1fr] md:gap-4 md:my-16 lg:px-52 ">
+    <div className="px-4 mb-14 w-full md:w-full md:mx-auto md:grid md:grid-cols-[auto_1fr] md:gap-4 md:my-16 lg:px-52 ">
       <div className="bg-[#ACDEE2]  rounded-lg hidden md:block">
         <Image
           src="/assets/img/logos/logo.jpg"
@@ -368,24 +368,24 @@ function ChoosePackageForm({
         />
       </div>
       <form
-        className="bg-[#EEEAEA] w-full px-6 py-4 rounded-lg flex flex-col items-center justify-center"
+        className="bg-[#EEEAEA] w-full px-4 py-6 rounded-lg flex flex-col items-center justify-center"
         onSubmit={handleSubmit((formData) => {
           setSelectedPackageId(formData.packageId)
         })}
       >
-        <div className="text-4xl text-center font-semibold">
+        <div className="text-2xl md:text-4xl text-center font-semibold mb-4">
           Track your Shipment
         </div>
-        <div className="text-center font-medium mb-5">
-          Let&apos;s Find your Package! <br />
-          Enter your Tracking Number to Track your Package
+        <div className="text-center font-medium mb-4">
+          Let&apos;s find your package! <br />
+          Enter your tracking number below.
         </div>
 
         <input
           {...register("packageId")}
           type="text"
-          placeholder="Enter tracking number ..."
-          className="bg-white border rounded-md px-4 py-1 text-xl w-full outline-none"
+          placeholder="Enter tracking number..."
+          className="bg-white border rounded-md px-3 py-2 text-base md:text-xl w-full max-w-md outline-none mb-4"
         />
         {errors.packageId && (
           <p className="text-red-600 mt-1">{errors.packageId.message}.</p>
@@ -393,7 +393,7 @@ function ChoosePackageForm({
         <div className="text-center mt-6">
           <button
             type="submit"
-            className="bg-[#ED5959] text-white rounded-full px-5 py-2"
+            className="bg-[#ED5959] text-white rounded-full px-4 py-2 text-lg md:text-xl"
           >
             Search
           </button>

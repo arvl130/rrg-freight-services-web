@@ -22,6 +22,44 @@ const formSchema = z.object({
   isExpressAllowed: z.boolean(),
 })
 
+const schemaRefined = formSchema.superRefine(
+  ({ type, weightCapacityInKg }, ctx) => {
+    if (type === "TRUCK") {
+      const weight = parseFloat(weightCapacityInKg)
+      if (weight < 2000) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a minimum of 2000",
+          path: ["weightCapacityInKg"],
+        })
+      } else if (weight > 4000) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a maximum of 4000",
+          path: ["weightCapacityInKg"],
+        })
+      }
+    }
+
+    if (type === "VAN") {
+      const weight = parseFloat(weightCapacityInKg)
+      if (weight < 500) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a minimum of 500",
+          path: ["weightCapacityInKg"],
+        })
+      } else if (weight > 1000) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Weight must be a maximum of 1000",
+          path: ["weightCapacityInKg"],
+        })
+      }
+    }
+  },
+)
+
 type FormSchema = z.infer<typeof formSchema>
 
 function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
@@ -31,7 +69,7 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
     reset,
     formState: { errors },
   } = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(schemaRefined),
     defaultValues: {
       type: vehicle.type,
       displayName: vehicle.displayName,
