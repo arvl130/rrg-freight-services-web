@@ -107,7 +107,7 @@ function ActivitiesTable({ items }: { items: Activity[] }) {
               }}
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
             >
-              <option value="ALL">All Verbs</option>
+              <option value="ALL">All Activities</option>
               {SUPPORTED_ACTIVITY_VERB.map((verb) => (
                 <option key={verb} value={verb}>
                   {verb}
@@ -165,7 +165,7 @@ function ActivitiesTable({ items }: { items: Activity[] }) {
             Date & Time
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
-            Verb
+            Activity
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Entity
