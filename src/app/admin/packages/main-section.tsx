@@ -10,6 +10,7 @@ import * as Table from "@/components/table"
 import { ViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { ViewDetailsModal } from "@/components/packages/view-details-modal"
 import { EditDetailsModal } from "./edit-details-modal"
+import type { PackageReceptionMode } from "@/utils/constants"
 import {
   SUPPORTED_PACKAGE_STATUSES,
   type PackageShippingType,
@@ -192,6 +193,15 @@ function filterByInsuranceStatus(
   return items.filter(({ declaredValue }) => declaredValue !== null)
 }
 
+function filterByReceptionMode(
+  items: Package[],
+  receptionMode: "ALL" | PackageReceptionMode,
+) {
+  if (receptionMode === "ALL") return items
+
+  return items.filter((_package) => _package.receptionMode === receptionMode)
+}
+
 function PackagesTable({
   packages,
   warehouses,
@@ -211,6 +221,10 @@ function PackagesTable({
     "ALL",
   )
 
+  const [selectedReceptionMode, setSelectedReceptionMode] = useState<
+    "ALL" | PackageReceptionMode
+  >("ALL")
+
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<
     "ALL" | "NONE" | number
   >("ALL")
@@ -223,12 +237,15 @@ function PackagesTable({
     filterBySelectedTab(
       filterByInsuranceStatus(
         filterByPackageStatus(
-          filterByWarehouseId(
-            filterByArchiveStatus(
-              packages,
-              visibleArchiveStatus === "ARCHIVED",
+          filterByReceptionMode(
+            filterByWarehouseId(
+              filterByArchiveStatus(
+                packages,
+                visibleArchiveStatus === "ARCHIVED",
+              ),
+              selectedWarehouseId,
             ),
-            selectedWarehouseId,
+            selectedReceptionMode,
           ),
           selectedStatus,
         ),
@@ -332,6 +349,19 @@ function PackagesTable({
               <option value="BOTH">Either Insurance</option>
               <option value="NOT_INSURED">Not Insured</option>
               <option value="INSURED">Insured</option>
+            </select>
+            <select
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+              value={selectedReceptionMode}
+              onChange={(e) => {
+                setSelectedReceptionMode(
+                  e.currentTarget.value as PackageReceptionMode,
+                )
+              }}
+            >
+              <option value="ALL">All Receptions</option>
+              <option value="DOOR_TO_DOOR">Door to Door</option>
+              <option value="FOR_PICKUP">For Pickup</option>
             </select>
             <button
               type="button"
