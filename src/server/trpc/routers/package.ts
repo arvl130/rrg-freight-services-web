@@ -9,6 +9,7 @@ import {
   lt,
 } from "drizzle-orm"
 import {
+  domesticAgentProcedure,
   overseasAgentProcedure,
   protectedProcedure,
   publicProcedure,
@@ -56,6 +57,19 @@ export const packageRouter = router({
         eq(shipmentPackages.shipmentId, incomingShipments.shipmentId),
       )
       .where(eq(incomingShipments.sentByAgentId, ctx.user.id))
+  }),
+  getAllForDomesticAgent: domesticAgentProcedure.query(async ({ ctx }) => {
+    const packageColumns = getTableColumns(packages)
+
+    return await ctx.db
+      .selectDistinct(packageColumns)
+      .from(packages)
+      .innerJoin(shipmentPackages, eq(packages.id, shipmentPackages.packageId))
+      .innerJoin(
+        forwarderTransferShipments,
+        eq(shipmentPackages.shipmentId, forwarderTransferShipments.shipmentId),
+      )
+      .where(eq(forwarderTransferShipments.sentToAgentId, ctx.user.id))
   }),
   getWithStatusLogsById: publicProcedure
     .input(
