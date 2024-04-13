@@ -109,6 +109,7 @@ export const packageRouter = router({
     .input(
       z.object({
         id: z.string(),
+        preassignedId: z.string(),
         shippingMode: z.custom<PackageShippingMode>((val) =>
           SUPPORTED_PACKAGE_SHIPPING_MODES.includes(val as PackageShippingMode),
         ),
@@ -148,6 +149,10 @@ export const packageRouter = router({
         receiverStateOrProvince: z.string().min(1).max(100),
         receiverCountryCode: z.string().min(1).max(3),
         receiverPostalCode: z.number(),
+        declaredValue: z.number().nullable(),
+        failedAttempts: z.number(),
+        isFragile: z.boolean(),
+        volumeInCubicMeter: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -158,6 +163,7 @@ export const packageRouter = router({
       return await ctx.db
         .update(packages)
         .set({
+          preassignedId: input.preassignedId,
           shippingMode: input.shippingMode,
           shippingType: input.shippingType,
           receptionMode: input.receptionMode,
@@ -186,6 +192,10 @@ export const packageRouter = router({
           )
             ? 1
             : 0,
+          declaredValue: input.declaredValue,
+          failedAttempts: input.failedAttempts,
+          isFragile: input.isFragile ? 1 : 0,
+          volumeInCubicMeter: input.volumeInCubicMeter,
         })
         .where(eq(packages.id, input.id))
     }),

@@ -6,7 +6,9 @@ import type {
   PackageShippingType,
 } from "@/utils/constants"
 import {
+  REGEX_EMPTY_STRING_OR_ONE_OR_MORE_DIGITS,
   REGEX_ONE_OR_MORE_DIGITS,
+  REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS,
   SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
@@ -16,9 +18,11 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
+import { useState } from "react"
 
 const editFormSchema = z.object({
   id: z.string(),
+  preassignedId: z.string(),
   shippingMode: z.custom<PackageShippingMode>((val) =>
     SUPPORTED_PACKAGE_SHIPPING_MODES.includes(val as PackageShippingMode),
   ),
@@ -46,6 +50,16 @@ const editFormSchema = z.object({
   receiverStateOrProvince: z.string().min(1).max(100),
   receiverCountryCode: z.string().length(3),
   receiverPostalCode: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
+  isFragile: z.boolean(),
+  declaredValue: z
+    .string()
+    .regex(REGEX_EMPTY_STRING_OR_ONE_OR_MORE_DIGITS)
+    .optional(),
+  volumeInCubicMeter: z
+    .string()
+    .min(1)
+    .regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS),
+  failedAttempts: z.string().min(1).regex(REGEX_ONE_OR_MORE_DIGITS),
 })
 
 type EditFormType = z.infer<typeof editFormSchema>
@@ -69,41 +83,57 @@ export function EditDetailsModal({
     },
   })
 
+  const defaultValues = {
+    id: _package.id,
+    preassignedId: _package.preassignedId,
+    shippingMode: _package.shippingMode,
+    shippingType: _package.shippingType as PackageShippingType,
+    receptionMode: _package.receptionMode,
+    weightInKg: _package.weightInKg.toString(),
+    senderFullName: _package.senderFullName,
+    senderContactNumber: _package.senderContactNumber,
+    senderEmailAddress: _package.senderEmailAddress,
+    senderStreetAddress: _package.senderStreetAddress,
+    senderCity: _package.senderCity,
+    senderStateOrProvince: _package.senderStateOrProvince,
+    senderCountryCode: _package.senderCountryCode,
+    senderPostalCode: _package.senderPostalCode.toString(),
+    receiverFullName: _package.receiverFullName,
+    receiverContactNumber: _package.receiverContactNumber,
+    receiverEmailAddress: _package.receiverEmailAddress,
+    receiverStreetAddress: _package.receiverStreetAddress,
+    receiverBarangay: _package.receiverBarangay,
+    receiverCity: _package.receiverCity,
+    receiverStateOrProvince: _package.receiverStateOrProvince,
+    receiverCountryCode: _package.receiverCountryCode,
+    receiverPostalCode: _package.receiverPostalCode.toString(),
+    declaredValue:
+      _package.declaredValue === null
+        ? undefined
+        : _package.declaredValue.toString(),
+    failedAttempts: _package.failedAttempts.toString(),
+    volumeInCubicMeter: _package.volumeInCubicMeter.toString(),
+    isFragile: _package.isFragile === 1,
+  }
+
   const {
     reset,
     register,
     handleSubmit,
+    setValue,
+    resetField,
     formState: { isDirty },
   } = useForm<EditFormType>({
     resolver: zodResolver(editFormSchema),
     resetOptions: {
       keepDirtyValues: true,
     },
-    defaultValues: {
-      id: _package.id,
-      shippingMode: _package.shippingMode,
-      shippingType: _package.shippingType as PackageShippingType,
-      receptionMode: _package.receptionMode,
-      weightInKg: _package.weightInKg.toString(),
-      senderFullName: _package.senderFullName,
-      senderContactNumber: _package.senderContactNumber,
-      senderEmailAddress: _package.senderEmailAddress,
-      senderStreetAddress: _package.senderStreetAddress,
-      senderCity: _package.senderCity,
-      senderStateOrProvince: _package.senderStateOrProvince,
-      senderCountryCode: _package.senderCountryCode,
-      senderPostalCode: _package.senderPostalCode.toString(),
-      receiverFullName: _package.receiverFullName,
-      receiverContactNumber: _package.receiverContactNumber,
-      receiverEmailAddress: _package.receiverEmailAddress,
-      receiverStreetAddress: _package.receiverStreetAddress,
-      receiverBarangay: _package.receiverBarangay,
-      receiverCity: _package.receiverCity,
-      receiverStateOrProvince: _package.receiverStateOrProvince,
-      receiverCountryCode: _package.receiverCountryCode,
-      receiverPostalCode: _package.receiverPostalCode.toString(),
-    },
+    defaultValues,
   })
+
+  const [hasDeclaredValue, setHasDeclaredValue] = useState(
+    _package.declaredValue !== null,
+  )
 
   return (
     <Dialog.Root open={isOpen}>
@@ -118,16 +148,101 @@ export function EditDetailsModal({
           </Dialog.Title>
           <form
             className="px-6 py-4 h-full grid overflow-y-auto"
-            onSubmit={handleSubmit((formData) =>
+            onSubmit={handleSubmit((formData) => {
+              console.log("formData.declaredValue", formData.declaredValue)
               mutate({
                 ...formData,
                 weightInKg: Number(formData.weightInKg),
                 senderPostalCode: Number(formData.senderPostalCode),
                 receiverPostalCode: Number(formData.receiverPostalCode),
-              }),
-            )}
+                declaredValue:
+                  formData.declaredValue === "" ||
+                  formData.declaredValue === undefined
+                    ? null
+                    : Number(formData.declaredValue),
+                failedAttempts: Number(formData.failedAttempts),
+                volumeInCubicMeter: Number(formData.volumeInCubicMeter),
+              })
+            })}
           >
             <div className="overflow-y-auto pb-2">
+              <div className="border-b border-gray-300 pb-6 mb-5 grid grid-cols-2 gap-x-3 gap-y-2">
+                <div>
+                  <label className="block font-medium">
+                    Tracking Number (from Agent)
+                  </label>
+                  <input
+                    type="text"
+                    className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                    {...register("preassignedId")}
+                  />
+                </div>
+                <div className="grid grid-cols-[auto_1fr]">
+                  <label className="block font-medium">
+                    <input
+                      type="checkbox"
+                      checked={hasDeclaredValue}
+                      onChange={(e) => {
+                        if (e.currentTarget.checked) {
+                          if (defaultValues.declaredValue)
+                            resetField("declaredValue")
+                          else setValue("declaredValue", "1")
+                        } else {
+                          setValue("declaredValue", "")
+                        }
+
+                        setHasDeclaredValue(e.currentTarget.checked)
+                      }}
+                    />
+                    <span className="ml-2">Declared Value (₱)</span>
+                  </label>
+                  {hasDeclaredValue ? (
+                    <input
+                      type="number"
+                      className="col-span-2 block text-sm w-full px-4 py-2 text-gray-700 disabled:text-gray-400 bg-white disabled:bg-gray-100 border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                      min={1}
+                      step={1}
+                      {...register("declaredValue")}
+                    />
+                  ) : (
+                    <input
+                      disabled
+                      type="number"
+                      className="col-span-2 block text-sm w-full px-4 py-2 text-gray-700 disabled:text-gray-400 bg-white disabled:bg-gray-100 border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                    />
+                  )}
+                </div>
+                <div>
+                  <label className="block font-medium">Space Use (m³)</label>
+                  <input
+                    type="number"
+                    className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                    min={1}
+                    step={1}
+                    {...register("volumeInCubicMeter")}
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium">Failed attempts</label>
+                  <input
+                    type="number"
+                    className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                    min={0}
+                    step={1}
+                    {...register("failedAttempts")}
+                  />
+                </div>
+                <div>
+                  <label className="font-medium">
+                    <input
+                      type="checkbox"
+                      className="text-sm px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                      {...register("isFragile")}
+                    />
+                    <span className="ml-2">Fragile?</span>
+                  </label>
+                </div>
+              </div>
               <div className="border-b border-gray-300 pb-6 mb-5">
                 <p className="font-semibold">Sender Info:</p>
                 <div className="grid grid-cols-4 gap-3 mb-3">
@@ -331,7 +446,7 @@ export function EditDetailsModal({
               </button>
               <button
                 type="submit"
-                disabled={isLoading || !isDirty}
+                disabled={isLoading}
                 className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 transition-colors text-white px-6 py-2 rounded-md"
               >
                 Save
