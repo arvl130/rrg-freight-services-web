@@ -44,8 +44,7 @@ function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
   return (
     <>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        <input type="checkbox" name="" id="" />
-        <span>{item.id}</span>
+        {item.id}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <UserDisplayName userId={item.sentToAgentId} />
