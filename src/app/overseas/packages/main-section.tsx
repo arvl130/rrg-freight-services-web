@@ -1,7 +1,7 @@
 "use client"
 
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
-import type { Package } from "@/server/db/entities"
+import type { Package, Warehouse } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
@@ -9,10 +9,15 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Table from "@/components/table"
 import { ViewWaybillModal } from "@/components/packages/view-waybill-modal"
 import { ViewDetailsModal } from "@/components/packages/view-details-modal"
-import type { PackageShippingType } from "@/utils/constants"
+import {
+  SUPPORTED_PACKAGE_STATUSES,
+  type PackageShippingType,
+  type PackageStatus,
+} from "@/utils/constants"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { getColorFromPackageStatus } from "@/utils/colors"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
+import { WarehouseDetails } from "@/components/warehouse-details"
 
 function TableItem({ package: _package }: { package: Package }) {
   const [visibleModal, setVisibleModal] = useState<
@@ -20,17 +25,11 @@ function TableItem({ package: _package }: { package: Package }) {
   >(null)
 
   return (
-    <div className="grid grid-cols-[10rem_repeat(3,_1fr)] border-b border-gray-300 text-sm">
-      <div className="px-4 py-2 flex items-center gap-1">
-        <input type="checkbox" name="" id="" />
-        <p
-          className="whitespace-nowrap overflow-hidden text-ellipsis"
-          title={_package.id}
-        >
-          {_package.id}
-        </p>
+    <>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {_package.id}
       </div>
-      <div className="px-4 py-2">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div>{_package.senderFullName}</div>
         <div className="text-gray-400">
           <p>{_package.senderStreetAddress}</p>
@@ -41,7 +40,7 @@ function TableItem({ package: _package }: { package: Package }) {
           </p>
         </div>
       </div>
-      <div className="px-4 py-2">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div>{_package.receiverFullName}</div>
         <div className="text-gray-400">
           <p>{_package.receiverStreetAddress}</p>
@@ -54,7 +53,14 @@ function TableItem({ package: _package }: { package: Package }) {
           </p>
         </div>
       </div>
-      <div className="px-4 py-2 flex items-center gap-2">
+      <div className="px-4 py-2 border-b border-gray-300 text-sm text-center">
+        {_package.lastWarehouseId === null ? (
+          "Not Received Yet"
+        ) : (
+          <WarehouseDetails warehouseId={_package.lastWarehouseId} />
+        )}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div
           className={`
             w-36 py-0.5 text-white text-center rounded-md
@@ -63,7 +69,8 @@ function TableItem({ package: _package }: { package: Package }) {
         >
           {getHumanizedOfPackageStatus(_package.status)}
         </div>
-
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
             <button type="button">
@@ -103,7 +110,7 @@ function TableItem({ package: _package }: { package: Package }) {
           close={() => setVisibleModal(null)}
         />
       </div>
-    </div>
+    </>
   )
 }
 
@@ -128,7 +135,33 @@ function filterByArchiveStatus(items: Package[], isArchived: boolean) {
   return items.filter((_package) => _package.isArchived === 0)
 }
 
-function PackagesTable({ packages }: { packages: Package[] }) {
+function filterByPackageStatus(
+  items: Package[],
+  status: "ALL" | PackageStatus,
+) {
+  if (status === "ALL") return items
+
+  return items.filter((_package) => _package.status === status)
+}
+
+function filterByWarehouseId(
+  items: Package[],
+  warehouseId: "ALL" | "NONE" | number,
+) {
+  if (warehouseId === "ALL") return items
+  if (warehouseId === "NONE")
+    return items.filter(({ lastWarehouseId }) => lastWarehouseId === null)
+
+  return items.filter((_package) => _package.lastWarehouseId === warehouseId)
+}
+
+function PackagesTable({
+  packages,
+  warehouses,
+}: {
+  packages: Package[]
+  warehouses: Warehouse[]
+}) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")
@@ -137,10 +170,24 @@ function PackagesTable({ packages }: { packages: Package[] }) {
     "EXPRESS" | "STANDARD" | "ALL"
   >("STANDARD")
 
+  const [selectedStatus, setSelectedStatus] = useState<"ALL" | PackageStatus>(
+    "ALL",
+  )
+
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<
+    "ALL" | "NONE" | number
+  >("ALL")
+
   const [searchTerm, setSearchTerm] = useState("")
   const visiblePackages = filterBySearchTerm(
     filterBySelectedTab(
-      filterByArchiveStatus(packages, visibleArchiveStatus === "ARCHIVED"),
+      filterByPackageStatus(
+        filterByWarehouseId(
+          filterByArchiveStatus(packages, visibleArchiveStatus === "ARCHIVED"),
+          selectedWarehouseId,
+        ),
+        selectedStatus,
+      ),
       selectedTab,
     ),
     searchTerm,
@@ -167,22 +214,56 @@ function PackagesTable({ packages }: { packages: Package[] }) {
   return (
     <>
       <Table.Filters>
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-3">
+        <div className="grid sm:grid-cols-[1fr_auto_1fr] gap-3">
           <div>
             <Table.SearchForm
               updateSearchTerm={(searchTerm) => setSearchTerm(searchTerm)}
               resetPageNumber={resetPageNumber}
             />
           </div>
-          <div className="flex gap-3 text-sm">
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-              <option>Status</option>
-            </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium">
-              <option>Warehouse</option>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
+            <select
+              value={selectedStatus}
+              onChange={(e) => {
+                setSelectedStatus(e.currentTarget.value as PackageStatus)
+              }}
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+            >
+              <option value="ALL">All Statuses</option>
+              {SUPPORTED_PACKAGE_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {getHumanizedOfPackageStatus(status)}
+                </option>
+              ))}
             </select>
             <select
-              className="bg-white border border-gray-300 px-2 py-1.5 w-32 rounded-md text-gray-400 font-medium"
+              value={
+                typeof selectedWarehouseId === "number"
+                  ? selectedWarehouseId.toString()
+                  : selectedWarehouseId
+              }
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+              onChange={(e) => {
+                if (
+                  e.currentTarget.value === "ALL" ||
+                  e.currentTarget.value === "NONE"
+                ) {
+                  setSelectedWarehouseId(e.currentTarget.value)
+                } else {
+                  setSelectedWarehouseId(Number(e.currentTarget.value))
+                }
+              }}
+            >
+              <option value="ALL">All Warehouses</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id.toString()}>
+                  {warehouse.displayName}
+                </option>
+              ))}
+              <option value="NONE">Not Received Yet</option>
+            </select>
+            <select
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
               value={visibleArchiveStatus}
               onChange={(e) => {
                 if (e.currentTarget.value === "ARCHIVED")
@@ -195,18 +276,18 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             </select>
             <button
               type="button"
-              className="bg-white border border-gray-300 px-3 py-1.5 rounded-md text-gray-400 font-medium"
+              className="bg-white border border-gray-300 px-3 py-1.5 w-full sm:w-auto rounded-md text-gray-400 font-medium"
             >
               Clear Filter
             </button>
           </div>
-          <div className="flex justify-end">
+          <div className="flex items-start justify-end">
             <Table.ExportButton records={paginatedItems} />
           </div>
         </div>
       </Table.Filters>
       <Table.Content>
-        <div className="flex justify-between mb-3">
+        <div className="flex flex-wrap gap-3 justify-between mb-3">
           <div className="flex gap-3">
             <button
               type="button"
@@ -265,26 +346,35 @@ function PackagesTable({ packages }: { packages: Package[] }) {
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div>
-          <Table.Header>
-            <div className="grid grid-cols-[10rem_repeat(3,_1fr)]">
-              <div className="uppercase px-4 py-2 flex gap-1">
-                <input type="checkbox" />
-                <span>Package ID</span>
-              </div>
-              <div className="uppercase px-4 py-2">Sender</div>
-              <div className="uppercase px-4 py-2">Receiver</div>
-              <div className="uppercase px-4 py-2">Status</div>
-            </div>
-          </Table.Header>
+        <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min overflow-auto">
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Package ID
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Sender
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Receiver
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Last Warehouse
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Status
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Actions
+          </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4">No packages found.</div>
+            <div className="text-center pt-4 col-span-6">
+              No packages found.
+            </div>
           ) : (
-            <div>
+            <>
               {paginatedItems.map((_package) => (
                 <TableItem key={_package.id} package={_package} />
               ))}
-            </div>
+            </>
           )}
         </div>
       </Table.Content>
@@ -293,21 +383,37 @@ function PackagesTable({ packages }: { packages: Package[] }) {
 }
 
 export function MainSection() {
-  const { status, data: packages, error } = api.package.getAll.useQuery()
+  const getAllPackagesQuery = api.package.getAllForOverseasAgent.useQuery()
+  const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
 
-  if (status === "loading")
+  if (
+    getAllPackagesQuery.status === "loading" ||
+    getAllWarehousesQuery.status === "loading"
+  )
     return (
       <div className="flex justify-center pt-4">
         <LoadingSpinner />
       </div>
     )
 
-  if (status === "error")
+  if (getAllPackagesQuery.status === "error")
     return (
       <div className="flex justify-center pt-4">
-        An error occured: {error.message}
+        An error occured: {getAllPackagesQuery.error.message}{" "}
       </div>
     )
 
-  return <PackagesTable packages={packages} />
+  if (getAllWarehousesQuery.status === "error")
+    return (
+      <div className="flex justify-center pt-4">
+        An error occured: {getAllWarehousesQuery.error.message}{" "}
+      </div>
+    )
+
+  return (
+    <PackagesTable
+      packages={getAllPackagesQuery.data}
+      warehouses={getAllWarehousesQuery.data}
+    />
+  )
 }

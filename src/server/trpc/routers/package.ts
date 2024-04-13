@@ -1,5 +1,19 @@
-import { and, asc, count, desc, eq, like, lt } from "drizzle-orm"
-import { protectedProcedure, publicProcedure, router } from "../trpc"
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  like,
+  lt,
+} from "drizzle-orm"
+import {
+  overseasAgentProcedure,
+  protectedProcedure,
+  publicProcedure,
+  router,
+} from "../trpc"
 import {
   forwarderTransferShipments,
   packageStatusLogs,
@@ -29,6 +43,19 @@ import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-pro
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(packages)
+  }),
+  getAllForOverseasAgent: overseasAgentProcedure.query(async ({ ctx }) => {
+    const packageColumns = getTableColumns(packages)
+
+    return await ctx.db
+      .selectDistinct(packageColumns)
+      .from(packages)
+      .innerJoin(shipmentPackages, eq(packages.id, shipmentPackages.packageId))
+      .innerJoin(
+        incomingShipments,
+        eq(shipmentPackages.shipmentId, incomingShipments.shipmentId),
+      )
+      .where(eq(incomingShipments.sentByAgentId, ctx.user.id))
   }),
   getWithStatusLogsById: publicProcedure
     .input(
