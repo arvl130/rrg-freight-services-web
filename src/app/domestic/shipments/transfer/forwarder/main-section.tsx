@@ -8,11 +8,18 @@ import { LoadingSpinner } from "@/components/spinner"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
-import type { NormalizedForwarderTransferShipment } from "@/server/db/entities"
+import type {
+  NormalizedForwarderTransferShipment,
+  Warehouse,
+} from "@/server/db/entities"
 import { ConfirmTransferModal } from "@/components/shipments/transfer/forwarder/confirm-transfer-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
+import {
+  SUPPORTED_SHIPMENT_STATUSES,
+  type ShipmentStatus,
+} from "@/utils/constants"
 
 function UserDisplayName({ userId }: { userId: string }) {
   const { status, data, error } = api.user.getById.useQuery({
@@ -124,18 +131,52 @@ function filterByArchiveStatus(
   return items.filter((item) => item.isArchived === 0)
 }
 
+function filterByShipmentStatus(
+  items: NormalizedForwarderTransferShipment[],
+  status: "ALL" | ShipmentStatus,
+) {
+  if (status === "ALL") return items
+
+  return items.filter((_package) => _package.status === status)
+}
+
+function filterByWarehouseId(
+  items: NormalizedForwarderTransferShipment[],
+  warehouseId: "ALL" | number,
+) {
+  if (warehouseId === "ALL") return items
+
+  return items.filter((item) => item.departingWarehouseId === warehouseId)
+}
+
 function ShipmentsTable({
   items,
+  warehouses,
 }: {
   items: NormalizedForwarderTransferShipment[]
+  warehouses: Warehouse[]
 }) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")
 
+  const [selectedStatus, setSelectedStatus] = useState<"ALL" | ShipmentStatus>(
+    "ALL",
+  )
+
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState<
+    "ALL" | number
+  >("ALL")
+
   const [searchTerm, setSearchTerm] = useState("")
   const visibleItems = filterBySearchTerm(
-    filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+    filterByShipmentStatus(
+      filterByWarehouseId(
+        filterByArchiveStatus(items, visibleArchiveStatus === "ARCHIVED"),
+        selectedWarehouseId,
+      ),
+      selectedStatus,
+    ),
     searchTerm,
   )
 
@@ -168,11 +209,41 @@ function ShipmentsTable({
             />
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-[repeat(3,_minmax(0,_1fr))_auto] gap-3 text-sm">
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Status</option>
+            <select
+              value={selectedStatus}
+              onChange={(e) => {
+                setSelectedStatus(e.currentTarget.value as ShipmentStatus)
+              }}
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+            >
+              <option value="ALL">All Statuses</option>
+              {SUPPORTED_SHIPMENT_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {getHumanizedOfShipmentStatus(status)}
+                </option>
+              ))}
             </select>
-            <select className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium">
-              <option>Warehouse</option>
+            <select
+              value={
+                typeof selectedWarehouseId === "number"
+                  ? selectedWarehouseId.toString()
+                  : selectedWarehouseId
+              }
+              className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
+              onChange={(e) => {
+                if (e.currentTarget.value === "ALL") {
+                  setSelectedWarehouseId(e.currentTarget.value)
+                } else {
+                  setSelectedWarehouseId(Number(e.currentTarget.value))
+                }
+              }}
+            >
+              <option value="ALL">All Warehouses</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id.toString()}>
+                  {warehouse.displayName}
+                </option>
+              ))}
             </select>
             <select
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
@@ -248,22 +319,38 @@ function ShipmentsTable({
 }
 
 export function MainSection() {
-  const { status, data, error } =
-    api.shipment.forwarderTransfer.getAll.useQuery()
+  const getAllForwarderTransfersQuery =
+    api.shipment.forwarderTransfer.getAllForDomesticAgent.useQuery()
+  const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
 
-  if (status === "loading")
+  if (
+    getAllForwarderTransfersQuery.status === "loading" ||
+    getAllWarehousesQuery.status === "loading"
+  )
     return (
       <div className="flex justify-center pt-4">
         <LoadingSpinner />
       </div>
     )
 
-  if (status === "error")
+  if (getAllForwarderTransfersQuery.status === "error")
     return (
       <div className="flex justify-center pt-4">
-        An error occured: {error.message}
+        An error occured: {getAllForwarderTransfersQuery.error.message}
       </div>
     )
 
-  return <ShipmentsTable items={data} />
+  if (getAllWarehousesQuery.status === "error")
+    return (
+      <div className="flex justify-center pt-4">
+        An error occured: {getAllWarehousesQuery.error.message}
+      </div>
+    )
+
+  return (
+    <ShipmentsTable
+      items={getAllForwarderTransfersQuery.data}
+      warehouses={getAllWarehousesQuery.data}
+    />
+  )
 }

@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { protectedProcedure, router } from "../../trpc"
+import { domesticAgentProcedure, protectedProcedure, router } from "../../trpc"
 import {
   shipments,
   shipmentPackages,
@@ -28,6 +28,25 @@ export const forwarderTransferShipmentRouter = router({
         shipments,
         eq(forwarderTransferShipments.shipmentId, shipments.id),
       )
+
+    return results.map(({ shipments, forwarder_transfer_shipments }) => {
+      const { shipmentId, ...other } = forwarder_transfer_shipments
+
+      return {
+        ...shipments,
+        ...other,
+      }
+    })
+  }),
+  getAllForDomesticAgent: domesticAgentProcedure.query(async ({ ctx }) => {
+    const results = await ctx.db
+      .select()
+      .from(forwarderTransferShipments)
+      .innerJoin(
+        shipments,
+        eq(forwarderTransferShipments.shipmentId, shipments.id),
+      )
+      .where(eq(forwarderTransferShipments.sentToAgentId, ctx.user.id))
 
     return results.map(({ shipments, forwarder_transfer_shipments }) => {
       const { shipmentId, ...other } = forwarder_transfer_shipments
