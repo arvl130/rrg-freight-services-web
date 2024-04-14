@@ -24,10 +24,11 @@ import { usePaginatedItems } from "@/hooks/paginated-items"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
 import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
+import { EditDetailsModal } from "./edit-details-modal"
 
 function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "VIEW_LOCATIONS"
+    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "VIEW_LOCATIONS"
   >(null)
 
   return (
@@ -74,6 +75,12 @@ function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
                 View Details
               </DropdownMenu.Item>
               <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("EDIT_DETAILS")}
+              >
+                Edit Details
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
                 className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("VIEW_LOCATIONS")}
               >
@@ -89,6 +96,11 @@ function TableItem({ item }: { item: NormalizedWarehouseTransferShipment }) {
           shipmentId={item.id}
           isOpen={visibleModal === "VIEW_DETAILS"}
           close={() => setVisibleModal(null)}
+        />
+        <EditDetailsModal
+          shipment={item}
+          isOpen={visibleModal === "EDIT_DETAILS"}
+          onClose={() => setVisibleModal(null)}
         />
         <ViewLocationsModal
           isOpen={visibleModal === "VIEW_LOCATIONS"}

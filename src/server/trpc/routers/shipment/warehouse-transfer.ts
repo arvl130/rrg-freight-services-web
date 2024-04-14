@@ -240,7 +240,6 @@ export const warehouseTransferShipmentRouter = router({
       z.object({
         id: z.number(),
         driverId: z.string(),
-        sentToAgentId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
