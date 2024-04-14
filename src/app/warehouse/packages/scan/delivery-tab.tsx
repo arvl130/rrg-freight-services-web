@@ -228,21 +228,65 @@ function PackagesTable({
   )
 }
 
+type ShipmentSelectorSearchCriteria =
+  | "SHIPMENT_ID"
+  | "PACKAGE_ID"
+  | "PACKAGE_PRE_ID"
+
 function ShipmentSelector({
   onSelectShipmentId,
 }: {
   onSelectShipmentId: (id: number) => void
 }) {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [searchWith, setSearchWith] =
+    useState<ShipmentSelectorSearchCriteria>("SHIPMENT_ID")
+
   const {
     status,
     data: shipments,
     error,
     isRefetching,
     refetch,
-  } = api.shipment.delivery.getPreparing.useQuery()
+  } = api.shipment.delivery.getPreparing.useQuery({
+    searchWith,
+    searchTerm,
+  })
 
   return (
-    <>
+    <div>
+      <div className="grid grid-cols-[auto_1fr] gap-x-3 items-center">
+        <p>
+          Search with
+          <select
+            className="px-3 py-1 ml-1 bg-white border border-gray-300 rounded-md"
+            value={searchWith}
+            onChange={(e) =>
+              setSearchWith(
+                e.currentTarget.value as ShipmentSelectorSearchCriteria,
+              )
+            }
+          >
+            <option value="SHIPMENT_ID">Shipment ID</option>
+            <option value="PACKAGE_ID">Tracking Number (from RRG)</option>
+            <option value="PACKAGE_PRE_ID">Tracking Number (from Agent)</option>
+          </select>
+          :
+        </p>
+        <input
+          type="text"
+          placeholder={
+            searchWith === "SHIPMENT_ID"
+              ? "Enter a shipment ID ..."
+              : "Enter an tracking number ..."
+          }
+          className="text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.currentTarget.value)
+          }}
+        />
+      </div>
       {status === "loading" && (
         <div>
           <p className="px-4 py-2 text-center">Loading ...</p>
@@ -320,7 +364,7 @@ function ShipmentSelector({
           )}
         </>
       )}
-    </>
+    </div>
   )
 }
 

@@ -1,4 +1,4 @@
-import { and, count, eq, inArray, lt } from "drizzle-orm"
+import { and, count, eq, getTableColumns, inArray, like, lt } from "drizzle-orm"
 import { protectedProcedure, router } from "../../trpc"
 import {
   shipments,
@@ -68,28 +68,52 @@ export const deliveryShipmentRouter = router({
         ...other,
       }
     }),
-  getPreparing: protectedProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
-      .from(deliveryShipments)
-      .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
-      .innerJoin(users, eq(deliveryShipments.driverId, users.id))
-      .innerJoin(vehicles, eq(deliveryShipments.vehicleId, vehicles.id))
-      .where(eq(shipments.status, "PREPARING"))
+  getPreparing: protectedProcedure
+    .input(
+      z.object({
+        searchWith: z
+          .literal("SHIPMENT_ID")
+          .or(z.literal("PACKAGE_ID"))
+          .or(z.literal("PACKAGE_PRE_ID")),
+        searchTerm: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const shipmentColumns = getTableColumns(shipments)
+      const { shipmentId, ...deliveryShipmentColumns } =
+        getTableColumns(deliveryShipments)
 
-    return results.map(({ shipments, delivery_shipments, users, vehicles }) => {
-      const { shipmentId, ...other } = delivery_shipments
-
-      return {
-        ...shipments,
-        ...other,
-        driverDisplayName: users.displayName,
-        driverContactNumber: users.contactNumber,
-        vehicleDisplayName: vehicles.displayName,
-        vehicleType: vehicles.type,
-      }
-    })
-  }),
+      return await ctx.db
+        .selectDistinct({
+          ...shipmentColumns,
+          ...deliveryShipmentColumns,
+          driverDisplayName: users.displayName,
+          driverContactNumber: users.contactNumber,
+          vehicleDisplayName: vehicles.displayName,
+          vehicleType: vehicles.type,
+        })
+        .from(shipmentPackages)
+        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+        .innerJoin(
+          deliveryShipments,
+          eq(shipmentPackages.shipmentId, deliveryShipments.shipmentId),
+        )
+        .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
+        .innerJoin(users, eq(deliveryShipments.driverId, users.id))
+        .innerJoin(vehicles, eq(deliveryShipments.vehicleId, vehicles.id))
+        .where(
+          and(
+            eq(shipments.status, "PREPARING"),
+            input.searchTerm === ""
+              ? undefined
+              : input.searchWith === "SHIPMENT_ID"
+                ? like(shipments.id, `%${input.searchTerm}%`)
+                : input.searchWith === "PACKAGE_ID"
+                  ? like(packages.id, `%${input.searchTerm}%`)
+                  : like(packages.preassignedId, `%${input.searchTerm}%`),
+          ),
+        )
+    }),
   getInTransit: protectedProcedure.query(async ({ ctx }) => {
     const results = await ctx.db
       .select()
