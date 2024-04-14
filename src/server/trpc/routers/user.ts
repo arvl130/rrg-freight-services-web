@@ -80,6 +80,23 @@ export const userRouter = router({
       }
     })
   }),
+  getDrivers: protectedProcedure.query(async ({ ctx }) => {
+    const results = await ctx.db
+      .select()
+      .from(users)
+      .innerJoin(drivers, eq(users.id, drivers.userId))
+      .where(eq(users.role, "DRIVER"))
+
+    return results.map(({ users, drivers }) => {
+      const { userId, ...otherDriverAttributes } = drivers
+      const { hashedPassword, ...otherUserAttributes } = users
+
+      return {
+        ...otherUserAttributes,
+        ...otherDriverAttributes,
+      }
+    })
+  }),
   getById: protectedProcedure
     .input(
       z.object({
