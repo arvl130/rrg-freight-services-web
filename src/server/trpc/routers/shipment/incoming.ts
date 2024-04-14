@@ -23,7 +23,7 @@ import {
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
 } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
-import { and, count, eq } from "drizzle-orm"
+import { and, count, eq, getTableColumns, like } from "drizzle-orm"
 import { generateUniqueId } from "@/utils/uuid"
 import { notifyByEmail } from "@/server/notification"
 import { createLog } from "@/utils/logging"
@@ -74,28 +74,50 @@ export const incomingShipmentRouter = router({
         ...other,
       }
     }),
-  getInTransit: protectedProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
-      .from(incomingShipments)
-      .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
-      .innerJoin(users, eq(incomingShipments.sentByAgentId, users.id))
-      .innerJoin(overseasAgents, eq(users.id, overseasAgents.userId))
-      .where(eq(shipments.status, "IN_TRANSIT"))
-
-    return results.map(
-      ({ shipments, incoming_shipments, users, overseas_agents }) => {
-        const { shipmentId, ...other } = incoming_shipments
-
-        return {
-          ...shipments,
-          ...other,
-          agentDisplayName: users.displayName,
-          agentCompanyName: overseas_agents.companyName,
-        }
-      },
+  getInTransit: protectedProcedure
+    .input(
+      z.object({
+        searchWith: z
+          .literal("SHIPMENT_ID")
+          .or(z.literal("PACKAGE_ID"))
+          .or(z.literal("PACKAGE_PRE_ID")),
+        searchTerm: z.string(),
+      }),
     )
-  }),
+    .query(async ({ ctx, input }) => {
+      const shipmentColumns = getTableColumns(shipments)
+      const { shipmentId, ...incomingShipmentColumns } =
+        getTableColumns(incomingShipments)
+
+      return await ctx.db
+        .selectDistinct({
+          ...shipmentColumns,
+          ...incomingShipmentColumns,
+          agentDisplayName: users.displayName,
+          agentCompanyName: overseasAgents.companyName,
+        })
+        .from(shipmentPackages)
+        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+        .innerJoin(
+          incomingShipments,
+          eq(shipmentPackages.shipmentId, incomingShipments.shipmentId),
+        )
+        .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
+        .innerJoin(users, eq(incomingShipments.sentByAgentId, users.id))
+        .innerJoin(overseasAgents, eq(users.id, overseasAgents.userId))
+        .where(
+          and(
+            eq(shipments.status, "IN_TRANSIT"),
+            input.searchTerm === ""
+              ? undefined
+              : input.searchWith === "SHIPMENT_ID"
+                ? like(shipments.id, `%${input.searchTerm}%`)
+                : input.searchWith === "PACKAGE_ID"
+                  ? like(packages.id, `%${input.searchTerm}%`)
+                  : like(packages.preassignedId, `%${input.searchTerm}%`),
+          ),
+        )
+    }),
   getTotalInTransitSentByAgentId: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db
       .select({ value: count() })
