@@ -12,7 +12,7 @@ import {
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
-import { eq } from "drizzle-orm"
+import { and, eq, getTableColumns, like } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
 
@@ -66,73 +66,117 @@ export const warehouseTransferShipmentRouter = router({
         ...other,
       }
     }),
-  getPreparing: protectedProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
-      .from(warehouseTransferShipments)
-      .innerJoin(
-        shipments,
-        eq(warehouseTransferShipments.shipmentId, shipments.id),
-      )
-      .innerJoin(
-        warehouses,
-        eq(warehouseTransferShipments.sentToWarehouseId, warehouses.id),
-      )
-      .innerJoin(users, eq(warehouseTransferShipments.driverId, users.id))
-      .innerJoin(
-        vehicles,
-        eq(warehouseTransferShipments.vehicleId, vehicles.id),
-      )
-      .where(eq(shipments.status, "PREPARING"))
+  getPreparing: protectedProcedure
+    .input(
+      z.object({
+        searchWith: z
+          .literal("SHIPMENT_ID")
+          .or(z.literal("PACKAGE_ID"))
+          .or(z.literal("PACKAGE_PRE_ID")),
+        searchTerm: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const shipmentColumns = getTableColumns(shipments)
+      const { shipmentId, ...warehouseTransferShipmentColumns } =
+        getTableColumns(warehouseTransferShipments)
 
-    return results.map(
-      ({
-        shipments,
-        warehouse_transfer_shipments,
-        warehouses,
-        users,
-        vehicles,
-      }) => {
-        const { shipmentId, ...other } = warehouse_transfer_shipments
-
-        return {
-          ...shipments,
-          ...other,
+      return await ctx.db
+        .selectDistinct({
+          ...shipmentColumns,
+          ...warehouseTransferShipmentColumns,
           warehouseDisplayName: warehouses.displayName,
           driverDisplayName: users.displayName,
           driverContactNumber: users.contactNumber,
           vehicleDisplayName: vehicles.displayName,
           vehicleType: vehicles.type,
-        }
-      },
+        })
+        .from(shipmentPackages)
+        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+        .innerJoin(
+          warehouseTransferShipments,
+          eq(
+            shipmentPackages.shipmentId,
+            warehouseTransferShipments.shipmentId,
+          ),
+        )
+        .innerJoin(
+          shipments,
+          eq(warehouseTransferShipments.shipmentId, shipments.id),
+        )
+        .innerJoin(
+          warehouses,
+          eq(warehouseTransferShipments.sentToWarehouseId, warehouses.id),
+        )
+        .innerJoin(users, eq(warehouseTransferShipments.driverId, users.id))
+        .innerJoin(
+          vehicles,
+          eq(warehouseTransferShipments.vehicleId, vehicles.id),
+        )
+        .where(
+          and(
+            eq(shipments.status, "PREPARING"),
+            input.searchTerm === ""
+              ? undefined
+              : input.searchWith === "SHIPMENT_ID"
+                ? like(shipments.id, `%${input.searchTerm}%`)
+                : input.searchWith === "PACKAGE_ID"
+                  ? like(packages.id, `%${input.searchTerm}%`)
+                  : like(packages.preassignedId, `%${input.searchTerm}%`),
+          ),
+        )
+    }),
+  getInTransit: protectedProcedure
+    .input(
+      z.object({
+        searchWith: z
+          .literal("SHIPMENT_ID")
+          .or(z.literal("PACKAGE_ID"))
+          .or(z.literal("PACKAGE_PRE_ID")),
+        searchTerm: z.string(),
+      }),
     )
-  }),
-  getInTransit: protectedProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
-      .from(warehouseTransferShipments)
-      .innerJoin(
-        shipments,
-        eq(warehouseTransferShipments.shipmentId, shipments.id),
-      )
-      .innerJoin(
-        warehouses,
-        eq(warehouseTransferShipments.sentToWarehouseId, warehouses.id),
-      )
-      .where(eq(shipments.status, "IN_TRANSIT"))
+    .query(async ({ ctx, input }) => {
+      const shipmentColumns = getTableColumns(shipments)
+      const { shipmentId, ...warehouseTransferShipmentColumns } =
+        getTableColumns(warehouseTransferShipments)
 
-    return results.map(
-      ({ shipments, warehouse_transfer_shipments, warehouses }) => {
-        const { shipmentId, ...other } = warehouse_transfer_shipments
-
-        return {
-          ...shipments,
-          ...other,
+      return await ctx.db
+        .selectDistinct({
+          ...shipmentColumns,
+          ...warehouseTransferShipmentColumns,
           warehouseDisplayName: warehouses.displayName,
-        }
-      },
-    )
-  }),
+        })
+        .from(shipmentPackages)
+        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+        .innerJoin(
+          warehouseTransferShipments,
+          eq(
+            shipmentPackages.shipmentId,
+            warehouseTransferShipments.shipmentId,
+          ),
+        )
+        .innerJoin(
+          shipments,
+          eq(warehouseTransferShipments.shipmentId, shipments.id),
+        )
+        .innerJoin(
+          warehouses,
+          eq(warehouseTransferShipments.sentToWarehouseId, warehouses.id),
+        )
+        .where(
+          and(
+            eq(shipments.status, "IN_TRANSIT"),
+            input.searchTerm === ""
+              ? undefined
+              : input.searchWith === "SHIPMENT_ID"
+                ? like(shipments.id, `%${input.searchTerm}%`)
+                : input.searchWith === "PACKAGE_ID"
+                  ? like(packages.id, `%${input.searchTerm}%`)
+                  : like(packages.preassignedId, `%${input.searchTerm}%`),
+          ),
+        )
+    }),
   updateStatusToInTransitById: protectedProcedure
     .input(
       z.object({
