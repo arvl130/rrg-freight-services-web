@@ -17,7 +17,7 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
     onSuccess: () => {
       utils.shipment.delivery.getAll.invalidate()
       onClose()
-      toast.success("Delivery Created")
+      toast.success("Delivery created.")
     },
   })
 
