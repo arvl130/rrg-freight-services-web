@@ -348,7 +348,7 @@ function PackagesTable({
         </div>
         <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min overflow-auto">
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
-            Package ID
+            Tracking Number
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Sender
