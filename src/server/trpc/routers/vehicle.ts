@@ -1,4 +1,4 @@
-import { eq, isNull, inArray } from "drizzle-orm"
+import { eq, isNull, inArray, and } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
 import { vehicles, shipments, deliveryShipments } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
@@ -60,7 +60,12 @@ export const vehicleRouter = router({
         deliveriesInProgress,
         eq(vehicles.id, deliveriesInProgress.delivery_shipments.vehicleId),
       )
-      .where(isNull(deliveriesInProgress.shipments.id))
+      .where(
+        and(
+          isNull(deliveriesInProgress.shipments.id),
+          eq(vehicles.isMaintenance, 0),
+        ),
+      )
 
     return results.map(({ vehicles }) => vehicles)
   }),
