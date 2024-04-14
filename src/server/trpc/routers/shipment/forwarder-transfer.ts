@@ -13,7 +13,7 @@ import {
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
-import { and, count, eq, inArray } from "drizzle-orm"
+import { and, count, eq, getTableColumns, inArray, like } from "drizzle-orm"
 import { alias } from "drizzle-orm/mysql-core"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
@@ -88,52 +88,72 @@ export const forwarderTransferShipmentRouter = router({
         ...other,
       }
     }),
-  getPreparing: protectedProcedure.query(async ({ ctx }) => {
-    const agentUsers = alias(users, "agent_users")
-    const driverUsers = alias(users, "driver_users")
-    const results = await ctx.db
-      .select()
-      .from(forwarderTransferShipments)
-      .innerJoin(
-        shipments,
-        eq(forwarderTransferShipments.shipmentId, shipments.id),
-      )
-      .innerJoin(
-        agentUsers,
-        eq(forwarderTransferShipments.sentToAgentId, agentUsers.id),
-      )
-      .innerJoin(
-        driverUsers,
-        eq(forwarderTransferShipments.driverId, driverUsers.id),
-      )
-      .innerJoin(
-        vehicles,
-        eq(forwarderTransferShipments.vehicleId, vehicles.id),
-      )
-      .where(eq(shipments.status, "PREPARING"))
+  getPreparing: protectedProcedure
+    .input(
+      z.object({
+        searchWith: z
+          .literal("SHIPMENT_ID")
+          .or(z.literal("PACKAGE_ID"))
+          .or(z.literal("PACKAGE_PRE_ID")),
+        searchTerm: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const agentUsers = alias(users, "agent_users")
+      const driverUsers = alias(users, "driver_users")
 
-    return results.map(
-      ({
-        shipments,
-        forwarder_transfer_shipments,
-        agent_users,
-        driver_users,
-        vehicles,
-      }) => {
-        const { shipmentId, ...other } = forwarder_transfer_shipments
+      const shipmentColumns = getTableColumns(shipments)
+      const { shipmentId, ...forwarderTransferShipmentColumns } =
+        getTableColumns(forwarderTransferShipments)
 
-        return {
-          ...shipments,
-          ...other,
-          agentDisplayName: agent_users.displayName,
-          driverDisplayName: driver_users.displayName,
-          driverContactNumber: driver_users.contactNumber,
+      return await ctx.db
+        .select({
+          ...shipmentColumns,
+          ...forwarderTransferShipmentColumns,
+          agentDisplayName: agentUsers.displayName,
+          driverDisplayName: driverUsers.displayName,
+          driverContactNumber: driverUsers.contactNumber,
           vehicleDisplayName: vehicles.displayName,
           vehicleType: vehicles.type,
-        }
-      },
-    )
-  }),
+        })
+        .from(shipmentPackages)
+        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+        .innerJoin(
+          forwarderTransferShipments,
+          eq(
+            shipmentPackages.shipmentId,
+            forwarderTransferShipments.shipmentId,
+          ),
+        )
+        .innerJoin(
+          shipments,
+          eq(forwarderTransferShipments.shipmentId, shipments.id),
+        )
+        .innerJoin(
+          agentUsers,
+          eq(forwarderTransferShipments.sentToAgentId, agentUsers.id),
+        )
+        .innerJoin(
+          driverUsers,
+          eq(forwarderTransferShipments.driverId, driverUsers.id),
+        )
+        .innerJoin(
+          vehicles,
+          eq(forwarderTransferShipments.vehicleId, vehicles.id),
+        )
+        .where(
+          and(
+            eq(shipments.status, "PREPARING"),
+            input.searchTerm === ""
+              ? undefined
+              : input.searchWith === "SHIPMENT_ID"
+                ? like(shipments.id, `%${input.searchTerm}%`)
+                : input.searchWith === "PACKAGE_ID"
+                  ? like(packages.id, `%${input.searchTerm}%`)
+                  : like(packages.preassignedId, `%${input.searchTerm}%`),
+          ),
+        )
+    }),
   getInTransit: protectedProcedure.query(async ({ ctx }) => {
     const results = await ctx.db
       .select()
