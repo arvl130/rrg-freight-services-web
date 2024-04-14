@@ -21,7 +21,7 @@ import toast from "react-hot-toast"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import { CloudArrowUp } from "@phosphor-icons/react/dist/ssr/CloudArrowUp"
 import { ArrowCircleDown } from "@phosphor-icons/react/dist/ssr/ArrowCircleDown"
-import type { User } from "@/server/db/entities"
+import type { NormalizedPublicOverseasAgentUser } from "@/server/db/entities"
 import type { FileRejection } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
 
@@ -227,7 +227,7 @@ function ChooseAgentForm({
   reset,
   onClose,
 }: {
-  agents: User[]
+  agents: NormalizedPublicOverseasAgentUser[]
   sheetRows: SheetRow[]
   reset: () => void
   onClose: () => void

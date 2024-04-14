@@ -24,6 +24,7 @@ import {
   type ShipmentStatus,
 } from "@/utils/constants"
 import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
+import { EditDetailsModal } from "./edit-details-modal"
 
 function WarehouseDetails(props: { warehouseId: number }) {
   const { status, data, error } = api.warehouse.getById.useQuery({
@@ -38,7 +39,7 @@ function WarehouseDetails(props: { warehouseId: number }) {
 
 function TableItem({ item }: { item: NormalizedIncomingShipment }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "PRINT_WAYBILLS"
+    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "PRINT_WAYBILLS"
   >(null)
 
   return (
@@ -89,6 +90,12 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
                 View Details
               </DropdownMenu.Item>
               <DropdownMenu.Item
+                className="transition-colors rounded-t-lg hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("EDIT_DETAILS")}
+              >
+                Edit Details
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
                 className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("PRINT_WAYBILLS")}
               >
@@ -104,6 +111,11 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
           shipmentId={item.id}
           isOpen={visibleModal === "VIEW_DETAILS"}
           close={() => setVisibleModal(null)}
+        />
+        <EditDetailsModal
+          shipment={item}
+          isOpen={visibleModal === "EDIT_DETAILS"}
+          onClose={() => setVisibleModal(null)}
         />
         <ViewWaybillsModal
           shipmentId={item.id}
