@@ -33,15 +33,28 @@ export type PublicUser = Omit<User, "hashedPassword">
 
 export type WarehouseStaff = typeof warehouseStaffs.$inferSelect
 export type NewWarehouseStaff = typeof warehouseStaffs.$inferInsert
+export type NormalizedPublicWarehouseStaffUser = Omit<
+  PublicUser & WarehouseStaff,
+  "userId"
+>
 
 export type Driver = typeof drivers.$inferSelect
 export type NewDriver = typeof drivers.$inferInsert
+export type NormalizedPublicDriverUser = Omit<PublicUser & Driver, "userId">
 
 export type OverseasAgent = typeof overseasAgents.$inferSelect
 export type NewOverseasAgent = typeof overseasAgents.$inferInsert
+export type NormalizedPublicOverseasAgentUser = Omit<
+  PublicUser & OverseasAgent,
+  "userId"
+>
 
 export type DomesticAgent = typeof domesticAgents.$inferSelect
 export type NewDomesticAgent = typeof domesticAgents.$inferInsert
+export type NormalizedPublicDomesticAgentUser = Omit<
+  PublicUser & DomesticAgent,
+  "userId"
+>
 
 export type Shipment = typeof shipments.$inferSelect
 export type NewShipment = typeof shipments.$inferInsert

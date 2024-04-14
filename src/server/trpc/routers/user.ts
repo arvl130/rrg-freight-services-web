@@ -47,16 +47,38 @@ export const userRouter = router({
     return await ctx.db.select().from(users)
   }),
   getOverseasAgents: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db
+    const results = await ctx.db
       .select()
       .from(users)
+      .innerJoin(overseasAgents, eq(users.id, overseasAgents.userId))
       .where(eq(users.role, "OVERSEAS_AGENT"))
+
+    return results.map(({ users, overseas_agents }) => {
+      const { userId, ...otherAgentAttributes } = overseas_agents
+      const { hashedPassword, ...otherUserAttributes } = users
+
+      return {
+        ...otherUserAttributes,
+        ...otherAgentAttributes,
+      }
+    })
   }),
   getDomesticAgents: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db
+    const results = await ctx.db
       .select()
       .from(users)
+      .innerJoin(domesticAgents, eq(users.id, domesticAgents.userId))
       .where(eq(users.role, "DOMESTIC_AGENT"))
+
+    return results.map(({ users, domestic_agents }) => {
+      const { userId, ...otherAgentAttributes } = domestic_agents
+      const { hashedPassword, ...otherUserAttributes } = users
+
+      return {
+        ...otherUserAttributes,
+        ...otherAgentAttributes,
+      }
+    })
   }),
   getById: protectedProcedure
     .input(
