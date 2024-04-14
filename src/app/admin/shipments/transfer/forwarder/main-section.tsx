@@ -79,13 +79,13 @@ function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
           <DropdownMenu.Portal>
             <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm">
               <DropdownMenu.Item
-                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                className="transition-colors rounded-t-lg hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("VIEW_DETAILS")}
               >
                 View Details
               </DropdownMenu.Item>
               <DropdownMenu.Item
-                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("VIEW_LOCATIONS")}
               >
                 View Locations

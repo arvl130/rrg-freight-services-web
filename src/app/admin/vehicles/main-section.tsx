@@ -47,13 +47,13 @@ function TableItem({ item }: { item: Vehicle }) {
           <DropdownMenu.Portal>
             <DropdownMenu.Content className="bg-white rounded-lg drop-shadow-lg text-sm font-medium">
               <DropdownMenu.Item
-                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                className="transition-colors rounded-t-lg hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("EDIT")}
               >
                 Edit
               </DropdownMenu.Item>
               <DropdownMenu.Item
-                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("DELETE")}
               >
                 Delete
