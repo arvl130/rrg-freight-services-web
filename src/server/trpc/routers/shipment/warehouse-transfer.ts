@@ -235,4 +235,26 @@ export const warehouseTransferShipmentRouter = router({
         createdById: ctx.user.id,
       })
     }),
+  updateDetailsById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        driverId: z.string(),
+        sentToAgentId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(warehouseTransferShipments)
+        .set({
+          driverId: input.driverId,
+        })
+        .where(eq(warehouseTransferShipments.shipmentId, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "TRANSFER_WAREHOUSE_SHIPMENT",
+        createdById: ctx.user.id,
+      })
+    }),
 })

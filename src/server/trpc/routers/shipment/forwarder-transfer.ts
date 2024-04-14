@@ -326,4 +326,27 @@ export const forwarderTransferShipmentRouter = router({
       count: value,
     }
   }),
+  updateDetailsById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        driverId: z.string(),
+        sentToAgentId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(forwarderTransferShipments)
+        .set({
+          driverId: input.driverId,
+          sentToAgentId: input.sentToAgentId,
+        })
+        .where(eq(forwarderTransferShipments.shipmentId, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "TRANSFER_FORWARDER_SHIPMENT",
+        createdById: ctx.user.id,
+      })
+    }),
 })

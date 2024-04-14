@@ -380,4 +380,27 @@ export const deliveryShipmentRouter = router({
           })
       })
     }),
+  updateDetailsById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        driverId: z.string(),
+        departureAt: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(deliveryShipments)
+        .set({
+          driverId: input.driverId,
+          departureAt: input.departureAt,
+        })
+        .where(eq(deliveryShipments.shipmentId, input.id))
+
+      await createLog(ctx.db, {
+        verb: "UPDATE",
+        entity: "DELIVERY_SHIPMENT",
+        createdById: ctx.user.id,
+      })
+    }),
 })
