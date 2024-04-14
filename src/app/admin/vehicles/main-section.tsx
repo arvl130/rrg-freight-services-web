@@ -36,6 +36,9 @@ function TableItem({ item }: { item: Vehicle }) {
         {item.isExpressAllowed === 1 ? "Yes" : "No"}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
+        {item.isMaintenance === 1 ? "Yes" : "No"}
+      </div>
+      <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
             <button type="button">
@@ -170,7 +173,7 @@ function VehiclesTable({ items }: { items: Vehicle[] }) {
             gotoPreviousPage={gotoPreviousPage}
           />
         </div>
-        <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min overflow-auto">
+        <div className="grid grid-cols-[repeat(6,_auto)_1fr] auto-rows-min overflow-auto">
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Vehicle ID
           </div>
@@ -187,10 +190,13 @@ function VehiclesTable({ items }: { items: Vehicle[] }) {
             Express Allowed
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
+            Ongoing Maintenance
+          </div>
+          <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Actions
           </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4 col-span-5">No vehicle found.</div>
+            <div className="text-center pt-4 col-span-7">No vehicle found.</div>
           ) : (
             <>
               {paginatedItems.map((item) => (

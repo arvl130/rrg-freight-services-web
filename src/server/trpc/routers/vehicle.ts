@@ -74,6 +74,7 @@ export const vehicleRouter = router({
         plateNumber: z.string().min(1).max(15),
         weightCapacityInKg: z.number().gt(0),
         isExpressAllowed: z.boolean(),
+        isMaintenance: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -82,6 +83,7 @@ export const vehicleRouter = router({
         const result = await ctx.db.insert(vehicles).values({
           ...input,
           isExpressAllowed: input.isExpressAllowed ? 1 : 0,
+          isMaintenance: input.isMaintenance ? 1 : 0,
           createdAt,
         })
 
@@ -114,6 +116,7 @@ export const vehicleRouter = router({
         plateNumber: z.string().min(1).max(15),
         weightCapacityInKg: z.number().gt(0),
         isExpressAllowed: z.boolean(),
+        isMaintenance: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -123,6 +126,7 @@ export const vehicleRouter = router({
           .set({
             ...input,
             isExpressAllowed: input.isExpressAllowed ? 1 : 0,
+            isMaintenance: input.isMaintenance ? 1 : 0,
           })
           .where(eq(vehicles.id, input.id))
 

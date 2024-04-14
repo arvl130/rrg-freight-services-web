@@ -306,6 +306,7 @@ export const vehicles = mysqlTable("vehicles", {
     scale: 2,
   }).notNull(),
   isExpressAllowed: tinyint("is_express_allowed").notNull(),
+  isMaintenance: tinyint("is_maintenance").notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
   createdAt: varchar("created_at", {
     length: 255,

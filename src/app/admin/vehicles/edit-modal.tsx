@@ -20,6 +20,7 @@ const formSchema = z.object({
   plateNumber: z.string().min(1).max(15),
   weightCapacityInKg: z.string().regex(REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS),
   isExpressAllowed: z.boolean(),
+  isMaintenance: z.boolean(),
 })
 
 const schemaRefined = formSchema.superRefine(
@@ -76,6 +77,7 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
       plateNumber: vehicle.plateNumber,
       weightCapacityInKg: vehicle.weightCapacityInKg.toString(),
       isExpressAllowed: vehicle.isExpressAllowed === 1,
+      isMaintenance: vehicle.isMaintenance === 1,
     },
   })
 
@@ -160,6 +162,12 @@ function EditForm({ vehicle, close }: { vehicle: Vehicle; close: () => void }) {
         <label className="flex gap-2 font-medium">
           <span>Allow express shipments?</span>
           <input type="checkbox" {...register("isExpressAllowed")} />
+        </label>
+      </div>
+      <div className="mb-3">
+        <label className="flex gap-2 font-medium">
+          <span>Has Ongoing Maintenance?</span>
+          <input type="checkbox" {...register("isMaintenance")} />
         </label>
       </div>
       <div className="flex justify-end">
