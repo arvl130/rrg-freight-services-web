@@ -107,7 +107,7 @@ export const forwarderTransferShipmentRouter = router({
         getTableColumns(forwarderTransferShipments)
 
       return await ctx.db
-        .select({
+        .selectDistinct({
           ...shipmentColumns,
           ...forwarderTransferShipmentColumns,
           agentDisplayName: agentUsers.displayName,
