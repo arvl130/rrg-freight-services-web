@@ -9,14 +9,16 @@ import type { Activity } from "@/server/db/entities"
 import { getColorFromActivityVerb } from "@/utils/colors"
 import { SUPPORTED_ACTIVITY_VERB, type ActivityVerb } from "@/utils/constants"
 
-function TableItem({ item }: { item: Activity }) {
+type ActivityWithUserDisplayName = Activity & { createdByDisplayName: string }
+
+function TableItem({ item }: { item: ActivityWithUserDisplayName }) {
   return (
     <>
       <div className="px-4 py-2 border-b border-gray-300 text-sm text-right">
         {item.id}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        {item.createdById}
+        {item.createdByDisplayName}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {item.createdAt}
@@ -37,25 +39,34 @@ function TableItem({ item }: { item: Activity }) {
   )
 }
 
-function filterBySearchTerm(items: Activity[], searchTerm: string) {
+function filterBySearchTerm(
+  items: ActivityWithUserDisplayName[],
+  searchTerm: string,
+) {
   return items.filter((item) =>
     item.id.toString().toLowerCase().includes(searchTerm),
   )
 }
 
-function filterByArchiveStatus(items: Activity[], isArchived: boolean) {
+function filterByArchiveStatus(
+  items: ActivityWithUserDisplayName[],
+  isArchived: boolean,
+) {
   if (isArchived) return items.filter((item) => item.isArchived === 1)
 
   return items.filter((item) => item.isArchived === 0)
 }
 
-function filterByVerb(items: Activity[], verb: "ALL" | ActivityVerb) {
+function filterByVerb(
+  items: ActivityWithUserDisplayName[],
+  verb: "ALL" | ActivityVerb,
+) {
   if (verb === "ALL") return items
 
   return items.filter((_package) => _package.verb === verb)
 }
 
-function ActivitiesTable({ items }: { items: Activity[] }) {
+function ActivitiesTable({ items }: { items: ActivityWithUserDisplayName[] }) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
     "ARCHIVED" | "NOT_ARCHIVED"
   >("NOT_ARCHIVED")
@@ -85,7 +96,7 @@ function ActivitiesTable({ items }: { items: Activity[] }) {
     gotoPage,
     gotoNextPage,
     gotoPreviousPage,
-  } = usePaginatedItems<Activity>({
+  } = usePaginatedItems<ActivityWithUserDisplayName>({
     items: visibleItems,
   })
 

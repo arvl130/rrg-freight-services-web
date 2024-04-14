@@ -1,12 +1,22 @@
 import { eq } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { activities } from "@/server/db/schema"
+import { activities, users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
 export const activityRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(activities)
+    const results = await ctx.db
+      .select()
+      .from(activities)
+      .innerJoin(users, eq(activities.createdById, users.id))
+
+    return results.map(({ activities, users }) => {
+      return {
+        ...activities,
+        createdByDisplayName: users.displayName,
+      }
+    })
   }),
   getById: protectedProcedure
     .input(
