@@ -1,24 +1,24 @@
 import { db } from "@/server/db/client"
-import { shipments } from "@/server/db/schema"
-import { Article } from "@phosphor-icons/react/dist/ssr/Article"
-import { count, eq } from "drizzle-orm"
+import { packages } from "@/server/db/schema"
+import { and, count, eq, lt } from "drizzle-orm"
 import { unstable_noStore as noStore } from "next/cache"
-
-export async function SkeletonManifestsShippedTile() {
+import { CalendarX } from "@phosphor-icons/react/dist/ssr/CalendarX"
+import { DateTime } from "luxon"
+export function SkeletonDelayPackagesTile() {
   return (
     <article
       className="
-        text-[#AC873C]
+        text-[#C61717]
         grid grid-cols-[1fr_6rem] shadow-md px-8 py-6 rounded-lg
-        bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]
+        bg-gradient-to-b from-[#ED5959CC] to-[#ED595900]
       "
     >
       <div className="flex flex-col justify-center items-start">
         <p className="text-4xl font-semibold">...</p>
-        <p>Shipments shipped</p>
+        <p>Total Delay Packages</p>
       </div>
       <div>
-        <Article
+        <CalendarX
           className="h-16 sm:h-24 aspect-square"
           width="auto"
           height="auto"
@@ -28,29 +28,35 @@ export async function SkeletonManifestsShippedTile() {
   )
 }
 
-export async function ManifestsShippedTile() {
+export async function DelayPackagesTile() {
   noStore()
+  const today = DateTime.now()
   const [{ value }] = await db
     .select({
       value: count(),
     })
-    .from(shipments)
-    .where(eq(shipments.status, "COMPLETED"))
+    .from(packages)
+    .where(
+      and(
+        eq(packages.status, "IN_WAREHOUSE"),
+        lt(packages.expectedHasDeliveryAt, today.toISO()),
+      ),
+    )
 
   return (
     <article
       className="
-        text-[#AC873C]
+        text-[#C61717]
         grid grid-cols-[1fr_auto] shadow-md px-8 py-6 rounded-lg
-        bg-gradient-to-b from-[#EDAD3E80] to-[#EDAD3E00]
+        bg-gradient-to-b from-[#ED5959CC] to-[#ED595940]
       "
     >
       <div className="flex flex-col justify-center items-start">
         <p className="text-4xl font-semibold">{value}</p>
-        <p>Shipments shipped</p>
+        <p>Total Delay Packages</p>
       </div>
       <div>
-        <Article
+        <CalendarX
           className="h-16 sm:h-24 aspect-square"
           width="auto"
           height="auto"
