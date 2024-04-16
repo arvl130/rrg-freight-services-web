@@ -300,7 +300,7 @@ function ShipmentsTable({
             Shipment ID
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
-            Sent By
+            Sent To
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Created At
