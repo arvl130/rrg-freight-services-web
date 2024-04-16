@@ -16,7 +16,7 @@ export function LogsTile(props: { logs: Logs }) {
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
       <div className="mb-2">
         <div className="flex justify-between">
-          <h2 className="font-semibold">Current Logs</h2>
+          <h2 className="font-semibold">Your Current Logs</h2>
         </div>
       </div>
       <table className="table-fixed w-full text-sm border-separate border-spacing-y-1	">
