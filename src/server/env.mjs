@@ -31,6 +31,9 @@ export const serverEnv = createEnv({
     OFFLINE_MODE: z.union([z.literal("0"), z.literal("1")]).optional(),
     EXPO_ACCESS_TOKEN: z.string().min(1),
     SURVEY_URL: z.string().min(1).url(),
+    MAPBOX_API_URL: z.string().min(1).url(),
+    MAPBOX_SECRET_KEY: z.string().min(1),
+    GOOGLE_API_KEY: z.string().min(1),
   },
   runtimeEnv: {
     APP_NAME: process.env.APP_NAME,
@@ -55,5 +58,8 @@ export const serverEnv = createEnv({
     OFFLINE_MODE: process.env.OFFLINE_MODE,
     EXPO_ACCESS_TOKEN: process.env.EXPO_ACCESS_TOKEN,
     SURVEY_URL: process.env.SURVEY_URL,
+    MAPBOX_API_URL: process.env.MAPBOX_API_URL,
+    MAPBOX_SECRET_KEY: process.env.MAPBOX_SECRET_KEY,
+    GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
   },
 })
