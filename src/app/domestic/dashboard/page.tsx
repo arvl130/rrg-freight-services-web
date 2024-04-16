@@ -1,110 +1,59 @@
-import { DomesticLayout } from "@/app/domestic/auth"
+import { AdminLayout } from "@/app/admin/auth"
+import { CalendarBlank } from "@phosphor-icons/react/dist/ssr/CalendarBlank"
+import { FunnelSimple } from "@phosphor-icons/react/dist/ssr/FunnelSimple"
+import {
+  PackagesInWarehouseTile,
+  SkeletonPackagesInWarehouseTile,
+} from "./total-received-packages"
+import { unstable_noStore as noStore } from "next/cache"
+import {
+  DelayPackagesTile,
+  SkeletonDelayPackagesTile,
+} from "./total-delay-packages"
+import {
+  IncomingShipmentsTile,
+  SkeletonIncomingShipmentsTile,
+} from "./total-incoming-shipments"
+import { ShipmentPerMonthTile } from "./shipments-per-month"
+import { VehicleStatusTile } from "./vehicle-status-tile"
+import { RefreshButton } from "./refresh-button"
+import { RevalidatedPageProvider } from "@/providers/revalidated-page"
+import { RevalidatedPageBoundary } from "@/components/revalidated-page-boundary"
 import { validateSessionWithCookies } from "@/server/auth"
-import { getUserRoleRedirectPath } from "@/utils/redirects"
-import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { redirect } from "next/navigation"
-import { TotalArrivingShipmentTile, TotalPackageTile } from "./top-tiles"
-
-function ManifestSummaryTile() {
-  return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
-      <div className="mb-2">
-        <div className="flex justify-between">
-          <h2 className="font-semibold">Manifest Summary</h2>
-          <p className="flex items-center">
-            See more <CaretRight size={16} />
-          </p>
-        </div>
-      </div>
-      {/* Table */}
-      <div className="text-sm">
-        {/* Header */}
-        <div className="grid grid-cols-5 text-gray-400 mb-1">
-          <div>ID</div>
-          <div>Date Issued</div>
-          <div>Date Issued</div>
-          <div>Date Issued</div>
-          <div>Items</div>
-        </div>
-      </div>
-    </article>
-  )
-}
-
-function ManifestHistoryTile() {
-  return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
-      <div className="mb-2">
-        <div className="flex justify-between">
-          <h2 className="font-semibold">Manifest History</h2>
-          <p className="flex items-center">
-            See more <CaretRight size={16} />
-          </p>
-        </div>
-      </div>
-      {/* Table */}
-      <div className="text-sm">
-        {/* Header */}
-        <div className="grid grid-cols-5 text-gray-400 mb-1">
-          <div>ID</div>
-          <div>Date Issued</div>
-          <div>Date Issued</div>
-          <div>Date Issued</div>
-          <div>Items</div>
-        </div>
-      </div>
-    </article>
-  )
-}
-
-interface CalendarWidgetProps {
-  year: number
-  month: string
-}
-
-function CalendarWidgetTile({ year, month }: CalendarWidgetProps) {
-  function generateCalendarContent() {
-    const daysInMonth = 31
-    const days = Array.from({ length: daysInMonth }, (_, index) => index + 1)
-
-    return days
-  }
-
-  const calendarDays = generateCalendarContent()
-
-  return (
-    <div className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
-      <h2 className="font-semibold flex items-center text-md  mb-2  ">
-        {`${month} ${year}  `}
-        <CaretRight size={16} />
-      </h2>
-      <div className="grid grid-cols-7 gap-6">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} className="text-center font-semibold">
-            {day}
-          </div>
-        ))}
-        {calendarDays.map((day, index) => (
-          <div key={index} className="text-center">
-            {day}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function RecentNotificationTile() {
-  return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[20rem]">
-      <div className="mb-2">
-        <div className="flex justify-between">
-          <h2 className="font-semibold">Notifications</h2>
-        </div>
-      </div>
-    </article>
-  )
-}
+import { getUserRoleRedirectPath } from "@/utils/redirects"
+import { DriverStatusTile } from "./driver-status-tile"
+import { PackagePerMonth } from "./package-per-month"
+import { db } from "@/server/db/client"
+import {
+  packages,
+  warehouses,
+  activities,
+  users,
+  vehicles,
+  deliveryShipments,
+  shipments,
+  forwarderTransferShipments,
+  shipmentPackages,
+} from "@/server/db/schema"
+import { eq, and, count, like, desc, not, max } from "drizzle-orm"
+import { DateTime } from "luxon"
+import { LogsTile } from "./logs-tile"
+import { DomesticLayout } from "@/app/domestic/auth"
+const months = [
+  "JAN",
+  "FEB",
+  "MAR",
+  "APR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AUG",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DEC",
+]
 
 export default async function DashboardPage() {
   const { user } = await validateSessionWithCookies()
@@ -116,26 +65,170 @@ export default async function DashboardPage() {
     const redirectPath = getUserRoleRedirectPath(user.role)
     return redirect(redirectPath)
   }
+  noStore()
+  const warehouseData = await db.select().from(warehouses)
+
+  const meterCubePacakges = warehouseData.map(async (warehouse) => {
+    const inWarehousePackages = await db
+      .select()
+      .from(packages)
+      .where(
+        and(
+          eq(packages.status, "IN_WAREHOUSE"),
+          eq(packages.lastWarehouseId, warehouse.id),
+        ),
+      )
+
+    let meter = 0
+
+    inWarehousePackages.map((volume) => {
+      meter = meter + volume.volumeInCubicMeter
+    })
+
+    return { warehouseId: warehouse.id, totalVolume: meter }
+  })
+
+  const warehouseCapacity = await Promise.all(meterCubePacakges)
+
+  const currentYear = DateTime.now().year
+
+  const packagePerMonths = months.map(async (month, index) => {
+    let monthIndex = ""
+    if (index + 1 < 10) {
+      monthIndex = "0" + (index + 1).toString()
+    } else {
+      monthIndex = (index + 1).toString()
+    }
+
+    const [{ value }] = await db
+      .select({ value: count() })
+      .from(forwarderTransferShipments)
+      .innerJoin(
+        shipmentPackages,
+        and(
+          eq(
+            shipmentPackages.shipmentId,
+            forwarderTransferShipments.shipmentId,
+          ),
+          eq(shipmentPackages.status, "COMPLETED"),
+          like(shipmentPackages.createdAt, `%${currentYear}-${monthIndex}%`),
+        ),
+      )
+      .where(eq(forwarderTransferShipments.sentToAgentId, user.id))
+
+    return value
+  })
+
+  const packagePerMonthsResult = await Promise.all(packagePerMonths)
+
+  const shipmentPerMonths = months.map(async (month, index) => {
+    let monthIndex = ""
+    if (index + 1 < 10) {
+      monthIndex = "0" + (index + 1).toString()
+    } else {
+      monthIndex = (index + 1).toString()
+    }
+
+    const [{ value }] = await db
+      .select({ value: count() })
+      .from(forwarderTransferShipments)
+      .where(
+        and(
+          eq(forwarderTransferShipments.sentToAgentId, user.id),
+          like(
+            forwarderTransferShipments.createdAt,
+            `%${currentYear}-${monthIndex}%`,
+          ),
+        ),
+      )
+
+    return value
+  })
+  const shipmentPerMonthsResult = await Promise.all(shipmentPerMonths)
+
+  const logs = await db
+    .select()
+    .from(activities)
+    .innerJoin(users, eq(activities.createdById, users.id))
+    .orderBy(desc(activities.createdAt))
+    .limit(6)
+
+  const latestDeliveryShipment = db
+    .select({ value: max(deliveryShipments.createdAt) })
+    .from(deliveryShipments)
+    .where(eq(deliveryShipments.vehicleId, vehicles.id))
+
+  const vehicleStatus = await db
+    .select()
+    .from(vehicles)
+    .leftJoin(
+      deliveryShipments,
+      and(
+        eq(vehicles.id, deliveryShipments.vehicleId),
+        eq(deliveryShipments.createdAt, latestDeliveryShipment),
+      ),
+    )
+    .leftJoin(shipments, eq(shipments.id, deliveryShipments.shipmentId))
 
   return (
     <DomesticLayout title="Dashboard" user={user}>
-      <>
-        <h1 className="text-3xl font-black [color:_#00203F] mb-8">Dashboard</h1>
+      <h1 className="text-2xl font-black [color:_#00203F] mb-4">Dashboard</h1>
+      <RevalidatedPageProvider>
         <section className="mb-6">
-          <div className="grid grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8">
-            <TotalPackageTile />
-            <TotalArrivingShipmentTile />
+          <div className="mb-4 flex flex-wrap sm:justify-end gap-3">
+            <div className="flex text-sm">
+              <input
+                type="date"
+                className="rounded-l-md border-y border-l border-gray-300 pl-2"
+              />
+              <span className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-r-md">
+                <CalendarBlank size={24} />
+              </span>
+            </div>
+
+            <RefreshButton />
+
+            <button
+              type="button"
+              className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-md"
+            >
+              <span className="sr-only">Filter</span>
+              <FunnelSimple size={24} />
+            </button>
+          </div>
+
+          <div className="grid sm:grid-cols-[repeat(2,_minmax(0,_24rem))] gap-x-8 gap-y-4 justify-center">
+            <RevalidatedPageBoundary
+              fallback={<SkeletonPackagesInWarehouseTile />}
+            >
+              <PackagesInWarehouseTile userId={user.id} />
+            </RevalidatedPageBoundary>
+
+            <RevalidatedPageBoundary
+              fallback={<SkeletonIncomingShipmentsTile />}
+            >
+              <IncomingShipmentsTile userId={user.id} />
+            </RevalidatedPageBoundary>
           </div>
         </section>
-        <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
-          <ManifestSummaryTile />
-          <CalendarWidgetTile year={2023} month="October" />
-        </section>
-        <section className="grid grid-cols-[1fr_20rem] gap-x-6 [color:_#404040] mb-6">
-          <ManifestHistoryTile />
-          <RecentNotificationTile />
-        </section>
-      </>
+      </RevalidatedPageProvider>
+
+      <section className="grid sm:grid-cols-2 gap-x-6 gap-y-4 [color:_#404040] mb-6">
+        <PackagePerMonth
+          packagesPerMonth={packagePerMonthsResult}
+          monthsLabel={months}
+        />
+        <ShipmentPerMonthTile
+          shipmentPerMonth={shipmentPerMonthsResult}
+          monthsLabel={months}
+        />
+      </section>
+
+      {/* <section className="grid lg:grid-cols-[25rem_20rem_1fr] gap-x-6 gap-y-4 [color:_#404040]">
+        <LogsTile logs={logs} />
+        <VehicleStatusTile vehicleStatuses={vehicleStatus} />
+        <DriverStatusTile />
+      </section> */}
     </DomesticLayout>
   )
 }
