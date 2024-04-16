@@ -1,24 +1,10 @@
 import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packages } from "@/server/db/schema"
-import { eq, and } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 import { z } from "zod"
-import { serverEnv } from "@/server/env.mjs"
+import { getLongitudeLatitudeWithGoogle } from "@/server/geocoding"
 const inputSchema = z.object({ packageId: z.string() })
-
-async function AddressToCoordintaesConvertion(addresses: string[]) {
-  const coordinatesPromises = addresses.map(async (address) => {
-    const response = await fetch(
-      `${serverEnv.GEOAPIFY_API_URL}${encodeURI(
-        address,
-      )}&limit=1&format=json&apiKey=${serverEnv.GEOAPIFY_API_KEY}`,
-    )
-
-    const { results } = await response.json()
-    return { lat: results[0].lat, lon: results[0].lon }
-  })
-  return await Promise.all(coordinatesPromises)
-}
 
 export async function GET(req: Request, ctx: { params: { id: string } }) {
   try {
@@ -36,20 +22,20 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
       packageId: ctx.params.id,
     })
 
-    const packageByIdResult = await db
+    const [_package] = await db
       .select()
       .from(packages)
       .where(eq(packages.id, input.packageId))
 
-    const recieverAddress = packageByIdResult.map((item) => {
-      return `${item.receiverStreetAddress} ${item.receiverCity} ${item.receiverCountryCode}`
-    })
-
-    const coordinate = await AddressToCoordintaesConvertion(recieverAddress)
+    const packageAddress = `${_package.receiverStreetAddress}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, ${_package.receiverCountryCode}`
+    const result = await getLongitudeLatitudeWithGoogle(packageAddress)
 
     return Response.json({
-      packageCoordinate: coordinate[0],
-      packageAddress: recieverAddress[0],
+      packageCoordinate: {
+        lat: result.lat,
+        lon: result.long,
+      },
+      packageAddress,
       message: "Package retrieved",
     })
   } catch (e) {
