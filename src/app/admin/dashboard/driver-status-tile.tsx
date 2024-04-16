@@ -8,17 +8,25 @@ import {
   users,
   vehicles,
 } from "@/server/db/schema"
-import { and, count, desc, eq, lt, ne, or, asc } from "drizzle-orm"
+import { and, count, desc, eq, lt, ne, or, asc, max } from "drizzle-orm"
 import { resourceLimits } from "worker_threads"
 
 export async function DriverStatusTile() {
   noStore()
+  const latestDriverDelivery = db
+    .select({ value: max(deliveryShipments.createdAt) })
+    .from(deliveryShipments)
+    .where(eq(deliveryShipments.driverId, users.id))
   const result = await db
     .select()
     .from(users)
-    .leftJoin(deliveryShipments, eq(users.id, deliveryShipments.driverId))
-    .orderBy(desc(deliveryShipments.createdAt))
-    .limit(1)
+    .leftJoin(
+      deliveryShipments,
+      and(
+        eq(users.id, deliveryShipments.driverId),
+        eq(deliveryShipments.createdAt, latestDriverDelivery),
+      ),
+    )
     .leftJoin(vehicles, eq(deliveryShipments.vehicleId, vehicles.id))
     .leftJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
     .where(eq(users.role, "DRIVER"))
@@ -41,8 +49,8 @@ export async function DriverStatusTile() {
         </thead>
 
         <tbody className="">
-          {result.map((driver) => (
-            <tr key={driver.users.id}>
+          {result.map((driver, index) => (
+            <tr key={index}>
               <td className="">{driver.users.displayName}</td>
               {driver.delivery_shipments == undefined ||
               driver.vehicles == undefined ||

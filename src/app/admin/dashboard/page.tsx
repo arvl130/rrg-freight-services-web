@@ -32,8 +32,9 @@ import {
   users,
   vehicles,
   deliveryShipments,
+  shipments,
 } from "@/server/db/schema"
-import { eq, and, count, like, desc } from "drizzle-orm"
+import { eq, and, count, like, desc, not, max } from "drizzle-orm"
 import { DateTime } from "luxon"
 import { LogsTile } from "./logs-tile"
 const months = [
@@ -112,10 +113,22 @@ export default async function DashboardPage() {
     .orderBy(desc(activities.createdAt))
     .limit(6)
 
+  const latestDeliveryShipment = db
+    .select({ value: max(deliveryShipments.createdAt) })
+    .from(deliveryShipments)
+    .where(eq(deliveryShipments.vehicleId, vehicles.id))
+
   const vehicleStatus = await db
     .select()
     .from(vehicles)
-    .leftJoin(deliveryShipments, eq(vehicles.id, deliveryShipments.vehicleId))
+    .leftJoin(
+      deliveryShipments,
+      and(
+        eq(vehicles.id, deliveryShipments.vehicleId),
+        eq(deliveryShipments.createdAt, latestDeliveryShipment),
+      ),
+    )
+    .leftJoin(shipments, eq(shipments.id, deliveryShipments.shipmentId))
 
   return (
     <AdminLayout title="Dashboard" user={user}>

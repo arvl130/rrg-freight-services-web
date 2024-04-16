@@ -1,8 +1,9 @@
-import type { DeliveryShipment, Vehicle } from "@/server/db/entities"
+import type { DeliveryShipment, Shipment, Vehicle } from "@/server/db/entities"
 
 type VehicleStatus = {
   delivery_shipments: DeliveryShipment | null
   vehicles: Vehicle
+  shipments: Shipment | null
 }[]
 
 export function VehicleStatusTile(props: { vehicleStatuses: VehicleStatus }) {
@@ -21,8 +22,8 @@ export function VehicleStatusTile(props: { vehicleStatuses: VehicleStatus }) {
             <>No Vehicle Found.</>
           ) : (
             <>
-              {props.vehicleStatuses.map((vehicleStatus) => (
-                <tr key={vehicleStatus.vehicles.id}>
+              {props.vehicleStatuses.map((vehicleStatus, index) => (
+                <tr key={index}>
                   <td>
                     {vehicleStatus.vehicles.displayName} (
                     {vehicleStatus.vehicles.plateNumber})
@@ -30,13 +31,14 @@ export function VehicleStatusTile(props: { vehicleStatuses: VehicleStatus }) {
                   <td>
                     {vehicleStatus.vehicles.isMaintenance === 1 ? (
                       <div className="flex justify-center	">
-                        <span className="uppercase font-bold	text-white	">
+                        <span className="uppercase font-bold	px-3 py-1 rounded-lg text-white		bg-[#ED5959]">
                           Maintenance
                         </span>
                       </div>
                     ) : (
                       <div className="flex justify-center	">
-                        {vehicleStatus.delivery_shipments === null ? (
+                        {vehicleStatus.delivery_shipments === null ||
+                        vehicleStatus.shipments?.status === "COMPLETED" ? (
                           <span className="uppercase font-bold	px-3 py-1 rounded-lg text-white		bg-[#3DE074]">
                             Available
                           </span>
