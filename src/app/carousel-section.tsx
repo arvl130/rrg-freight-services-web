@@ -26,6 +26,8 @@ export function CarouselSection() {
             showStatus={false}
             showThumbs={false}
             useKeyboardArrows={true}
+            autoPlay={true}
+            infiniteLoop={true}
           >
             {images.map((URL, index) => (
               <div
@@ -34,11 +36,13 @@ export function CarouselSection() {
                 className="slide"
               >
                 <Image
-                  style={{ borderRadius: "10px" }}
                   src={URL}
                   alt="ship"
-                  width={616}
-                  height={370}
+                  width={632}
+                  height={440}
+                  layout="responsive"
+                  quality={100}
+                  style={{ borderRadius: "10px" }}
                 />
               </div>
             ))}
