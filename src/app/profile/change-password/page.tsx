@@ -19,7 +19,7 @@ export default async function ProfilePasswordPage() {
           <div className="min-w-0">
             <div className="px-6 pt-4 pb-6 rounded-lg bg-white">
               <UpdatePasswordForm />
-              <SecurityKeysSection />
+              <SecurityKeysSection user={user} />
             </div>
           </div>
         </section>

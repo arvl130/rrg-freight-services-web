@@ -76,6 +76,7 @@ const lucia = new Lucia(adapter, {
       role: attributes.role,
       photoUrl: attributes.photoUrl,
       displayName: attributes.displayName,
+      email: attributes.emailAddress,
     }
   },
 })
@@ -91,6 +92,7 @@ interface DatabaseUserAttributes {
   role: UserRole
   displayName: string
   photoUrl: string | null
+  emailAddress: string
 }
 
 export async function createSessionForUserId(userId: string) {

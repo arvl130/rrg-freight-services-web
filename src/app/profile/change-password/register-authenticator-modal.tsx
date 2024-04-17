@@ -1,8 +1,10 @@
+import { useSavedUser } from "@/components/saved-users"
 import { api } from "@/utils/api"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
 import { WebAuthnError, startRegistration } from "@simplewebauthn/browser"
+import type { User } from "lucia"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
@@ -14,7 +16,9 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
-function RegisterForm({ onClose }: { onClose: () => void }) {
+function RegisterForm({ onClose, user }: { onClose: () => void; user: User }) {
+  const savedUsers = useSavedUser()
+
   const {
     handleSubmit,
     register,
@@ -39,11 +43,14 @@ function RegisterForm({ onClose }: { onClose: () => void }) {
         apiUtils.webauthn.getCredentials.invalidate()
         onClose()
         toast.success("Authenticator registered.")
+        savedUsers.addUser(user)
       },
       onError: ({ message }) => {
         toast.error(message)
       },
     })
+
+  if (savedUsers.isLoading) return <p>Loading saved users ...</p>
 
   return (
     <form
@@ -108,9 +115,11 @@ function RegisterForm({ onClose }: { onClose: () => void }) {
 export function RegisterModal({
   isOpen,
   onClose,
+  user,
 }: {
   isOpen: boolean
   onClose: () => void
+  user: User
 }) {
   return (
     <Dialog.Root open={isOpen}>
@@ -126,7 +135,7 @@ export function RegisterModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             New Authenticator
           </Dialog.Title>
-          <RegisterForm onClose={onClose} />
+          <RegisterForm user={user} onClose={onClose} />
           <Dialog.Close asChild>
             <button
               type="button"

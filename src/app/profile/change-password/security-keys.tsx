@@ -6,6 +6,7 @@ import { useState } from "react"
 import { RegisterModal } from "./register-authenticator-modal"
 import { EditModal } from "./edit-authenticator-modal"
 import { DeleteModal } from "./delete-authenticator-modal"
+import type { User } from "lucia"
 
 function CredentialsListItem(props: { credential: WebauthnCredential }) {
   const [visibleModal, setVisibleModal] = useState<"" | "EDIT" | "DELETE">("")
@@ -70,7 +71,7 @@ function CredentialsList(props: { credentials: WebauthnCredential[] }) {
   )
 }
 
-export function SecurityKeysSection() {
+export function SecurityKeysSection(props: { user: User }) {
   const credentialsQuery = api.webauthn.getCredentials.useQuery()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
@@ -95,6 +96,7 @@ export function SecurityKeysSection() {
       </button>
 
       <RegisterModal
+        user={props.user}
         isOpen={isModalVisible}
         onClose={() => setIsModalVisible(false)}
       />
