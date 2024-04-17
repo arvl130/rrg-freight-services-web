@@ -2,7 +2,7 @@ import { ShipVector } from "@/components/vector/ship"
 
 export function HeroSection() {
   return (
-    <section className="[background-color:_#79CFDC] relative">
+    <section id="hero-section" className="[background-color:_#79CFDC] relative">
       <div className="min-h-[60vh] max-w-6xl mx-auto grid md:grid-cols-2 px-6">
         <div className="flex flex-col justify-center text-white font-semibold">
           <p className="text-4xl w-full text-center mb-3 max-w-md mx-auto">
