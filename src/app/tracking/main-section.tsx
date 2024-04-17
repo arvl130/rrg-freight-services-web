@@ -346,8 +346,10 @@ type ChoosePackageFormType = z.infer<typeof choosePackageFormSchema>
 
 function ChoosePackageForm({
   setSelectedPackageId,
+  initialPackageId,
 }: {
   setSelectedPackageId: (packageId: string) => void
+  initialPackageId?: string
 }) {
   const {
     register,
@@ -355,6 +357,9 @@ function ChoosePackageForm({
     formState: { errors },
   } = useForm<ChoosePackageFormType>({
     resolver: zodResolver(choosePackageFormSchema),
+    defaultValues: {
+      packageId: initialPackageId,
+    },
   })
 
   return (
@@ -428,15 +433,14 @@ export function MainSection(props: { preselectedId: string | null }) {
   )
   const [trackingIdEntered, setTrackingIdEntered] = useState<boolean>(false)
 
-  const handleTrackingIdEntered = () => {
-    setTrackingIdEntered(true)
-  }
-
   return (
     <>
       <HeroSection />
 
       <ChoosePackageForm
+        initialPackageId={
+          props.preselectedId === null ? undefined : props.preselectedId
+        }
         setSelectedPackageId={(packageId) => {
           setSelectedPackageId(packageId)
           setTrackingIdEntered(true)
