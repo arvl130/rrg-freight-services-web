@@ -5,7 +5,11 @@ import {
   shipmentPackageOtps,
   deliveryShipments,
 } from "@/server/db/schema"
-import { notifyByEmail, notifyBySms } from "@/server/notification"
+import {
+  notifyByEmailWithHtmlifiedComponent,
+  notifyBySms,
+} from "@/server/notification"
+import OtpEmail from "@/utils/email-templates/otp-email"
 import { HttpError } from "@/utils/errors"
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -113,10 +117,10 @@ export async function GET(
         .onDuplicateKeyUpdate({ set: { code, expireAt, createdAt } })
 
       await Promise.allSettled([
-        notifyByEmail({
+        notifyByEmailWithHtmlifiedComponent({
           to: receiverEmailAddress,
           subject: `Your package will be delivered soon`,
-          htmlBody: `<p>Your package with ID ${id} will be delivered soon. Upon receiving, please enter the following code ${code} in our driver app for verification. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
+          component: <OtpEmail otp={code.toString()} />,
         }),
         notifyBySms({
           to: receiverContactNumber,

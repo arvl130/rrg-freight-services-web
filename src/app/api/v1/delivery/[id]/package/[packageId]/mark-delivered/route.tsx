@@ -7,8 +7,9 @@ import {
   shipmentPackages,
 } from "@/server/db/schema"
 import { serverEnv } from "@/server/env.mjs"
-import { notifyByEmail } from "@/server/notification"
+import { notifyByEmailWithHtmlifiedComponent } from "@/server/notification"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
+import PackageStatusUpdateEmail from "@/utils/email-templates/package-status-update-email"
 import { HttpError } from "@/utils/errors"
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -163,15 +164,31 @@ export async function POST(
       })
 
       await Promise.allSettled([
-        notifyByEmail({
+        notifyByEmailWithHtmlifiedComponent({
           to: _package.senderEmailAddress,
           subject: "Your package has been delivered",
-          htmlBody: `<p>Your package with ID ${_package.id} has been delivered. Kindly fill up our survey form: click <a href="${serverEnv.SURVEY_URL}">here</a>.</p>`,
+          component: (
+            <PackageStatusUpdateEmail
+              body={`Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`}
+              callToAction={{
+                label: "Fill-up our Survey",
+                href: serverEnv.SURVEY_URL,
+              }}
+            />
+          ),
         }),
-        notifyByEmail({
+        notifyByEmailWithHtmlifiedComponent({
           to: _package.receiverEmailAddress,
           subject: "Your package has been delivered",
-          htmlBody: `<p>Your package with ID ${_package.id} has been delivered. Kindly fill up our survey form: click <a href="${serverEnv.SURVEY_URL}">here</a>.</p>`,
+          component: (
+            <PackageStatusUpdateEmail
+              body={`Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`}
+              callToAction={{
+                label: "Fill-up our Survey",
+                href: serverEnv.SURVEY_URL,
+              }}
+            />
+          ),
         }),
       ])
 

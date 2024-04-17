@@ -21,9 +21,13 @@ import { and, count, eq, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import type { DbWithEntities } from "@/server/db/entities"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
-import { notifyByEmail, notifyBySms } from "@/server/notification"
+import {
+  notifyByEmailWithHtmlifiedComponent,
+  notifyBySms,
+} from "@/server/notification"
 import type { User } from "lucia"
 import { DateTime } from "luxon"
+import PackageStatusUpdateEmail from "@/utils/email-templates/package-status-update-email"
 
 async function getDescriptionForStatus(options: {
   db: DbWithEntities
@@ -151,9 +155,17 @@ export const shipmentPackageRouter = router({
         ({ id, senderEmailAddress }) => ({
           to: senderEmailAddress,
           subject: `The status of your package was updated.`,
-          htmlBody: `<p>Your package with tracking number ${id} now has the status <b>${getHumanizedOfPackageStatus(
-            input.packageStatus,
-          )}</b>. For more information, check the <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">tracking page</a> for your package.</p>`,
+          component: (
+            <PackageStatusUpdateEmail
+              body={`Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+                input.packageStatus,
+              )}. For more information, click the button below.`}
+              callToAction={{
+                label: "Track your Package",
+                href: `https://rrgfreightservices.vercel.app/tracking?id=${id}`,
+              }}
+            />
+          ),
         }),
       )
 
@@ -161,9 +173,17 @@ export const shipmentPackageRouter = router({
         ({ id, receiverEmailAddress }) => ({
           to: receiverEmailAddress,
           subject: `The status of your package was updated.`,
-          htmlBody: `<p>Your package with tracking number ${id} now has the status <b>${getHumanizedOfPackageStatus(
-            input.packageStatus,
-          )}</b>. For more information, check the <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">tracking page</a> for your package.</p>`,
+          component: (
+            <PackageStatusUpdateEmail
+              body={`Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+                input.packageStatus,
+              )}. For more information, click the button below.`}
+              callToAction={{
+                label: "Track your Package",
+                href: `https://rrgfreightservices.vercel.app/tracking?id=${id}`,
+              }}
+            />
+          ),
         }),
       )
 
@@ -251,8 +271,12 @@ export const shipmentPackageRouter = router({
       })
 
       await Promise.allSettled([
-        ...packageSenderEmailNotifications.map((e) => notifyByEmail(e)),
-        ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
+        ...packageSenderEmailNotifications.map((e) =>
+          notifyByEmailWithHtmlifiedComponent(e),
+        ),
+        ...packageReceiverEmailNotifications.map((e) =>
+          notifyByEmailWithHtmlifiedComponent(e),
+        ),
         ...packageReceiverSmsNotifications.map((e) => notifyBySms(e)),
       ])
     }),

@@ -7,7 +7,6 @@ import {
   packageStatusLogs,
   packages,
   users,
-  activities,
   overseasAgents,
   warehouseStaffs,
 } from "@/server/db/schema"
@@ -25,10 +24,11 @@ import {
 import { TRPCError } from "@trpc/server"
 import { and, count, eq, getTableColumns, like } from "drizzle-orm"
 import { generateUniqueId } from "@/utils/uuid"
-import { notifyByEmail } from "@/server/notification"
+import { notifyByEmailWithHtmlifiedComponent } from "@/server/notification"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
 import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
+import PackageStatusUpdateEmail from "@/utils/email-templates/package-status-update-email"
 
 export const incomingShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -269,15 +269,31 @@ export const incomingShipmentRouter = router({
         ({ senderEmailAddress, id }) => ({
           to: senderEmailAddress,
           subject: `Your package has been registered`,
-          htmlBody: `<p>Your package with ID ${id} has been registered to our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
+          component: (
+            <PackageStatusUpdateEmail
+              body={`Your package with RRG tracking number ${id} has been registered to our system. Click the button below to track your package.`}
+              callToAction={{
+                label: "Track your Package",
+                href: `https://rrgfreightservices.vercel.app/tracking?id=${id}`,
+              }}
+            />
+          ),
         }),
       )
 
       const packageReceiverEmailNotifications = newPackages.map(
         ({ receiverEmailAddress, id }) => ({
           to: receiverEmailAddress,
-          subject: "A package will be sent to you",
-          htmlBody: `<p>A package with ID ${id} will be sent to you through our system. Click <a href="https://rrgfreightservices.vercel.app/tracking?id=${id}">here</a> to track your package.</p>`,
+          subject: `A package will be sent to you`,
+          component: (
+            <PackageStatusUpdateEmail
+              body={`A package with RRG tracking number ${id} will be sent to you through our system. Click the button below to track your package.`}
+              callToAction={{
+                label: "Track your Package",
+                href: `https://rrgfreightservices.vercel.app/tracking?id=${id}`,
+              }}
+            />
+          ),
         }),
       )
 
@@ -305,8 +321,12 @@ export const incomingShipmentRouter = router({
 
         await tx.insert(shipmentPackages).values(newShipmentPackages)
         await Promise.allSettled([
-          ...packageSenderEmailNotifications.map((e) => notifyByEmail(e)),
-          ...packageReceiverEmailNotifications.map((e) => notifyByEmail(e)),
+          ...packageSenderEmailNotifications.map((e) =>
+            notifyByEmailWithHtmlifiedComponent(e),
+          ),
+          ...packageReceiverEmailNotifications.map((e) =>
+            notifyByEmailWithHtmlifiedComponent(e),
+          ),
         ])
       })
 
