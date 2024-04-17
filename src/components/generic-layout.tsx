@@ -12,10 +12,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { Gear } from "@phosphor-icons/react/dist/ssr/Gear"
 import { Bell } from "@phosphor-icons/react/dist/ssr/Bell"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
-import { Airplane } from "@phosphor-icons/react/dist/ssr/Airplane"
-import { Warehouse } from "@phosphor-icons/react/dist/ssr/Warehouse"
-import { House } from "@phosphor-icons/react/dist/ssr/House"
-import { SteeringWheel } from "@phosphor-icons/react/dist/ssr/SteeringWheel"
+import { signOutAction } from "@/server/actions/auth"
 import { CaretDown } from "@phosphor-icons/react/dist/ssr/CaretDown"
 import type { UserRole } from "@/utils/constants"
 import { DriverSideBar } from "@/app/driver/auth"
@@ -45,6 +42,30 @@ function GenericSidebar(props: { isMinimized: boolean; role: UserRole }) {
     return <DriverSideBar isMinimized={props.isMinimized} />
 
   return <nav className="bg-brand-cyan-500 h-dvh sticky top-0 bottom-0"></nav>
+}
+
+export function LogoutButtons({}) {
+  const [isSigningOut, setIsSigningOut] = useState(false)
+
+  return (
+    <button
+      type="button"
+      className={`items-center h-10 w-full hover:bg-sky-200 transition duration-200 text-white font-semibold`}
+      disabled={isSigningOut}
+      onClick={async () => {
+        setIsSigningOut(true)
+        try {
+          await signOutAction()
+        } catch {
+          setIsSigningOut(false)
+        }
+      }}
+    >
+      <div className="flex flex-col items-center justify-center bg-white px-5 py-2 border-2 border-grey-100 hover:font-bold text-black">
+        Logout
+      </div>
+    </button>
+  )
 }
 
 export function GenericHeader({
@@ -94,46 +115,12 @@ export function GenericHeader({
                 <span className="hidden sm:inline">{user.displayName}</span>{" "}
                 <CaretDown size={12} />{" "}
               </DropdownMenu.Trigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content>
-                  <Dialog.Trigger>
-                    <DropdownMenu.Item className="flex flex-col items-center justify-center bg-white px-5 py-2 border-2 border-grey-100 rounded-lg hover:font-bold hover:bg-gray-200">
-                      SwitchUser
-                    </DropdownMenu.Item>
-                  </Dialog.Trigger>
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
+              <DropdownMenu.Content>
+                <DropdownMenu.Item>
+                  <LogoutButtons />
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
             </DropdownMenu.Root>
-            <Dialog.Portal />
-            <Dialog.Overlay className="bg-black/40 fixed inset-0">
-              <Dialog.Content
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_32rem)]  rounded-2xl bg-white 
-                  no-border h-[400px] px-10 py-0 m-0 flex justify-center items-center"
-              >
-                <div className="flex justify-center items-center">
-                  <div className="">
-                    <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
-                      <button className=" flex flex-col items-center justify-center border-4 text-black border-blue-700 hover:bg-blue-500 hover:text-white hover:font-bold py-2 px-4 rounded-lg cursor-pointer h-[150px] w-[200px]">
-                        <Airplane size={56} />
-                        <p>Overseas</p>
-                      </button>
-                      <button className="flex flex-col items-center justify-center border-4 text-black border-green-700 hover:bg-green-500 hover:text-white hover:font-bold py-2 px-4 rounded-lg cursor-pointer h-[150px]  w-[200px]">
-                        <Warehouse size={56} />
-                        Warehouse
-                      </button>
-                      <button className=" flex flex-col items-center justify-center border-4 text-black border-yellow-700 hover:bg-yellow-500 hover:text-white hover:font-bold py-2 px-4 rounded-lg cursor-pointer h-[150px]  w-[200px]">
-                        <House size={56} />
-                        Domestic
-                      </button>
-                      <button className=" flex flex-col items-center justify-center border-4 text-black border-red-700 hover:bg-red-400 hover:text-white hover:font-bold py-2 px-4 rounded-lg cursor-pointer h-[150px]  w-[200px]">
-                        <SteeringWheel size={56} />
-                        Driver
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Dialog.Content>
-            </Dialog.Overlay>
           </Dialog.Root>
         </div>
       </div>
