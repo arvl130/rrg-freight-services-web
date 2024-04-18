@@ -123,6 +123,9 @@ function PackagesTable({
         utils.package.getAll.invalidate()
         setScannedPackageIds([])
       },
+      onError: (error) => {
+        toast.error(error.message)
+      },
     })
 
   if (status === "loading") return <div>Loading ...</div>
@@ -389,6 +392,9 @@ function MarkAsInTransit({
       onSuccess: () => {
         utils.shipment.delivery.getPreparing.invalidate()
         resetSelectedShipmentId()
+      },
+      onError: (error) => {
+        toast.error(error.message)
       },
     })
 

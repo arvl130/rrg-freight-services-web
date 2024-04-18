@@ -178,6 +178,9 @@ function PackagesTable({
         utils.package.getAll.invalidate()
         setScannedPackageIds([])
       },
+      onError: (error) => {
+        toast.error(error.message)
+      },
     })
 
   if (packagesQuery.status === "loading") return <div>Loading ...</div>
@@ -397,6 +400,9 @@ function MarkAsCompleted({
       onSuccess: () => {
         utils.shipment.warehouseTransfer.getInTransit.invalidate()
         resetSelectedShipmentId()
+      },
+      onError: (error) => {
+        toast.error(error.message)
       },
     })
 

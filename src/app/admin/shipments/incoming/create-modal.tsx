@@ -241,6 +241,9 @@ function ChooseAgentForm({
       onClose()
       toast.success("Shipment Created")
     },
+    onError: (error) => {
+      toast.error(error.message)
+    },
   })
   const {
     handleSubmit,
