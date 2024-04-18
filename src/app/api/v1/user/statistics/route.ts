@@ -75,7 +75,7 @@ export async function GET(req: Request) {
 
     const packageAddresses = deliveryPackageResults.map(
       ({ packages: _package }) => {
-        return `${_package.receiverStreetAddress} ${_package.receiverCity} ${_package.receiverCountryCode}`
+        return `${_package.receiverStreetAddress}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, Philippines`
       },
     )
 

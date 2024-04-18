@@ -27,7 +27,7 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
       .from(packages)
       .where(eq(packages.id, input.packageId))
 
-    const packageAddress = `${_package.receiverStreetAddress}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, ${_package.receiverCountryCode}`
+    const packageAddress = `${_package.receiverStreetAddress}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, Philippines`
     const result = await getLongitudeLatitudeWithGoogle(packageAddress)
 
     return Response.json({

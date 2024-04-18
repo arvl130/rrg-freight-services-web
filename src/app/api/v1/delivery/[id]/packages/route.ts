@@ -16,7 +16,7 @@ async function getPackagesWithDistanceFromOrigin(options: {
 }) {
   const packagesWithDistancePromises = options.packages.map(
     async (_package) => {
-      const fullAddress = `${_package.receiverStreetAddress}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, ${_package.receiverCountryCode}`
+      const fullAddress = `${_package.receiverStreetAddress}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, Philippines`
       const { lat, long } = await getLongitudeLatitudeWithGoogle(fullAddress)
 
       return {
