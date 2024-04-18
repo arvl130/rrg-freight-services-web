@@ -22,7 +22,7 @@ import { createLog } from "@/utils/logging"
 import type { DbWithEntities } from "@/server/db/entities"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import {
-  notifyByEmailWithHtmlifiedComponent,
+  batchNotifyByEmailWithHtmlifiedComponent,
   notifyBySms,
 } from "@/server/notification"
 import type { User } from "lucia"
@@ -151,8 +151,8 @@ export const shipmentPackageRouter = router({
               .map(({ id }) => id)
           : []
 
-      const packageSenderEmailNotifications = packageDetails.map(
-        ({ id, senderEmailAddress }) => ({
+      const emailNotifications = [
+        ...packageDetails.map(({ id, senderEmailAddress }) => ({
           to: senderEmailAddress,
           subject: `The status of your package was updated.`,
           component: (
@@ -166,11 +166,8 @@ export const shipmentPackageRouter = router({
               }}
             />
           ),
-        }),
-      )
-
-      const packageReceiverEmailNotifications = packageDetails.map(
-        ({ id, receiverEmailAddress }) => ({
+        })),
+        ...packageDetails.map(({ id, receiverEmailAddress }) => ({
           to: receiverEmailAddress,
           subject: `The status of your package was updated.`,
           component: (
@@ -184,8 +181,8 @@ export const shipmentPackageRouter = router({
               }}
             />
           ),
-        }),
-      )
+        })),
+      ]
 
       const packageReceiverSmsNotifications = packageDetails.map(
         ({ id, receiverContactNumber }) => ({
@@ -271,12 +268,9 @@ export const shipmentPackageRouter = router({
       })
 
       await Promise.allSettled([
-        ...packageSenderEmailNotifications.map((e) =>
-          notifyByEmailWithHtmlifiedComponent(e),
-        ),
-        ...packageReceiverEmailNotifications.map((e) =>
-          notifyByEmailWithHtmlifiedComponent(e),
-        ),
+        batchNotifyByEmailWithHtmlifiedComponent({
+          messages: emailNotifications,
+        }),
         ...packageReceiverSmsNotifications.map((e) => notifyBySms(e)),
       ])
     }),

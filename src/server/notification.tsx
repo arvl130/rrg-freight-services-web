@@ -7,6 +7,7 @@ import type { ExpoPushMessage } from "expo-server-sdk"
 import { Expo } from "expo-server-sdk"
 import type { JSXElementConstructor, ReactElement, ReactNode } from "react"
 import { render } from "@react-email/render"
+import { chunkArray } from "@/utils/array-transform"
 
 const resend = new Resend(serverEnv.RESEND_API_KEY)
 
@@ -54,6 +55,36 @@ export async function notifyByEmailWithHtmlifiedComponent({
       react: component,
       text: componentTextVersion,
     })
+  }
+}
+
+const RESEND_BATCH_EMAIL_LIMIT = 10
+
+export async function batchNotifyByEmailWithHtmlifiedComponent(options: {
+  messages: {
+    to: string
+    subject: string
+    component: ReactElement<any, string | JSXElementConstructor<any>>
+  }[]
+}) {
+  if (serverEnv.OFFLINE_MODE === "1") return
+  if (serverEnv.IS_EMAIL_ENABLED === "1") {
+    const messagesWithTextVersion = options.messages.map((message) => ({
+      from: `RRG Freight Services Updates <noreply@${serverEnv.MAIL_FROM_URL}>`,
+      to: message.to,
+      subject: message.subject,
+      react: message.component,
+      text: "Please check the HTML version of this email.",
+    }))
+
+    const chunkedMessages = chunkArray(
+      messagesWithTextVersion,
+      RESEND_BATCH_EMAIL_LIMIT,
+    )
+
+    await Promise.allSettled(
+      chunkedMessages.map((chunk) => resend.batch.send(chunk)),
+    )
   }
 }
 

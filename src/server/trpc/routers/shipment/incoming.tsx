@@ -24,7 +24,7 @@ import {
 import { TRPCError } from "@trpc/server"
 import { and, count, eq, getTableColumns, like } from "drizzle-orm"
 import { generateUniqueId } from "@/utils/uuid"
-import { notifyByEmailWithHtmlifiedComponent } from "@/server/notification"
+import { batchNotifyByEmailWithHtmlifiedComponent } from "@/server/notification"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
 import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
@@ -265,8 +265,8 @@ export const incomingShipmentRouter = router({
         createdAt,
       }))
 
-      const packageSenderEmailNotifications = newPackages.map(
-        ({ senderEmailAddress, id }) => ({
+      const emailNotifications = [
+        ...newPackages.map(({ senderEmailAddress, id }) => ({
           to: senderEmailAddress,
           subject: `Your package has been registered`,
           component: (
@@ -278,11 +278,8 @@ export const incomingShipmentRouter = router({
               }}
             />
           ),
-        }),
-      )
-
-      const packageReceiverEmailNotifications = newPackages.map(
-        ({ receiverEmailAddress, id }) => ({
+        })),
+        ...newPackages.map(({ receiverEmailAddress, id }) => ({
           to: receiverEmailAddress,
           subject: `A package will be sent to you`,
           component: (
@@ -294,8 +291,8 @@ export const incomingShipmentRouter = router({
               }}
             />
           ),
-        }),
-      )
+        })),
+      ]
 
       await ctx.db.transaction(async (tx) => {
         await tx.insert(packages).values(newPackages)
@@ -320,20 +317,15 @@ export const incomingShipmentRouter = router({
         }))
 
         await tx.insert(shipmentPackages).values(newShipmentPackages)
-        await Promise.allSettled([
-          ...packageSenderEmailNotifications.map((e) =>
-            notifyByEmailWithHtmlifiedComponent(e),
-          ),
-          ...packageReceiverEmailNotifications.map((e) =>
-            notifyByEmailWithHtmlifiedComponent(e),
-          ),
-        ])
-      })
+        await createLog(tx, {
+          verb: "CREATE",
+          entity: "INCOMING_SHIPMENT",
+          createdById: ctx.user.id,
+        })
 
-      await createLog(ctx.db, {
-        verb: "CREATE",
-        entity: "INCOMING_SHIPMENT",
-        createdById: ctx.user.id,
+        await batchNotifyByEmailWithHtmlifiedComponent({
+          messages: emailNotifications,
+        })
       })
     }),
   updateDetailsById: protectedProcedure
