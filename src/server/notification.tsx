@@ -58,7 +58,7 @@ export async function notifyByEmailWithHtmlifiedComponent({
   }
 }
 
-const RESEND_BATCH_EMAIL_LIMIT = 10
+const RESEND_BATCH_EMAIL_LIMIT = 100
 
 export async function batchNotifyByEmailWithHtmlifiedComponent(options: {
   messages: {
