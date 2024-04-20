@@ -6,10 +6,9 @@ import {
   deliveryShipments,
 } from "@/server/db/schema"
 import {
-  notifyByEmailWithHtmlifiedComponent,
-  notifyBySms,
+  batchNotifyByEmailWithComponentProps,
+  batchNotifyBySms,
 } from "@/server/notification"
-import OtpEmail from "@/utils/email-templates/otp-email"
 import { HttpError } from "@/utils/errors"
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -116,17 +115,26 @@ export async function GET(
         })
         .onDuplicateKeyUpdate({ set: { code, expireAt, createdAt } })
 
-      await Promise.allSettled([
-        notifyByEmailWithHtmlifiedComponent({
-          to: receiverEmailAddress,
-          subject: `Your package will be delivered soon`,
-          component: <OtpEmail otp={code.toString()} />,
-        }),
-        notifyBySms({
-          to: receiverContactNumber,
-          body: `Your package ${id} will be delivered soon. Enter the code ${code} for verification.`,
-        }),
-      ])
+      await batchNotifyBySms({
+        messages: [
+          {
+            to: receiverContactNumber,
+            body: `Your package ${id} will be delivered soon. Enter the code ${code} for verification.`,
+          },
+        ],
+      })
+      await batchNotifyByEmailWithComponentProps({
+        messages: [
+          {
+            to: receiverEmailAddress,
+            subject: `Your package will be delivered soon`,
+            componentProps: {
+              type: "otp",
+              otp: code.toString(),
+            },
+          },
+        ],
+      })
     })
 
     return Response.json({

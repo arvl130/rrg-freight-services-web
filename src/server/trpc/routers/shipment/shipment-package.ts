@@ -23,7 +23,7 @@ import type { DbWithEntities } from "@/server/db/entities"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import {
   batchNotifyByEmailWithComponentProps,
-  notifyBySms,
+  batchNotifyBySms,
 } from "@/server/notification"
 import type { User } from "lucia"
 import { DateTime } from "luxon"
@@ -264,12 +264,12 @@ export const shipmentPackageRouter = router({
         })
       })
 
-      await Promise.allSettled([
-        batchNotifyByEmailWithComponentProps({
-          messages: emailNotifications,
-        }),
-        ...packageReceiverSmsNotifications.map((e) => notifyBySms(e)),
-      ])
+      await batchNotifyByEmailWithComponentProps({
+        messages: emailNotifications,
+      })
+      await batchNotifyBySms({
+        messages: packageReceiverSmsNotifications,
+      })
     }),
   getTotalShipmentShipped: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db

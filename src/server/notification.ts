@@ -5,7 +5,7 @@ import { sendNotification, setVapidDetails } from "web-push"
 import { clientEnv } from "@/utils/env.mjs"
 import type { ExpoPushMessage } from "expo-server-sdk"
 import { Expo } from "expo-server-sdk"
-import type { JSXElementConstructor, ReactElement, ReactNode } from "react"
+import type { JSXElementConstructor, ReactElement } from "react"
 import { render } from "@react-email/render"
 import { chunkArray } from "@/utils/array-transform"
 import { SQSClient, SendMessageBatchCommand } from "@aws-sdk/client-sqs"
@@ -97,15 +97,11 @@ export async function batchNotifyByEmailWithComponentProps(options: {
   if (serverEnv.IS_EMAIL_ENABLED === "1") {
     const timerLabel = `Sent ${options.messages.length} emails in`
     console.time(timerLabel)
-    const messagesInHtml = options.messages.map((message) => {
-      return {
-        to: message.to,
-        subject: message.subject,
-        componentProps: message.componentProps,
-      }
-    })
 
-    const chunkedMessages = chunkArray(messagesInHtml, AWS_SQS_BATCH_SIZE_LIMIT)
+    const chunkedMessages = chunkArray(
+      options.messages,
+      AWS_SQS_BATCH_SIZE_LIMIT,
+    )
 
     await Promise.allSettled(
       chunkedMessages.map((chunk) => {
@@ -170,6 +166,38 @@ export async function notifyBySms({ to, body }: { to: string; body: string }) {
         }),
       },
     )
+  }
+}
+
+export async function batchNotifyBySms(options: {
+  messages: {
+    to: string
+    body: string
+  }[]
+}) {
+  if (serverEnv.OFFLINE_MODE === "1") return
+  if (serverEnv.IS_SMS_ENABLED === "1") {
+    const timerLabel = `Sent ${options.messages.length} SMS messages in`
+    console.time(timerLabel)
+    const chunkedMessages = chunkArray(
+      options.messages,
+      AWS_SQS_BATCH_SIZE_LIMIT,
+    )
+
+    await Promise.allSettled(
+      chunkedMessages.map((chunk) => {
+        const command = new SendMessageBatchCommand({
+          QueueUrl: serverEnv.AWS_SQS_SMS_QUEUE_URL,
+          Entries: chunk.map((message) => ({
+            Id: crypto.randomUUID(),
+            MessageBody: JSON.stringify(message),
+          })),
+        })
+
+        return sqsClient.send(command)
+      }),
+    )
+    console.timeEnd(timerLabel)
   }
 }
 
