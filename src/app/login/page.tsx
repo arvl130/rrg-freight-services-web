@@ -36,8 +36,8 @@ export default async function Page() {
               <p className="text-center font-semibold">
                 Enter Your Credentials
               </p>
-              <MainSection />
             </div>
+            <MainSection />
           </div>
           <div className="text-sm flex justify-between">
             <Link href="/" className="inline-flex items-center">
