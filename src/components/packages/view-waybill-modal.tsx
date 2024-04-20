@@ -153,17 +153,17 @@ export function ViewWaybillModal({
             </div>
           </div>
           <div className="flex justify-between px-4 pb-2">
+            <Dialog.Close asChild>
+              <button type="button" className="font-medium" onClick={close}>
+                Close
+              </button>
+            </Dialog.Close>
             <PDFDownloadLink
               document={<WaybillPdf package={_package} />}
               fileName={`RRG-WAYBILL-${_package.id}.pdf`}
             >
               <button>Download</button>
             </PDFDownloadLink>
-            <Dialog.Close asChild>
-              <button type="button" className="font-medium" onClick={close}>
-                Close
-              </button>
-            </Dialog.Close>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
