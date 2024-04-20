@@ -108,7 +108,7 @@ export async function batchNotifyByEmailWithComponentProps(options: {
     const chunkedMessages = chunkArray(messagesInHtml, AWS_SQS_BATCH_SIZE_LIMIT)
 
     await Promise.allSettled(
-      chunkedMessages.map(async (chunk) => {
+      chunkedMessages.map((chunk) => {
         const command = new SendMessageBatchCommand({
           QueueUrl: serverEnv.AWS_SQS_EMAIL_QUEUE_URL,
           Entries: chunk.map((message) => ({
