@@ -1,19 +1,17 @@
-"use client"
-
 import Image from "next/image"
 import Link from "next/link"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
-import { useSavedUser } from "@/components/saved-users"
-import { LoginForm } from "./login-form"
-import { LoadingSpinner } from "@/components/spinner"
+import { MainSection } from "./main-section"
+import { validateSessionWithCookies } from "@/server/auth"
+import { getUserRoleRedirectPath } from "@/utils/redirects"
+import { redirect } from "next/navigation"
 
-export default function Page() {
-  const {
-    isLoading,
-    savedUsers,
-    addUser,
-    removeUserById: removeUserByEmail,
-  } = useSavedUser()
+export default async function Page() {
+  const { user } = await validateSessionWithCookies()
+  if (user) {
+    const redirectPath = getUserRoleRedirectPath(user.role)
+    redirect(redirectPath)
+  }
 
   return (
     <>
@@ -39,19 +37,8 @@ export default function Page() {
                 Enter Your Credentials
               </p>
             </div>
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center">
-                <p className="mb-3 text-sm">Loading your options ...</p>
-                <LoadingSpinner />
-              </div>
-            ) : (
-              <LoginForm
-                savedUsers={savedUsers?.users ?? []}
-                onAddUser={addUser}
-                onRemoveUser={removeUserByEmail}
-              />
-            )}
           </div>
+          <MainSection />
           <div className="text-sm flex justify-between">
             <Link href="/" className="inline-flex items-center">
               <CaretLeft height={12} /> Back to Homepage
