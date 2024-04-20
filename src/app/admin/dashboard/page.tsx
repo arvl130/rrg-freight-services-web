@@ -24,6 +24,7 @@ import { redirect } from "next/navigation"
 import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { DriverStatusTile } from "./driver-status-tile"
 import { PackagePerMonth } from "./package-per-month"
+import { PDFReportGeneratorBtn } from "./generate-pdf-report"
 import { db } from "@/server/db/client"
 import {
   packages,
@@ -37,6 +38,7 @@ import {
 import { eq, and, count, like, desc, not, max } from "drizzle-orm"
 import { DateTime } from "luxon"
 import { LogsTile } from "./logs-tile"
+
 const months = [
   "JAN",
   "FEB",
@@ -155,6 +157,7 @@ export default async function DashboardPage() {
               <span className="sr-only">Filter</span>
               <FunnelSimple size={24} />
             </button>
+            <PDFReportGeneratorBtn />
           </div>
 
           <div className="grid sm:grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8 gap-y-4 justify-center">
@@ -180,6 +183,7 @@ export default async function DashboardPage() {
           packagesPerMonth={packagePerMonthsResult}
           monthsLabel={months}
         />
+
         <WarehouseCapacityTile
           warehouses={warehouseData}
           packages={warehouseCapacity}
