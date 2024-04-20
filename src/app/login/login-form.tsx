@@ -15,10 +15,14 @@ import { Trash } from "@phosphor-icons/react/dist/ssr/Trash"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import { Fingerprint } from "@phosphor-icons/react/dist/ssr/Fingerprint"
 import { FingerprintSimple } from "@phosphor-icons/react/dist/ssr/FingerprintSimple"
+import { LoadingSpinner } from "@/components/spinner"
 
 type FormType = z.infer<typeof formSchema>
 
-function NoUsers(props: { onAddUser: (newUser: SavedUser) => void }) {
+function NoUsers(props: {
+  onAddUser: (newUser: SavedUser) => void
+  onSignInSuccess: () => void
+}) {
   const router = useRouter()
 
   const generateAuthenticationOptionsMutation =
@@ -29,6 +33,7 @@ function NoUsers(props: { onAddUser: (newUser: SavedUser) => void }) {
           const response = await startAuthentication(options)
           const { data } = await signInWithWebauthnResponseAction(response)
           if (data) {
+            props.onSignInSuccess()
             router.replace(data.redirectPath)
             props.onAddUser({
               id: data.user.id,
@@ -116,6 +121,7 @@ function LoginWithSelection(props: {
   savedUsers: SavedUser[]
   onAddUser: (newUser: SavedUser) => void
   onRemoveUser: (email: string) => void
+  onSignInSuccess: () => void
 }) {
   const [selectedUserId, setSelectedUserId] = useState(
     props.savedUsers.length === 1 ? props.savedUsers[0].id : null,
@@ -131,6 +137,7 @@ function LoginWithSelection(props: {
           const { data } = await signInWithWebauthnResponseAction(response)
 
           if (data) {
+            props.onSignInSuccess()
             router.replace(data.redirectPath)
             props.onAddUser({
               id: data.user.id,
@@ -259,6 +266,7 @@ function HasUsers(props: {
   savedUsers: SavedUser[]
   onAddUser: (newUser: SavedUser) => void
   onRemoveUser: (email: string) => void
+  onSignInSuccess: () => void
 }) {
   const [chooseUserFrom, setChooseUserFrom] = useState<"SELECTION" | "PROMPT">(
     "SELECTION",
@@ -271,6 +279,7 @@ function HasUsers(props: {
           savedUsers={props.savedUsers}
           onAddUser={props.onAddUser}
           onRemoveUser={props.onRemoveUser}
+          onSignInSuccess={props.onSignInSuccess}
         />
         <div className="mt-3">
           <button
@@ -288,7 +297,10 @@ function HasUsers(props: {
 
   return (
     <>
-      <NoUsers onAddUser={props.onAddUser} />
+      <NoUsers
+        onAddUser={props.onAddUser}
+        onSignInSuccess={props.onSignInSuccess}
+      />
       <div className="mt-3">
         <button
           type="button"
@@ -309,14 +321,39 @@ export function LoginForm(props: {
   onAddUser: (newUser: SavedUser) => void
   onRemoveUser: (id: string) => void
 }) {
+  const [isSignInSuccess, setIsSignInSuccess] = useState(false)
+
+  if (isSignInSuccess)
+    return (
+      <div className="pt-4">
+        <div className="flex justify-center">
+          <LoadingSpinner />
+        </div>
+        <div className="mt-3 text-center">
+          <p className="font-medium">Sign in successful.</p>
+          <p>You will be redirected in a moment ...</p>
+        </div>
+      </div>
+    )
+
   if (props.savedUsers.length === 0)
-    return <NoUsers onAddUser={props.onAddUser} />
+    return (
+      <NoUsers
+        onAddUser={props.onAddUser}
+        onSignInSuccess={() => {
+          setIsSignInSuccess(true)
+        }}
+      />
+    )
 
   return (
     <HasUsers
       savedUsers={props.savedUsers}
       onAddUser={props.onAddUser}
       onRemoveUser={props.onRemoveUser}
+      onSignInSuccess={() => {
+        setIsSignInSuccess(true)
+      }}
     />
   )
 }
