@@ -11,6 +11,8 @@ import {
   vehicles,
   expopushTokens,
   webpushSubscriptions,
+  assignedDrivers,
+  assignedVehicles,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -283,17 +285,32 @@ export const deliveryShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(shipments)
-        .set({
-          status: "COMPLETED",
-        })
-        .where(eq(shipments.id, input.id))
+      await ctx.db.transaction(async (tx) => {
+        const [deliveryShipment] = await tx
+          .select()
+          .from(deliveryShipments)
+          .where(eq(deliveryShipments.shipmentId, input.id))
 
-      await createLog(ctx.db, {
-        verb: "UPDATE",
-        entity: "DELIVERY_SHIPMENT",
-        createdById: ctx.user.id,
+        await tx
+          .update(shipments)
+          .set({
+            status: "COMPLETED",
+          })
+          .where(eq(shipments.id, input.id))
+
+        await tx
+          .delete(assignedDrivers)
+          .where(eq(deliveryShipments.driverId, deliveryShipment.driverId))
+
+        await tx
+          .delete(assignedVehicles)
+          .where(eq(deliveryShipments.vehicleId, deliveryShipment.vehicleId))
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "DELIVERY_SHIPMENT",
+          createdById: ctx.user.id,
+        })
       })
     }),
   create: protectedProcedure
@@ -369,6 +386,16 @@ export const deliveryShipmentRouter = router({
         const [{ insertId: shipmentId }] = await tx.insert(shipments).values({
           type: "DELIVERY",
           status: "PREPARING",
+        })
+
+        await tx.insert(assignedDrivers).values({
+          driverId: input.driverId,
+          shipmentId,
+        })
+
+        await tx.insert(assignedVehicles).values({
+          vehicleId: input.vehicleId,
+          shipmentId,
         })
 
         await tx.insert(deliveryShipments).values({

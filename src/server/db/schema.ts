@@ -556,3 +556,21 @@ export const deliverableProvinces = mysqlTable("deliverable_provinces", {
     length: 100,
   }).notNull(),
 })
+
+export const assignedDrivers = mysqlTable("assigned_drivers", {
+  driverId: varchar("user_id", {
+    length: 28,
+  }).notNull(),
+  shipmentId: bigint("shipment_id", {
+    mode: "number",
+  }).notNull(),
+})
+
+export const assignedVehicles = mysqlTable("assigned_vehicles", {
+  vehicleId: bigint("id", {
+    mode: "number",
+  }).primaryKey(),
+  shipmentId: bigint("shipment_id", {
+    mode: "number",
+  }).notNull(),
+})

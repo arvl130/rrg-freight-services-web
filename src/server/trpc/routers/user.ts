@@ -9,9 +9,18 @@ import {
   overseasAgents,
   domesticAgents,
   webpushSubscriptions,
+  assignedDrivers,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
-import { and, count, eq, inArray, isNull, like } from "drizzle-orm"
+import {
+  and,
+  count,
+  eq,
+  getTableColumns,
+  inArray,
+  isNull,
+  like,
+} from "drizzle-orm"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
 import type { Gender, UserRole } from "@/utils/constants"
@@ -593,32 +602,13 @@ export const userRouter = router({
       return result
     }),
   getAvailableDrivers: protectedProcedure.query(async ({ ctx }) => {
-    // FIXME: This db query should also consider transfers in progress.
-    const deliveriesInProgress = ctx.db
-      .select()
-      .from(shipments)
-      .innerJoin(
-        deliveryShipments,
-        eq(shipments.id, deliveryShipments.shipmentId),
-      )
-      .where(inArray(shipments.status, ["PREPARING", "IN_TRANSIT"]))
-      .as("deliveries_in_progress")
+    const userColumns = getTableColumns(users)
 
-    const results = await ctx.db
-      .select()
+    return await ctx.db
+      .select(userColumns)
       .from(users)
-      .leftJoin(
-        deliveriesInProgress,
-        eq(users.id, deliveriesInProgress.delivery_shipments.driverId),
-      )
-      .where(
-        and(
-          eq(users.role, "DRIVER"),
-          isNull(deliveriesInProgress.shipments.id),
-        ),
-      )
-
-    return results.map(({ users }) => users)
+      .leftJoin(assignedDrivers, eq(users.id, assignedDrivers.driverId))
+      .where(and(eq(users.role, "DRIVER"), isNull(assignedDrivers.driverId)))
   }),
   getTotalActiveUsers: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db

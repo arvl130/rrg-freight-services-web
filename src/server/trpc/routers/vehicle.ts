@@ -1,6 +1,11 @@
-import { eq, isNull, inArray, and } from "drizzle-orm"
+import { eq, isNull, inArray, and, getTableColumns } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { vehicles, shipments, deliveryShipments } from "@/server/db/schema"
+import {
+  vehicles,
+  shipments,
+  deliveryShipments,
+  assignedVehicles,
+} from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import type { VehicleType } from "@/utils/constants"
@@ -42,32 +47,15 @@ export const vehicleRouter = router({
       return results[0]
     }),
   getAvailable: protectedProcedure.query(async ({ ctx }) => {
-    // FIXME: This db query should also consider transfers in progress.
-    const deliveriesInProgress = ctx.db
-      .select()
-      .from(shipments)
-      .innerJoin(
-        deliveryShipments,
-        eq(shipments.id, deliveryShipments.shipmentId),
-      )
-      .where(inArray(shipments.status, ["PREPARING", "IN_TRANSIT"]))
-      .as("deliveries_in_progress")
+    const vehicleColumns = getTableColumns(vehicles)
 
-    const results = await ctx.db
-      .select()
+    return await ctx.db
+      .select(vehicleColumns)
       .from(vehicles)
-      .leftJoin(
-        deliveriesInProgress,
-        eq(vehicles.id, deliveriesInProgress.delivery_shipments.vehicleId),
-      )
+      .leftJoin(assignedVehicles, eq(vehicles.id, assignedVehicles.vehicleId))
       .where(
-        and(
-          isNull(deliveriesInProgress.shipments.id),
-          eq(vehicles.isMaintenance, 0),
-        ),
+        and(isNull(assignedVehicles.vehicleId), eq(vehicles.isMaintenance, 0)),
       )
-
-    return results.map(({ vehicles }) => vehicles)
   }),
   create: protectedProcedure
     .input(

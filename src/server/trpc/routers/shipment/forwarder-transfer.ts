@@ -10,6 +10,8 @@ import {
   vehicles,
   webpushSubscriptions,
   expopushTokens,
+  assignedDrivers,
+  assignedVehicles,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
@@ -202,20 +204,43 @@ export const forwarderTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db
-        .update(shipments)
-        .set({
-          status: "COMPLETED",
+      await ctx.db.transaction(async (tx) => {
+        const [forwarderTransferShipment] = await tx
+          .select()
+          .from(forwarderTransferShipments)
+          .where(eq(forwarderTransferShipments.shipmentId, input.id))
+
+        await tx
+          .update(shipments)
+          .set({
+            status: "COMPLETED",
+          })
+          .where(eq(shipments.id, input.id))
+
+        await tx
+          .delete(assignedDrivers)
+          .where(
+            eq(
+              forwarderTransferShipments.driverId,
+              forwarderTransferShipment.driverId,
+            ),
+          )
+
+        await tx
+          .delete(assignedVehicles)
+          .where(
+            eq(
+              forwarderTransferShipments.vehicleId,
+              forwarderTransferShipment.vehicleId,
+            ),
+          )
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "TRANSFER_FORWARDER_SHIPMENT",
+          createdById: ctx.user.id,
         })
-        .where(eq(shipments.id, input.id))
-
-      await createLog(ctx.db, {
-        verb: "UPDATE",
-        entity: "TRANSFER_FORWARDER_SHIPMENT",
-        createdById: ctx.user.id,
       })
-
-      return result
     }),
   create: protectedProcedure
     .input(
@@ -257,6 +282,16 @@ export const forwarderTransferShipmentRouter = router({
             status: "PREPARING",
           })
 
+        await tx.insert(assignedDrivers).values({
+          driverId: input.driverId,
+          shipmentId,
+        })
+
+        await tx.insert(assignedVehicles).values({
+          vehicleId: input.vehicleId,
+          shipmentId,
+        })
+
         await ctx.db.insert(forwarderTransferShipments).values({
           shipmentId,
           departingWarehouseId: input.departingWarehouseId,
@@ -291,15 +326,15 @@ export const forwarderTransferShipmentRouter = router({
         if (webPushSubscriptionResults.length > 0)
           await notifyByWebPush({
             subscriptions: webPushSubscriptionResults,
-            title: "New delivery assigned",
-            body: `Delivery with ID ${shipmentId} has been assigned to you.`,
+            title: "New forwarder transfer assigned",
+            body: `Forwarder transfer with ID ${shipmentId} has been assigned to you.`,
           })
 
         if (expoPushTokenResults.length > 0)
           await notifyByExpoPush({
             to: expoPushTokenResults.map((token) => token.data),
-            title: "New delivery assigned",
-            body: `Delivery with ID ${shipmentId} has been assigned to you.`,
+            title: "New forwarder transfer assigned",
+            body: `Forwarder transfer with ID ${shipmentId} has been assigned to you.`,
           })
       })
     }),

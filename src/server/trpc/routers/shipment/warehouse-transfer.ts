@@ -9,12 +9,17 @@ import {
   warehouses,
   users,
   vehicles,
+  assignedDrivers,
+  assignedVehicles,
+  webpushSubscriptions,
+  expopushTokens,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
-import { and, eq, getTableColumns, like } from "drizzle-orm"
+import { and, eq, getTableColumns, inArray, like } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
+import { notifyByExpoPush, notifyByWebPush } from "@/server/notification"
 
 export const warehouseTransferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -233,50 +238,88 @@ export const warehouseTransferShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const createdAt = DateTime.now().toISO()
-      const [{ insertId: shipmentId }] = await ctx.db.insert(shipments).values({
-        type: "TRANSFER_WAREHOUSE",
-        status: "PREPARING",
-      })
-
-      await ctx.db.insert(warehouseTransferShipments).values({
-        shipmentId,
-        driverId: input.driverId,
-        vehicleId: input.vehicleId,
-        sentFromWarehouseId: input.sentFromWarehouseId,
-        sentToWarehouseId: input.sentToWarehouseId,
+      const newPackageStatusLogs = input.packageIds.map((packageId) => ({
+        packageId,
+        createdById: ctx.user.id,
+        description: getDescriptionForNewPackageStatusLog({
+          status: "SORTING",
+        }),
+        status: "SORTING" as const,
         createdAt,
-      })
+      }))
 
-      for (const packageId of input.packageIds) {
-        await ctx.db.insert(shipmentPackages).values({
-          packageId,
+      await ctx.db.transaction(async (tx) => {
+        const webPushSubscriptionResults = await tx
+          .select()
+          .from(webpushSubscriptions)
+          .where(eq(webpushSubscriptions.userId, input.driverId))
+
+        const expoPushTokenResults = await tx
+          .select()
+          .from(expopushTokens)
+          .where(eq(expopushTokens.userId, input.driverId))
+
+        const [{ insertId: shipmentId }] = await ctx.db
+          .insert(shipments)
+          .values({
+            type: "TRANSFER_WAREHOUSE",
+            status: "PREPARING",
+          })
+
+        await tx.insert(assignedDrivers).values({
+          driverId: input.driverId,
           shipmentId,
-          status: "PREPARING",
+        })
+
+        await tx.insert(assignedVehicles).values({
+          vehicleId: input.vehicleId,
+          shipmentId,
+        })
+
+        await ctx.db.insert(warehouseTransferShipments).values({
+          shipmentId,
+          driverId: input.driverId,
+          vehicleId: input.vehicleId,
+          sentFromWarehouseId: input.sentFromWarehouseId,
+          sentToWarehouseId: input.sentToWarehouseId,
           createdAt,
         })
 
-        await ctx.db
+        const newShipmentPackages = input.packageIds.map((packageId) => ({
+          shipmentId,
+          packageId,
+          status: "PREPARING" as const,
+          createdAt,
+        }))
+
+        await tx.insert(shipmentPackages).values(newShipmentPackages)
+
+        await tx
           .update(packages)
           .set({
             status: "SORTING",
           })
-          .where(eq(packages.id, packageId))
-
-        await ctx.db.insert(packageStatusLogs).values({
-          packageId,
+          .where(inArray(packages.id, input.packageIds))
+        await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
+        await createLog(tx, {
+          verb: "CREATE",
+          entity: "TRANSFER_WAREHOUSE_SHIPMENT",
           createdById: ctx.user.id,
-          status: "SORTING",
-          description: getDescriptionForNewPackageStatusLog({
-            status: "SORTING",
-          }),
-          createdAt,
         })
-      }
 
-      await createLog(ctx.db, {
-        verb: "CREATE",
-        entity: "TRANSFER_WAREHOUSE_SHIPMENT",
-        createdById: ctx.user.id,
+        if (webPushSubscriptionResults.length > 0)
+          await notifyByWebPush({
+            subscriptions: webPushSubscriptionResults,
+            title: "New warehouse transfer assigned",
+            body: `Warehouse transfer with ID ${shipmentId} has been assigned to you.`,
+          })
+
+        if (expoPushTokenResults.length > 0)
+          await notifyByExpoPush({
+            to: expoPushTokenResults.map((token) => token.data),
+            title: "New warehouse transfer assigned",
+            body: `Warehouse transfer with ID ${shipmentId} has been assigned to you.`,
+          })
       })
     }),
   updateDetailsById: protectedProcedure
