@@ -38,7 +38,7 @@ export const serverEnv = createEnv({
     AWS_ACCESS_KEY_SECRET: z.string().min(1),
     AWS_SQS_EMAIL_QUEUE_URL: z.string().min(1).url(),
     AWS_SQS_SMS_QUEUE_URL: z.string().min(1).url(),
-    BITLY_TRACKING_PAGE_URL: z.string().min(1).url(),
+    BITLY_TRACKING_PAGE_URL: z.string().min(1),
   },
   runtimeEnv: {
     APP_NAME: process.env.APP_NAME,
