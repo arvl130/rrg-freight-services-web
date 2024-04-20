@@ -7,9 +7,8 @@ import {
   shipmentPackages,
 } from "@/server/db/schema"
 import { serverEnv } from "@/server/env.mjs"
-import { notifyByEmailWithHtmlifiedComponent } from "@/server/notification"
+import { batchNotifyByEmailWithComponentProps } from "@/server/notification"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
-import PackageStatusUpdateEmail from "@/utils/email-templates/package-status-update-email"
 import { HttpError } from "@/utils/errors"
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -163,34 +162,34 @@ export async function POST(
         status: "DELIVERED",
       })
 
-      await Promise.allSettled([
-        notifyByEmailWithHtmlifiedComponent({
-          to: _package.senderEmailAddress,
-          subject: "Your package has been delivered",
-          component: (
-            <PackageStatusUpdateEmail
-              body={`Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`}
-              callToAction={{
+      await batchNotifyByEmailWithComponentProps({
+        messages: [
+          {
+            to: _package.senderEmailAddress,
+            subject: "Your package has been delivered",
+            componentProps: {
+              type: "package-status-update",
+              body: `Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`,
+              callToAction: {
                 label: "Fill-up our Survey",
                 href: serverEnv.SURVEY_URL,
-              }}
-            />
-          ),
-        }),
-        notifyByEmailWithHtmlifiedComponent({
-          to: _package.receiverEmailAddress,
-          subject: "Your package has been delivered",
-          component: (
-            <PackageStatusUpdateEmail
-              body={`Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`}
-              callToAction={{
+              },
+            },
+          },
+          {
+            to: _package.receiverEmailAddress,
+            subject: "Your package has been delivered",
+            componentProps: {
+              type: "package-status-update",
+              body: `Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`,
+              callToAction: {
                 label: "Fill-up our Survey",
                 href: serverEnv.SURVEY_URL,
-              }}
-            />
-          ),
-        }),
-      ])
+              },
+            },
+          },
+        ],
+      })
 
       return {
         package: {
