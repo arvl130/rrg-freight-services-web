@@ -152,12 +152,12 @@ export const shipmentPackageRouter = router({
           : []
 
       const emailNotifications = [
-        ...packageDetails.map(({ id, senderEmailAddress }) => ({
+        ...packageDetails.map(({ id, senderFullName, senderEmailAddress }) => ({
           to: senderEmailAddress,
           subject: `The status of your package was updated.`,
           componentProps: {
             type: "package-status-update" as const,
-            body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+            body: `Hi, ${senderFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
               input.packageStatus,
             )}. For more information, click the button below.`,
             callToAction: {
@@ -166,20 +166,22 @@ export const shipmentPackageRouter = router({
             },
           },
         })),
-        ...packageDetails.map(({ id, receiverEmailAddress }) => ({
-          to: receiverEmailAddress,
-          subject: `The status of your package was updated.`,
-          componentProps: {
-            type: "package-status-update" as const,
-            body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
-              input.packageStatus,
-            )}. For more information, click the button below.`,
-            callToAction: {
-              label: "Track your Package",
-              href: `https://www.rrgfreight.services/tracking?id=${id}`,
+        ...packageDetails.map(
+          ({ id, receiverFullName, receiverEmailAddress }) => ({
+            to: receiverEmailAddress,
+            subject: `The status of your package was updated.`,
+            componentProps: {
+              type: "package-status-update" as const,
+              body: `Hi, ${receiverFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+                input.packageStatus,
+              )}. For more information, click the button below.`,
+              callToAction: {
+                label: "Track your Package",
+                href: `https://www.rrgfreight.services/tracking?id=${id}`,
+              },
             },
-          },
-        })),
+          }),
+        ),
       ]
 
       const packageReceiverSmsNotifications = packageDetails.map(

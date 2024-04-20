@@ -265,30 +265,32 @@ export const incomingShipmentRouter = router({
       }))
 
       const emailNotifications = [
-        ...newPackages.map(({ senderEmailAddress, id }) => ({
+        ...newPackages.map(({ senderFullName, senderEmailAddress, id }) => ({
           to: senderEmailAddress,
           subject: `Your package has been registered`,
           componentProps: {
             type: "package-status-update" as const,
-            body: `Your package with RRG tracking number ${id} has been registered to our system. Click the button below to track your package.`,
+            body: `Hi, ${senderFullName}. Your package with RRG tracking number ${id} has been registered to our system. Click the button below to track your package.`,
             callToAction: {
               label: "Track your Package",
               href: `https://www.rrgfreight.services/tracking?id=${id}`,
             },
           },
         })),
-        ...newPackages.map(({ receiverEmailAddress, id }) => ({
-          to: receiverEmailAddress,
-          subject: `A package will be sent to you`,
-          componentProps: {
-            type: "package-status-update" as const,
-            body: `A package with RRG tracking number ${id} will be sent to you through our system. Click the button below to track your package.`,
-            callToAction: {
-              label: "Track your Package",
-              href: `https://www.rrgfreight.services/tracking?id=${id}`,
+        ...newPackages.map(
+          ({ receiverFullName, receiverEmailAddress, id }) => ({
+            to: receiverEmailAddress,
+            subject: `A package will be sent to you`,
+            componentProps: {
+              type: "package-status-update" as const,
+              body: `Hi, ${receiverFullName}. A package with RRG tracking number ${id} will be sent to you through our system. Click the button below to track your package.`,
+              callToAction: {
+                label: "Track your Package",
+                href: `https://www.rrgfreight.services/tracking?id=${id}`,
+              },
             },
-          },
-        })),
+          }),
+        ),
       ]
 
       await ctx.db.transaction(async (tx) => {

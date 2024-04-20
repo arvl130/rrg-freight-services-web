@@ -169,7 +169,7 @@ export async function POST(
             subject: "Your package has been delivered",
             componentProps: {
               type: "package-status-update",
-              body: `Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`,
+              body: `Hi, ${_package.senderFullName}. Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`,
               callToAction: {
                 label: "Fill-up our Survey",
                 href: serverEnv.SURVEY_URL,
@@ -181,7 +181,7 @@ export async function POST(
             subject: "Your package has been delivered",
             componentProps: {
               type: "package-status-update",
-              body: `Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`,
+              body: `Hi, ${_package.receiverFullName}. Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`,
               callToAction: {
                 label: "Fill-up our Survey",
                 href: serverEnv.SURVEY_URL,
