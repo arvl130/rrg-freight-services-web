@@ -22,12 +22,11 @@ import { createLog } from "@/utils/logging"
 import type { DbWithEntities } from "@/server/db/entities"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import {
-  batchNotifyByEmailWithHtmlifiedComponent,
+  batchNotifyByEmailWithComponentProps,
   notifyBySms,
 } from "@/server/notification"
 import type { User } from "lucia"
 import { DateTime } from "luxon"
-import PackageStatusUpdateEmail from "@/utils/email-templates/package-status-update-email"
 
 async function getDescriptionForStatus(options: {
   db: DbWithEntities
@@ -155,32 +154,30 @@ export const shipmentPackageRouter = router({
         ...packageDetails.map(({ id, senderEmailAddress }) => ({
           to: senderEmailAddress,
           subject: `The status of your package was updated.`,
-          component: (
-            <PackageStatusUpdateEmail
-              body={`Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
-                input.packageStatus,
-              )}. For more information, click the button below.`}
-              callToAction={{
-                label: "Track your Package",
-                href: `https://rrgfreightservices.vercel.app/tracking?id=${id}`,
-              }}
-            />
-          ),
+          componentProps: {
+            type: "package-status-update" as const,
+            body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+              input.packageStatus,
+            )}. For more information, click the button below.`,
+            callToAction: {
+              label: "Track your Package",
+              href: `https://www.rrgfreight.services/tracking?id=${id}`,
+            },
+          },
         })),
         ...packageDetails.map(({ id, receiverEmailAddress }) => ({
           to: receiverEmailAddress,
           subject: `The status of your package was updated.`,
-          component: (
-            <PackageStatusUpdateEmail
-              body={`Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
-                input.packageStatus,
-              )}. For more information, click the button below.`}
-              callToAction={{
-                label: "Track your Package",
-                href: `https://rrgfreightservices.vercel.app/tracking?id=${id}`,
-              }}
-            />
-          ),
+          componentProps: {
+            type: "package-status-update" as const,
+            body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+              input.packageStatus,
+            )}. For more information, click the button below.`,
+            callToAction: {
+              label: "Track your Package",
+              href: `https://www.rrgfreight.services/tracking?id=${id}`,
+            },
+          },
         })),
       ]
 
@@ -268,7 +265,7 @@ export const shipmentPackageRouter = router({
       })
 
       await Promise.allSettled([
-        batchNotifyByEmailWithHtmlifiedComponent({
+        batchNotifyByEmailWithComponentProps({
           messages: emailNotifications,
         }),
         ...packageReceiverSmsNotifications.map((e) => notifyBySms(e)),
