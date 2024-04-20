@@ -27,6 +27,7 @@ import {
 } from "@/server/notification"
 import type { User } from "lucia"
 import { DateTime } from "luxon"
+import { serverEnv } from "@/server/env.mjs"
 
 async function getDescriptionForStatus(options: {
   db: DbWithEntities
@@ -186,7 +187,9 @@ export const shipmentPackageRouter = router({
           to: receiverContactNumber,
           body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
             input.packageStatus,
-          )}. For more info, you may monitor your package on our website.`,
+          )}. For more info, monitor your package on: ${
+            serverEnv.BITLY_TRACKING_PAGE_URL
+          }`,
         }),
       )
 

@@ -36,8 +36,9 @@ export const serverEnv = createEnv({
     GOOGLE_API_KEY: z.string().min(1),
     AWS_ACCESS_KEY_ID: z.string().min(1),
     AWS_ACCESS_KEY_SECRET: z.string().min(1),
-    AWS_SQS_EMAIL_QUEUE_URL: z.string().min(1),
-    AWS_SQS_SMS_QUEUE_URL: z.string().min(1),
+    AWS_SQS_EMAIL_QUEUE_URL: z.string().min(1).url(),
+    AWS_SQS_SMS_QUEUE_URL: z.string().min(1).url(),
+    BITLY_TRACKING_PAGE_URL: z.string().min(1).url(),
   },
   runtimeEnv: {
     APP_NAME: process.env.APP_NAME,
@@ -69,5 +70,6 @@ export const serverEnv = createEnv({
     AWS_ACCESS_KEY_SECRET: process.env.AWS_ACCESS_KEY_SECRET,
     AWS_SQS_EMAIL_QUEUE_URL: process.env.AWS_SQS_EMAIL_QUEUE_URL,
     AWS_SQS_SMS_QUEUE_URL: process.env.AWS_SQS_SMS_QUEUE_URL,
+    BITLY_TRACKING_PAGE_URL: process.env.BITLY_TRACKING_PAGE_URL,
   },
 })
