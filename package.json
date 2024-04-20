@@ -13,6 +13,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.556.0",
     "@custom-react-hooks/use-permission": "^1.4.19",
     "@googlemaps/google-maps-services-js": "^3.4.0",
     "@hookform/resolvers": "^3.3.2",

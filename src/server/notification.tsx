@@ -8,6 +8,7 @@ import { Expo } from "expo-server-sdk"
 import type { JSXElementConstructor, ReactElement, ReactNode } from "react"
 import { render } from "@react-email/render"
 import { chunkArray } from "@/utils/array-transform"
+import { SQSClient, SendMessageBatchCommand } from "@aws-sdk/client-sqs"
 
 const resend = new Resend(serverEnv.RESEND_API_KEY)
 
@@ -55,6 +56,71 @@ export async function notifyByEmailWithHtmlifiedComponent({
       react: component,
       text: componentTextVersion,
     })
+  }
+}
+
+const AWS_SQS_BATCH_SIZE_LIMIT = 10
+
+const sqsClient = new SQSClient({
+  credentials: {
+    accessKeyId: serverEnv.AWS_ACCESS_KEY_ID,
+    secretAccessKey: serverEnv.AWS_ACCESS_KEY_SECRET,
+  },
+})
+
+type PackageStatusUpdateEmailComponentProps = {
+  type: "package-status-update"
+  body: string
+  callToAction: {
+    label: string
+    href: string
+  }
+}
+
+type OtpEmailComponentProps = {
+  type: "otp"
+  otp: string
+}
+
+type ComponentProps =
+  | PackageStatusUpdateEmailComponentProps
+  | OtpEmailComponentProps
+
+export async function batchNotifyByEmailWithComponentProps(options: {
+  messages: {
+    to: string
+    subject: string
+    componentProps: ComponentProps
+  }[]
+}) {
+  if (serverEnv.OFFLINE_MODE === "1") return
+  if (serverEnv.IS_EMAIL_ENABLED === "1") {
+    const timerLabel = `Sent ${options.messages.length} emails in`
+    console.time(timerLabel)
+    const messagesInHtml = options.messages.map((message) => {
+      return {
+        to: message.to,
+        subject: message.subject,
+        componentProps: message.componentProps,
+      }
+    })
+
+    const chunkedMessages = chunkArray(messagesInHtml, AWS_SQS_BATCH_SIZE_LIMIT)
+
+    await Promise.allSettled(
+      chunkedMessages.map(async (chunk) => {
+        const command = new SendMessageBatchCommand({
+          QueueUrl: serverEnv.AWS_SQS_EMAIL_QUEUE_URL,
+          Entries: chunk.map((message) => ({
+            Id: crypto.randomUUID(),
+            MessageBody: JSON.stringify(message),
+          })),
+        })
+
+        return sqsClient.send(command)
+      }),
+    )
+    console.timeEnd(timerLabel)
   }
 }
 

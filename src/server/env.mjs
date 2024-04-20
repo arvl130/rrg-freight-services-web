@@ -34,6 +34,9 @@ export const serverEnv = createEnv({
     MAPBOX_API_URL: z.string().min(1).url(),
     MAPBOX_SECRET_KEY: z.string().min(1),
     GOOGLE_API_KEY: z.string().min(1),
+    AWS_ACCESS_KEY_ID: z.string().min(1),
+    AWS_ACCESS_KEY_SECRET: z.string().min(1),
+    AWS_SQS_EMAIL_QUEUE_URL: z.string().min(1),
   },
   runtimeEnv: {
     APP_NAME: process.env.APP_NAME,
@@ -61,5 +64,8 @@ export const serverEnv = createEnv({
     MAPBOX_API_URL: process.env.MAPBOX_API_URL,
     MAPBOX_SECRET_KEY: process.env.MAPBOX_SECRET_KEY,
     GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+    AWS_ACCESS_KEY_SECRET: process.env.AWS_ACCESS_KEY_SECRET,
+    AWS_SQS_EMAIL_QUEUE_URL: process.env.AWS_SQS_EMAIL_QUEUE_URL,
   },
 })
