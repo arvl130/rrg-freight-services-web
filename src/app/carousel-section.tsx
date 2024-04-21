@@ -7,9 +7,9 @@ import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
 import Link from "next/link"
 
 const images = [
-  "/assets/img/home/ship1.jpg",
-  "/assets/img/home/ship2.jpg",
-  "/assets/img/home/ship3.jpg",
+  "/assets/img/home/rrg1.jpg",
+  "/assets/img/home/trucking1.jpg",
+  "/assets/img/home/wr1.jpg",
 ]
 
 export function CarouselSection() {
@@ -33,7 +33,7 @@ export function CarouselSection() {
               <div
                 style={{ borderRadius: "10px" }}
                 key={index}
-                className="slide"
+                className="slide object-contain"
               >
                 <Image
                   src={URL}
