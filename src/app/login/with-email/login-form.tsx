@@ -3,21 +3,26 @@
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRef, useState, useTransition } from "react"
+import { useEffect, useRef, useState, useTransition } from "react"
 import { Eye } from "@phosphor-icons/react/dist/ssr/Eye"
 import { EyeSlash } from "@phosphor-icons/react/dist/ssr/EyeSlash"
 import { signInWithEmailAndPasswordAction } from "./actions"
 import { useFormState } from "react-dom"
 import { formSchema } from "./form-schema"
 import type { z } from "zod"
-import { InlineLoadingSpinner, LoadingSpinner } from "@/components/spinner"
+import { InlineLoadingSpinner } from "@/components/spinner"
 
 type FormType = z.infer<typeof formSchema>
 
 export function LoginForm() {
+  const [isSigningIn, setIsSigningIn] = useState(false)
   const [state, formAction] = useFormState(signInWithEmailAndPasswordAction, {
     message: "",
   })
+
+  useEffect(() => {
+    setIsSigningIn(false)
+  }, [state])
 
   const defaultValues = {
     email: "",
@@ -48,6 +53,7 @@ export function LoginForm() {
         handleSubmit(() => {
           if (formRef.current) {
             const formData = new FormData(formRef.current)
+            setIsSigningIn(true)
             startTransition(() => {
               formAction(formData)
             })
@@ -114,9 +120,9 @@ export function LoginForm() {
       <button
         type="submit"
         className="font-semibold w-full flex gap-2 items-center justify-center mt-4 px-8 py-2.5 leading-5 text-white transition-colors duration-200 transform bg-brand-cyan-500 rounded-md hover:bg-brand-cyan-600 focus:outline-none focus:bg-brand-cyan-600 disabled:bg-brand-cyan-350"
-        disabled={isPending}
+        disabled={isPending || isSigningIn}
       >
-        {isPending ? (
+        {isPending || isSigningIn ? (
           <>
             <InlineLoadingSpinner />
             Signing in ...
