@@ -25,6 +25,8 @@ import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
 import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 import { EditDetailsModal } from "./edit-details-modal"
+import { ArchiveModal } from "./archive-modal"
+import { UnarchiveModal } from "./unarchive-modal"
 
 function WarehouseDetails(props: { warehouseId: number }) {
   const { status, data, error } = api.warehouse.getById.useQuery({
@@ -39,7 +41,12 @@ function WarehouseDetails(props: { warehouseId: number }) {
 
 function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "VIEW_LOCATIONS"
+    | null
+    | "VIEW_DETAILS"
+    | "EDIT_DETAILS"
+    | "VIEW_LOCATIONS"
+    | "ARCHIVE"
+    | "UNARCHIVE"
   >(null)
 
   return (
@@ -92,11 +99,26 @@ function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
                 Edit Details
               </DropdownMenu.Item>
               <DropdownMenu.Item
-                className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("VIEW_LOCATIONS")}
               >
                 View Locations
               </DropdownMenu.Item>
+              {item.isArchived ? (
+                <DropdownMenu.Item
+                  className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("UNARCHIVE")}
+                >
+                  Unarchive
+                </DropdownMenu.Item>
+              ) : (
+                <DropdownMenu.Item
+                  className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("ARCHIVE")}
+                >
+                  Archive
+                </DropdownMenu.Item>
+              )}
 
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
@@ -117,6 +139,16 @@ function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
           isOpen={visibleModal === "VIEW_LOCATIONS"}
           close={() => setVisibleModal(null)}
           shipment={item}
+        />
+        <ArchiveModal
+          id={item.id}
+          close={() => setVisibleModal(null)}
+          isOpen={visibleModal === "ARCHIVE"}
+        />
+        <UnarchiveModal
+          id={item.id}
+          close={() => setVisibleModal(null)}
+          isOpen={visibleModal === "UNARCHIVE"}
         />
       </div>
     </>

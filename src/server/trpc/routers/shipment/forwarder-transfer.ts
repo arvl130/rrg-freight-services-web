@@ -75,7 +75,11 @@ export const forwarderTransferShipmentRouter = router({
         )
         .where(eq(shipments.id, input.id))
 
-      if (results.length === 0) return null
+      if (results.length === 0)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        })
+
       if (results.length > 1)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
