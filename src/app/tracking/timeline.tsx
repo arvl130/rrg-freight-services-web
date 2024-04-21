@@ -5,6 +5,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { Moped } from "@phosphor-icons/react/dist/ssr/Moped"
 import { DateTime } from "luxon"
 import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
+import { Warehouse } from "@phosphor-icons/react/dist/ssr/Warehouse"
 
 function TimelineItem({
   packageStatusLog,
@@ -27,6 +28,9 @@ function TimelineItem({
           packageStatusLog.status === "TRANSFERRING_FORWARDER" ||
           packageStatusLog.status === "TRANSFERRING_WAREHOUSE") && (
           <Truck size={44} color="#1d798b" />
+        )}
+        {packageStatusLog.status === "TRANSFERRED_FORWARDER" && (
+          <Warehouse size={44} color="#1d798b" />
         )}
         {packageStatusLog.status === "IN_WAREHOUSE" && (
           <Package size={44} color="#1d798b" />
