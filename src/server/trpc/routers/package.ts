@@ -40,6 +40,7 @@ import {
 import { generateUniqueId } from "@/utils/uuid"
 import { DateTime } from "luxon"
 import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
+import { createLog } from "@/utils/logging"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -486,4 +487,48 @@ export const packageRouter = router({
       count: value,
     }
   }),
+  archiveById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(packages)
+          .set({
+            isArchived: 1,
+          })
+          .where(eq(packages.id, input.id))
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "PACKAGE",
+          createdById: ctx.user.id,
+        })
+      })
+    }),
+  unarchiveById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(packages)
+          .set({
+            isArchived: 0,
+          })
+          .where(eq(packages.id, input.id))
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "PACKAGE",
+          createdById: ctx.user.id,
+        })
+      })
+    }),
 })

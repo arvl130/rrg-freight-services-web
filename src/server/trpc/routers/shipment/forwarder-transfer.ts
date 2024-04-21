@@ -75,7 +75,11 @@ export const forwarderTransferShipmentRouter = router({
         )
         .where(eq(shipments.id, input.id))
 
-      if (results.length === 0) return null
+      if (results.length === 0)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        })
+
       if (results.length > 1)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -220,19 +224,13 @@ export const forwarderTransferShipmentRouter = router({
         await tx
           .delete(assignedDrivers)
           .where(
-            eq(
-              forwarderTransferShipments.driverId,
-              forwarderTransferShipment.driverId,
-            ),
+            eq(assignedDrivers.driverId, forwarderTransferShipment.driverId),
           )
 
         await tx
           .delete(assignedVehicles)
           .where(
-            eq(
-              forwarderTransferShipments.vehicleId,
-              forwarderTransferShipment.vehicleId,
-            ),
+            eq(assignedVehicles.vehicleId, forwarderTransferShipment.vehicleId),
           )
 
         await createLog(tx, {

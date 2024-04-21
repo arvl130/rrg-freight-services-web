@@ -25,6 +25,8 @@ import {
 } from "@/utils/constants"
 import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 import { EditDetailsModal } from "./edit-details-modal"
+import { ArchiveModal } from "./archive-modal"
+import { UnarchiveModal } from "./unarchive-modal"
 
 function WarehouseDetails(props: { warehouseId: number }) {
   const { status, data, error } = api.warehouse.getById.useQuery({
@@ -39,7 +41,12 @@ function WarehouseDetails(props: { warehouseId: number }) {
 
 function TableItem({ item }: { item: NormalizedIncomingShipment }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "PRINT_WAYBILLS"
+    | null
+    | "VIEW_DETAILS"
+    | "EDIT_DETAILS"
+    | "PRINT_WAYBILLS"
+    | "ARCHIVE"
+    | "UNARCHIVE"
   >(null)
 
   return (
@@ -96,11 +103,26 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
                 Edit Details
               </DropdownMenu.Item>
               <DropdownMenu.Item
-                className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("PRINT_WAYBILLS")}
               >
                 Print Waybills
               </DropdownMenu.Item>
+              {item.isArchived ? (
+                <DropdownMenu.Item
+                  className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("UNARCHIVE")}
+                >
+                  Unarchive
+                </DropdownMenu.Item>
+              ) : (
+                <DropdownMenu.Item
+                  className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("ARCHIVE")}
+                >
+                  Archive
+                </DropdownMenu.Item>
+              )}
 
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
@@ -121,6 +143,16 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
           shipmentId={item.id}
           isOpen={visibleModal === "PRINT_WAYBILLS"}
           onClose={() => setVisibleModal(null)}
+        />
+        <ArchiveModal
+          id={item.id}
+          close={() => setVisibleModal(null)}
+          isOpen={visibleModal === "ARCHIVE"}
+        />
+        <UnarchiveModal
+          id={item.id}
+          close={() => setVisibleModal(null)}
+          isOpen={visibleModal === "UNARCHIVE"}
         />
       </div>
     </>

@@ -160,4 +160,48 @@ export const vehicleRouter = router({
 
       return result
     }),
+  archiveById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(vehicles)
+          .set({
+            isArchived: 1,
+          })
+          .where(eq(vehicles.id, input.id))
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "VEHICLE",
+          createdById: ctx.user.id,
+        })
+      })
+    }),
+  unarchiveById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(vehicles)
+          .set({
+            isArchived: 0,
+          })
+          .where(eq(vehicles.id, input.id))
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "VEHICLE",
+          createdById: ctx.user.id,
+        })
+      })
+    }),
 })

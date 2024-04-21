@@ -1,7 +1,7 @@
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { Export } from "@phosphor-icons/react/dist/ssr/Export"
 import type { ReactNode } from "react"
-import { useRef } from "react"
+import { Fragment, useRef } from "react"
 import { CaretDoubleLeft } from "@phosphor-icons/react/dist/ssr/CaretDoubleLeft"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
@@ -127,19 +127,65 @@ export function Pagination({
             <CaretLeft size={16} />
           </button>
 
-          {[...Array(pageCount)].map((_, index) => (
-            <button
-              key={index}
-              type="button"
-              disabled={index + 1 === pageNumber}
-              onClick={() => gotoPage(index + 1)}
-              className={
-                "w-6 h-6 disabled:bg-brand-cyan-500 disabled:text-white rounded-md"
+          {[...Array(pageCount)].map((_, index) => {
+            const currentPage = index + 1
+            const isDisabled = currentPage === pageNumber
+
+            if (pageCount > 5) {
+              if (
+                isDisabled ||
+                currentPage === pageNumber - 1 ||
+                currentPage === pageNumber + 1 ||
+                currentPage === 1 ||
+                currentPage === pageCount
+              )
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    disabled={isDisabled}
+                    onClick={() => gotoPage(index + 1)}
+                    className={
+                      "w-6 h-6 disabled:bg-brand-cyan-500 disabled:text-white rounded-md"
+                    }
+                  >
+                    {index + 1}
+                  </button>
+                )
+              else if (
+                currentPage === pageNumber - 2 ||
+                currentPage === pageNumber + 2
+              ) {
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    disabled={true}
+                    onClick={() => gotoPage(index + 1)}
+                    className={"w-6 h-6 rounded-md"}
+                  >
+                    ...
+                  </button>
+                )
+              } else {
+                return <Fragment key={index} />
               }
-            >
-              {index + 1}
-            </button>
-          ))}
+            } else {
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  disabled={isDisabled}
+                  onClick={() => gotoPage(index + 1)}
+                  className={
+                    "w-6 h-6 disabled:bg-brand-cyan-500 disabled:text-white rounded-md"
+                  }
+                >
+                  {index + 1}
+                </button>
+              )
+            }
+          })}
 
           <button
             type="button"

@@ -43,4 +43,32 @@ export const activityRouter = router({
 
       return results[0]
     }),
+  archiveById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(activities)
+        .set({
+          isArchived: 1,
+        })
+        .where(eq(activities.id, input.id))
+    }),
+  unarchiveById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(activities)
+        .set({
+          isArchived: 0,
+        })
+        .where(eq(activities.id, input.id))
+    }),
 })

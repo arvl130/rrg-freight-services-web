@@ -19,6 +19,8 @@ import {
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { getColorFromPackageStatus } from "@/utils/colors"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
+import { ArchiveModal } from "./archive-modal"
+import { UnarchiveModal } from "./unarchive-modal"
 
 function WarehouseDetails(props: { warehouseId: number }) {
   const { status, data, error } = api.warehouse.getById.useQuery({
@@ -33,7 +35,12 @@ function WarehouseDetails(props: { warehouseId: number }) {
 
 function TableItem({ package: _package }: { package: Package }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "EDIT_DETAILS" | "VIEW_WAYBILL"
+    | null
+    | "VIEW_DETAILS"
+    | "EDIT_DETAILS"
+    | "VIEW_WAYBILL"
+    | "ARCHIVE"
+    | "UNARCHIVE"
   >(null)
 
   return (
@@ -108,11 +115,26 @@ function TableItem({ package: _package }: { package: Package }) {
                 Edit Details
               </DropdownMenu.Item>
               <DropdownMenu.Item
-                className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("VIEW_WAYBILL")}
               >
                 View Waybill
               </DropdownMenu.Item>
+              {_package.isArchived ? (
+                <DropdownMenu.Item
+                  className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("UNARCHIVE")}
+                >
+                  Unarchive
+                </DropdownMenu.Item>
+              ) : (
+                <DropdownMenu.Item
+                  className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("ARCHIVE")}
+                >
+                  Archive
+                </DropdownMenu.Item>
+              )}
 
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
@@ -133,6 +155,16 @@ function TableItem({ package: _package }: { package: Package }) {
           package={_package}
           isOpen={visibleModal === "VIEW_WAYBILL"}
           close={() => setVisibleModal(null)}
+        />
+        <ArchiveModal
+          id={_package.id}
+          close={() => setVisibleModal(null)}
+          isOpen={visibleModal === "ARCHIVE"}
+        />
+        <UnarchiveModal
+          id={_package.id}
+          close={() => setVisibleModal(null)}
+          isOpen={visibleModal === "UNARCHIVE"}
         />
       </div>
     </>

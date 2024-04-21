@@ -12,11 +12,13 @@ import { DeleteModal } from "./delete-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import type { Vehicle } from "@/server/db/entities"
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
+import { ArchiveModal } from "./archive-modal"
+import { UnarchiveModal } from "./unarchive-modal"
 
 function TableItem({ item }: { item: Vehicle }) {
-  const [visibleModal, setVisibleModal] = useState<null | "EDIT" | "DELETE">(
-    null,
-  )
+  const [visibleModal, setVisibleModal] = useState<
+    null | "EDIT" | "DELETE" | "ARCHIVE" | "UNARCHIVE"
+  >(null)
 
   return (
     <>
@@ -56,11 +58,26 @@ function TableItem({ item }: { item: Vehicle }) {
                 Edit
               </DropdownMenu.Item>
               <DropdownMenu.Item
-                className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("DELETE")}
               >
                 Delete
               </DropdownMenu.Item>
+              {item.isArchived ? (
+                <DropdownMenu.Item
+                  className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("UNARCHIVE")}
+                >
+                  Unarchive
+                </DropdownMenu.Item>
+              ) : (
+                <DropdownMenu.Item
+                  className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("ARCHIVE")}
+                >
+                  Archive
+                </DropdownMenu.Item>
+              )}
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
@@ -75,6 +92,16 @@ function TableItem({ item }: { item: Vehicle }) {
           id={item.id}
           close={() => setVisibleModal(null)}
           isOpen={visibleModal === "DELETE"}
+        />
+        <ArchiveModal
+          id={item.id}
+          close={() => setVisibleModal(null)}
+          isOpen={visibleModal === "ARCHIVE"}
+        />
+        <UnarchiveModal
+          id={item.id}
+          close={() => setVisibleModal(null)}
+          isOpen={visibleModal === "UNARCHIVE"}
         />
       </div>
     </>

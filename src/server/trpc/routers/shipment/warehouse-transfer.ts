@@ -56,7 +56,11 @@ export const warehouseTransferShipmentRouter = router({
         )
         .where(eq(shipments.id, input.id))
 
-      if (results.length === 0) return null
+      if (results.length === 0)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        })
+
       if (results.length > 1)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -211,20 +215,37 @@ export const warehouseTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const result = await ctx.db
-        .update(shipments)
-        .set({
-          status: "COMPLETED",
+      await ctx.db.transaction(async (tx) => {
+        const [warehouseTransferShipment] = await tx
+          .select()
+          .from(warehouseTransferShipments)
+          .where(eq(warehouseTransferShipments.shipmentId, input.id))
+
+        await tx
+          .update(shipments)
+          .set({
+            status: "COMPLETED",
+          })
+          .where(eq(shipments.id, input.id))
+
+        await tx
+          .delete(assignedDrivers)
+          .where(
+            eq(assignedDrivers.driverId, warehouseTransferShipment.driverId),
+          )
+
+        await tx
+          .delete(assignedVehicles)
+          .where(
+            eq(assignedVehicles.vehicleId, warehouseTransferShipment.vehicleId),
+          )
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "TRANSFER_WAREHOUSE_SHIPMENT",
+          createdById: ctx.user.id,
         })
-        .where(eq(shipments.id, input.id))
-
-      await createLog(ctx.db, {
-        verb: "UPDATE",
-        entity: "TRANSFER_WAREHOUSE_SHIPMENT",
-        createdById: ctx.user.id,
       })
-
-      return result
     }),
   create: protectedProcedure
     .input(
