@@ -26,10 +26,10 @@ function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
 
         <Link href="/">
           <Image
-            src="/assets/img/logos/logo-header.png"
+            src="/assets/img/logos/logo-header-enhanced.png"
             alt="Logo of RRG Freight Services"
-            width={130}
-            height={50}
+            width={210}
+            height={70}
           />
         </Link>
 
@@ -68,10 +68,10 @@ function DesktopNav(props: { user: User | null }) {
     <div className="hidden md:flex max-w-6xl mx-auto px-6 h-full justify-between items-center text-white font-semibold">
       <Link href="/">
         <Image
-          src="/assets/img/logos/logo-header.png"
+          src="/assets/img/logos/logo-header-enhanced.png"
           alt="Logo of RRG Freight Services"
-          width={130}
-          height={50}
+          width={230}
+          height={80}
         />
       </Link>
 
