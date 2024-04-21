@@ -9,6 +9,7 @@ import {
   users,
   assignedDrivers,
   assignedVehicles,
+  domesticAgents,
 } from "@/server/db/schema"
 import { serverEnv } from "@/server/env.mjs"
 import {
@@ -53,9 +54,14 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
         ...forwarderTransferShipmentColumns,
         agentDisplayName: users.displayName,
         agentContactNumber: users.contactNumber,
+        agentCompanyName: domesticAgents.companyName,
       })
       .from(forwarderTransferShipments)
       .innerJoin(users, eq(forwarderTransferShipments.sentToAgentId, users.id))
+      .innerJoin(
+        domesticAgents,
+        eq(forwarderTransferShipments.sentToAgentId, domesticAgents.userId),
+      )
       .where(eq(forwarderTransferShipments.shipmentId, transferShipmentId))
 
     if (transferShipmentResults.length === 0) {
@@ -104,7 +110,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
           subject: "Your package has been transferred",
           componentProps: {
             type: "package-status-update" as const,
-            body: `Hi, ${senderFullName}. Your package with RRG tracking number ${id} has been transferred to another forwarder (${transferShipment.agentDisplayName}). You may contact them through this number: ${transferShipment.agentContactNumber}. Click the button below to see your package tracking history.`,
+            body: `Hi, ${senderFullName}. Your package with RRG tracking number ${id} has been transferred to another forwarder: ${transferShipment.agentDisplayName} (${transferShipment.agentCompanyName}). You may contact them through this number: ${transferShipment.agentContactNumber}. Click the button below to see your package tracking history.`,
             callToAction: {
               label: "View Tracking History",
               href: `https://www.rrgfreight.services/tracking?id=${id}`,
@@ -118,7 +124,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
           subject: "Your package has been transferred",
           componentProps: {
             type: "package-status-update" as const,
-            body: `Hi, ${receiverFullName}. Your package with RRG tracking number ${id} has been transferred to another forwarder (${transferShipment.agentDisplayName}). You may contact them through this number: ${transferShipment.agentContactNumber}. Click the button below to see your package tracking history.`,
+            body: `Hi, ${receiverFullName}. Your package with RRG tracking number ${id} has been transferred to another forwarder: ${transferShipment.agentDisplayName} (${transferShipment.agentCompanyName}). You may contact them through this number: ${transferShipment.agentContactNumber}. Click the button below to see your package tracking history.`,
             callToAction: {
               label: "View Tracking History",
               href: `https://www.rrgfreight.services/tracking?id=${id}`,
