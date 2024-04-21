@@ -46,7 +46,7 @@ export default async function TermsCondition() {
             </div>
 
             <div className="flex text-justify pr-20">
-              2.&nbsp;
+              2. &nbsp;
               <p>
                 The shipment contains no hazardous or prohibited items, e.g.
                 explosives, flammable, firearms and parts, ammunitions, illegal
