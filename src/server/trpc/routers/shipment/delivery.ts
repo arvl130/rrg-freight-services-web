@@ -300,11 +300,11 @@ export const deliveryShipmentRouter = router({
 
         await tx
           .delete(assignedDrivers)
-          .where(eq(deliveryShipments.driverId, deliveryShipment.driverId))
+          .where(eq(assignedDrivers.driverId, deliveryShipment.driverId))
 
         await tx
           .delete(assignedVehicles)
-          .where(eq(deliveryShipments.vehicleId, deliveryShipment.vehicleId))
+          .where(eq(assignedVehicles.vehicleId, deliveryShipment.vehicleId))
 
         await createLog(tx, {
           verb: "UPDATE",

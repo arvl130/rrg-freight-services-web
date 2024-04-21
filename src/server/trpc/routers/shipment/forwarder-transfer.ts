@@ -224,19 +224,13 @@ export const forwarderTransferShipmentRouter = router({
         await tx
           .delete(assignedDrivers)
           .where(
-            eq(
-              forwarderTransferShipments.driverId,
-              forwarderTransferShipment.driverId,
-            ),
+            eq(assignedDrivers.driverId, forwarderTransferShipment.driverId),
           )
 
         await tx
           .delete(assignedVehicles)
           .where(
-            eq(
-              forwarderTransferShipments.vehicleId,
-              forwarderTransferShipment.vehicleId,
-            ),
+            eq(assignedVehicles.vehicleId, forwarderTransferShipment.vehicleId),
           )
 
         await createLog(tx, {
