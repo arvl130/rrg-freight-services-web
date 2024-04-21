@@ -7,13 +7,15 @@ import {
   forwarderTransferShipments,
   packages,
   users,
+  assignedDrivers,
+  assignedVehicles,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
-import { and, eq, inArray } from "drizzle-orm"
+import { and, eq, getTableColumns, inArray } from "drizzle-orm"
 import { DateTime } from "luxon"
 import { ZodError, z } from "zod"
 
-const getLocationsSchema = z.object({
+const inputSchema = z.object({
   transferShipmentId: z.number(),
   imageUrl: z.string().url(),
 })
@@ -31,23 +33,24 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     }
 
     const body = await req.json()
-    const { transferShipmentId, imageUrl } = getLocationsSchema.parse({
+    const { transferShipmentId, imageUrl } = inputSchema.parse({
       transferShipmentId: Number(ctx.params.id),
       imageUrl: body.imageUrl,
     })
 
-    const transferShipmentResultsPreformatted = await db
-      .select()
+    const createdAt = DateTime.now().toISO()
+    const forwarderTransferShipmentColumns = getTableColumns(
+      forwarderTransferShipments,
+    )
+
+    const transferShipmentResults = await db
+      .select({
+        ...forwarderTransferShipmentColumns,
+        agentDisplayName: users.displayName,
+      })
       .from(forwarderTransferShipments)
       .innerJoin(users, eq(forwarderTransferShipments.sentToAgentId, users.id))
       .where(eq(forwarderTransferShipments.shipmentId, transferShipmentId))
-
-    const transferShipmentResults = transferShipmentResultsPreformatted.map(
-      ({ forwarder_transfer_shipments, users }) => ({
-        ...forwarder_transfer_shipments,
-        agentDisplayName: users.displayName,
-      }),
-    )
 
     if (transferShipmentResults.length === 0) {
       return Response.json(
@@ -68,26 +71,11 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     }
 
     const [transferShipment] = transferShipmentResults
-    await db
-      .update(shipments)
-      .set({
-        status: "COMPLETED",
-      })
-      .where(eq(shipments.id, transferShipmentId))
-
-    await db
-      .update(forwarderTransferShipments)
-      .set({
-        proofOfTransferImgUrl: imageUrl,
-      })
-      .where(eq(forwarderTransferShipments.shipmentId, transferShipmentId))
 
     const transferShipmentPackagesResults = await db
       .select()
       .from(shipmentPackages)
       .where(eq(shipmentPackages.shipmentId, transferShipmentId))
-
-    const createdAt = DateTime.now().toISO()
     const newPackageStatusLogs = transferShipmentPackagesResults.map(
       ({ packageId }) => ({
         packageId,
@@ -101,33 +89,58 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
       }),
     )
 
-    await db
-      .update(shipmentPackages)
-      .set({
-        status: "COMPLETED" as const,
-      })
-      .where(
-        and(
-          eq(shipmentPackages.shipmentId, transferShipmentId),
+    await db.transaction(async (tx) => {
+      await tx
+        .update(shipments)
+        .set({
+          status: "COMPLETED",
+        })
+        .where(eq(shipments.id, transferShipmentId))
+
+      await tx
+        .update(forwarderTransferShipments)
+        .set({
+          proofOfTransferImgUrl: imageUrl,
+        })
+        .where(eq(forwarderTransferShipments.shipmentId, transferShipmentId))
+
+      await tx
+        .update(shipmentPackages)
+        .set({
+          status: "COMPLETED" as const,
+        })
+        .where(
+          and(
+            eq(shipmentPackages.shipmentId, transferShipmentId),
+            inArray(
+              shipmentPackages.packageId,
+              transferShipmentPackagesResults.map(({ packageId }) => packageId),
+            ),
+          ),
+        )
+
+      await tx
+        .update(packages)
+        .set({
+          status: "TRANSFERRED_FORWARDER",
+        })
+        .where(
           inArray(
-            shipmentPackages.packageId,
+            packages.id,
             transferShipmentPackagesResults.map(({ packageId }) => packageId),
           ),
-        ),
-      )
+        )
 
-    await db
-      .update(packages)
-      .set({
-        status: "TRANSFERRED_FORWARDER",
-      })
-      .where(
-        inArray(
-          packages.id,
-          transferShipmentPackagesResults.map(({ packageId }) => packageId),
-        ),
-      )
-    await db.insert(packageStatusLogs).values(newPackageStatusLogs)
+      await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
+
+      await tx
+        .delete(assignedDrivers)
+        .where(eq(assignedDrivers.driverId, transferShipment.driverId))
+
+      await tx
+        .delete(assignedVehicles)
+        .where(eq(assignedVehicles.vehicleId, transferShipment.vehicleId))
+    })
 
     return Response.json({
       message: "Transfer shipment status updated",

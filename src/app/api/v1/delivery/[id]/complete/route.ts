@@ -1,10 +1,15 @@
 import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
-import { shipments } from "@/server/db/schema"
-import { eq } from "drizzle-orm"
+import {
+  assignedDrivers,
+  assignedVehicles,
+  deliveryShipments,
+  shipments,
+} from "@/server/db/schema"
+import { eq, getTableColumns } from "drizzle-orm"
 import { ZodError, z } from "zod"
 
-const getLocationsSchema = z.object({
+const inputSchema = z.object({
   deliveryId: z.number(),
 })
 
@@ -20,13 +25,24 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
       )
     }
 
-    const { deliveryId } = getLocationsSchema.parse({
+    const { deliveryId } = inputSchema.parse({
       deliveryId: Number(ctx.params.id),
     })
 
+    const shipmentColumns = getTableColumns(shipments)
+    const { shipmentId: _, ...deliveryShipmentColumns } =
+      getTableColumns(deliveryShipments)
+
     const deliveryResults = await db
-      .select()
+      .select({
+        ...shipmentColumns,
+        ...deliveryShipmentColumns,
+      })
       .from(shipments)
+      .innerJoin(
+        deliveryShipments,
+        eq(shipments.id, deliveryShipments.shipmentId),
+      )
       .where(eq(shipments.id, deliveryId))
 
     if (deliveryResults.length === 0) {
@@ -48,12 +64,23 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     }
 
     const [delivery] = deliveryResults
-    await db
-      .update(shipments)
-      .set({
-        status: "COMPLETED",
-      })
-      .where(eq(shipments.id, deliveryId))
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(shipments)
+        .set({
+          status: "COMPLETED",
+        })
+        .where(eq(shipments.id, deliveryId))
+
+      await tx
+        .delete(assignedDrivers)
+        .where(eq(assignedDrivers.driverId, delivery.driverId))
+
+      await tx
+        .delete(assignedVehicles)
+        .where(eq(assignedVehicles.vehicleId, delivery.vehicleId))
+    })
 
     return Response.json({
       message: "Delivery status updated",
