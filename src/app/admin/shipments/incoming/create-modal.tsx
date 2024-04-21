@@ -225,20 +225,21 @@ function ChooseAgentForm({
   agents,
   sheetRows,
   reset,
-  onClose,
+  onSuccess,
 }: {
   agents: NormalizedPublicOverseasAgentUser[]
   sheetRows: SheetRow[]
   reset: () => void
   onClose: () => void
+  onSuccess: (newShipmentId: number) => void
 }) {
   const apiUtils = api.useUtils()
   const { isLoading, mutate } = api.shipment.incoming.create.useMutation({
-    onSuccess: () => {
+    onSuccess: ({ shipmentId }) => {
       apiUtils.shipment.incoming.getAll.invalidate()
       apiUtils.package.getInWarehouse.invalidate()
       apiUtils.package.getAll.invalidate()
-      onClose()
+      onSuccess(shipmentId)
       toast.success("Shipment Created")
     },
     onError: (error) => {
@@ -339,11 +340,13 @@ function CreatePackagesForm({
   selectedSheetName,
   reset,
   onClose,
+  onSuccess,
 }: {
   selectedWorkBook: WorkBook
   selectedSheetName: string
   reset: () => void
   onClose: () => void
+  onSuccess: (newShipmentId: number) => void
 }) {
   const sheetRowsRaw = utils.sheet_to_json<Record<string, unknown>>(
     selectedWorkBook.Sheets[selectedSheetName],
@@ -394,6 +397,7 @@ function CreatePackagesForm({
             sheetRows={parseArrayResult.data}
             reset={() => reset()}
             onClose={onClose}
+            onSuccess={onSuccess}
           />
         )}
       </div>
@@ -470,6 +474,7 @@ function HasValidWorkBook(props: {
   workbook: WorkBook
   onReset: () => void
   onClose: () => void
+  onSuccess: (newShipmentId: number) => void
 }) {
   const [selectedSheetName, setSelectedSheetName] = useState(
     props.workbook.SheetNames[0],
@@ -489,6 +494,7 @@ function HasValidWorkBook(props: {
             selectedSheetName={selectedSheetName}
             reset={props.onReset}
             onClose={props.onClose}
+            onSuccess={props.onSuccess}
           />
         )}
       </div>
@@ -499,9 +505,11 @@ function HasValidWorkBook(props: {
 export function CreateModal({
   isOpen,
   onClose,
+  onSuccess,
 }: {
   isOpen: boolean
   onClose: () => void
+  onSuccess: (newShipmentId: number) => void
 }) {
   const [selectedWorkbook, setSelectedWorkBook] = useState<null | WorkBook>(
     null,
@@ -544,6 +552,7 @@ export function CreateModal({
                     setSelectedWorkBook(null)
                   }}
                   onClose={onClose}
+                  onSuccess={onSuccess}
                 />
               )}
             </>
