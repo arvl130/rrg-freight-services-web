@@ -44,7 +44,7 @@ function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
           } space-y-1 pb-3`}
         >
           <li>
-            <Link href="/">Home</Link>
+            <Link href="/#home">Home</Link>
           </li>
           <li>
             <Link href="/about">About Us</Link>
@@ -77,11 +77,7 @@ function DesktopNav(props: { user: User | null }) {
 
       <ul className="text-white flex gap-6">
         <li>
-          <Link
-            className="py-2 hover:text-[#389AA9]"
-            href="#hero-section"
-            passHref
-          >
+          <Link className="py-2 hover:text-[#389AA9]" href="/#home" passHref>
             Home
           </Link>
         </li>
