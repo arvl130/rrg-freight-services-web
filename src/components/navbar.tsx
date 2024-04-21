@@ -13,7 +13,7 @@ function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
 
   return (
     <div className="md:hidden relative h-full text-white">
-      <div className="px-3 h-full flex justify-between items-center  py-3">
+      <div className="px-3 h-full flex justify-between items-center py-3">
         <button
           type="button"
           onClick={() =>
@@ -65,13 +65,13 @@ function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
 
 function DesktopNav(props: { user: User | null }) {
   return (
-    <div className="hidden md:flex max-w-6xl mx-auto px-6 h-full justify-between items-center text-white font-semibold">
+    <div className="hidden md:flex max-w-6xl mx-auto px-6 h-full justify-between items-center text-white font-semibold ">
       <Link href="/">
         <Image
           src="/assets/img/logos/logo-header-enhanced.png"
           alt="Logo of RRG Freight Services"
-          width={230}
-          height={80}
+          width={200}
+          height={70}
         />
       </Link>
 
@@ -116,10 +116,13 @@ function DesktopNav(props: { user: User | null }) {
 
       {props.user === null ? (
         <Link href="/login" className="flex items-center text-white">
-          <UserIcon
-            size={30}
-            className="text-xl font-bold focus:outline-none text-white"
-          />
+          <div className="flex items-center">
+            <UserIcon
+              size={30}
+              className="text-xl font-bold focus:outline-none text-white mx-2"
+            />
+            <span>Log-in</span>
+          </div>
         </Link>
       ) : (
         <Link
@@ -130,6 +133,7 @@ function DesktopNav(props: { user: User | null }) {
             size={30}
             className="text-xl font-bold focus:outline-none text-white"
           />
+          <span>Login</span>
         </Link>
       )}
     </div>
@@ -156,7 +160,7 @@ export function Navbar(props: { user: User | null }) {
     <>
       <div className="h-20 bg-[#79CFDC]"></div>
       <div
-        className={`h-20 bg-[#79CFDC] w-full top-0 fixed z-50 transition-all duration-300 ${
+        className={`h-24 bg-[#79CFDC] w-full top-0 fixed z-50 transition-all duration-300 ${
           hasScrolled ? "drop-shadow-xl" : ""
         }`}
       >
