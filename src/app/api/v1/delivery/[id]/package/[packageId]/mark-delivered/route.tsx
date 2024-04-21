@@ -27,6 +27,7 @@ const inputSchema = z.object({
   shipmentId: z.number(),
   packageId: z.string(),
   imageUrl: z.string().url(),
+  signatureUrl: z.string(),
   code: z.number(),
 })
 
@@ -47,6 +48,7 @@ export async function POST(
       shipmentId: Number(ctx.params.id),
       packageId: ctx.params.packageId,
       imageUrl: body.imageUrl,
+      signatureUrl: body.signatureUrl,
       code: Number(body.code),
     })
 
@@ -64,7 +66,8 @@ export async function POST(
         statusCode: HTTP_STATUS_SERVER_ERROR,
       })
 
-    const { shipmentId, packageId, imageUrl, code } = parseResult.data
+    const { shipmentId, packageId, imageUrl, code, signatureUrl } =
+      parseResult.data
 
     const { package: _package } = await db.transaction(async (tx) => {
       const otpResults = await tx
@@ -132,6 +135,7 @@ export async function POST(
         .update(packages)
         .set({
           proofOfDeliveryImgUrl: imageUrl,
+          proofOfDeliverySignatureUrl: signatureUrl,
         })
         .where(eq(packages.id, packageId))
 

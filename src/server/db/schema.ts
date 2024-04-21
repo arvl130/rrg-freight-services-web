@@ -396,6 +396,7 @@ export const packages = mysqlTable("packages", {
   }).notNull(),
   receiverPostalCode: int("receiver_postal_code").notNull(),
   proofOfDeliveryImgUrl: text("proof_of_delivery_img_url"),
+  proofOfDeliverySignatureUrl: text("proof_of_delivery_sig_url"),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),

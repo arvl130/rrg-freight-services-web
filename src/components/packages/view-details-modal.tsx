@@ -208,17 +208,31 @@ export function ViewDetailsModal({
                       {_package.receiverCountryCode},{" "}
                       {_package.receiverPostalCode}
                     </p>
-                    {_package.proofOfDeliveryImgUrl && (
+                    {(_package.proofOfDeliveryImgUrl ||
+                      _package.proofOfDeliverySignatureUrl) && (
                       <>
                         <p className="font-medium mt-3">Proof of Delivery</p>
+
                         <p>
-                          <a
-                            href={_package.proofOfDeliveryImgUrl}
-                            target="_blank"
-                            className="text-gray-500 text-sm"
-                          >
-                            View image
-                          </a>
+                          {_package.proofOfDeliveryImgUrl && (
+                            <a
+                              href={_package.proofOfDeliveryImgUrl}
+                              target="_blank"
+                              className="text-gray-500 text-sm hover:underline"
+                            >
+                              View photo
+                            </a>
+                          )}
+
+                          {_package.proofOfDeliverySignatureUrl && (
+                            <a
+                              href={_package.proofOfDeliverySignatureUrl}
+                              target="_blank"
+                              className="text-gray-500 text-sm ml-3 hover:underline"
+                            >
+                              View signature
+                            </a>
+                          )}
                         </p>
                       </>
                     )}
