@@ -137,7 +137,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     const smsNotifications = shipmentPackageResults.map(
       ({ id, receiverContactNumber }) => ({
         to: receiverContactNumber,
-        body: `Your package with tracking number ${id} has been transferred. Monitor your tracking history here: ${serverEnv.BITLY_TRACKING_PAGE_URL}`,
+        body: `Your package with tracking number ${id} has been transferred to ${transferShipment.agentDisplayName} (${transferShipment.agentCompanyName}) Contact: ${transferShipment.agentContactNumber}`,
       }),
     )
 
