@@ -92,6 +92,14 @@ function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
               >
                 View Details
               </DropdownMenu.Item>
+              {item.proofOfTransferImgUrl && (
+                <DropdownMenu.Item className="transition-colors rounded-t-lg hover:bg-sky-50 px-3 py-2">
+                  <a href={item.proofOfTransferImgUrl} target="_blank">
+                    View Proof of Transfer
+                  </a>
+                </DropdownMenu.Item>
+              )}
+
               <DropdownMenu.Item
                 className="transition-colors hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("EDIT_DETAILS")}
