@@ -193,18 +193,20 @@ function PackagesTable({
 
   const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.shipment.package.updateManyToCompletedStatus.useMutation({
-      onSuccess: () => {
-        utils.package.getWithLatestStatusByShipmentId.invalidate({
-          shipmentId,
-        })
-        utils.package.getAll.invalidate()
-        setScannedPackageIds([])
+    api.shipment.package.updateManyToCompletedStatusFromIncompleteDelivery.useMutation(
+      {
+        onSuccess: () => {
+          utils.package.getWithLatestStatusByShipmentId.invalidate({
+            shipmentId,
+          })
+          utils.package.getAll.invalidate()
+          setScannedPackageIds([])
+        },
+        onError: (error) => {
+          toast.error(error.message)
+        },
       },
-      onError: (error) => {
-        toast.error(error.message)
-      },
-    })
+    )
 
   if (packagesQuery.status === "loading") return <div>Loading ...</div>
   if (packagesQuery.status === "error")
@@ -259,15 +261,10 @@ function PackagesTable({
           className="font-medium bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 text-white transition-colors px-4 py-2 rounded-md"
           disabled={isLoading || scannedPackageIds.length === 0}
           onClick={() => {
-            const createdAt = DateTime.now().toISO()
             mutate({
               shipmentId,
-              shipmentPackageStatus: "COMPLETED" as const,
               packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
-              packageStatus: "IN_WAREHOUSE" as const,
-              createdAt,
               createdById: userId,
-              isFailedAttempt: true,
             })
           }}
         >

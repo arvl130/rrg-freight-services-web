@@ -2,6 +2,7 @@ import { z } from "zod"
 import { protectedProcedure, router } from "../../trpc"
 import type { PackageStatus, ShipmentPackageStatus } from "@/utils/constants"
 import {
+  CLIENT_TIMEZONE,
   SUPPORTED_PACKAGE_STATUSES,
   SUPPORTED_SHIPMENT_PACKAGE_STATUSES,
   getDescriptionForNewPackageStatusLog,
@@ -28,6 +29,7 @@ import {
 import type { User } from "lucia"
 import { DateTime } from "luxon"
 import { serverEnv } from "@/server/env.mjs"
+import { TRPCError } from "@trpc/server"
 
 async function getDescriptionForStatus(options: {
   db: DbWithEntities
@@ -94,6 +96,178 @@ async function getDescriptionForStatus(options: {
 }
 
 export const shipmentPackageRouter = router({
+  updateManyToCompletedStatusFromIncompleteDelivery: protectedProcedure
+    .input(
+      z.object({
+        shipmentId: z.number(),
+        packageIds: z.string().array().nonempty(),
+        createdById: z.string().length(28),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      console.log("function ran ...")
+
+      const now = DateTime.now().setZone(CLIENT_TIMEZONE)
+      if (!now.isValid) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Invalid timezone set.",
+        })
+      }
+
+      const nowPlusThreeDays = now
+        .plus({
+          days: 3,
+        })
+        .endOf("day")
+
+      const description = await getDescriptionForStatus({
+        db: ctx.db,
+        currentUser: ctx.user,
+        shipmentId: input.shipmentId,
+        status: "IN_WAREHOUSE",
+      })
+
+      const newPackageStatusLogs = input.packageIds.map((packageId) => ({
+        packageId,
+        status: "IN_WAREHOUSE" as const,
+        description,
+        createdAt: now.toISO(),
+        createdById: input.createdById,
+      }))
+
+      const packageDetails = await ctx.db
+        .select()
+        .from(packages)
+        .where(and(inArray(packages.id, input.packageIds)))
+
+      const packageIdsCandidateForPickUp = packageDetails
+        .filter(({ failedAttempts }) => failedAttempts >= 2)
+        .map(({ id }) => id)
+
+      const packageIdsCanBeDelivered = packageDetails
+        .filter(({ isDeliverable }) => isDeliverable)
+        .map(({ id }) => id)
+
+      const emailNotifications = [
+        ...packageDetails.map(({ id, senderFullName, senderEmailAddress }) => ({
+          to: senderEmailAddress,
+          subject: `The status of your package was updated`,
+          componentProps: {
+            type: "package-status-update" as const,
+            body: `Hi, ${senderFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+              "IN_WAREHOUSE",
+            )}. For more information, click the button below.`,
+            callToAction: {
+              label: "Track your Package",
+              href: `https://www.rrgfreight.services/tracking?id=${id}`,
+            },
+          },
+        })),
+        ...packageDetails.map(
+          ({ id, receiverFullName, receiverEmailAddress, failedAttempts }) => {
+            const isActionRequired = failedAttempts >= 2
+
+            return {
+              to: receiverEmailAddress,
+              subject: `${
+                isActionRequired ? "[ACTION REQUIRED] " : ""
+              }The delivery for your package failed`,
+              componentProps: {
+                type: "package-status-update" as const,
+                body: `Hi, ${receiverFullName}. The delivery for your package with tracking number ${id} failed and was returned to our warehouse.${
+                  isActionRequired
+                    ? " Please contact customer service (+02) 8461 6027 for further actions."
+                    : " A re-delivery will be automatically scheduled. No further action is required."
+                } For more information, click the button below.`,
+                callToAction: {
+                  label: "Track your Package",
+                  href: `https://www.rrgfreight.services/tracking?id=${id}`,
+                },
+              },
+            }
+          },
+        ),
+      ]
+
+      const packageReceiverSmsNotifications = packageDetails.map(
+        ({ id, receiverContactNumber, failedAttempts }) => ({
+          to: receiverContactNumber,
+          body: `The delivery for your package with tracking number ${id} failed and was returned to our warehouse. ${
+            failedAttempts >= 2
+              ? "Please contact customer service (+02) 8461 6027 for further actions."
+              : "A re-delivery will be automatically scheduled. No further action is required."
+          }`,
+        }),
+      )
+
+      await ctx.db.transaction(async (tx) => {
+        if (packageIdsCandidateForPickUp.length > 0)
+          await tx
+            .update(packages)
+            .set({
+              receptionMode: "FOR_PICKUP",
+            })
+            .where(inArray(packages.id, packageIdsCandidateForPickUp))
+
+        // Update expected_has_delivery_at if we're receiving a package.
+        if (packageIdsCanBeDelivered.length > 0)
+          await tx
+            .update(packages)
+            .set({
+              expectedHasDeliveryAt: nowPlusThreeDays.toISO(),
+            })
+            .where(inArray(packages.id, packageIdsCanBeDelivered))
+
+        if (ctx.user.role === "WAREHOUSE") {
+          const [{ warehouseId }] = await tx
+            .select()
+            .from(warehouseStaffs)
+            .where(eq(warehouseStaffs.userId, ctx.user.id))
+
+          await tx
+            .update(packages)
+            .set({
+              lastWarehouseId: warehouseId,
+            })
+            .where(inArray(packages.id, input.packageIds))
+        }
+
+        await tx
+          .update(packages)
+          .set({
+            status: "IN_WAREHOUSE",
+            failedAttempts: sql`${packages.failedAttempts} + 1`,
+          })
+          .where(inArray(packages.id, input.packageIds))
+
+        await tx
+          .update(shipmentPackages)
+          .set({
+            status: "COMPLETED",
+          })
+          .where(
+            and(
+              eq(shipmentPackages.shipmentId, input.shipmentId),
+              inArray(shipmentPackages.packageId, input.packageIds),
+            ),
+          )
+
+        await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "SHIPMENT_PACKAGE",
+          createdById: ctx.user.id,
+        })
+      })
+
+      await batchNotifyByEmailWithComponentProps({
+        messages: emailNotifications,
+      })
+      await batchNotifyBySms({
+        messages: packageReceiverSmsNotifications,
+      })
+    }),
   updateManyToCompletedStatus: protectedProcedure
     .input(
       z.object({
@@ -154,7 +328,7 @@ export const shipmentPackageRouter = router({
       const emailNotifications = [
         ...packageDetails.map(({ id, senderFullName, senderEmailAddress }) => ({
           to: senderEmailAddress,
-          subject: `The status of your package was updated.`,
+          subject: `The status of your package was updated`,
           componentProps: {
             type: "package-status-update" as const,
             body: `Hi, ${senderFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
@@ -169,7 +343,7 @@ export const shipmentPackageRouter = router({
         ...packageDetails.map(
           ({ id, receiverFullName, receiverEmailAddress }) => ({
             to: receiverEmailAddress,
-            subject: `The status of your package was updated.`,
+            subject: `The status of your package was updated`,
             componentProps: {
               type: "package-status-update" as const,
               body: `Hi, ${receiverFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
