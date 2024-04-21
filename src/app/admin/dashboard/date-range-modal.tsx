@@ -88,13 +88,6 @@ export function DateRangeModal({
             />
           </div>
           <div className="flex justify-between px-4 pb-2">
-            {/* <PDFDownloadLink
-              document={<WaybillPdf package={_package} />}
-              fileName={`RRG-WAYBILL-${_package.id}.pdf`}
-            >
-              <button>Download</button>
-            </PDFDownloadLink> */}
-
             <Dialog.Close asChild>
               <button type="button" className="font-medium" onClick={close}>
                 Close
@@ -110,7 +103,15 @@ export function DateRangeModal({
                   endDate={DateTime.fromJSDate(state[0].endDate).toISO()!}
                 />
               }
-              fileName={`RRG-WAYBILL-Report.pdf`}
+              // {DateTime.fromISO(DateTime.fromJSDate(
+              //   state[0].startDate,
+              // ).toISO()!)}
+
+              fileName={`RRG-ADMIN-REPORT-${DateTime.fromISO(
+                DateTime.fromJSDate(state[0].startDate).toISO()!,
+              ).toLocaleString(DateTime.DATE_MED)}-${DateTime.fromISO(
+                DateTime.fromJSDate(state[0].endDate).toISO()!,
+              ).toLocaleString(DateTime.DATE_MED)}.pdf`}
             >
               <button
                 disabled={
