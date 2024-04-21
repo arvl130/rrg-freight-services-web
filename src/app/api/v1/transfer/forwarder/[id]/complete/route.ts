@@ -82,6 +82,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     const shipmentPackageResults = await db
       .select(packageColumns)
       .from(shipmentPackages)
+      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .where(eq(shipmentPackages.shipmentId, transferShipmentId))
 
     const packageIdsToUpdate = shipmentPackageResults.map(({ id }) => id)
