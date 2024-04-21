@@ -325,10 +325,10 @@ export const incomingShipmentRouter = router({
           entity: "INCOMING_SHIPMENT",
           createdById: ctx.user.id,
         })
+      })
 
-        await batchNotifyByEmailWithComponentProps({
-          messages: emailNotifications,
-        })
+      await batchNotifyByEmailWithComponentProps({
+        messages: emailNotifications,
       })
     }),
   updateDetailsById: protectedProcedure

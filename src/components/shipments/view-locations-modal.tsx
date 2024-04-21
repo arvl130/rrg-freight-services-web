@@ -136,7 +136,7 @@ export function ViewLocationsModal({
                   {selectedItemIndex === null ? (
                     <div className="h-full w-full bg-gray-50">
                       <PathMap
-                        locations={locations}
+                        locations={locations.toReversed()}
                         setMap={(map) => setMap(map)}
                       />
                     </div>

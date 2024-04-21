@@ -7,7 +7,10 @@ import {
   shipmentPackages,
 } from "@/server/db/schema"
 import { serverEnv } from "@/server/env.mjs"
-import { batchNotifyByEmailWithComponentProps } from "@/server/notification"
+import {
+  batchNotifyByEmailWithComponentProps,
+  batchNotifyBySms,
+} from "@/server/notification"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { HttpError } from "@/utils/errors"
 import {
@@ -187,6 +190,15 @@ export async function POST(
                 href: serverEnv.SURVEY_URL,
               },
             },
+          },
+        ],
+      })
+
+      await batchNotifyBySms({
+        messages: [
+          {
+            to: _package.receiverContactNumber,
+            body: `Your package with tracking number ${_package.id} has been delivered. Monitor your tracking history here: ${serverEnv.BITLY_TRACKING_PAGE_URL}`,
           },
         ],
       })

@@ -9,7 +9,13 @@ import {
   users,
   assignedDrivers,
   assignedVehicles,
+  domesticAgents,
 } from "@/server/db/schema"
+import { serverEnv } from "@/server/env.mjs"
+import {
+  batchNotifyByEmailWithComponentProps,
+  batchNotifyBySms,
+} from "@/server/notification"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { and, eq, getTableColumns, inArray } from "drizzle-orm"
 import { DateTime } from "luxon"
@@ -47,9 +53,15 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
       .select({
         ...forwarderTransferShipmentColumns,
         agentDisplayName: users.displayName,
+        agentContactNumber: users.contactNumber,
+        agentCompanyName: domesticAgents.companyName,
       })
       .from(forwarderTransferShipments)
       .innerJoin(users, eq(forwarderTransferShipments.sentToAgentId, users.id))
+      .innerJoin(
+        domesticAgents,
+        eq(forwarderTransferShipments.sentToAgentId, domesticAgents.userId),
+      )
       .where(eq(forwarderTransferShipments.shipmentId, transferShipmentId))
 
     if (transferShipmentResults.length === 0) {
@@ -72,20 +84,60 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
 
     const [transferShipment] = transferShipmentResults
 
-    const transferShipmentPackagesResults = await db
-      .select()
+    const packageColumns = getTableColumns(packages)
+    const shipmentPackageResults = await db
+      .select(packageColumns)
       .from(shipmentPackages)
+      .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .where(eq(shipmentPackages.shipmentId, transferShipmentId))
-    const newPackageStatusLogs = transferShipmentPackagesResults.map(
-      ({ packageId }) => ({
-        packageId,
-        createdById: user.id,
-        description: getDescriptionForNewPackageStatusLog({
-          status: "TRANSFERRED_FORWARDER",
-          forwarderName: transferShipment.agentDisplayName,
+
+    const packageIdsToUpdate = shipmentPackageResults.map(({ id }) => id)
+    const newPackageStatusLogs = shipmentPackageResults.map(({ id }) => ({
+      packageId: id,
+      createdById: user.id,
+      description: getDescriptionForNewPackageStatusLog({
+        status: "TRANSFERRED_FORWARDER",
+        forwarderName: transferShipment.agentDisplayName,
+      }),
+      status: "TRANSFERRED_FORWARDER" as const,
+      createdAt,
+    }))
+
+    const emailNotifications = [
+      ...shipmentPackageResults.map(
+        ({ senderFullName, senderEmailAddress, id }) => ({
+          to: senderEmailAddress,
+          subject: "Your package has been transferred",
+          componentProps: {
+            type: "package-status-update" as const,
+            body: `Hi, ${senderFullName}. Your package with RRG tracking number ${id} has been transferred to another forwarder: ${transferShipment.agentDisplayName} (${transferShipment.agentCompanyName}). You may contact them through this number: ${transferShipment.agentContactNumber}. Click the button below to see your package tracking history.`,
+            callToAction: {
+              label: "View Tracking History",
+              href: `https://www.rrgfreight.services/tracking?id=${id}`,
+            },
+          },
         }),
-        status: "TRANSFERRED_FORWARDER" as const,
-        createdAt,
+      ),
+      ...shipmentPackageResults.map(
+        ({ receiverFullName, receiverEmailAddress, id }) => ({
+          to: receiverEmailAddress,
+          subject: "Your package has been transferred",
+          componentProps: {
+            type: "package-status-update" as const,
+            body: `Hi, ${receiverFullName}. Your package with RRG tracking number ${id} has been transferred to another forwarder: ${transferShipment.agentDisplayName} (${transferShipment.agentCompanyName}). You may contact them through this number: ${transferShipment.agentContactNumber}. Click the button below to see your package tracking history.`,
+            callToAction: {
+              label: "View Tracking History",
+              href: `https://www.rrgfreight.services/tracking?id=${id}`,
+            },
+          },
+        }),
+      ),
+    ]
+
+    const smsNotifications = shipmentPackageResults.map(
+      ({ id, receiverContactNumber }) => ({
+        to: receiverContactNumber,
+        body: `Your package with tracking number ${id} has been transferred to ${transferShipment.agentDisplayName} (${transferShipment.agentCompanyName}) Contact: ${transferShipment.agentContactNumber}`,
       }),
     )
 
@@ -112,10 +164,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
         .where(
           and(
             eq(shipmentPackages.shipmentId, transferShipmentId),
-            inArray(
-              shipmentPackages.packageId,
-              transferShipmentPackagesResults.map(({ packageId }) => packageId),
-            ),
+            inArray(shipmentPackages.packageId, packageIdsToUpdate),
           ),
         )
 
@@ -124,12 +173,7 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
         .set({
           status: "TRANSFERRED_FORWARDER",
         })
-        .where(
-          inArray(
-            packages.id,
-            transferShipmentPackagesResults.map(({ packageId }) => packageId),
-          ),
-        )
+        .where(inArray(packages.id, packageIdsToUpdate))
 
       await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
 
@@ -140,6 +184,14 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
       await tx
         .delete(assignedVehicles)
         .where(eq(assignedVehicles.vehicleId, transferShipment.vehicleId))
+    })
+
+    await batchNotifyByEmailWithComponentProps({
+      messages: emailNotifications,
+    })
+
+    await batchNotifyBySms({
+      messages: smsNotifications,
     })
 
     return Response.json({
