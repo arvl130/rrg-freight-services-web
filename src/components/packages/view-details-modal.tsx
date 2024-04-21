@@ -208,6 +208,20 @@ export function ViewDetailsModal({
                       {_package.receiverCountryCode},{" "}
                       {_package.receiverPostalCode}
                     </p>
+                    {_package.proofOfDeliveryImgUrl && (
+                      <>
+                        <p className="font-medium mt-3">Proof of Delivery</p>
+                        <p>
+                          <a
+                            href={_package.proofOfDeliveryImgUrl}
+                            target="_blank"
+                            className="text-gray-500 text-sm"
+                          >
+                            View image
+                          </a>
+                        </p>
+                      </>
+                    )}
                   </div>
                   <div>
                     <p className="font-medium">Sender</p>
