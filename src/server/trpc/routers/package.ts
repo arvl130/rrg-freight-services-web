@@ -36,6 +36,7 @@ import {
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
   SUPPORTED_PACKAGE_STATUSES,
+  getDescriptionForNewPackageStatusLog,
 } from "@/utils/constants"
 import { generateUniqueId } from "@/utils/uuid"
 import { DateTime } from "luxon"
@@ -523,6 +524,40 @@ export const packageRouter = router({
             isArchived: 0,
           })
           .where(eq(packages.id, input.id))
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "PACKAGE",
+          createdById: ctx.user.id,
+        })
+      })
+    }),
+  markAsPickedUpById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
+
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(packages)
+          .set({
+            status: "DELIVERED",
+          })
+          .where(eq(packages.id, input.id))
+
+        await tx.insert(packageStatusLogs).values({
+          packageId: input.id,
+          createdAt,
+          createdById: ctx.user.id,
+          description: getDescriptionForNewPackageStatusLog({
+            status: "DELIVERED",
+          }),
+          status: "DELIVERED",
+        })
 
         await createLog(tx, {
           verb: "UPDATE",

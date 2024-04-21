@@ -21,6 +21,7 @@ import { getColorFromPackageStatus } from "@/utils/colors"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
+import { MarkAsPickedUpModal } from "./mark-package-picked-up-modal"
 
 function WarehouseDetails(props: { warehouseId: number }) {
   const { status, data, error } = api.warehouse.getById.useQuery({
@@ -41,6 +42,7 @@ function TableItem({ package: _package }: { package: Package }) {
     | "VIEW_WAYBILL"
     | "ARCHIVE"
     | "UNARCHIVE"
+    | "MARK_AS_PICKUP"
   >(null)
 
   return (
@@ -120,6 +122,15 @@ function TableItem({ package: _package }: { package: Package }) {
               >
                 View Waybill
               </DropdownMenu.Item>
+              {_package.receptionMode === "FOR_PICKUP" &&
+                _package.status !== "DELIVERED" && (
+                  <DropdownMenu.Item
+                    className="transition-colors hover:bg-sky-50 px-3 py-2"
+                    onClick={() => setVisibleModal("MARK_AS_PICKUP")}
+                  >
+                    Mark as Picked Up
+                  </DropdownMenu.Item>
+                )}
               {_package.isArchived ? (
                 <DropdownMenu.Item
                   className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
@@ -155,6 +166,11 @@ function TableItem({ package: _package }: { package: Package }) {
           package={_package}
           isOpen={visibleModal === "VIEW_WAYBILL"}
           close={() => setVisibleModal(null)}
+        />
+        <MarkAsPickedUpModal
+          item={_package}
+          onClose={() => setVisibleModal(null)}
+          isOpen={visibleModal === "MARK_AS_PICKUP"}
         />
         <ArchiveModal
           id={_package.id}
