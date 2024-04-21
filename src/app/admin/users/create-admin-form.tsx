@@ -31,7 +31,9 @@ const schemaRefined = createAdminFormSchema.superRefine(
 
 type CreateAdminFormSchema = z.infer<typeof schemaRefined>
 
-export function CreateAdminForm(props: { onClose: () => void }) {
+export function CreateAdminForm(props: {
+  onSuccess: (options: { generatedPassword?: string }) => void
+}) {
   const {
     watch,
     resetField,
@@ -55,9 +57,13 @@ export function CreateAdminForm(props: { onClose: () => void }) {
 
   const apiUtils = api.useUtils()
   const { mutate, status, error } = api.user.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (_, values) => {
       apiUtils.user.getAll.invalidate()
-      props.onClose()
+      if (isPasswordRandomWatched)
+        props.onSuccess({
+          generatedPassword: values.password,
+        })
+      else props.onSuccess({})
       reset()
       toast.success("User created successfully.")
     },

@@ -26,7 +26,9 @@ type CreateOverseasAgentFormSchema = z.infer<
   typeof createOverseasAgentFormSchema
 >
 
-export function CreateOverseasAgentForm(props: { onClose: () => void }) {
+export function CreateOverseasAgentForm(props: {
+  onSuccess: (options: { generatedPassword?: string }) => void
+}) {
   const {
     watch,
     resetField,
@@ -50,9 +52,13 @@ export function CreateOverseasAgentForm(props: { onClose: () => void }) {
 
   const apiUtils = api.useUtils()
   const createUserMutation = api.user.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (_, values) => {
       apiUtils.user.getAll.invalidate()
-      props.onClose()
+      if (isPasswordRandomWatched)
+        props.onSuccess({
+          generatedPassword: values.password,
+        })
+      else props.onSuccess({})
       reset()
       toast.success("User created successfully.")
     },

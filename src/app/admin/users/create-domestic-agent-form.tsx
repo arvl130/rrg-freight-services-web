@@ -26,7 +26,9 @@ type CreateDomesticAgentFormSchema = z.infer<
   typeof createDomesticAgentFormSchema
 >
 
-export function CreateDomesticAgentForm(props: { onClose: () => void }) {
+export function CreateDomesticAgentForm(props: {
+  onSuccess: (options: { generatedPassword?: string }) => void
+}) {
   const {
     watch,
     resetField,
@@ -50,9 +52,13 @@ export function CreateDomesticAgentForm(props: { onClose: () => void }) {
 
   const apiUtils = api.useUtils()
   const createUserMutation = api.user.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (_, values) => {
       apiUtils.user.getAll.invalidate()
-      props.onClose()
+      if (isPasswordRandomWatched)
+        props.onSuccess({
+          generatedPassword: values.password,
+        })
+      else props.onSuccess({})
       reset()
       toast.success("User created successfully.")
     },

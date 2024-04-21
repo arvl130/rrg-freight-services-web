@@ -26,7 +26,9 @@ type CreateWarehouseStaffFormSchema = z.infer<
   typeof createWarehouseStaffFormSchema
 >
 
-export function CreateWarehouseStaffForm(props: { onClose: () => void }) {
+export function CreateWarehouseStaffForm(props: {
+  onSuccess: (options: { generatedPassword?: string }) => void
+}) {
   const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
   const {
     watch,
@@ -51,9 +53,13 @@ export function CreateWarehouseStaffForm(props: { onClose: () => void }) {
 
   const apiUtils = api.useUtils()
   const createUserMutation = api.user.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (_, values) => {
       apiUtils.user.getAll.invalidate()
-      props.onClose()
+      if (isPasswordRandomWatched)
+        props.onSuccess({
+          generatedPassword: values.password,
+        })
+      else props.onSuccess({})
       reset()
       toast.success("User created successfully.")
     },

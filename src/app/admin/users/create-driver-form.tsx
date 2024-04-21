@@ -27,7 +27,9 @@ const createDriverFormSchema = createAdminFormSchema
 
 type CreateDriverFormSchema = z.infer<typeof createDriverFormSchema>
 
-export function CreateDriverForm(props: { onClose: () => void }) {
+export function CreateDriverForm(props: {
+  onSuccess: (options: { generatedPassword?: string }) => void
+}) {
   const {
     watch,
     resetField,
@@ -51,9 +53,13 @@ export function CreateDriverForm(props: { onClose: () => void }) {
 
   const apiUtils = api.useUtils()
   const createUserMutation = api.user.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (_, values) => {
       apiUtils.user.getAll.invalidate()
-      props.onClose()
+      if (isPasswordRandomWatched)
+        props.onSuccess({
+          generatedPassword: values.password,
+        })
+      else props.onSuccess({})
       reset()
       toast.success("User created successfully.")
     },

@@ -13,6 +13,7 @@ import type { UserRole } from "@/utils/constants"
 import { SUPPORTED_USER_ROLES } from "@/utils/constants"
 import { getHumanizedOfUserRole } from "@/utils/humanize"
 import { CreateModal } from "./create-modal"
+import { ShowGeneratedPasswordModal } from "./show-generated-password-modal"
 
 function filterBySearchTerm(items: User[], searchTerm: string) {
   return items.filter((item) =>
@@ -188,6 +189,9 @@ function UsersTable({ items }: { items: User[] }) {
 
 export function HeaderSection() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
+  const [generatedPassword, setGeneratedPassword] = useState<null | string>(
+    null,
+  )
 
   return (
     <>
@@ -206,8 +210,19 @@ export function HeaderSection() {
       </div>
       <CreateModal
         isOpen={isOpenCreateModal}
-        close={() => setIsOpenCreateModal(false)}
+        onClose={() => setIsOpenCreateModal(false)}
+        onSuccess={({ generatedPassword: newGeneratedPassword }) => {
+          setIsOpenCreateModal(false)
+          if (newGeneratedPassword) setGeneratedPassword(newGeneratedPassword)
+        }}
       />
+      {generatedPassword && (
+        <ShowGeneratedPasswordModal
+          generatedPassword={generatedPassword}
+          isOpen={true}
+          onClose={() => setGeneratedPassword(null)}
+        />
+      )}
     </>
   )
 }

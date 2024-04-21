@@ -12,10 +12,12 @@ import { getHumanizedOfUserRole } from "@/utils/humanize"
 
 export function CreateModal({
   isOpen,
-  close,
+  onClose,
+  onSuccess,
 }: {
   isOpen: boolean
-  close: () => void
+  onClose: () => void
+  onSuccess: (options: { generatedPassword?: string }) => void
 }) {
   const [selectedRole, setSelectedRole] = useState<UserRole>("ADMIN")
 
@@ -24,7 +26,7 @@ export function CreateModal({
       <Dialog.Portal>
         <Dialog.Overlay className="bg-black/40 fixed inset-0" />
         <Dialog.Content
-          onEscapeKeyDown={close}
+          onEscapeKeyDown={onClose}
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_32rem)] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
         >
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
@@ -47,23 +49,27 @@ export function CreateModal({
                 </option>
               ))}
             </select>
-            {selectedRole === "ADMIN" && <CreateAdminForm onClose={close} />}
-            {selectedRole === "WAREHOUSE" && (
-              <CreateWarehouseStaffForm onClose={close} />
+            {selectedRole === "ADMIN" && (
+              <CreateAdminForm onSuccess={onSuccess} />
             )}
-            {selectedRole === "DRIVER" && <CreateDriverForm onClose={close} />}
+            {selectedRole === "WAREHOUSE" && (
+              <CreateWarehouseStaffForm onSuccess={onSuccess} />
+            )}
+            {selectedRole === "DRIVER" && (
+              <CreateDriverForm onSuccess={onSuccess} />
+            )}
             {selectedRole === "OVERSEAS_AGENT" && (
-              <CreateOverseasAgentForm onClose={close} />
+              <CreateOverseasAgentForm onSuccess={onSuccess} />
             )}
             {selectedRole === "DOMESTIC_AGENT" && (
-              <CreateDomesticAgentForm onClose={close} />
+              <CreateDomesticAgentForm onSuccess={onSuccess} />
             )}
           </div>
           <Dialog.Close asChild>
             <button
               type="button"
               className="text-white absolute top-3 right-3"
-              onClick={close}
+              onClick={onClose}
             >
               <X size={20} />
               <span className="sr-only">Close</span>
