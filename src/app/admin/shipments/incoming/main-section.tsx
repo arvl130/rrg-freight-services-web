@@ -377,6 +377,7 @@ function ShipmentsTable({
 
 export function HeaderSection() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
+  const [shipmentId, setShipmentId] = useState<null | number>(null)
 
   return (
     <>
@@ -397,7 +398,18 @@ export function HeaderSection() {
       <CreateModal
         isOpen={isOpenCreateModal}
         onClose={() => setIsOpenCreateModal(false)}
+        onSuccess={(newShipmentId) => {
+          setIsOpenCreateModal(false)
+          setShipmentId(newShipmentId)
+        }}
       />
+      {shipmentId !== null && (
+        <ViewWaybillsModal
+          shipmentId={shipmentId}
+          isOpen={true}
+          onClose={() => setShipmentId(null)}
+        />
+      )}
     </>
   )
 }

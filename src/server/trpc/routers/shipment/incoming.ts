@@ -297,7 +297,7 @@ export const incomingShipmentRouter = router({
         ),
       ]
 
-      await ctx.db.transaction(async (tx) => {
+      const result = await ctx.db.transaction(async (tx) => {
         await tx.insert(packages).values(newPackages)
         await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
 
@@ -325,11 +325,19 @@ export const incomingShipmentRouter = router({
           entity: "INCOMING_SHIPMENT",
           createdById: ctx.user.id,
         })
+
+        return {
+          shipmentId,
+        }
       })
 
       await batchNotifyByEmailWithComponentProps({
         messages: emailNotifications,
       })
+
+      return {
+        shipmentId: result.shipmentId,
+      }
     }),
   updateDetailsById: protectedProcedure
     .input(
