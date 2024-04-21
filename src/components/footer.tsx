@@ -1,8 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { EnvelopeSimple } from "@phosphor-icons/react/dist/ssr/EnvelopeSimple"
-import { FacebookLogo } from "@phosphor-icons/react/dist/ssr/FacebookLogo"
-import { TwitterLogo } from "@phosphor-icons/react/dist/ssr/TwitterLogo"
+import { Phone } from "@phosphor-icons/react/dist/ssr/Phone"
 
 export function Footer() {
   return (
@@ -66,12 +65,12 @@ export function Footer() {
               </h2>
               <ul className="text-gray-500 dark:text-gray-700 font-medium">
                 <li className="mb-4">
-                  <Link href="#" className="hover:underline">
+                  <Link href="/privacy-and-policy" className="hover:underline">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:underline">
+                  <Link href="/terms-and-condition" className="hover:underline">
                     Terms &amp; Conditions
                   </Link>
                 </li>
@@ -94,20 +93,10 @@ export function Footer() {
             >
               <EnvelopeSimple size={25} color="#1e2324" weight="bold" />
             </Link>
-            <Link
-              href="#"
-              className="text-gray-700 hover:text-gray-900 dark:hover:text-white"
-            >
-              <FacebookLogo size={25} color="#1e2324" weight="bold" />
-              <span className="sr-only">Discord community</span>
-            </Link>
-            <Link
-              href="#"
-              className="text-gray-700 hover:text-gray-900 dark:hover:text-white"
-            >
-              <TwitterLogo size={25} color="#1e2324" weight="bold" />
-              <span className="sr-only">Twitter page</span>
-            </Link>
+            <span className="flex m-0">
+              <Phone className="mr-3" size={26} color="#000000" weight="bold" />{" "}
+              (+02)84616027
+            </span>
           </div>
         </div>
       </div>
