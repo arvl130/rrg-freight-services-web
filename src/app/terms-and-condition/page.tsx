@@ -7,7 +7,7 @@ function HeroSection() {
   return (
     <section>
       <div className="[background-color:_#79CFDC]">
-        <div className="min-h-[45vh] max-w-6xl mx-auto grid md:grid-cols-2">
+        <div className="min-h-[45vh] max-w-6xl mx-auto grid">
           <div className="flex flex-col justify-center text-white font-semibold">
             <p className="text-[50px] w-full text-center mb-3">
               Terms and Conditions
@@ -28,14 +28,14 @@ export default async function TermsCondition() {
       <Navbar user={user} />
       <main>
         <HeroSection />
-        <div className=" mx-20 my-20 flex flex-col">
-          <div className="text-[#B0A8A8] text-[30px] font-bold font-'DM Sans'">
+        <div className=" mx-20 my-20 flex flex-col content-center">
+          <div className="text-[#B0A8A8] text-[30px] px-20 font-bold font-'DM Sans'">
             Effective by April 19, 2024
           </div>
-          <div className="text-[#263238] text-2xl my-3 font-bold font-'DM Sans'">
+          <div className="text-[#263238] text-2xl my-3 px-20 font-bold font-'DM Sans'">
             Terms and Conditions
           </div>
-          <div className=" px-20 text-stone-900 text-2xl text-justify font-normal font-'Poppins' leading-[4rem]">
+          <div className=" mx-auto px-40 text-stone-900 text-xl text-justify font-normal font-'Poppins' leading-[4rem]">
             <div className="flex text-justify pr-20">
               1.&nbsp;
               <p>
@@ -108,10 +108,10 @@ export default async function TermsCondition() {
             </div>
           </div>
 
-          <div className=" mt-10 text-[#263238] text-2xl font-bold font-'DM Sans'">
+          <div className=" mt-10 px-20 text-[#263238] text-2xl font-bold font-'DM Sans'">
             Contact Us
           </div>
-          <div className="mt-2 mb-10 text-stone-900 text-2xl font-normal font-'Poppins'">
+          <div className="mt-2 mb-10 px-20 text-stone-900 text-xl font-normal font-'Poppins'">
             <p className="text-left pr-">
               If you have any questions about this Privacy Policy, please&nbsp;
               <Link
