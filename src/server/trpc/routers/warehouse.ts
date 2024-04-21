@@ -100,4 +100,48 @@ export const warehouseRouter = router({
 
       return result
     }),
+  archiveById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(warehouses)
+          .set({
+            isArchived: 1,
+          })
+          .where(eq(warehouses.id, input.id))
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "WAREHOUSE",
+          createdById: ctx.user.id,
+        })
+      })
+    }),
+  unarchiveById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(warehouses)
+          .set({
+            isArchived: 0,
+          })
+          .where(eq(warehouses.id, input.id))
+
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "WAREHOUSE",
+          createdById: ctx.user.id,
+        })
+      })
+    }),
 })
