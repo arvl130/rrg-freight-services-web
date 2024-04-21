@@ -48,7 +48,7 @@ export default async function Page() {
             <PasswordResetForm />
           </div>
           <div className="text-sm flex justify-between">
-            <Link href="/login" className="inline-flex items-center">
+            <Link href="/login/with-email" className="inline-flex items-center">
               <CaretLeft height={12} /> Back to Login
             </Link>
           </div>

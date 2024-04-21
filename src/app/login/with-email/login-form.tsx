@@ -16,12 +16,16 @@ type FormType = z.infer<typeof formSchema>
 
 export function LoginForm() {
   const [isSigningIn, setIsSigningIn] = useState(false)
+  const [incorrectCredentialsCount, setIncorrectCredentialsCount] = useState(0)
   const [state, formAction] = useFormState(signInWithEmailAndPasswordAction, {
     message: "",
   })
 
   useEffect(() => {
     setIsSigningIn(false)
+    if (state.fields) {
+      setIncorrectCredentialsCount((currCount) => currCount + 1)
+    }
   }, [state])
 
   const defaultValues = {
@@ -116,6 +120,15 @@ export function LoginForm() {
             <li key={index}>{issue}</li>
           ))}
         </ul>
+      )}
+      {incorrectCredentialsCount > 2 && (
+        <p className="text-red-600 text-center mt-3 text-sm">
+          Too many invalid attempts. You may click{" "}
+          <Link href="/forgot-password" className="underline">
+            here
+          </Link>{" "}
+          to reset your password.
+        </p>
       )}
       <button
         type="submit"
