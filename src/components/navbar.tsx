@@ -112,12 +112,11 @@ function DesktopNav(props: { user: User | null }) {
 
       {props.user === null ? (
         <Link href="/login" className="flex items-center text-white">
-          <div className="flex items-center">
+          <div className="flex items-center  ">
             <UserIcon
               size={30}
-              className="text-xl font-bold focus:outline-none text-white mx-2 "
+              className="text-xl font-bold focus:outline-none text-white mx-2 hover:text-[#389AA9] "
             />
-            <span>Log-in</span>
           </div>
         </Link>
       ) : (

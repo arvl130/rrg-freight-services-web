@@ -7,7 +7,7 @@ function HeroSection() {
   return (
     <section>
       <div className="[background-color:_#79CFDC]">
-        <div className="min-h-[45vh] max-w-6xl mx-auto grid md:grid-cols-2">
+        <div className="min-h-[45vh] max-w-6xl mx-auto grid">
           <div className="flex flex-col justify-center text-white font-semibold">
             <p className="text-[50px] w-full text-center mb-3">
               Privacy Policy
@@ -29,14 +29,14 @@ export default async function PrivacyPolicy() {
       <Navbar user={user} />
       <main>
         <HeroSection />
-        <div className=" mx-20 my-20 flex flex-col">
-          <div className="text-[#B0A8A8] text-[30px] font-bold font-'DM Sans'">
+        <div className=" mx-20 my-20 flex flex-col content-center">
+          <div className="text-[#B0A8A8] text-[30px] mx-20 font-bold font-'DM Sans'">
             Effective by April 19, 2024
           </div>
-          <div className="text-[#263238] text-2xl mt-5 font-bold font-'DM Sans'">
+          <div className="text-[#263238] text-2xl mx-20 mt-5 font-bold font-'DM Sans'">
             Privacy Policy
           </div>
-          <div className=" mx-auto text-stone-900 text-2xl text-justify font-normal font-'Poppins'">
+          <div className=" mx-20 text-stone-900 text-xl text-justify font-normal font-'Poppins'">
             <p>
               RRG Freight Services operates{" "}
               <a
@@ -56,11 +56,11 @@ export default async function PrivacyPolicy() {
             </p>
           </div>
 
-          <div className="mx-auto px-20 ">
+          <div className="mx-auto px-40 ">
             <div className=" mt-10 text-[#263238] text-2xl font-bold font-'DM Sans'">
               1. Information Collection and Use
             </div>
-            <div className=" mx-auto mt-2 text-stone-900 text-2xl text-justify font-normal font-'Poppins'">
+            <div className=" mx-auto mt-2 text-stone-900 text-xl text-justify font-normal font-'Poppins'">
               <p>
                 {" "}
                 While using our Site, we may ask you to provide us with certain
@@ -73,7 +73,7 @@ export default async function PrivacyPolicy() {
               {" "}
               2. Security
             </div>
-            <div className=" mx-auto mt-2 text-stone-900 text-2xl text-justify font-normal font-'Poppins'">
+            <div className=" mx-auto mt-2 text-stone-900 text-xl text-justify font-normal font-'Poppins'">
               <p>
                 {" "}
                 While using our Site, we may ask you to provide us with certain
@@ -86,7 +86,7 @@ export default async function PrivacyPolicy() {
               {" "}
               3. Changes to This Privacy Policy
             </div>
-            <div className=" mx-auto mt-2 text-stone-900 text-2xl text-justify font-normal font-'Poppins'">
+            <div className=" mx-auto mt-2 text-stone-900 text-xl text-justify font-normal font-'Poppins'">
               <p>
                 This Privacy Policy is effective as of April 19, 2024 and will
                 remain in effect except with respect to any changes in its
@@ -108,10 +108,10 @@ export default async function PrivacyPolicy() {
               </p>
             </div>
           </div>
-          <div className=" mt-10 text-[#263238] text-2xl font-bold font-'DM Sans'">
+          <div className=" mx-20 mt-10 text-[#263238] text-2xl font-bold font-'DM Sans'">
             Contact Us
           </div>
-          <div className="mt-2 mb-10 text-stone-900 text-2xl font-normal font-'Poppins'">
+          <div className=" mx-20 mt-2 mb-10 text-stone-900 text-xl font-normal font-'Poppins'">
             <p className="text-left pr-">
               If you have any questions about this Privacy Policy, please&nbsp;
               <Link
