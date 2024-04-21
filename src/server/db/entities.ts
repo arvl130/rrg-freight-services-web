@@ -16,6 +16,7 @@ import type {
   warehouseTransferShipments,
   deliveryShipments,
   vehicles,
+  inquiries,
   warehouses,
   packages,
   packageStatusLogs,
@@ -119,6 +120,9 @@ export type NewActivity = typeof activities.$inferInsert
 
 export type Vehicle = typeof vehicles.$inferSelect
 export type NewVehicle = typeof vehicles.$inferInsert
+
+export type Inquiries = typeof inquiries.$inferSelect
+export type NewInquiries = typeof inquiries.$inferInsert
 
 export type PackageCategory = typeof packageCategories.$inferSelect
 export type NewPackageCategory = typeof packageCategories.$inferInsert
