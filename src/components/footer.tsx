@@ -94,13 +94,8 @@ export function Footer() {
               <EnvelopeSimple size={25} color="#1e2324" weight="bold" />
             </Link>
             <span className="flex m-0">
-            <Phone
-                      className="mr-3"
-                      size={26}
-                      color="#000000"
-                      weight="bold"
-                    />{" "}
-                    (+02)84616027
+              <Phone className="mr-3" size={26} color="#000000" weight="bold" />{" "}
+              (+02)84616027
             </span>
           </div>
         </div>
