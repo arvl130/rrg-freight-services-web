@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import {
   Page,
   Text,
@@ -33,6 +33,19 @@ const PDFReportTemplate = (props: {
   startDate: string
   endDate: string
 }) => {
+  const [totalPackage, setTotalPackage] = useState<number>(0)
+
+  useEffect(() => {
+    const totalDeliveredPackages = props.packagesByDate?.forEach((_package) => {
+      let count = 0
+
+      if (_package.status === "DELIVERED") {
+        count = count + 1
+      }
+      setTotalPackage(count)
+    })
+  }, [props.packagesByDate])
+
   return (
     <Document>
       <Page
@@ -77,6 +90,9 @@ const PDFReportTemplate = (props: {
             Total Pacakges : {props.packagesByDate?.length}
           </Text>
           <Text style={styles.headerSubTitle}>
+            Total Delivered : {totalPackage}
+          </Text>
+          <Text style={styles.headerSubTitle}>
             Total Shipments : {props.shipmentByDate?.length}
           </Text>
 
@@ -109,7 +125,7 @@ const PDFReportTemplate = (props: {
                 <View
                   style={{
                     ...styles.tableHeader,
-                    width: "15%",
+                    width: "14%",
                   }}
                 >
                   <View
@@ -125,7 +141,7 @@ const PDFReportTemplate = (props: {
                 <View
                   style={{
                     ...styles.tableHeader,
-                    width: "10%",
+                    width: "6%",
                   }}
                 >
                   <View
@@ -141,7 +157,7 @@ const PDFReportTemplate = (props: {
                 <View
                   style={{
                     ...styles.tableHeader,
-                    width: "10%",
+                    width: "7%",
                   }}
                 >
                   <View
@@ -205,7 +221,7 @@ const PDFReportTemplate = (props: {
                 <View
                   style={{
                     ...styles.tableHeader,
-                    width: "15%",
+                    width: "12%",
                   }}
                 >
                   <View
@@ -218,13 +234,29 @@ const PDFReportTemplate = (props: {
                     <Text>Receiver Contact No.</Text>
                   </View>
                 </View>
+                <View
+                  style={{
+                    ...styles.tableHeader,
+                    width: "11%",
+                  }}
+                >
+                  <View
+                    style={{
+                      ...styles.tableCell,
+                      fontSize: "10px",
+                      margin: "auto",
+                    }}
+                  >
+                    <Text>Status</Text>
+                  </View>
+                </View>
               </View>
               {props.packagesByDate?.map((_package) => (
                 <View key={_package.id} style={{ ...styles.tableRow }}>
                   <View
                     style={{
                       ...styles.tableHeader,
-                      width: "15%",
+                      width: "14%",
                     }}
                   >
                     <View
@@ -240,7 +272,7 @@ const PDFReportTemplate = (props: {
                   <View
                     style={{
                       ...styles.tableHeader,
-                      width: "10%",
+                      width: "6%",
                     }}
                   >
                     <View
@@ -256,7 +288,7 @@ const PDFReportTemplate = (props: {
                   <View
                     style={{
                       ...styles.tableHeader,
-                      width: "10%",
+                      width: "7%",
                     }}
                   >
                     <View
@@ -324,7 +356,7 @@ const PDFReportTemplate = (props: {
                   <View
                     style={{
                       ...styles.tableHeader,
-                      width: "15%",
+                      width: "12%",
                     }}
                   >
                     <View
@@ -335,6 +367,22 @@ const PDFReportTemplate = (props: {
                       }}
                     >
                       <Text>{_package.receiverContactNumber}</Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      ...styles.tableHeader,
+                      width: "11%",
+                    }}
+                  >
+                    <View
+                      style={{
+                        ...styles.tableCell,
+                        fontSize: "10px",
+                        margin: "auto",
+                      }}
+                    >
+                      <Text>{_package.status}</Text>
                     </View>
                   </View>
                 </View>
@@ -477,7 +525,7 @@ const PDFReportTemplate = (props: {
                     margin: "auto",
                   }}
                 >
-                  <Text>type</Text>
+                  <Text>Status</Text>
                 </View>
               </View>
             </View>
@@ -562,7 +610,17 @@ const PDFReportTemplate = (props: {
                     }}
                   >
                     <Text>
-                      {_shipment.incoming_shipments.receivedAtWarehouseId}
+                      {}
+                      {_shipment.incoming_shipments.receivedAtWarehouseId !==
+                        null ||
+                      _shipment.incoming_shipments.receivedAtWarehouseId !==
+                        undefined ? (
+                        <>
+                          {_shipment.incoming_shipments.receivedAtWarehouseId}
+                        </>
+                      ) : (
+                        <>Not Yet Received</>
+                      )}
                     </Text>
                   </View>
                 </View>
@@ -599,7 +657,7 @@ const PDFReportTemplate = (props: {
                       margin: "auto",
                     }}
                   >
-                    <Text>{_shipment.shipments.type}</Text>
+                    <Text>{_shipment.shipments.status}</Text>
                   </View>
                 </View>
               </View>
@@ -677,7 +735,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   tableCell: {
-    fontSize: "9px",
+    fontSize: "8px",
     display: "flex",
     flexDirection: "column",
   },
