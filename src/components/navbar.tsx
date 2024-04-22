@@ -65,7 +65,7 @@ function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
 
 function DesktopNav(props: { user: User | null }) {
   return (
-    <div className="hidden md:flex max-w-6xl mx-auto px-6 h-full justify-between items-center text-white font-semibold mt-10">
+    <div className="hidden md:flex max-w-6xl mx-auto px-6 h-full justify-between items-center text-white font-semibold ">
       <Link href="/">
         <Image
           src="/assets/img/logos/new-logo-nav-bar.png"
@@ -75,7 +75,7 @@ function DesktopNav(props: { user: User | null }) {
         />
       </Link>
 
-      <ul className="text-white flex gap-6">
+      <ul className="text-white flex gap-6   ">
         <li>
           <Link className="py-2 hover:text-[#389AA9]" href="/#home" passHref>
             Home
@@ -155,7 +155,7 @@ export function Navbar(props: { user: User | null }) {
     <>
       <div className="h-20 bg-[#79CFDC]"></div>
       <div
-        className={`h-24 bg-[#79CFDC] w-full top-0 fixed z-50 transition-all duration-300 ${
+        className={`h-36 bg-[#79CFDC] w-full top-0 fixed z-50 transition-all duration-300 ${
           hasScrolled ? "drop-shadow-xl" : ""
         }`}
       >
