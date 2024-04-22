@@ -68,14 +68,14 @@ function DesktopNav(props: { user: User | null }) {
     <div className="hidden md:flex max-w-6xl mx-auto px-6 h-full justify-between items-center text-white font-semibold ">
       <Link href="/">
         <Image
-          src="/assets/img/logos/logo-header-enhanced.png"
+          src="/assets/img/logos/new-logo-nav-bar.png"
           alt="Logo of RRG Freight Services"
-          width={200}
-          height={70}
+          width={350}
+          height={120}
         />
       </Link>
 
-      <ul className="text-white flex gap-6">
+      <ul className="text-white flex gap-6   ">
         <li>
           <Link className="py-2 hover:text-[#389AA9]" href="/#home" passHref>
             Home
@@ -155,7 +155,7 @@ export function Navbar(props: { user: User | null }) {
     <>
       <div className="h-20 bg-[#79CFDC]"></div>
       <div
-        className={`h-24 bg-[#79CFDC] w-full top-0 fixed z-50 transition-all duration-300 ${
+        className={`h-36 bg-[#79CFDC] w-full top-0 fixed z-50 transition-all duration-300 ${
           hasScrolled ? "drop-shadow-xl" : ""
         }`}
       >
