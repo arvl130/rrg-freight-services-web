@@ -65,13 +65,13 @@ function MobileNav({ hasScrolled }: { hasScrolled: boolean }) {
 
 function DesktopNav(props: { user: User | null }) {
   return (
-    <div className="hidden md:flex max-w-6xl mx-auto px-6 h-full justify-between items-center text-white font-semibold ">
+    <div className="hidden md:flex max-w-6xl mx-auto px-6 h-full justify-between items-center text-white font-semibold mt-10">
       <Link href="/">
         <Image
-          src="/assets/img/logos/logo-header-enhanced.png"
+          src="/assets/img/logos/new-logo-nav-bar.png"
           alt="Logo of RRG Freight Services"
-          width={200}
-          height={70}
+          width={350}
+          height={120}
         />
       </Link>
 
