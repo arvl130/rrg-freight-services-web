@@ -58,7 +58,7 @@ export function ViewWaybillModal({
               <table className="border border-black w-full mb-2">
                 <tr>
                   <th className="border border-black">Ship To</th>
-                  <td className="border border-black px-2" colSpan={3}>
+                  <td className="border border-black px-2 py-2" colSpan={3}>
                     <p className="text-xs font-semibold">
                       {_package.receiverFullName}
                     </p>
@@ -69,10 +69,7 @@ export function ViewWaybillModal({
                       {_package.receiverCountryCode}{" "}
                       {_package.receiverPostalCode}
                     </p>
-                    <p className="text-xs">
-                      <span className="font-semibold">Phone</span>{" "}
-                      {_package.receiverContactNumber}
-                    </p>
+
                     <p className="text-xs">
                       <span className="font-semibold">Email</span>{" "}
                       {_package.receiverEmailAddress}
@@ -81,7 +78,7 @@ export function ViewWaybillModal({
                 </tr>
                 <tr>
                   <th className="border border-black">Shipped From</th>
-                  <td className="border border-black px-2" colSpan={3}>
+                  <td className="border border-black px-2 py-2" colSpan={3}>
                     <p className="text-xs font-semibold">
                       {_package.senderFullName}
                     </p>
@@ -103,7 +100,7 @@ export function ViewWaybillModal({
                 <tr>
                   <th className="border border-black">Package Info</th>
                   <td
-                    className="border border-black text-center px-2 text-sm"
+                    className="border border-black text-center px-2  text-sm py-2"
                     colSpan={2}
                   >
                     <p className="font-semibold">Delivery Type</p>
@@ -121,7 +118,7 @@ export function ViewWaybillModal({
                 <tr>
                   <th className="border border-black">Tracking Number</th>
                   <td
-                    className="border border-black text-center text-sm"
+                    className="border border-black text-center text-sm py-2"
                     colSpan={3}
                   >
                     <p>{_package.id} (from RRG)</p>
@@ -131,7 +128,7 @@ export function ViewWaybillModal({
                 <tr>
                   <th className="border border-black">Fragile?</th>
                   <td
-                    className="border border-black text-center px-2 text-sm"
+                    className="border border-black text-center px-2 py-2 text-sm"
                     colSpan={3}
                   >
                     {_package.isFragile === 1 ? "Yes" : "No"}
@@ -142,12 +139,10 @@ export function ViewWaybillModal({
                   <td className="border border-black text-center w-[80px]">
                     {_package.weightInKg}
                   </td>
-                  <th className="border border-black">
-                    Receiver
-                    <br />
-                    Signature
-                  </th>
-                  <td className="border border-black text-center px-2 text-sm"></td>
+                  <th className="border border-black">Insured?</th>
+                  <td className="border border-black text-center px-2 py-2 text-sm">
+                    Yes
+                  </td>
                 </tr>
               </table>
             </div>
