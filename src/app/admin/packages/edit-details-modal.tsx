@@ -388,7 +388,7 @@ export function EditDetailsModal({
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-3 mb-3">
-                  <div className="col-span-2">
+                  <div className="col-span-1">
                     <label className="block font-medium">Street address</label>
                     <input
                       type="text"
@@ -402,6 +402,14 @@ export function EditDetailsModal({
                       type="text"
                       className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
                       {...register("receiverBarangay")}
+                    />
+                  </div>
+                  <div className="col-span-1">
+                    <label className="block font-medium">City</label>
+                    <input
+                      type="text"
+                      className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                      {...register("receiverCity")}
                     />
                   </div>
                   <div>
