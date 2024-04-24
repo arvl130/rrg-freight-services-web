@@ -14,8 +14,11 @@ export const SUPPORTED_PACKAGE_STATUSES = [
   "INCOMING",
   "IN_WAREHOUSE",
   "SORTING",
+  "PREPARING_FOR_DELIVERY",
   "DELIVERING",
+  "ARRIVING",
   "DELIVERED",
+  "FAILED_DELIVERY",
   "TRANSFERRING_WAREHOUSE",
   "TRANSFERRING_FORWARDER",
   "TRANSFERRED_FORWARDER",
@@ -36,6 +39,13 @@ export const SUPPORTED_PACKAGE_RECEPTION_MODES = [
 ] as const
 export type PackageReceptionMode =
   (typeof SUPPORTED_PACKAGE_RECEPTION_MODES)[number]
+
+export const SUPPORTED_PACKAGE_REMARKS = [
+  "GOOD_CONDITION",
+  "BAD_CONDITION",
+  "MISSING",
+] as const
+export type PackageRemarks = (typeof SUPPORTED_PACKAGE_REMARKS)[number]
 
 export const SUPPORTED_SHIPMENT_PACKAGE_STATUSES = [
   "PREPARING",
@@ -99,7 +109,14 @@ export const REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS_INSIDE_PARENTHESIS =
 
 type NewPackageStatusDescriptionOptions =
   | {
-      status: "INCOMING" | "SORTING" | "DELIVERING" | "DELIVERED"
+      status:
+        | "INCOMING"
+        | "SORTING"
+        | "DELIVERING"
+        | "DELIVERED"
+        | "PREPARING_FOR_DELIVERY"
+        | "ARRIVING"
+        | "FAILED_DELIVERY"
     }
   | {
       status: "IN_WAREHOUSE" | "TRANSFERRING_WAREHOUSE"
@@ -119,12 +136,15 @@ export function getDescriptionForNewPackageStatusLog(
   if (options.status === "IN_WAREHOUSE")
     return `Your package has been received at our warehouse (${options.warehouseName}).`
 
+  if (options.status === "PREPARING_FOR_DELIVERY")
+    return "Your package is being prepared for delivery."
+
   if (options.status === "SORTING") return "Your package is being sorted."
 
   if (options.status === "TRANSFERRING_WAREHOUSE")
     return `Your package is being transferred to another warehouse (${options.warehouseName}).`
 
-  if (options.status === "DELIVERING")
+  if (options.status === "DELIVERING" || options.status === "ARRIVING")
     return "Your package is out for delivery."
 
   if (options.status === "DELIVERED") return "Your package has been delivered."
@@ -134,6 +154,9 @@ export function getDescriptionForNewPackageStatusLog(
 
   if (options.status === "TRANSFERRED_FORWARDER")
     return `Your package has been transferred to another forwarder (${options.forwarderName}).`
+
+  if (options.status === "FAILED_DELIVERY")
+    return "The delivery attempt for your package has failed."
 
   return ""
 }

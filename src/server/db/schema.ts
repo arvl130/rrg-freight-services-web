@@ -11,6 +11,7 @@ import {
   SUPPORTED_SHIPMENT_PACKAGE_STATUSES,
   SUPPORTED_ACTIVITY_VERB,
   SUPPORTED_ACTIVITY_ENTITY,
+  SUPPORTED_PACKAGE_REMARKS,
 } from "../../utils/constants"
 import {
   bigint,
@@ -342,6 +343,7 @@ export const packages = mysqlTable("packages", {
     "reception_mode",
     SUPPORTED_PACKAGE_RECEPTION_MODES,
   ).notNull(),
+  remarks: mysqlEnum("remarks", SUPPORTED_PACKAGE_REMARKS),
   weightInKg: double("weight_in_kg", {
     precision: 8,
     scale: 2,
@@ -409,6 +411,7 @@ export const packages = mysqlTable("packages", {
   updatedById: varchar("updated_by_id", { length: 28 }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
   isDeliverable: tinyint("is_deliverable").notNull(),
+  isUnmanifested: tinyint("is_unmanifested").notNull().default(0),
   lastWarehouseId: bigint("last_warehouse_id", {
     mode: "number",
   }),

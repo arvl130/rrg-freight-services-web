@@ -4,11 +4,14 @@ const packageStatusColors: Record<PackageStatus, string> = {
   INCOMING: "bg-blue-500",
   IN_WAREHOUSE: "bg-pink-500",
   SORTING: "bg-cyan-400",
+  PREPARING_FOR_DELIVERY: "bg-cyan-400",
   TRANSFERRING_FORWARDER: "bg-blue-500",
   TRANSFERRING_WAREHOUSE: "bg-blue-500",
   DELIVERING: "bg-blue-500",
+  ARRIVING: "bg-blue-500",
   DELIVERED: "bg-green-500",
   TRANSFERRED_FORWARDER: "bg-orange-500",
+  FAILED_DELIVERY: "bg-red-500",
 }
 
 export function getColorFromPackageStatus(status: PackageStatus) {
