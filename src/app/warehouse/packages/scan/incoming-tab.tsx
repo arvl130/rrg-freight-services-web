@@ -681,6 +681,16 @@ export function IncomingTab({
     null,
   )
 
+  const {
+    status,
+    data: warehouseName,
+    error,
+    isRefetching,
+    refetch,
+  } = api.shipment.incoming.getWarehouseByStaffId.useQuery({
+    id: userId,
+  })
+
   return (
     <div className="bg-white rounded-lg shadow-lg px-4 py-2">
       <TabSelector selectedTab={selectedTab} onSelectTab={setSelectedTab} />
@@ -689,7 +699,10 @@ export function IncomingTab({
       ) : (
         <div className="sm:flex justify-between items-center mb-3">
           <div className="font-semibold mb-3 sm:mb-0">
-            Shipment ID {selectedShipmentId}
+            Shipment ID: {selectedShipmentId}
+          </div>
+          <div className="font-semibold mb-3 sm:mb-0">
+            Receving Warehouse: {warehouseName}
           </div>
           <div>
             <button

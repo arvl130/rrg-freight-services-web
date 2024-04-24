@@ -9,6 +9,7 @@ import {
   users,
   overseasAgents,
   warehouseStaffs,
+  warehouses,
 } from "@/server/db/schema"
 import type {
   PackageReceptionMode,
@@ -45,6 +46,7 @@ export const incomingShipmentRouter = router({
       }
     })
   }),
+
   getById: protectedProcedure
     .input(
       z.object({
@@ -77,6 +79,22 @@ export const incomingShipmentRouter = router({
         ...other,
       }
     }),
+  getWarehouseByStaffId: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(warehouseStaffs)
+        .innerJoin(warehouses, eq(warehouses.id, warehouseStaffs.warehouseId))
+        .where(eq(warehouseStaffs.userId, input.id))
+
+      return results[0].warehouses.displayName
+    }),
+
   getInTransit: protectedProcedure
     .input(
       z.object({
