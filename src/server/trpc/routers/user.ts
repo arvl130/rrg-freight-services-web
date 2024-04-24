@@ -539,19 +539,15 @@ export const userRouter = router({
             })
 
           await tx
-            .insert(driverAssignedAreas)
-            .values(
-              input.assignedAreaCodes.map((areaCode) => ({
-                userId: input.id,
-                areaCode,
-              })),
-            )
-            .onDuplicateKeyUpdate({
-              set: {
-                userId: sql`user_id`,
-                areaCode: sql`area_code`,
-              },
-            })
+            .delete(driverAssignedAreas)
+            .where(eq(driverAssignedAreas.userId, input.id))
+
+          await tx.insert(driverAssignedAreas).values(
+            input.assignedAreaCodes.map((areaCode) => ({
+              userId: input.id,
+              areaCode,
+            })),
+          )
         } else if (input.role === "OVERSEAS_AGENT") {
           await tx
             .insert(overseasAgents)

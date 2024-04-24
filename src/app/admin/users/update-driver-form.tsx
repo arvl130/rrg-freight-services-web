@@ -126,23 +126,25 @@ function EditForm(props: {
           <div className="text-red-500 mt-1">{errors.isEnabled.message}</div>
         )}
 
-        <AssignedAreasFormSection
-          assignedAreaCodes={assignedAreaCodes}
-          onAddAreaCode={(newAreaCode) => {
-            setAssignedAreaCodes((currAssignedAreaCodes) => {
-              if (currAssignedAreaCodes.includes(newAreaCode)) {
-                return currAssignedAreaCodes
-              } else return [...currAssignedAreaCodes, newAreaCode]
-            })
-          }}
-          onRemoveAreaCode={(oldAreaCode) => {
-            setAssignedAreaCodes((currAssignedAreaCodes) => {
-              return currAssignedAreaCodes.filter(
-                (areaCode) => areaCode !== oldAreaCode,
-              )
-            })
-          }}
-        />
+        <div className="mt-3">
+          <AssignedAreasFormSection
+            assignedAreaCodes={assignedAreaCodes}
+            onAddAreaCode={(newAreaCode) => {
+              setAssignedAreaCodes((currAssignedAreaCodes) => {
+                if (currAssignedAreaCodes.includes(newAreaCode)) {
+                  return currAssignedAreaCodes
+                } else return [...currAssignedAreaCodes, newAreaCode]
+              })
+            }}
+            onRemoveAreaCode={(oldAreaCode) => {
+              setAssignedAreaCodes((currAssignedAreaCodes) => {
+                return currAssignedAreaCodes.filter(
+                  (areaCode) => areaCode !== oldAreaCode,
+                )
+              })
+            }}
+          />
+        </div>
       </div>
 
       <button
