@@ -10,6 +10,9 @@ import {
   overseasAgents,
   warehouseStaffs,
   warehouses,
+  barangays,
+  provinces,
+  cities,
 } from "@/server/db/schema"
 import type {
   PackageReceptionMode,
@@ -29,6 +32,47 @@ import { batchNotifyByEmailWithComponentProps } from "@/server/notification"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
 import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
+import type { DbWithEntities } from "@/server/db/entities"
+
+async function getAreaCode({
+  db,
+  provinceName,
+  cityName,
+  barangayName,
+}: {
+  db: DbWithEntities
+  provinceName: string
+  cityName: string
+  barangayName: string
+}) {
+  const [matchedProvince] = await db
+    .select()
+    .from(provinces)
+    .where(eq(provinces.name, provinceName))
+
+  const [matchedCity] = await db
+    .select()
+    .from(cities)
+    .where(
+      and(
+        eq(cities.provinceId, matchedProvince.provinceId),
+        eq(cities.name, cityName),
+      ),
+    )
+
+  const [matchedBarangay] = await db
+    .select()
+    .from(barangays)
+    .where(
+      and(
+        eq(barangays.provinceId, matchedProvince.provinceId),
+        eq(barangays.cityId, matchedCity.cityId),
+        eq(barangays.name, barangayName),
+      ),
+    )
+
+  return matchedBarangay.code
+}
 
 export const incomingShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -271,7 +315,7 @@ export const incomingShipmentRouter = router({
         db: ctx.db,
       })
 
-      const newPackages = input.newPackages.map((newPackage) => ({
+      const newPackagePromises = input.newPackages.map(async (newPackage) => ({
         ...newPackage,
         id: generateUniqueId(),
         createdById: ctx.user.id,
@@ -284,8 +328,15 @@ export const incomingShipmentRouter = router({
         )
           ? 1
           : 0,
+        areaCode: await getAreaCode({
+          db: ctx.db,
+          provinceName: newPackage.receiverStateOrProvince,
+          cityName: newPackage.receiverCity,
+          barangayName: newPackage.receiverBarangay,
+        }),
       }))
 
+      const newPackages = await Promise.all(newPackagePromises)
       const newPackageStatusLogs = newPackages.map(({ id }) => ({
         packageId: id,
         createdById: ctx.user.id,
