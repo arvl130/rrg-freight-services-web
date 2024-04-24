@@ -83,7 +83,9 @@ export const incomingShipmentRouter = router({
         searchWith: z
           .literal("SHIPMENT_ID")
           .or(z.literal("PACKAGE_ID"))
-          .or(z.literal("PACKAGE_PRE_ID")),
+          .or(z.literal("PACKAGE_PRE_ID"))
+          .or(z.literal("AGENT_ID"))
+          .or(z.literal("COMPANY_NAME")),
         searchTerm: z.string(),
       }),
     )
@@ -117,10 +119,18 @@ export const incomingShipmentRouter = router({
                 ? like(shipments.id, `%${input.searchTerm}%`)
                 : input.searchWith === "PACKAGE_ID"
                   ? like(packages.id, `%${input.searchTerm}%`)
-                  : like(packages.preassignedId, `%${input.searchTerm}%`),
+                  : input.searchWith === "AGENT_ID"
+                    ? like(users.displayName, `%${input.searchTerm}%`)
+                    : input.searchWith === "COMPANY_NAME"
+                      ? like(
+                          overseasAgents.companyName,
+                          `%${input.searchTerm}%`,
+                        )
+                      : like(packages.preassignedId, `%${input.searchTerm}%`),
           ),
         )
     }),
+
   getTotalInTransitSentByAgentId: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db
       .select({ value: count() })

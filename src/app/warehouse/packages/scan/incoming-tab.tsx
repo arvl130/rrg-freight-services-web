@@ -482,6 +482,8 @@ type ShipmentSelectorSearchCriteria =
   | "SHIPMENT_ID"
   | "PACKAGE_ID"
   | "PACKAGE_PRE_ID"
+  | "AGENT_ID"
+  | "COMPANY_NAME"
 
 function ShipmentSelector({
   onSelectShipmentId,
@@ -520,6 +522,8 @@ function ShipmentSelector({
             <option value="SHIPMENT_ID">Shipment ID</option>
             <option value="PACKAGE_ID">Tracking Number (from RRG)</option>
             <option value="PACKAGE_PRE_ID">Tracking Number (from Agent)</option>
+            <option value="AGENT_ID">Agent Name</option>
+            <option value="COMPANY_NAME">Company Name</option>
           </select>
           :
         </p>
