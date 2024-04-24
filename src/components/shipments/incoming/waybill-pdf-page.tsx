@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import type { Package } from "@/server/db/entities"
 import QRCode from "qrcode"
-import { Page, Text, Image, StyleSheet, View } from "@react-pdf/renderer"
+import { Page, Text, Image, StyleSheet, View, Tspan } from "@react-pdf/renderer"
 
 const styles = StyleSheet.create({
   page: {
@@ -81,46 +81,48 @@ export function WaybillPdfPage({ package: _package }: { package: Package }) {
       {/*Table*/}
       <View style={styles.table}>
         <View style={styles.tableRow}>
-          <View style={{ ...styles.tableCol, width: "20%" }}>
+          <View style={{ ...styles.tableCol, width: "25%" }}>
             <View
               style={{
                 ...styles.tableCell,
                 fontSize: "10px",
-                margin: "auto",
+                marginVertical: "auto",
+                textAlign: "center",
               }}
             >
               <Text>Ship To</Text>
             </View>
           </View>
-          <View style={{ ...styles.tableCol, width: "80%" }}>
+          <View style={{ ...styles.tableCol, width: "75%" }}>
             <View style={styles.tableCell}>
-              <Text>{_package.receiverFullName}</Text>
+              <Text style={{ fontWeight: "bold" }}>
+                {_package.receiverFullName}
+              </Text>
               <Text>
                 {_package.receiverStreetAddress}, Brgy.{" "}
                 {_package.receiverBarangay}, {_package.receiverCity},{" "}
                 {_package.receiverStateOrProvince},{" "}
                 {_package.receiverCountryCode} {_package.receiverPostalCode}{" "}
               </Text>
-              <Text>Phone: {_package.receiverContactNumber}</Text>
               <Text>Email: {_package.receiverEmailAddress}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.tableRow}>
-          <View style={{ ...styles.tableCol, width: "20%" }}>
+          <View style={{ ...styles.tableCol, width: "25%" }}>
             <View
               style={{
                 ...styles.tableCell,
                 fontSize: "10px",
-                margin: "auto",
+                marginVertical: "auto",
                 textAlign: "center",
               }}
             >
               <Text>Shipped From</Text>
             </View>
           </View>
-          <View style={{ ...styles.tableCol, width: "80%" }}>
+          <View style={{ ...styles.tableCol, width: "75%" }}>
             <View style={styles.tableCell}>
               <Text>{_package.senderFullName}</Text>
               <Text>
@@ -135,19 +137,19 @@ export function WaybillPdfPage({ package: _package }: { package: Package }) {
         </View>
 
         <View style={styles.tableRow}>
-          <View style={{ ...styles.tableCol, width: "20%" }}>
+          <View style={{ ...styles.tableCol, width: "25%" }}>
             <View
               style={{
                 ...styles.tableCell,
                 fontSize: "10px",
-                margin: "auto",
+                marginVertical: "auto",
                 textAlign: "center",
               }}
             >
               <Text>Package Info</Text>
             </View>
           </View>
-          <View style={{ ...styles.tableCol, width: "55%" }}>
+          <View style={{ ...styles.tableCol, width: "50%" }}>
             <View
               style={{
                 ...styles.tableCell,
@@ -179,19 +181,19 @@ export function WaybillPdfPage({ package: _package }: { package: Package }) {
         </View>
 
         <View style={styles.tableRow}>
-          <View style={{ ...styles.tableCol, width: "20%" }}>
+          <View style={{ ...styles.tableCol, width: "25%" }}>
             <View
               style={{
                 ...styles.tableCell,
                 fontSize: "10px",
-                margin: "auto",
+
                 textAlign: "center",
               }}
             >
               <Text>Tracking Number</Text>
             </View>
           </View>
-          <View style={{ ...styles.tableCol, width: "80%" }}>
+          <View style={{ ...styles.tableCol, width: "75%" }}>
             <View style={styles.tableCell}>
               <Text
                 style={{
@@ -212,7 +214,7 @@ export function WaybillPdfPage({ package: _package }: { package: Package }) {
         </View>
 
         <View style={styles.tableRow}>
-          <View style={{ ...styles.tableCol, width: "20%" }}>
+          <View style={{ ...styles.tableCol, width: "25%" }}>
             <View
               style={{
                 ...styles.tableCell,
@@ -223,7 +225,7 @@ export function WaybillPdfPage({ package: _package }: { package: Package }) {
               <Text>Fragile?</Text>
             </View>
           </View>
-          <View style={{ ...styles.tableCol, width: "80%" }}>
+          <View style={{ ...styles.tableCol, width: "75%" }}>
             <View
               style={{
                 ...styles.tableCell,
@@ -237,7 +239,7 @@ export function WaybillPdfPage({ package: _package }: { package: Package }) {
         </View>
 
         <View style={styles.tableRow}>
-          <View style={{ ...styles.tableCol, width: "20%" }}>
+          <View style={{ ...styles.tableCol, width: "25%" }}>
             <View
               style={{
                 ...styles.tableCell,
@@ -248,7 +250,7 @@ export function WaybillPdfPage({ package: _package }: { package: Package }) {
               <Text>Weight</Text>
             </View>
           </View>
-          <View style={{ ...styles.tableCol, width: "20%" }}>
+          <View style={{ ...styles.tableCol, width: "25%" }}>
             <View
               style={{
                 ...styles.tableCell,
@@ -259,28 +261,30 @@ export function WaybillPdfPage({ package: _package }: { package: Package }) {
             </View>
           </View>
 
-          <View style={{ ...styles.tableCol, width: "20%" }}>
+          <View style={{ ...styles.tableCol, width: "25%" }}>
             <View
               style={{
                 ...styles.tableCell,
                 fontSize: "10px",
-                margin: "auto",
+
                 textAlign: "center",
               }}
             >
-              <Text>Receiver Signature</Text>
+              <Text>Insured?</Text>
             </View>
           </View>
 
-          <View style={{ ...styles.tableCol, width: "40%" }}>
+          <View style={{ ...styles.tableCol, width: "25%" }}>
             <View
               style={{
                 ...styles.tableCell,
                 fontSize: "10px",
-                margin: "auto",
+
                 textAlign: "center",
               }}
-            ></View>
+            >
+              <Text>Yes</Text>
+            </View>
           </View>
         </View>
       </View>

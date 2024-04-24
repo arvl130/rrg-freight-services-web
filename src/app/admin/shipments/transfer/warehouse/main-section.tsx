@@ -203,7 +203,7 @@ function ShipmentsTable({
   >("NOT_ARCHIVED")
 
   const [selectedStatus, setSelectedStatus] = useState<"ALL" | ShipmentStatus>(
-    "ALL",
+    "IN_TRANSIT",
   )
 
   const [selectedOriginWarehouseId, setSelectedOriginWarehouseId] = useState<
