@@ -42,6 +42,7 @@ import { generateUniqueId } from "@/utils/uuid"
 import { DateTime } from "luxon"
 import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
 import { createLog } from "@/utils/logging"
+import { getAreaCode } from "@/utils/area-code"
 
 export const packageRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -162,6 +163,13 @@ export const packageRouter = router({
         db: ctx.db,
       })
 
+      const areaCode = await getAreaCode({
+        db: ctx.db,
+        provinceName: input.receiverStateOrProvince,
+        cityName: input.receiverCity,
+        barangayName: input.receiverBarangay,
+      })
+
       return await ctx.db
         .update(packages)
         .set({
@@ -198,6 +206,7 @@ export const packageRouter = router({
           failedAttempts: input.failedAttempts,
           isFragile: input.isFragile ? 1 : 0,
           volumeInCubicMeter: input.volumeInCubicMeter,
+          areaCode,
         })
         .where(eq(packages.id, input.id))
     }),
@@ -216,76 +225,6 @@ export const packageRouter = router({
           .from(packages)
           .where(inArray(packages.id, input.ids))
       }
-    }),
-  createMany: protectedProcedure
-    .input(
-      z.object({
-        newPackages: z
-          .object({
-            preassignedId: z.string().min(1).max(100),
-            shippingMode: z.custom<PackageShippingMode>((val) =>
-              SUPPORTED_PACKAGE_SHIPPING_MODES.includes(
-                val as PackageShippingMode,
-              ),
-            ),
-            shippingType: z.custom<PackageShippingType>((val) =>
-              SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(
-                val as PackageShippingType,
-              ),
-            ),
-            receptionMode: z.custom<PackageReceptionMode>((val) =>
-              SUPPORTED_PACKAGE_RECEPTION_MODES.includes(
-                val as PackageReceptionMode,
-              ),
-            ),
-            weightInKg: z.number(),
-            volumeInCubicMeter: z.number(),
-            senderFullName: z.string().min(1).max(100),
-            senderContactNumber: z.string().min(1).max(15),
-            senderEmailAddress: z.string().min(1).max(100),
-            senderStreetAddress: z.string().min(1).max(255),
-            senderCity: z.string().min(1).max(100),
-            senderStateOrProvince: z.string().min(1).max(100),
-            senderCountryCode: z.string().min(1).max(3),
-            senderPostalCode: z.number(),
-            receiverFullName: z.string().min(1).max(100),
-            receiverContactNumber: z.string().min(1).max(15),
-            receiverEmailAddress: z.string().min(1).max(100),
-            receiverStreetAddress: z.string().min(1).max(255),
-            receiverBarangay: z.string().min(1).max(100),
-            receiverCity: z.string().min(1).max(100),
-            receiverStateOrProvince: z.string().min(1).max(100),
-            receiverCountryCode: z.string().min(1).max(3),
-            receiverPostalCode: z.number(),
-            isFragile: z.boolean(),
-            status: z.custom<PackageStatus>((val) =>
-              SUPPORTED_PACKAGE_STATUSES.includes(val as PackageStatus),
-            ),
-          })
-          .array(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const createdAt = DateTime.now().toISO()
-      const deliverableProvinces = await getDeliverableProvinceNames({
-        db: ctx.db,
-      })
-
-      await ctx.db.insert(packages).values(
-        input.newPackages.map((newPackage) => ({
-          ...newPackage,
-          id: generateUniqueId(),
-          createdAt,
-          createdById: ctx.user.id,
-          updatedById: ctx.user.id,
-          isFragile: newPackage.isFragile ? 1 : 0,
-          isDeliverable: deliverableProvinces.includes(
-            newPackage.receiverStateOrProvince.trim().toUpperCase(),
-          )
-            ? 1
-            : 0,
-        })),
-      )
     }),
   getById: protectedProcedure
     .input(
