@@ -566,17 +566,18 @@ function ShipmentSelector({
           ) : (
             <div className="py-2">
               <p>Please choose a shipment.</p>
-              <div className="grid grid-cols-[auto_auto_auto_1fr] overflow-auto">
+              <div className="grid grid-cols-[auto_auto_auto_auto_1fr] overflow-auto">
                 <div className="font-medium px-2 py-1">Shipment ID</div>
                 <div className="font-medium px-2 py-1">Status</div>
                 <div className="font-medium px-2 py-1">Sent by</div>
+                <div className="font-medium px-2 py-1">Created at</div>
                 <div></div>
                 {shipments.map((shipment, index) => (
                   <button
                     key={shipment.id}
                     className={`${
                       index === 0 ? "" : "mt-3"
-                    } group grid grid-cols-subgrid col-span-4 hover:bg-gray-100 hover:border-gray-100 rounded-lg transition-colors duration-200`}
+                    } group grid grid-cols-subgrid col-span-5 hover:bg-gray-100 hover:border-gray-100 rounded-lg transition-colors duration-200`}
                     onClick={() => {
                       onSelectShipmentId(shipment.id)
                     }}
@@ -589,6 +590,11 @@ function ShipmentSelector({
                     </p>
                     <p className="border-y border-gray-300 px-2 py-2">
                       {shipment.agentDisplayName} ({shipment.agentCompanyName})
+                    </p>
+                    <p className="border-y border-gray-300 px-2 py-2">
+                      {DateTime.fromISO(shipment.createdAt)
+                        .toLocaleString(DateTime.DATETIME_MED)
+                        .toString()}
                     </p>
                     <p className="border-y border-r rounded-r-lg border-gray-300 text-left text-gray-500 px-2 py-2">
                       <span className="invisible group-hover:visible">
@@ -652,7 +658,7 @@ function MarkAsCompleted({
         })
       }}
     >
-      Mark as Completed
+      Mark as Arrived
     </button>
   )
 }
