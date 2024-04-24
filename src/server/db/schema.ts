@@ -25,6 +25,7 @@ import {
   double,
   primaryKey,
   datetime,
+  decimal,
 } from "drizzle-orm/mysql-core"
 
 export const users = mysqlTable("users", {
@@ -577,4 +578,79 @@ export const assignedVehicles = mysqlTable("assigned_vehicles", {
   shipmentId: bigint("shipment_id", {
     mode: "number",
   }).notNull(),
+})
+
+export const barangays = mysqlTable("barangays", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  code: varchar("code", {
+    length: 9,
+  }).notNull(),
+  name: varchar("name", {
+    length: 255,
+  }).notNull(),
+  regionId: varchar("region_id", {
+    length: 2,
+  }).notNull(),
+  provinceId: varchar("province_id", {
+    length: 4,
+  }).notNull(),
+  cityId: varchar("city_id", {
+    length: 6,
+  }).notNull(),
+  published: tinyint("published").notNull().default(0),
+  shippingFee: decimal("shipping_fee", {
+    precision: 10,
+    scale: 2,
+  })
+    .notNull()
+    .default("0.00"),
+})
+
+export const cities = mysqlTable("cities", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  code: varchar("code", {
+    length: 9,
+  }).notNull(),
+  name: varchar("name", {
+    length: 255,
+  }).notNull(),
+  regionId: varchar("region_id", {
+    length: 2,
+  }).notNull(),
+  provinceId: varchar("province_id", {
+    length: 4,
+  }).notNull(),
+  cityId: varchar("city_id", {
+    length: 6,
+  }).notNull(),
+  published: tinyint("published").notNull().default(0),
+})
+
+export const provinces = mysqlTable("provinces", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  code: varchar("code", {
+    length: 9,
+  }).notNull(),
+  name: varchar("name", {
+    length: 255,
+  }).notNull(),
+  regionId: varchar("region_id", {
+    length: 2,
+  }).notNull(),
+  provinceId: varchar("province_id", {
+    length: 4,
+  }).notNull(),
+  published: tinyint("published").notNull().default(0),
 })

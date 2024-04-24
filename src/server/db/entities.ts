@@ -23,6 +23,9 @@ import type {
   webpushSubscriptions,
   webauthnCredentials,
   deliverableProvinces,
+  provinces,
+  cities,
+  barangays,
 } from "./schema"
 
 export type DbWithEntities = MySql2Database<typeof schema>
@@ -123,3 +126,12 @@ export type NewWebauthnCredential = typeof webauthnCredentials.$inferInsert
 
 export type DeliverableProvince = typeof deliverableProvinces.$inferSelect
 export type NewDeliverableProvince = typeof deliverableProvinces.$inferInsert
+
+export type Province = typeof provinces.$inferSelect
+export type NewProvince = typeof provinces.$inferInsert
+
+export type City = typeof cities.$inferSelect
+export type NewCity = typeof cities.$inferInsert
+
+export type Barangay = typeof barangays.$inferSelect
+export type NewBarangay = typeof barangays.$inferInsert

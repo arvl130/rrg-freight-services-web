@@ -12,18 +12,15 @@ import { activityRouter } from "./activity"
 import { webauthnRouter } from "./webauthn"
 import { passwordResetRouter } from "./password-reset"
 import { deliverableProvinceRouter } from "./deliverable-provinces"
-import { eq, between, and, count } from "drizzle-orm"
+import { eq, between, and } from "drizzle-orm"
 import {
-  activities,
   incomingShipments,
   overseasAgents,
   packages,
-  shipmentPackages,
   shipments,
   users,
 } from "@/server/db/schema"
-import { TRPCError } from "@trpc/server"
-import UsersPage from "@/app/admin/users/page"
+import { addressValidationRouter } from "./address-validation"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -49,7 +46,7 @@ export const rootRouter = router({
   webauthn: webauthnRouter,
   passwordReset: passwordResetRouter,
   deliverableProvince: deliverableProvinceRouter,
-
+  addressValidation: addressValidationRouter,
   getAllPackagesByDateRange: protectedProcedure
     .input(
       z.object({
