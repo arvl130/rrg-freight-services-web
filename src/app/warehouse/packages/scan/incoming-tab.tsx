@@ -165,6 +165,10 @@ function TableItem(props: {
       )}
       <div className="flex justify-center	items-center	">
         <select
+          value={
+            props.selectedRemarks.find((remark) => remark.id === props.item.id)
+              ?.remarks || "0"
+          }
           onChange={handleSelectChange}
           disabled={props.isScanned ? false : true}
         >
