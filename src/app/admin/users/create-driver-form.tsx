@@ -6,7 +6,10 @@ import { api } from "@/utils/api"
 import toast from "react-hot-toast"
 import { createAdminFormSchema } from "./create-admin-form"
 import { generateRandomPassword } from "@/utils/uuid"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import { AddAssignedAreaModal } from "./add-assigned-area-modal"
+import { AreaCodeDisplayName } from "@/components/area-code-display-name"
+import { X } from "@phosphor-icons/react/dist/ssr/X"
 
 const createDriverFormSchema = createAdminFormSchema
   .extend({
@@ -26,6 +29,63 @@ const createDriverFormSchema = createAdminFormSchema
   })
 
 type CreateDriverFormSchema = z.infer<typeof createDriverFormSchema>
+
+function AssignedAreas(props: {
+  assignedAreaCodes: string[]
+  onAddAreaCode: (newAreaCode: string) => void
+  onRemoveAreaCode: (newAreaCode: string) => void
+}) {
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
+  return (
+    <div className="col-span-2">
+      <p className="font-medium">Assigned Areas</p>
+      {props.assignedAreaCodes.length === 0 ? (
+        <p className="text-sm text-red-500">
+          At least one assigned area is required.
+        </p>
+      ) : (
+        <div className="mt-1 flex flex-wrap gap-y-2 gap-x-1">
+          {props.assignedAreaCodes.map((areaCode) => (
+            <div
+              key={areaCode}
+              className="inline-flex px-2 py-1 bg-pink-500 text-white rounded-full font-medium text-sm"
+            >
+              <AreaCodeDisplayName areaCode={areaCode} />
+              <button
+                type="button"
+                onClick={() => {
+                  props.onRemoveAreaCode(areaCode)
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-3">
+        <button
+          type="button"
+          className="px-4 py-2 bg-rose-500 disabled:bg-rose-300 hover:bg-rose-400 rounded-md font-medium transition-colors duration-200 text-white"
+          onClick={() => {
+            setIsModalVisible(true)
+          }}
+        >
+          Add Area
+        </button>
+        <AddAssignedAreaModal
+          isOpen={isModalVisible}
+          onAddAreaCode={props.onAddAreaCode}
+          onClose={() => {
+            setIsModalVisible(false)
+          }}
+        />
+      </div>
+    </div>
+  )
+}
 
 export function CreateDriverForm(props: {
   onSuccess: (options: { generatedPassword?: string }) => void
@@ -65,21 +125,29 @@ export function CreateDriverForm(props: {
     },
   })
 
+  const [assignedAreaCodes, setAssignedAreaCodes] = useState<string[]>([])
+
   return (
     <form
       className="grid grid-cols-subgrid col-span-2 gap-y-2"
       onSubmit={handleSubmit((formData) => {
+        if (assignedAreaCodes.length === 0) {
+          return toast.error("Please select at least one assigned area.")
+        }
+
         if (formData.isPasswordRandom) {
           createUserMutation.mutate({
             role: "DRIVER",
             ...formData,
             password: generateRandomPassword(),
+            assignedAreaCodes,
           })
         } else {
           createUserMutation.mutate({
             role: "DRIVER",
             ...formData,
             password: formData.password!,
+            assignedAreaCodes,
           })
         }
       })}
@@ -205,11 +273,32 @@ export function CreateDriverForm(props: {
         </div>
       )}
 
+      <AssignedAreas
+        assignedAreaCodes={assignedAreaCodes}
+        onAddAreaCode={(newAreaCode) => {
+          setAssignedAreaCodes((currAssignedAreaCodes) => {
+            if (currAssignedAreaCodes.includes(newAreaCode)) {
+              return currAssignedAreaCodes
+            } else return [...currAssignedAreaCodes, newAreaCode]
+          })
+        }}
+        onRemoveAreaCode={(oldAreaCode) => {
+          setAssignedAreaCodes((currAssignedAreaCodes) => {
+            return currAssignedAreaCodes.filter(
+              (areaCode) => areaCode !== oldAreaCode,
+            )
+          })
+        }}
+      />
+
       <div className="col-span-2 flex justify-end mt-3">
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 disabled:bg-blue-300 hover:bg-blue-400 rounded-md font-medium transition-colors duration-200 text-white"
-          disabled={createUserMutation.status === "loading"}
+          disabled={
+            createUserMutation.status === "loading" ||
+            assignedAreaCodes.length === 0
+          }
         >
           Create
         </button>

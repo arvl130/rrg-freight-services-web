@@ -10,6 +10,7 @@ import {
   domesticAgents,
   webpushSubscriptions,
   assignedDrivers,
+  driverAssignedAreas,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import {
@@ -229,6 +230,7 @@ export const userRouter = router({
           role: z.literal("DRIVER"),
           licenseNumber: z.string().min(1).max(100),
           licenseRegistrationDate: z.string().regex(REGEX_HTML_INPUT_DATESTR),
+          assignedAreaCodes: z.string().array(),
         }),
         createInputSchema.extend({
           role: z.literal("OVERSEAS_AGENT"),
@@ -282,6 +284,13 @@ export const userRouter = router({
             licenseNumber: input.licenseNumber,
             licenseRegistrationDate: input.licenseRegistrationDate,
           })
+
+          await tx.insert(driverAssignedAreas).values(
+            input.assignedAreaCodes.map((areaCode) => ({
+              userId,
+              areaCode,
+            })),
+          )
         } else if (input.role === "OVERSEAS_AGENT") {
           await tx.insert(overseasAgents).values({
             userId,
