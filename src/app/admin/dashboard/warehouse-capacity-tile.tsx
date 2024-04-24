@@ -2,7 +2,7 @@
 
 import { db } from "@/server/db/client"
 import { Bar, Doughnut } from "react-chartjs-2"
-import type { Chart } from "chart.js"
+import type { Chart, ChartType } from "chart.js"
 import {
   Chart as ChartJS,
   ArcElement,
@@ -29,7 +29,7 @@ export function WarehouseCapacityTile(props: {
     return props.packages.findIndex((item) => item.warehouseId === id)
   }
 
-  const labels = ["JAN", "FEB"]
+  const labels = ["Accumulated Space", "Free Space"]
 
   return (
     <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem] overflow-auto">
@@ -96,7 +96,7 @@ export function WarehouseCapacityTile(props: {
                     ctx.textAlign = "center"
                     ctx.textBaseline = "middle"
                     ctx.fillText(
-                      `${data.datasets[0].data[0]}%`,
+                      `${data.datasets[0].data[0].toFixed(2)}%`,
                       chart.getDatasetMeta(0).data[0].x,
                       chart.getDatasetMeta(0).data[0].y,
                     )
