@@ -37,3 +37,6 @@ next-env.d.ts
 
 # avoid accidentally committing package-lock.json
 package-lock.json
+
+# seeder
+scripts/db-seed.ts
