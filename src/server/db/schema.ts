@@ -78,6 +78,21 @@ export const drivers = mysqlTable("drivers", {
   }).notNull(),
 })
 
+export const driverAssignedAreas = mysqlTable(
+  "driver_assigned_areas",
+  {
+    userId: varchar("user_id", {
+      length: 28,
+    }).notNull(),
+    areaCode: varchar("area_code", { length: 10 }).notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.userId, table.areaCode],
+    }),
+  }),
+)
+
 export const overseasAgents = mysqlTable("overseas_agents", {
   userId: varchar("user_id", {
     length: 28,

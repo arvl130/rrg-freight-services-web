@@ -21,6 +21,9 @@ import {
   users,
 } from "@/server/db/schema"
 import { addressValidationRouter } from "./address-validation"
+import { provinceRouter } from "./province"
+import { cityRouter } from "./city"
+import { barangayRouter } from "./barangay"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -47,6 +50,9 @@ export const rootRouter = router({
   passwordReset: passwordResetRouter,
   deliverableProvince: deliverableProvinceRouter,
   addressValidation: addressValidationRouter,
+  province: provinceRouter,
+  city: cityRouter,
+  barangay: barangayRouter,
   getAllPackagesByDateRange: protectedProcedure
     .input(
       z.object({
