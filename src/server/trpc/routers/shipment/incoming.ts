@@ -84,6 +84,30 @@ export const incomingShipmentRouter = router({
         ...other,
       }
     }),
+  getShipmentsByOverseasAgentId: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(incomingShipments)
+        .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
+        .where(eq(incomingShipments.sentByAgentId, input.id))
+
+      //return results[0].warehouses.displayName
+
+      return results.map(({ shipments, incoming_shipments }) => {
+        const { shipmentId, ...other } = incoming_shipments
+
+        return {
+          ...shipments,
+          ...other,
+        }
+      })
+    }),
   getWarehouseByStaffId: protectedProcedure
     .input(
       z.object({
