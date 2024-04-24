@@ -21,6 +21,7 @@ import {
   inArray,
   isNull,
   like,
+  sql,
 } from "drizzle-orm"
 import { getStorage } from "firebase-admin/storage"
 import { clientEnv } from "@/utils/env.mjs"
@@ -168,7 +169,17 @@ export const userRouter = router({
           message: "Expected 1 result, but got multiple.",
         })
 
-      return results[0]
+      const [driverDetails] = results
+
+      const areaCodeResults = await ctx.db
+        .select()
+        .from(driverAssignedAreas)
+        .where(eq(driverAssignedAreas.userId, input.id))
+
+      return {
+        ...driverDetails,
+        assignedAreaCodes: areaCodeResults.map((areaCode) => areaCode.areaCode),
+      }
     }),
   getOverseasAgentDetailsById: protectedProcedure
     .input(
@@ -474,6 +485,7 @@ export const userRouter = router({
           role: z.literal("DRIVER"),
           licenseNumber: z.string().min(1).max(100),
           licenseRegistrationDate: z.string().regex(REGEX_HTML_INPUT_DATESTR),
+          assignedAreaCodes: z.string().array(),
         }),
         updateByIdInputSchema.extend({
           role: z.literal("OVERSEAS_AGENT"),
@@ -523,6 +535,21 @@ export const userRouter = router({
               set: {
                 licenseNumber: input.licenseNumber,
                 licenseRegistrationDate: input.licenseRegistrationDate,
+              },
+            })
+
+          await tx
+            .insert(driverAssignedAreas)
+            .values(
+              input.assignedAreaCodes.map((areaCode) => ({
+                userId: input.id,
+                areaCode,
+              })),
+            )
+            .onDuplicateKeyUpdate({
+              set: {
+                userId: sql`user_id`,
+                areaCode: sql`area_code`,
               },
             })
         } else if (input.role === "OVERSEAS_AGENT") {

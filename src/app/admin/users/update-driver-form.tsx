@@ -4,6 +4,9 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import { REGEX_HTML_INPUT_DATESTR } from "@/utils/constants"
+import { useState } from "react"
+import { AssignedAreasFormSection } from "./assigned-areas-form-section"
+import toast from "react-hot-toast"
 
 const formSchema = z.object({
   isEnabled: z.union([z.literal("YES"), z.literal("NO")]),
@@ -15,7 +18,10 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
-function EditForm(props: { user: User; driver: Driver | null }) {
+function EditForm(props: {
+  user: User
+  driver: (Driver & { assignedAreaCodes: string[] }) | null
+}) {
   const {
     reset,
     register,
@@ -42,9 +48,17 @@ function EditForm(props: { user: User; driver: Driver | null }) {
     },
   })
 
+  const [assignedAreaCodes, setAssignedAreaCodes] = useState<string[]>(
+    props.driver?.assignedAreaCodes ?? [],
+  )
+
   return (
     <form
       onSubmit={handleSubmit((formData) => {
+        if (assignedAreaCodes.length === 0) {
+          return toast.error("Please select at least one assigned area.")
+        }
+
         mutate({
           id: props.user.id,
           displayName: props.user.displayName,
@@ -54,6 +68,7 @@ function EditForm(props: { user: User; driver: Driver | null }) {
           role: "DRIVER",
           ...formData,
           isEnabled: formData.isEnabled === "YES",
+          assignedAreaCodes,
         })
       })}
     >
@@ -110,11 +125,30 @@ function EditForm(props: { user: User; driver: Driver | null }) {
         {errors.isEnabled && (
           <div className="text-red-500 mt-1">{errors.isEnabled.message}</div>
         )}
+
+        <AssignedAreasFormSection
+          assignedAreaCodes={assignedAreaCodes}
+          onAddAreaCode={(newAreaCode) => {
+            setAssignedAreaCodes((currAssignedAreaCodes) => {
+              if (currAssignedAreaCodes.includes(newAreaCode)) {
+                return currAssignedAreaCodes
+              } else return [...currAssignedAreaCodes, newAreaCode]
+            })
+          }}
+          onRemoveAreaCode={(oldAreaCode) => {
+            setAssignedAreaCodes((currAssignedAreaCodes) => {
+              return currAssignedAreaCodes.filter(
+                (areaCode) => areaCode !== oldAreaCode,
+              )
+            })
+          }}
+        />
       </div>
+
       <button
         type="submit"
         className="p-2 text-white	w-full bg-cyan-500 transition-colors disabled:bg-cyan-300 hover:bg-cyan-400 rounded-lg font-medium"
-        disabled={isLoading}
+        disabled={isLoading || assignedAreaCodes.length === 0}
       >
         {isLoading ? "Saving ..." : "Save"}
       </button>
