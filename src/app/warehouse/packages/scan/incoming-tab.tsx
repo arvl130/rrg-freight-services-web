@@ -103,7 +103,30 @@ function TableItem(props: {
   isScanned: boolean
   isUpdatingStatus: boolean
   undoScan: () => void
+  setSelectedRemarks: (
+    remarks: {
+      id: string
+      remarks: string
+    }[],
+  ) => void
+  selectedRemarks: {
+    id: string
+    remarks: string
+  }[]
 }) {
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedRemark = event.target.value as string
+
+    const { id } = props.item
+
+    const updatedRemarks = props.selectedRemarks.filter(
+      (remark) => remark.id !== id,
+    )
+
+    updatedRemarks.push({ id, remarks: selectedRemark })
+
+    props.setSelectedRemarks(updatedRemarks)
+  }
   return (
     <>
       <div className="whitespace-nowrap">{props.item.preassignedId}</div>
@@ -140,6 +163,17 @@ function TableItem(props: {
           </span>
         </div>
       )}
+      <div className="flex justify-center	items-center	">
+        <select
+          onChange={handleSelectChange}
+          disabled={props.isScanned ? false : true}
+        >
+          <option value={"0"}>Select Remarks</option>
+          <option value={"GOOD_CONDITION"}>Good Condition</option>
+          <option value={"BAD_CONDITION"}>Bad Condition</option>
+          <option value={"MISSING"}>Missing</option>
+        </select>
+      </div>
       <div>
         {props.isScanned && (
           <button
@@ -161,6 +195,16 @@ function PackagesTableTabs(props: {
   isUpdatingStatus: boolean
   packages: Package[]
   onUndoScan: (packageId: string) => void
+  selectedRemarks: {
+    id: string
+    remarks: string
+  }[]
+  setSelectedRemarks: (
+    remarks: {
+      id: string
+      remarks: string
+    }[],
+  ) => void
 }) {
   const [visibleView, setVisibleView] = useState<
     "SORTED" | "DELIVERABLE_ONLY" | "NON_DELIVERABLE_ONLY" | "ALL"
@@ -230,7 +274,7 @@ function PackagesTableTabs(props: {
       </div>
 
       {visibleView === "ALL" && (
-        <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto">
+        <div className="grid grid-cols-[repeat(5,_auto)_1fr] gap-3 overflow-auto">
           <div className="font-medium whitespace-nowrap">
             Tracking No. (from agent)
           </div>
@@ -239,6 +283,7 @@ function PackagesTableTabs(props: {
           </div>
           <div className="font-medium">Receiver</div>
           <div className="font-medium">Status</div>
+          <div className="font-medium">Remarks</div>
           <div className="font-medium">Actions</div>
           {props.packages.map((_package) => (
             <TableItem
@@ -249,13 +294,15 @@ function PackagesTableTabs(props: {
               undoScan={() => {
                 props.onUndoScan(_package.id)
               }}
+              setSelectedRemarks={props.setSelectedRemarks}
+              selectedRemarks={props.selectedRemarks}
             />
           ))}
         </div>
       )}
 
       {visibleView === "DELIVERABLE_ONLY" && (
-        <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto">
+        <div className="grid grid-cols-[repeat(5,_auto)_1fr] gap-3 overflow-auto">
           <div className="font-medium whitespace-nowrap">
             Tracking No. (from agent)
           </div>
@@ -264,6 +311,8 @@ function PackagesTableTabs(props: {
           </div>
           <div className="font-medium">Receiver</div>
           <div className="font-medium">Status</div>
+          <div className="font-medium">Remarks</div>
+
           <div className="font-medium">Actions</div>
           {luzonPackages.length === 0 ? (
             <p className="text-center text-gray-500 col-span-5">
@@ -280,6 +329,8 @@ function PackagesTableTabs(props: {
                   undoScan={() => {
                     props.onUndoScan(_package.id)
                   }}
+                  setSelectedRemarks={props.setSelectedRemarks}
+                  selectedRemarks={props.selectedRemarks}
                 />
               ))}
             </>
@@ -288,7 +339,7 @@ function PackagesTableTabs(props: {
       )}
 
       {visibleView === "NON_DELIVERABLE_ONLY" && (
-        <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto">
+        <div className="grid grid-cols-[repeat(5,_auto)_1fr] gap-3 overflow-auto">
           <div className="font-medium whitespace-nowrap">
             Tracking No. (from agent)
           </div>
@@ -297,6 +348,7 @@ function PackagesTableTabs(props: {
           </div>
           <div className="font-medium">Receiver</div>
           <div className="font-medium">Status</div>
+          <div className="font-medium">Remarks</div>
           <div className="font-medium">Actions</div>
           {nonLuzonPackages.length === 0 ? (
             <p className="text-center text-gray-500 col-span-5">
@@ -313,6 +365,8 @@ function PackagesTableTabs(props: {
                   undoScan={() => {
                     props.onUndoScan(_package.id)
                   }}
+                  setSelectedRemarks={props.setSelectedRemarks}
+                  selectedRemarks={props.selectedRemarks}
                 />
               ))}
             </>
@@ -330,15 +384,18 @@ function PackagesTableTabs(props: {
             <p className="text-lg">Non-Deliverable Packages</p>
             <p className="text-gray-500 text-sm">(Going to Visayas/Mindanao)</p>
           </div>
-          <div className="grid grid-cols-[repeat(4,_auto)_1fr] gap-3 overflow-auto pr-3">
-            <div className="font-medium whitespace-nowrap">
-              Tracking No. (from agent)
+          <div className="grid grid-cols-[repeat(5,_auto)_1fr] gap-3 overflow-auto pr-3">
+            <div className="font-medium whitespace-nowrap flex flex-col	">
+              <span>Tracking No. </span>
+              <span>(from agent)</span>
             </div>
-            <div className="font-medium whitespace-nowrap">
-              Tracking No. (from RRG)
+            <div className="font-medium whitespace-nowrap flex flex-col	">
+              <span>Tracking No. </span>
+              <span>(from RRG)</span>
             </div>
             <div className="font-medium">Receiver</div>
             <div className="font-medium">Status</div>
+            <div className="font-medium">Remarks</div>
             <div className="font-medium">Actions</div>
             {luzonPackages.length === 0 ? (
               <p className="text-center text-gray-500 col-span-5">
@@ -355,20 +412,25 @@ function PackagesTableTabs(props: {
                     undoScan={() => {
                       props.onUndoScan(_package.id)
                     }}
+                    setSelectedRemarks={props.setSelectedRemarks}
+                    selectedRemarks={props.selectedRemarks}
                   />
                 ))}
               </>
             )}
           </div>
-          <div className="grid grid-cols-[repeat(4,_auto)_1fr] auto-rows-min gap-3 overflow-auto border-l border-gray-300 pl-3">
-            <div className="font-medium whitespace-nowrap">
-              Tracking No. (from agent)
+          <div className="grid grid-cols-[repeat(5,_auto)_1fr] auto-rows-min gap-3 overflow-auto border-l border-gray-300 pl-3">
+            <div className="font-medium whitespace-nowrap flex flex-col">
+              <span>Tracking No. </span>
+              <span> (from agent)</span>
             </div>
-            <div className="font-medium whitespace-nowrap">
-              Tracking No. (from RRG)
+            <div className="font-medium whitespace-nowrap flex flex-col">
+              <span> Tracking No. </span>
+              <span> (from RRG)</span>
             </div>
             <div className="font-medium">Receiver</div>
             <div className="font-medium">Status</div>
+            <div className="font-medium">Remarks</div>
             <div className="font-medium">Actions</div>
             {nonLuzonPackages.length === 0 ? (
               <p className="text-center text-gray-500 col-span-5">
@@ -385,6 +447,8 @@ function PackagesTableTabs(props: {
                     undoScan={() => {
                       props.onUndoScan(_package.id)
                     }}
+                    setSelectedRemarks={props.setSelectedRemarks}
+                    selectedRemarks={props.selectedRemarks}
                   />
                 ))}
               </>
@@ -407,7 +471,12 @@ function PackagesTable({
     shipmentId,
   })
   const [scannedPackageIds, setScannedPackageIds] = useState<string[]>([])
-
+  const [selectedRemarks, setSelectedRemarks] = useState<
+    {
+      id: string
+      remarks: string
+    }[]
+  >([])
   const utils = api.useUtils()
   const { isLoading, mutate } =
     api.shipment.package.updateManyToCompletedStatus.useMutation({
@@ -444,6 +513,8 @@ function PackagesTable({
       />
 
       <PackagesTableTabs
+        selectedRemarks={selectedRemarks}
+        setSelectedRemarks={setSelectedRemarks}
         packages={packagesQuery.data}
         scannedPackageIds={scannedPackageIds}
         isUpdatingStatus={isLoading}
@@ -461,14 +532,28 @@ function PackagesTable({
           disabled={isLoading || scannedPackageIds.length === 0}
           onClick={() => {
             const createdAt = DateTime.now().toISO()
-            mutate({
-              shipmentId,
-              shipmentPackageStatus: "COMPLETED" as const,
-              packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
-              packageStatus: "IN_WAREHOUSE" as const,
-              createdAt,
-              createdById: userId,
-            })
+
+            if (
+              selectedRemarks.some((remark) => remark.remarks === "0") ||
+              selectedRemarks.length !== scannedPackageIds.length
+            ) {
+              toast("Remarks Selection is Required.", {
+                icon: "⚠️",
+              })
+            } else {
+              mutate({
+                shipmentId,
+                shipmentPackageStatus: "COMPLETED" as const,
+                packageIds: [
+                  scannedPackageIds[0],
+                  ...scannedPackageIds.slice(1),
+                ],
+                packageStatus: "IN_WAREHOUSE" as const,
+                createdAt,
+                createdById: userId,
+                remarks: selectedRemarks,
+              })
+            }
           }}
         >
           Save All

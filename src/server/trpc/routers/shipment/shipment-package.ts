@@ -1,11 +1,16 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../../trpc"
-import type { PackageStatus, ShipmentPackageStatus } from "@/utils/constants"
+import type {
+  PackageStatus,
+  ShipmentPackageStatus,
+  PackageRemarks,
+} from "@/utils/constants"
 import {
   CLIENT_TIMEZONE,
   SUPPORTED_PACKAGE_STATUSES,
   SUPPORTED_SHIPMENT_PACKAGE_STATUSES,
   getDescriptionForNewPackageStatusLog,
+  SUPPORTED_PACKAGE_REMARKS,
 } from "@/utils/constants"
 import {
   packageStatusLogs,
@@ -20,7 +25,7 @@ import {
 } from "@/server/db/schema"
 import { and, count, eq, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
-import type { DbWithEntities } from "@/server/db/entities"
+import type { DbWithEntities, Package } from "@/server/db/entities"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import {
   batchNotifyByEmailWithComponentProps,
@@ -284,8 +289,18 @@ export const shipmentPackageRouter = router({
         createdAt: z.string(),
         createdById: z.string().length(28),
         isFailedAttempt: z.boolean().default(false),
+        remarks: z.object({ id: z.string(), remarks: z.string() }).array(),
       }),
     )
+
+    // z.array(
+    //   z.object({
+    //     id: z.string(),
+    //     remarks: z.custom<PackageRemarks>((val) =>
+    //       SUPPORTED_PACKAGE_REMARKS.includes(val as PackageRemarks),
+    //     ),
+    //   }),
+    // ),
     .mutation(async ({ ctx, input }) => {
       const now = DateTime.now()
       const nowPlusThreeDays = now
@@ -412,16 +427,27 @@ export const shipmentPackageRouter = router({
             })
             .where(inArray(packages.id, input.packageIds))
         }
+        const findRemarkById = (_packageId: string) => {
+          return input.remarks.find((remark) => remark.id === _packageId)!
+        }
 
-        await tx
-          .update(packages)
-          .set({
-            status: input.packageStatus,
-            failedAttempts: input.isFailedAttempt
-              ? sql`${packages.failedAttempts} + 1`
-              : undefined,
-          })
-          .where(inArray(packages.id, input.packageIds))
+        for (const packageId of input.packageIds) {
+          await tx
+            .update(packages)
+            .set({
+              status: input.packageStatus,
+              failedAttempts: input.isFailedAttempt
+                ? sql`${packages.failedAttempts} + 1`
+                : undefined,
+              remarks:
+                findRemarkById(packageId)?.remarks === "GOOD_CONDITION"
+                  ? "GOOD_CONDITION"
+                  : findRemarkById(packageId)?.remarks === "BAD_CONDITION"
+                    ? "BAD_CONDITION"
+                    : "MISSING",
+            })
+            .where(eq(packages.id, packageId))
+        }
 
         await tx
           .update(shipmentPackages)
