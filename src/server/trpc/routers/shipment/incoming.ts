@@ -9,6 +9,7 @@ import {
   users,
   overseasAgents,
   warehouseStaffs,
+  warehouses,
 } from "@/server/db/schema"
 import type {
   PackageReceptionMode,
@@ -45,6 +46,7 @@ export const incomingShipmentRouter = router({
       }
     })
   }),
+
   getById: protectedProcedure
     .input(
       z.object({
@@ -77,13 +79,31 @@ export const incomingShipmentRouter = router({
         ...other,
       }
     }),
+  getWarehouseByStaffId: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(warehouseStaffs)
+        .innerJoin(warehouses, eq(warehouses.id, warehouseStaffs.warehouseId))
+        .where(eq(warehouseStaffs.userId, input.id))
+
+      return results[0].warehouses.displayName
+    }),
+
   getInTransit: protectedProcedure
     .input(
       z.object({
         searchWith: z
           .literal("SHIPMENT_ID")
           .or(z.literal("PACKAGE_ID"))
-          .or(z.literal("PACKAGE_PRE_ID")),
+          .or(z.literal("PACKAGE_PRE_ID"))
+          .or(z.literal("AGENT_ID"))
+          .or(z.literal("COMPANY_NAME")),
         searchTerm: z.string(),
       }),
     )
@@ -117,10 +137,18 @@ export const incomingShipmentRouter = router({
                 ? like(shipments.id, `%${input.searchTerm}%`)
                 : input.searchWith === "PACKAGE_ID"
                   ? like(packages.id, `%${input.searchTerm}%`)
-                  : like(packages.preassignedId, `%${input.searchTerm}%`),
+                  : input.searchWith === "AGENT_ID"
+                    ? like(users.displayName, `%${input.searchTerm}%`)
+                    : input.searchWith === "COMPANY_NAME"
+                      ? like(
+                          overseasAgents.companyName,
+                          `%${input.searchTerm}%`,
+                        )
+                      : like(packages.preassignedId, `%${input.searchTerm}%`),
           ),
         )
     }),
+
   getTotalInTransitSentByAgentId: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db
       .select({ value: count() })
