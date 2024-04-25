@@ -10,6 +10,7 @@ import * as Accordion from "@radix-ui/react-accordion"
 import { SidebarLink } from "@/components/sidebar-link"
 import { LogoutButton } from "@/components/logout-button"
 import type { User } from "lucia"
+import { Boat } from "@phosphor-icons/react/dist/ssr/Boat"
 
 export function OverseasSideBar(props: { isMinimized: boolean }) {
   return (
@@ -46,6 +47,12 @@ export function OverseasSideBar(props: { isMinimized: boolean }) {
               icon={<Gauge size={32} />}
               name="Dashboard"
               href="/overseas/dashboard"
+            />
+            <SidebarLink
+              isMinimized={props.isMinimized}
+              icon={<Boat size={32} />}
+              name="Shipments"
+              href="/overseas/shipments"
             />
             <SidebarLink
               isMinimized={props.isMinimized}
