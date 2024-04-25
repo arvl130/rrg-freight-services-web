@@ -13,6 +13,7 @@ import {
   assignedDrivers,
   assignedVehicles,
   warehouses,
+  domesticAgents,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
@@ -37,6 +38,7 @@ export const forwarderTransferShipmentRouter = router({
         ...shipmentColumns,
         ...forwarderTransferShipmentColumns,
         agentDisplayName: agentUsers.displayName,
+        agentCompanyName: domesticAgents.companyName,
         driverDisplayName: driverUsers.displayName,
         warehouseDisplayName: warehouses.displayName,
       })
@@ -48,6 +50,10 @@ export const forwarderTransferShipmentRouter = router({
       .innerJoin(
         agentUsers,
         eq(forwarderTransferShipments.sentToAgentId, agentUsers.id),
+      )
+      .innerJoin(
+        domesticAgents,
+        eq(forwarderTransferShipments.sentToAgentId, domesticAgents.userId),
       )
       .innerJoin(
         driverUsers,

@@ -30,6 +30,7 @@ import { UnarchiveModal } from "./unarchive-modal"
 type NormalizedForwarderTransferShipmentWithDetails =
   NormalizedForwarderTransferShipment & {
     agentDisplayName: string
+    agentCompanyName: string
     driverDisplayName: string
     warehouseDisplayName: string
   }
@@ -54,7 +55,7 @@ function TableItem({
         {item.id}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        {item.agentDisplayName}
+        {item.agentDisplayName} ({item.agentCompanyName})
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {DateTime.fromISO(item.createdAt).toLocaleString(
@@ -169,7 +170,8 @@ function filterBySearchTerm(
   return items.filter((item) => {
     const searchTermSearchable = searchTerm.toLowerCase()
     const shipmentId = item.id.toString()
-    const sentTo = item.agentDisplayName.toLowerCase()
+    const sentTo =
+      `${item.agentDisplayName} (${item.agentCompanyName})`.toLowerCase()
     const departingFrom = item.warehouseDisplayName.toLowerCase()
 
     return (
