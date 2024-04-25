@@ -20,25 +20,44 @@ import { and, eq, getTableColumns, inArray, like } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
 import { notifyByExpoPush, notifyByWebPush } from "@/server/notification"
+import { alias } from "drizzle-orm/mysql-core"
 
 export const warehouseTransferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
+    const shipmentColumns = getTableColumns(shipments)
+    const { shipmentId, ...warehouseTransferShipmentColumns } = getTableColumns(
+      warehouseTransferShipments,
+    )
+
+    const originWarehouses = alias(warehouses, "origin_warehouses")
+    const destinationWarehouses = alias(warehouses, "destination_warehouses")
+
+    return await ctx.db
+      .select({
+        ...shipmentColumns,
+        ...warehouseTransferShipmentColumns,
+        originWarehouseDisplayName: originWarehouses.displayName,
+        destinationWarehouseDisplayName: destinationWarehouses.displayName,
+      })
       .from(warehouseTransferShipments)
       .innerJoin(
         shipments,
         eq(warehouseTransferShipments.shipmentId, shipments.id),
       )
-
-    return results.map(({ shipments, warehouse_transfer_shipments }) => {
-      const { shipmentId, ...other } = warehouse_transfer_shipments
-
-      return {
-        ...shipments,
-        ...other,
-      }
-    })
+      .innerJoin(
+        originWarehouses,
+        eq(
+          warehouseTransferShipmentColumns.sentFromWarehouseId,
+          originWarehouses.id,
+        ),
+      )
+      .innerJoin(
+        destinationWarehouses,
+        eq(
+          warehouseTransferShipmentColumns.sentToWarehouseId,
+          destinationWarehouses.id,
+        ),
+      )
   }),
   getById: protectedProcedure
     .input(
