@@ -103,9 +103,16 @@ function TableItem({ item }: { item: Warehouse }) {
 }
 
 function filterBySearchTerm(items: Warehouse[], searchTerm: string) {
-  return items.filter((item) =>
-    item.id.toString().toLowerCase().includes(searchTerm),
-  )
+  return items.filter((item) => {
+    const searchTermSearchable = searchTerm.toLowerCase()
+    const id = item.id.toString()
+    const displayName = item.displayName.toLowerCase()
+
+    return (
+      id.includes(searchTermSearchable) ||
+      displayName.includes(searchTermSearchable)
+    )
+  })
 }
 
 function filterByArchiveStatus(items: Warehouse[], isArchived: boolean) {

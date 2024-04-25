@@ -16,9 +16,16 @@ import { CreateModal } from "./create-modal"
 import { ShowGeneratedPasswordModal } from "./show-generated-password-modal"
 
 function filterBySearchTerm(items: User[], searchTerm: string) {
-  return items.filter((item) =>
-    item.id.toString().toLowerCase().includes(searchTerm),
-  )
+  return items.filter((item) => {
+    const searchTermSearchable = searchTerm.toLowerCase()
+    const displayName = item.displayName.toLowerCase()
+    const email = item.emailAddress.toLowerCase()
+
+    return (
+      displayName.includes(searchTermSearchable) ||
+      email.includes(searchTermSearchable)
+    )
+  })
 }
 
 type ActiveStatus = "ACTIVE" | "NOT_ACTIVE"
@@ -173,7 +180,7 @@ function UsersTable({ items }: { items: User[] }) {
             Actions
           </div>
           {paginatedItems.length === 0 ? (
-            <div className="text-center pt-4">No users found.</div>
+            <div className="text-center pt-4 col-span-5">No users found.</div>
           ) : (
             <>
               {paginatedItems.map((item) => (

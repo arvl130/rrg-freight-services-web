@@ -109,9 +109,18 @@ function TableItem({ item }: { item: Vehicle }) {
 }
 
 function filterBySearchTerm(items: Vehicle[], searchTerm: string) {
-  return items.filter((item) =>
-    item.id.toString().toLowerCase().includes(searchTerm),
-  )
+  return items.filter((item) => {
+    const searchTermSearchable = searchTerm.toLowerCase()
+    const id = item.id.toString()
+    const plateNumber = item.plateNumber.toLowerCase()
+    const displayName = item.displayName.toLowerCase()
+
+    return (
+      id.includes(searchTermSearchable) ||
+      plateNumber.includes(searchTermSearchable) ||
+      displayName.includes(searchTermSearchable)
+    )
+  })
 }
 
 function filterByArchiveStatus(items: Vehicle[], isArchived: boolean) {
