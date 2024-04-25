@@ -5,7 +5,6 @@ import { Popup } from "react-leaflet/Popup"
 import "@/styles/leaflet/leaflet.css"
 import type { Map } from "leaflet"
 import { Icon } from "leaflet"
-import MarkerIcon from "leaflet/dist/images/marker-icon.png"
 import { useMap } from "react-leaflet/hooks"
 import { useEffect } from "react"
 import { LEAFLET_DEFAULT_ZOOM_LEVEL } from "@/utils/constants"
@@ -50,8 +49,9 @@ export default function BareMap({
         position={[lat, long]}
         icon={
           new Icon({
-            iconUrl: MarkerIcon.src,
-            iconSize: [MarkerIcon.width, MarkerIcon.height],
+            iconUrl:
+              "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+            iconSize: [25, 41],
           })
         }
       >
