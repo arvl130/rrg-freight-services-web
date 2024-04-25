@@ -32,24 +32,28 @@ import { batchNotifyByEmailWithComponentProps } from "@/server/notification"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
 import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
-import type { DbWithEntities } from "@/server/db/entities"
 import { getAreaCode } from "@/utils/area-code"
 
 export const incomingShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
+    const shipmentColumns = getTableColumns(shipments)
+    const { shipmentId, ...incomingShipmentColumns } =
+      getTableColumns(incomingShipments)
+
+    return await ctx.db
+      .select({
+        ...shipmentColumns,
+        ...incomingShipmentColumns,
+        agentDisplayName: users.displayName,
+        agentCompanyName: overseasAgents.companyName,
+      })
       .from(incomingShipments)
       .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
-
-    return results.map(({ shipments, incoming_shipments }) => {
-      const { shipmentId, ...other } = incoming_shipments
-
-      return {
-        ...shipments,
-        ...other,
-      }
-    })
+      .innerJoin(users, eq(incomingShipments.sentByAgentId, users.id))
+      .innerJoin(
+        overseasAgents,
+        eq(incomingShipments.sentByAgentId, overseasAgents.userId),
+      )
   }),
 
   getById: protectedProcedure
