@@ -1,14 +1,20 @@
 import { api } from "@/utils/api"
+import Link from "next/link"
 import { useEffect } from "react"
 
 export function ChooseDriver({
+  provinceId,
   driverId,
   onChange,
 }: {
+  provinceId: string
   driverId: string
   onChange: (driverId: string) => void
 }) {
-  const { status, data, error } = api.user.getAvailableDrivers.useQuery()
+  const { status, data, error } =
+    api.user.getAvailableDriverInProvinceId.useQuery({
+      provinceId,
+    })
 
   useEffect(() => {
     if (driverId === "" && data && data.length > 0) {
@@ -24,7 +30,26 @@ export function ChooseDriver({
       {status === "success" && (
         <>
           {data.length === 0 ? (
-            <p>No available drivers.</p>
+            <div className="max-w-lg">
+              <p className="text-red-500">
+                There are no available drivers assigned for this area at the
+                moment.
+              </p>
+              <ul className="mt-1 text-sm">
+                <li>
+                  * Try assigning an existing driver to this area, or create a
+                  new driver assigned to this area. You can accomplish this on
+                  the{" "}
+                  <Link
+                    href="/admin/users"
+                    className="font-semibold hover:underline"
+                  >
+                    Users
+                  </Link>{" "}
+                  page.
+                </li>
+              </ul>
+            </div>
           ) : (
             <select
               className="w-full bg-white px-3 py-1.5 border border-gray-300 rounded-md"

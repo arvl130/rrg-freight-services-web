@@ -89,6 +89,7 @@ function filterBySearchTerm(items: Package[], searchTerm: string) {
 }
 
 export function ChoosePackageTable({
+  selectedProvinceId,
   hasExceededWeightLimit,
   totalWeightOfSelectedPackages,
   selectedDepartingWarehouseId,
@@ -99,6 +100,7 @@ export function ChoosePackageTable({
   onCheckboxChange,
   onResetSelection,
 }: {
+  selectedProvinceId: string
   hasExceededWeightLimit: boolean
   totalWeightOfSelectedPackages: number
   selectedDepartingWarehouseId: null | number
@@ -116,7 +118,8 @@ export function ChoosePackageTable({
     refetch,
     status,
     data: packages,
-  } = api.package.getInWarehouseAndCanBeDelivered.useQuery({
+  } = api.package.getInWarehouseAndCanBeDeliveredInProvinceId.useQuery({
+    provinceId: selectedProvinceId,
     shippingType: selectedDeliveryType,
     sortOrder,
     searchTerm,
@@ -127,7 +130,7 @@ export function ChoosePackageTable({
   })
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] overflow-auto">
+    <div className="grid grid-rows-[auto_1fr_auto] overflow-auto mt-3">
       <div className="mb-3">
         <div className="grid grid-cols-[1fr_auto]">
           <div className="flex justify-between items-center font-medium text-gray-700">

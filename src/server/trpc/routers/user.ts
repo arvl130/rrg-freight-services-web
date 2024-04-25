@@ -642,6 +642,28 @@ export const userRouter = router({
       .leftJoin(assignedDrivers, eq(users.id, assignedDrivers.driverId))
       .where(and(eq(users.role, "DRIVER"), isNull(assignedDrivers.driverId)))
   }),
+  getAvailableDriverInProvinceId: protectedProcedure
+    .input(
+      z.object({
+        provinceId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const userColumns = getTableColumns(users)
+
+      return await ctx.db
+        .selectDistinct(userColumns)
+        .from(driverAssignedAreas)
+        .innerJoin(users, eq(driverAssignedAreas.userId, users.id))
+        .leftJoin(assignedDrivers, eq(users.id, assignedDrivers.driverId))
+        .where(
+          and(
+            eq(users.role, "DRIVER"),
+            isNull(assignedDrivers.driverId),
+            eq(driverAssignedAreas.areaCode, input.provinceId),
+          ),
+        )
+    }),
   getTotalActiveUsers: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db
       .select({

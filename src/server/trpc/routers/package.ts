@@ -7,6 +7,7 @@ import {
   getTableColumns,
   like,
   lt,
+  sql,
 } from "drizzle-orm"
 import {
   domesticAgentProcedure,
@@ -35,10 +36,8 @@ import {
   SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
-  SUPPORTED_PACKAGE_STATUSES,
   getDescriptionForNewPackageStatusLog,
 } from "@/utils/constants"
-import { generateUniqueId } from "@/utils/uuid"
 import { DateTime } from "luxon"
 import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
 import { createLog } from "@/utils/logging"
@@ -297,6 +296,50 @@ export const packageRouter = router({
         .where(
           and(
             eq(packages.status, "IN_WAREHOUSE"),
+            lt(packages.failedAttempts, 3),
+            input.warehouseId
+              ? eq(packages.lastWarehouseId, input.warehouseId)
+              : undefined,
+            input.shippingType
+              ? eq(packages.shippingType, input.shippingType)
+              : undefined,
+            input.searchTerm === ""
+              ? undefined
+              : like(packages.id, `%${input.searchTerm}%`),
+          ),
+        )
+        .orderBy(
+          input.sortOrder === "DESC"
+            ? desc(packages.expectedHasDeliveryAt)
+            : asc(packages.expectedHasDeliveryAt),
+        )
+
+      return results.filter(({ isDeliverable }) => isDeliverable)
+    }),
+  getInWarehouseAndCanBeDeliveredInProvinceId: protectedProcedure
+    .input(
+      z.object({
+        provinceId: z.string(),
+        searchTerm: z.string(),
+        warehouseId: z.number().optional(),
+        shippingType: z
+          .custom<PackageShippingType>((val) =>
+            SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(
+              val as PackageShippingType,
+            ),
+          )
+          .optional(),
+        sortOrder: z.union([z.literal("ASC"), z.literal("DESC")]),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(packages)
+        .where(
+          and(
+            eq(packages.status, "IN_WAREHOUSE"),
+            eq(sql`substring(${packages.areaCode},1,4)`, input.provinceId),
             lt(packages.failedAttempts, 3),
             input.warehouseId
               ? eq(packages.lastWarehouseId, input.warehouseId)
