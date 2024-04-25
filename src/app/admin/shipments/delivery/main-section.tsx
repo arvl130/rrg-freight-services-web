@@ -22,25 +22,18 @@ import {
 } from "@/utils/constants"
 import { ViewLocationsModal } from "@/components/shipments/view-locations-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
-import { UserDisplayName } from "@/components/user-display-name"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 import { EditDetailsModal } from "./edit-details-modal"
 import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
 
-function WarehouseDetails(props: { warehouseId: number }) {
-  const { status, data, error } = api.warehouse.getById.useQuery({
-    id: props.warehouseId,
-  })
-
-  if (status === "loading") return <>...</>
-  if (status === "error") return <>Error: {error.message}</>
-
-  return <>{data.displayName}</>
+type NormalizedDeliveryShipmentWithDetails = NormalizedDeliveryShipment & {
+  warehouseDisplayName: string
+  driverDisplayName: string
 }
 
-function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
+function TableItem({ item }: { item: NormalizedDeliveryShipmentWithDetails }) {
   const [visibleModal, setVisibleModal] = useState<
     | null
     | "VIEW_DETAILS"
@@ -56,10 +49,10 @@ function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
         {item.id}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        <UserDisplayName userId={item.driverId} />
+        {item.driverDisplayName}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        <WarehouseDetails warehouseId={item.departingWarehouseId} />
+        {item.warehouseDisplayName}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {DateTime.fromISO(item.createdAt).toLocaleString(
@@ -157,16 +150,25 @@ function TableItem({ item }: { item: NormalizedDeliveryShipment }) {
 }
 
 function filterBySearchTerm(
-  items: NormalizedDeliveryShipment[],
+  items: NormalizedDeliveryShipmentWithDetails[],
   searchTerm: string,
 ) {
-  return items.filter((item) =>
-    item.id.toString().toLowerCase().includes(searchTerm),
-  )
+  return items.filter((item) => {
+    const searchTermSearchable = searchTerm.toLowerCase()
+    const shipmentId = item.id.toString()
+    const assignedTo = item.driverDisplayName.toLowerCase()
+    const departingFrom = item.warehouseDisplayName.toLowerCase()
+
+    return (
+      shipmentId.includes(searchTermSearchable) ||
+      assignedTo.includes(searchTermSearchable) ||
+      departingFrom.includes(searchTermSearchable)
+    )
+  })
 }
 
 function filterBySelectedTab(
-  items: NormalizedDeliveryShipment[],
+  items: NormalizedDeliveryShipmentWithDetails[],
   selectedTab: PackageShippingType | "ALL",
 ) {
   if (selectedTab === "ALL") return items
@@ -176,7 +178,7 @@ function filterBySelectedTab(
 }
 
 function filterByArchiveStatus(
-  items: NormalizedDeliveryShipment[],
+  items: NormalizedDeliveryShipmentWithDetails[],
   isArchived: boolean,
 ) {
   if (isArchived) return items.filter((item) => item.isArchived === 1)
@@ -185,7 +187,7 @@ function filterByArchiveStatus(
 }
 
 function filterByShipmentStatus(
-  items: NormalizedDeliveryShipment[],
+  items: NormalizedDeliveryShipmentWithDetails[],
   status: "ALL" | ShipmentStatus,
 ) {
   if (status === "ALL") return items
@@ -194,7 +196,7 @@ function filterByShipmentStatus(
 }
 
 function filterByWarehouseId(
-  items: NormalizedDeliveryShipment[],
+  items: NormalizedDeliveryShipmentWithDetails[],
   warehouseId: "ALL" | number,
 ) {
   if (warehouseId === "ALL") return items
@@ -206,7 +208,7 @@ function ShipmentsTable({
   items,
   warehouses,
 }: {
-  items: NormalizedDeliveryShipment[]
+  items: NormalizedDeliveryShipmentWithDetails[]
   warehouses: Warehouse[]
 }) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
@@ -254,7 +256,7 @@ function ShipmentsTable({
     gotoPage,
     gotoNextPage,
     gotoPreviousPage,
-  } = usePaginatedItems<NormalizedDeliveryShipment>({
+  } = usePaginatedItems<NormalizedDeliveryShipmentWithDetails>({
     items: visibleItems,
   })
 

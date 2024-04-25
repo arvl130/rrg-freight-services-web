@@ -13,6 +13,7 @@ import {
   webpushSubscriptions,
   assignedDrivers,
   assignedVehicles,
+  warehouses,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -24,19 +25,24 @@ import { createLog } from "@/utils/logging"
 
 export const deliveryShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
+    const shipmentColumns = getTableColumns(shipments)
+    const { shipmentId, ...deliveryShipmentColumns } =
+      getTableColumns(deliveryShipments)
+
+    return await ctx.db
+      .select({
+        ...shipmentColumns,
+        ...deliveryShipmentColumns,
+        driverDisplayName: users.displayName,
+        warehouseDisplayName: warehouses.displayName,
+      })
       .from(deliveryShipments)
       .innerJoin(shipments, eq(deliveryShipments.shipmentId, shipments.id))
-
-    return results.map(({ shipments, delivery_shipments }) => {
-      const { shipmentId, ...other } = delivery_shipments
-
-      return {
-        ...shipments,
-        ...other,
-      }
-    })
+      .innerJoin(users, eq(deliveryShipments.driverId, users.id))
+      .innerJoin(
+        warehouses,
+        eq(deliveryShipments.departingWarehouseId, warehouses.id),
+      )
   }),
   getById: protectedProcedure
     .input(
