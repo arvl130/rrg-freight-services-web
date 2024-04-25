@@ -12,6 +12,7 @@ import {
   expopushTokens,
   assignedDrivers,
   assignedVehicles,
+  warehouses,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
@@ -23,22 +24,39 @@ import { notifyByExpoPush, notifyByWebPush } from "@/server/notification"
 
 export const forwarderTransferShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
+    const shipmentColumns = getTableColumns(shipments)
+    const { shipmentId, ...forwarderTransferShipmentColumns } = getTableColumns(
+      forwarderTransferShipments,
+    )
+
+    const agentUsers = alias(users, "agent_users")
+    const driverUsers = alias(users, "driver_users")
+
+    return await ctx.db
+      .select({
+        ...shipmentColumns,
+        ...forwarderTransferShipmentColumns,
+        agentDisplayName: agentUsers.displayName,
+        driverDisplayName: driverUsers.displayName,
+        warehouseDisplayName: warehouses.displayName,
+      })
       .from(forwarderTransferShipments)
       .innerJoin(
         shipments,
         eq(forwarderTransferShipments.shipmentId, shipments.id),
       )
-
-    return results.map(({ shipments, forwarder_transfer_shipments }) => {
-      const { shipmentId, ...other } = forwarder_transfer_shipments
-
-      return {
-        ...shipments,
-        ...other,
-      }
-    })
+      .innerJoin(
+        agentUsers,
+        eq(forwarderTransferShipments.sentToAgentId, agentUsers.id),
+      )
+      .innerJoin(
+        driverUsers,
+        eq(forwarderTransferShipments.driverId, driverUsers.id),
+      )
+      .innerJoin(
+        warehouses,
+        eq(forwarderTransferShipments.departingWarehouseId, warehouses.id),
+      )
   }),
   getAllForDomesticAgent: domesticAgentProcedure.query(async ({ ctx }) => {
     const results = await ctx.db
