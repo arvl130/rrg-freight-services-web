@@ -21,18 +21,19 @@ import {
   type ShipmentStatus,
 } from "@/utils/constants"
 
-function UserDisplayName({ userId }: { userId: string }) {
-  const { status, data, error } = api.user.getById.useQuery({
-    id: userId,
-  })
+type NormalizedForwarderTransferShipmentWithDetails =
+  NormalizedForwarderTransferShipment & {
+    agentDisplayName: string
+    agentCompanyName: string
+    driverDisplayName: string
+    warehouseDisplayName: string
+  }
 
-  if (status === "loading") return <>...</>
-  if (status === "error") return <>error: {error.message}</>
-
-  return <>{data?.displayName}</>
-}
-
-function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
+function TableItem({
+  item,
+}: {
+  item: NormalizedForwarderTransferShipmentWithDetails
+}) {
   const [visibleModal, setVisibleModal] = useState<
     null | "VIEW_DETAILS" | "CONFIRM_TRANSFER"
   >(null)
@@ -43,7 +44,7 @@ function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
         {item.id}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        <UserDisplayName userId={item.sentToAgentId} />
+        {item.agentDisplayName} ({item.agentCompanyName})
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {DateTime.fromISO(item.createdAt).toLocaleString(
@@ -114,7 +115,7 @@ function TableItem({ item }: { item: NormalizedForwarderTransferShipment }) {
 }
 
 function filterBySearchTerm(
-  items: NormalizedForwarderTransferShipment[],
+  items: NormalizedForwarderTransferShipmentWithDetails[],
   searchTerm: string,
 ) {
   return items.filter((item) =>
@@ -123,7 +124,7 @@ function filterBySearchTerm(
 }
 
 function filterByArchiveStatus(
-  items: NormalizedForwarderTransferShipment[],
+  items: NormalizedForwarderTransferShipmentWithDetails[],
   isArchived: boolean,
 ) {
   if (isArchived) return items.filter((item) => item.isArchived === 1)
@@ -132,7 +133,7 @@ function filterByArchiveStatus(
 }
 
 function filterByShipmentStatus(
-  items: NormalizedForwarderTransferShipment[],
+  items: NormalizedForwarderTransferShipmentWithDetails[],
   status: "ALL" | ShipmentStatus,
 ) {
   if (status === "ALL") return items
@@ -141,7 +142,7 @@ function filterByShipmentStatus(
 }
 
 function filterByWarehouseId(
-  items: NormalizedForwarderTransferShipment[],
+  items: NormalizedForwarderTransferShipmentWithDetails[],
   warehouseId: "ALL" | number,
 ) {
   if (warehouseId === "ALL") return items
@@ -153,7 +154,7 @@ function ShipmentsTable({
   items,
   warehouses,
 }: {
-  items: NormalizedForwarderTransferShipment[]
+  items: NormalizedForwarderTransferShipmentWithDetails[]
   warehouses: Warehouse[]
 }) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
@@ -194,7 +195,7 @@ function ShipmentsTable({
     gotoPage,
     gotoNextPage,
     gotoPreviousPage,
-  } = usePaginatedItems<NormalizedForwarderTransferShipment>({
+  } = usePaginatedItems<NormalizedForwarderTransferShipmentWithDetails>({
     items: visibleItems,
   })
 

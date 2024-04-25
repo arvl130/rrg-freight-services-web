@@ -65,23 +65,45 @@ export const forwarderTransferShipmentRouter = router({
       )
   }),
   getAllForDomesticAgent: domesticAgentProcedure.query(async ({ ctx }) => {
-    const results = await ctx.db
-      .select()
+    const shipmentColumns = getTableColumns(shipments)
+    const { shipmentId, ...forwarderTransferShipmentColumns } = getTableColumns(
+      forwarderTransferShipments,
+    )
+
+    const agentUsers = alias(users, "agent_users")
+    const driverUsers = alias(users, "driver_users")
+
+    return await ctx.db
+      .select({
+        ...shipmentColumns,
+        ...forwarderTransferShipmentColumns,
+        agentDisplayName: agentUsers.displayName,
+        agentCompanyName: domesticAgents.companyName,
+        driverDisplayName: driverUsers.displayName,
+        warehouseDisplayName: warehouses.displayName,
+      })
       .from(forwarderTransferShipments)
       .innerJoin(
         shipments,
         eq(forwarderTransferShipments.shipmentId, shipments.id),
       )
+      .innerJoin(
+        agentUsers,
+        eq(forwarderTransferShipments.sentToAgentId, agentUsers.id),
+      )
+      .innerJoin(
+        domesticAgents,
+        eq(forwarderTransferShipments.sentToAgentId, domesticAgents.userId),
+      )
+      .innerJoin(
+        driverUsers,
+        eq(forwarderTransferShipments.driverId, driverUsers.id),
+      )
+      .innerJoin(
+        warehouses,
+        eq(forwarderTransferShipments.departingWarehouseId, warehouses.id),
+      )
       .where(eq(forwarderTransferShipments.sentToAgentId, ctx.user.id))
-
-    return results.map(({ shipments, forwarder_transfer_shipments }) => {
-      const { shipmentId, ...other } = forwarder_transfer_shipments
-
-      return {
-        ...shipments,
-        ...other,
-      }
-    })
   }),
   getById: protectedProcedure
     .input(
