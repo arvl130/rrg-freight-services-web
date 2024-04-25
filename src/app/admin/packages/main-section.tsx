@@ -188,9 +188,30 @@ function TableItem({ package: _package }: { package: Package }) {
 }
 
 function filterBySearchTerm(items: Package[], searchTerm: string) {
-  return items.filter((_package) =>
-    _package.id.toString().toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  return items.filter((_package) => {
+    const searchTermSearchable = searchTerm.toLowerCase()
+    const packageId = _package.id.toLowerCase()
+
+    const senderFullname = _package.senderFullName.toLowerCase()
+    const senderContactNumber = _package.senderContactNumber.toLowerCase()
+    const senderFullAddress =
+      `${_package.senderStreetAddress}, ${_package.senderCity}, ${_package.senderStateOrProvince}, ${_package.senderCountryCode} ${_package.senderPostalCode}`.toLowerCase()
+
+    const receiverFullname = _package.receiverFullName.toLowerCase()
+    const receiverContactNumber = _package.receiverContactNumber.toLowerCase()
+    const receiverFullAddress =
+      `${_package.receiverStreetAddress}, ${_package.receiverBarangay}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, ${_package.receiverCountryCode} ${_package.receiverPostalCode}`.toLowerCase()
+
+    return (
+      packageId.includes(searchTermSearchable) ||
+      senderFullname.includes(searchTermSearchable) ||
+      senderContactNumber.includes(searchTermSearchable) ||
+      senderFullAddress.includes(searchTermSearchable) ||
+      receiverFullname.includes(searchTermSearchable) ||
+      receiverContactNumber.includes(searchTermSearchable) ||
+      receiverFullAddress.includes(searchTermSearchable)
+    )
+  })
 }
 
 function filterBySelectedTab(
