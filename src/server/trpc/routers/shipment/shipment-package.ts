@@ -288,8 +288,8 @@ export const shipmentPackageRouter = router({
         ),
         createdAt: z.string(),
         createdById: z.string().length(28),
+
         isFailedAttempt: z.boolean().default(false),
-        remarks: z.object({ id: z.string(), remarks: z.string() }).array(),
       }),
     )
 
@@ -427,27 +427,16 @@ export const shipmentPackageRouter = router({
             })
             .where(inArray(packages.id, input.packageIds))
         }
-        const findRemarkById = (_packageId: string) => {
-          return input.remarks.find((remark) => remark.id === _packageId)!
-        }
 
-        for (const packageId of input.packageIds) {
-          await tx
-            .update(packages)
-            .set({
-              status: input.packageStatus,
-              failedAttempts: input.isFailedAttempt
-                ? sql`${packages.failedAttempts} + 1`
-                : undefined,
-              remarks:
-                findRemarkById(packageId)?.remarks === "GOOD_CONDITION"
-                  ? "GOOD_CONDITION"
-                  : findRemarkById(packageId)?.remarks === "BAD_CONDITION"
-                    ? "BAD_CONDITION"
-                    : "MISSING",
-            })
-            .where(eq(packages.id, packageId))
-        }
+        await tx
+          .update(packages)
+          .set({
+            status: input.packageStatus,
+            failedAttempts: input.isFailedAttempt
+              ? sql`${packages.failedAttempts} + 1`
+              : undefined,
+          })
+          .where(inArray(packages.id, input.packageIds))
 
         await tx
           .update(shipmentPackages)
@@ -474,6 +463,33 @@ export const shipmentPackageRouter = router({
       })
       await batchNotifyBySms({
         messages: packageReceiverSmsNotifications,
+      })
+    }),
+  updateRemarksOfPackages: protectedProcedure
+    .input(
+      z.object({
+        packageIds: z.string().array().nonempty(),
+        remarks: z.object({ id: z.string(), remarks: z.string() }).array(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.transaction(async (tx) => {
+        const findRemarkById = (_packageId: string) => {
+          return input.remarks.find((remark) => remark.id === _packageId)!
+        }
+        for (const packageId of input.packageIds) {
+          await tx
+            .update(packages)
+            .set({
+              remarks:
+                findRemarkById(packageId)?.remarks === "GOOD_CONDITION"
+                  ? "GOOD_CONDITION"
+                  : findRemarkById(packageId)?.remarks === "BAD_CONDITION"
+                    ? "BAD_CONDITION"
+                    : "MISSING",
+            })
+            .where(eq(packages.id, packageId))
+        }
       })
     }),
   getTotalShipmentShipped: protectedProcedure.query(async ({ ctx }) => {

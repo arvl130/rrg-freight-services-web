@@ -496,6 +496,9 @@ function PackagesTable({
       },
     })
 
+  const { mutate: updatePackageRemarks } =
+    api.shipment.package.updateRemarksOfPackages.useMutation({})
+
   if (packagesQuery.status === "loading") return <div>Loading ...</div>
   if (packagesQuery.status === "error")
     return <div>Error: {packagesQuery.error.message}</div>
@@ -555,6 +558,13 @@ function PackagesTable({
                 packageStatus: "IN_WAREHOUSE" as const,
                 createdAt,
                 createdById: userId,
+              })
+
+              updatePackageRemarks({
+                packageIds: [
+                  scannedPackageIds[0],
+                  ...scannedPackageIds.slice(1),
+                ],
                 remarks: selectedRemarks,
               })
             }
