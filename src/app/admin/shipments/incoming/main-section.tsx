@@ -26,17 +26,7 @@ import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 import { EditDetailsModal } from "./edit-details-modal"
 import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
-
-function WarehouseDetails(props: { warehouseId: number }) {
-  const { status, data, error } = api.warehouse.getById.useQuery({
-    id: props.warehouseId,
-  })
-
-  if (status === "loading") return <>...</>
-  if (status === "error") return <>Error: {error.message}</>
-
-  return <>{data.displayName}</>
-}
+import { WarehouseDetails } from "@/components/warehouse-details"
 
 type NormalizedIncomingShipmentWithAgentDetails = NormalizedIncomingShipment & {
   agentDisplayName: string

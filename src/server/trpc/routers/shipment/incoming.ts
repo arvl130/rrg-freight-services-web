@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { protectedProcedure, router } from "../../trpc"
+import { overseasAgentProcedure, protectedProcedure, router } from "../../trpc"
 import {
   shipments,
   shipmentPackages,
@@ -10,9 +10,6 @@ import {
   overseasAgents,
   warehouseStaffs,
   warehouses,
-  barangays,
-  provinces,
-  cities,
 } from "@/server/db/schema"
 import type {
   PackageReceptionMode,
@@ -88,6 +85,27 @@ export const incomingShipmentRouter = router({
         ...other,
       }
     }),
+  getAllForOverseasAgent: overseasAgentProcedure.query(async ({ ctx }) => {
+    const shipmentColumns = getTableColumns(shipments)
+    const { shipmentId, ...incomingShipmentColumns } =
+      getTableColumns(incomingShipments)
+
+    return await ctx.db
+      .select({
+        ...shipmentColumns,
+        ...incomingShipmentColumns,
+        agentDisplayName: users.displayName,
+        agentCompanyName: overseasAgents.companyName,
+      })
+      .from(incomingShipments)
+      .innerJoin(shipments, eq(incomingShipments.shipmentId, shipments.id))
+      .innerJoin(users, eq(incomingShipments.sentByAgentId, users.id))
+      .innerJoin(
+        overseasAgents,
+        eq(incomingShipments.sentByAgentId, overseasAgents.userId),
+      )
+      .where(eq(incomingShipments.sentByAgentId, ctx.user.id))
+  }),
   getShipmentsByOverseasAgentId: protectedProcedure
     .input(
       z.object({

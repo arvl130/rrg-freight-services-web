@@ -1,21 +1,18 @@
 "use client"
 
 import { useState } from "react"
-
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
 import type {
   NormalizedIncomingShipment,
   Warehouse,
 } from "@/server/db/entities"
-
 import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Table from "@/components/table"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import { usePaginatedItems } from "@/hooks/paginated-items"
-import { UserDisplayName } from "@/components/user-display-name"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
 import { ViewWaybillsModal } from "@/components/shipments/incoming/view-waybills-modal"
 import {
@@ -26,19 +23,18 @@ import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 
 import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
+import { WarehouseDetails } from "@/components/warehouse-details"
 
-function WarehouseDetails(props: { warehouseId: number }) {
-  const { status, data, error } = api.warehouse.getById.useQuery({
-    id: props.warehouseId,
-  })
-
-  if (status === "loading") return <>...</>
-  if (status === "error") return <>Error: {error.message}</>
-
-  return <>{data.displayName}</>
+type NormalizedIncomingShipmentWithAgentDetails = NormalizedIncomingShipment & {
+  agentDisplayName: string
+  agentCompanyName: string
 }
 
-function TableItem({ item }: { item: NormalizedIncomingShipment }) {
+function TableItem({
+  item,
+}: {
+  item: NormalizedIncomingShipmentWithAgentDetails
+}) {
   const [visibleModal, setVisibleModal] = useState<
     null | "VIEW_DETAILS" | "PRINT_WAYBILLS" | "ARCHIVE" | "UNARCHIVE"
   >(null)
@@ -49,7 +45,7 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
         {item.id}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        <UserDisplayName userId={item.sentByAgentId} />
+        {item.agentDisplayName} ({item.agentCompanyName})
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         {DateTime.fromISO(item.createdAt).toLocaleString(
@@ -134,16 +130,24 @@ function TableItem({ item }: { item: NormalizedIncomingShipment }) {
 }
 
 function filterBySearchTerm(
-  items: NormalizedIncomingShipment[],
+  items: NormalizedIncomingShipmentWithAgentDetails[],
   searchTerm: string,
 ) {
-  return items.filter((item) =>
-    item.id.toString().toLowerCase().includes(searchTerm),
-  )
+  return items.filter((item) => {
+    const searchTermSearchable = searchTerm.toLowerCase()
+    const shipmentId = item.id.toString()
+    const sender =
+      `${item.agentDisplayName} (${item.agentCompanyName})`.toLowerCase()
+
+    return (
+      shipmentId.includes(searchTermSearchable) ||
+      sender.includes(searchTermSearchable)
+    )
+  })
 }
 
 function filterByArchiveStatus(
-  items: NormalizedIncomingShipment[],
+  items: NormalizedIncomingShipmentWithAgentDetails[],
   isArchived: boolean,
 ) {
   if (isArchived) return items.filter((item) => item.isArchived === 1)
@@ -152,7 +156,7 @@ function filterByArchiveStatus(
 }
 
 function filterByShipmentStatus(
-  items: NormalizedIncomingShipment[],
+  items: NormalizedIncomingShipmentWithAgentDetails[],
   status: "ALL" | ShipmentStatus,
 ) {
   if (status === "ALL") return items
@@ -161,7 +165,7 @@ function filterByShipmentStatus(
 }
 
 function filterByWarehouseId(
-  items: NormalizedIncomingShipment[],
+  items: NormalizedIncomingShipmentWithAgentDetails[],
   warehouseId: "ALL" | "NONE" | number,
 ) {
   if (warehouseId === "ALL") return items
@@ -177,7 +181,7 @@ function ShipmentsTable({
   items,
   warehouses,
 }: {
-  items: NormalizedIncomingShipment[]
+  items: NormalizedIncomingShipmentWithAgentDetails[]
   warehouses: Warehouse[]
 }) {
   const [visibleArchiveStatus, setVisibleArchiveStatus] = useState<
@@ -218,7 +222,7 @@ function ShipmentsTable({
     gotoPage,
     gotoNextPage,
     gotoPreviousPage,
-  } = usePaginatedItems<NormalizedIncomingShipment>({
+  } = usePaginatedItems<NormalizedIncomingShipmentWithAgentDetails>({
     items: visibleItems,
   })
 
@@ -372,9 +376,7 @@ export function HeaderSection() {
 
 export function MainSection(props: { userId: string }) {
   const getAllShipmentsByOverseasId =
-    api.shipment.incoming.getShipmentsByOverseasAgentId.useQuery({
-      id: props.userId,
-    })
+    api.shipment.incoming.getAllForOverseasAgent.useQuery()
   const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
 
   if (
