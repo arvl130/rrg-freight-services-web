@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm"
+import { desc, eq, inArray } from "drizzle-orm"
 import { protectedProcedure, router } from "../../trpc"
 import { shipmentLocations } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
@@ -44,6 +44,26 @@ export const shipmentLocationRouter = router({
         .select()
         .from(shipmentLocations)
         .where(eq(shipmentLocations.shipmentId, input.shipmentId))
+        .orderBy(desc(shipmentLocations.createdAt))
+    }),
+  getByShipmentIds: protectedProcedure
+    .input(
+      z.object({
+        shipmentIds: z.number().array(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      if (input.shipmentIds.length === 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "One or more shipment ids must be specified.",
+        })
+      }
+
+      return await ctx.db
+        .select()
+        .from(shipmentLocations)
+        .where(inArray(shipmentLocations.shipmentId, input.shipmentIds))
         .orderBy(desc(shipmentLocations.createdAt))
     }),
 })

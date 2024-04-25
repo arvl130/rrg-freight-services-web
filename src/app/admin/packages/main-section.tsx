@@ -22,6 +22,7 @@ import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
 import { MarkAsPickedUpModal } from "./mark-package-picked-up-modal"
+import { ViewLocationHistoryModal } from "./view-location-history-modal"
 
 function WarehouseDetails(props: { warehouseId: number }) {
   const { status, data, error } = api.warehouse.getById.useQuery({
@@ -43,6 +44,7 @@ function TableItem({ package: _package }: { package: Package }) {
     | "ARCHIVE"
     | "UNARCHIVE"
     | "MARK_AS_PICKUP"
+    | "VIEW_LOCATION_HISTORY"
   >(null)
 
   return (
@@ -122,6 +124,12 @@ function TableItem({ package: _package }: { package: Package }) {
               >
                 View Waybill
               </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("VIEW_LOCATION_HISTORY")}
+              >
+                Location History
+              </DropdownMenu.Item>
               {_package.receptionMode === "FOR_PICKUP" &&
                 _package.status !== "DELIVERED" && (
                   <DropdownMenu.Item
@@ -171,6 +179,11 @@ function TableItem({ package: _package }: { package: Package }) {
           item={_package}
           onClose={() => setVisibleModal(null)}
           isOpen={visibleModal === "MARK_AS_PICKUP"}
+        />
+        <ViewLocationHistoryModal
+          item={_package}
+          onClose={() => setVisibleModal(null)}
+          isOpen={visibleModal === "VIEW_LOCATION_HISTORY"}
         />
         <ArchiveModal
           id={_package.id}
