@@ -137,7 +137,7 @@ function PackagesTable({
         packageIds={packages.map((_package) => _package.id)}
         scannedPackageIds={scannedPackageIds}
         updatedPackageIds={packages
-          .filter((_package) => _package.status === "DELIVERING")
+          .filter((_package) => _package.status === "OUT_FOR_DELIVERY")
           .map((_package) => _package.id)}
         onSubmitValidPackageId={(packageId) =>
           setScannedPackageIds((currScannedPackageIds) => [
@@ -169,10 +169,10 @@ function PackagesTable({
                 <ArrowRight size={24} />
                 <span
                   className={`inline-block px-2 py-1 text-white rounded-full ${getColorFromPackageStatus(
-                    "DELIVERING",
+                    "OUT_FOR_DELIVERY",
                   )}`}
                 >
-                  {getHumanizedOfPackageStatus("DELIVERING")}
+                  {getHumanizedOfPackageStatus("OUT_FOR_DELIVERY")}
                 </span>
               </div>
             ) : (
@@ -218,7 +218,7 @@ function PackagesTable({
               shipmentId,
               shipmentPackageStatus: "IN_TRANSIT" as const,
               packageIds: [scannedPackageIds[0], ...scannedPackageIds.slice(1)],
-              packageStatus: "DELIVERING" as const,
+              packageStatus: "OUT_FOR_DELIVERY" as const,
               createdAt,
               createdById: userId,
             })
@@ -403,7 +403,7 @@ function MarkAsInTransit({
   if (packages.length === 0) return <p>No packages.</p>
 
   const hasPendingPackages = packages.some(
-    (_package) => _package.status !== "DELIVERING",
+    (_package) => _package.status !== "OUT_FOR_DELIVERY",
   )
 
   return (

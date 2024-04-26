@@ -31,7 +31,7 @@ export function getEstimatedDeliveryOfPackage(_package: Package) {
 
   if (_package.status === "TRANSFERRING_WAREHOUSE") return "N/A"
 
-  if (_package.status === "DELIVERING") {
+  if (_package.status === "OUT_FOR_DELIVERY") {
     if (_package.expectedIsDeliveredAt === null) return "N/A"
 
     const expectedIsDeliveredAt = DateTime.fromISO(

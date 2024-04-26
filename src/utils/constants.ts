@@ -15,7 +15,7 @@ export const SUPPORTED_PACKAGE_STATUSES = [
   "IN_WAREHOUSE",
   "SORTING",
   "PREPARING_FOR_DELIVERY",
-  "DELIVERING",
+  "OUT_FOR_DELIVERY",
   "ARRIVING",
   "DELIVERED",
   "FAILED_DELIVERY",
@@ -115,7 +115,7 @@ type NewPackageStatusDescriptionOptions =
       status:
         | "INCOMING"
         | "SORTING"
-        | "DELIVERING"
+        | "OUT_FOR_DELIVERY"
         | "DELIVERED"
         | "PREPARING_FOR_DELIVERY"
         | "ARRIVING"
@@ -147,7 +147,7 @@ export function getDescriptionForNewPackageStatusLog(
   if (options.status === "TRANSFERRING_WAREHOUSE")
     return `Your package is being transferred to another warehouse (${options.warehouseName}).`
 
-  if (options.status === "DELIVERING" || options.status === "ARRIVING")
+  if (options.status === "OUT_FOR_DELIVERY" || options.status === "ARRIVING")
     return "Your package is out for delivery."
 
   if (options.status === "DELIVERED") return "Your package has been delivered."

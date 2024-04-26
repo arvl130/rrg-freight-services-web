@@ -320,7 +320,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
       {_package.status === "INCOMING" && <First />}
       {_package.status === "IN_WAREHOUSE" && <Second />}
       {_package.status === "SORTING" && <Second />}
-      {_package.status === "DELIVERING" && <Third />}
+      {_package.status === "OUT_FOR_DELIVERY" && <Third />}
       {_package.status === "DELIVERED" && <Fourth />}
       {_package.status === "TRANSFERRING_WAREHOUSE" && <Second />}
       {_package.status === "TRANSFERRING_FORWARDER" && <Third />}

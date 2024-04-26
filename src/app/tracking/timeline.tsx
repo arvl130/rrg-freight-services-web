@@ -18,7 +18,7 @@ function TimelineItem({
         {packageStatusLog.status === "DELIVERED" && (
           <DropboxLogo size={44} color="#1d798b" />
         )}
-        {packageStatusLog.status === "DELIVERING" && (
+        {packageStatusLog.status === "OUT_FOR_DELIVERY" && (
           <Moped size={44} color="#1d798b" />
         )}
         {packageStatusLog.status === "SORTING" && (

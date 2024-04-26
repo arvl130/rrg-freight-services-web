@@ -462,7 +462,7 @@ function MarkAsComplete({
         })
       }}
     >
-      Mark as Complete
+      Mark as Arrived
     </button>
   )
 }

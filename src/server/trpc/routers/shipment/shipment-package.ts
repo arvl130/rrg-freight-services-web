@@ -403,7 +403,7 @@ export const shipmentPackageRouter = router({
             .where(inArray(packages.id, packageIdsCanBeDelivered))
 
         // Update expected_is_delivered_at if a package is out for delivery.
-        if (input.packageStatus === "DELIVERING")
+        if (input.packageStatus === "OUT_FOR_DELIVERY")
           await tx
             .update(packages)
             .set({

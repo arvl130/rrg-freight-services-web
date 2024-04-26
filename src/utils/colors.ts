@@ -7,7 +7,7 @@ const packageStatusColors: Record<PackageStatus, string> = {
   PREPARING_FOR_DELIVERY: "bg-cyan-400",
   TRANSFERRING_FORWARDER: "bg-blue-500",
   TRANSFERRING_WAREHOUSE: "bg-blue-500",
-  DELIVERING: "bg-blue-500",
+  OUT_FOR_DELIVERY: "bg-blue-500",
   ARRIVING: "bg-blue-500",
   DELIVERED: "bg-green-500",
   TRANSFERRED_FORWARDER: "bg-orange-500",
