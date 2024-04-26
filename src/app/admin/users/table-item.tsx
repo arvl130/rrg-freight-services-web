@@ -1,7 +1,7 @@
 import type { User } from "@/server/db/entities"
 import Image from "next/image"
 import { useState } from "react"
-import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
+import { List } from "@phosphor-icons/react/dist/ssr/List"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { getHumanizedOfUserRole } from "@/utils/humanize"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
@@ -47,10 +47,10 @@ export function TableItem({ user }: { user: User }) {
           <DropdownMenu.Trigger asChild>
             <button
               type="button"
-              className="border border-gray-300 rounded-full p-1 shadow hover:bg-gray-50 transition-colors duration-200"
+              className="border border-gray-300 rounded-full p-2 shadow hover:bg-gray-50 transition-colors duration-200"
             >
               <span className="sr-only">Actions</span>
-              <DotsThree size={16} />
+              <List size={16} weight="bold" />
             </button>
           </DropdownMenu.Trigger>
 
