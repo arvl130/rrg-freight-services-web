@@ -5,6 +5,7 @@ import type {
   users,
   warehouseStaffs,
   drivers,
+  driverAssignedAreas,
   overseasAgents,
   domesticAgents,
   shipments,
@@ -44,6 +45,9 @@ export type NormalizedPublicWarehouseStaffUser = Omit<
 export type Driver = typeof drivers.$inferSelect
 export type NewDriver = typeof drivers.$inferInsert
 export type NormalizedPublicDriverUser = Omit<PublicUser & Driver, "userId">
+
+export type DriverAssignedArea = typeof driverAssignedAreas.$inferSelect
+export type NewDriverAssignedArea = typeof driverAssignedAreas.$inferInsert
 
 export type OverseasAgent = typeof overseasAgents.$inferSelect
 export type NewOverseasAgent = typeof overseasAgents.$inferInsert
