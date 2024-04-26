@@ -18,6 +18,7 @@ const inputSchema = z
     ),
     warehouseName: z.string().optional(),
     forwarderName: z.string().optional(),
+    failureReason: z.string().optional(),
   })
   .superRefine(({ status, warehouseName }, ctx) => {
     if (
@@ -136,6 +137,30 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
       const description = getDescriptionForNewPackageStatusLog({
         status: input.status,
         forwarderName: input.forwarderName!,
+      })
+
+      const [{ insertId }] = await db.insert(packageStatusLogs).values({
+        ...input,
+        createdAt,
+        createdById,
+        description,
+      })
+
+      return Response.json({
+        message: "Package status updated",
+        data: {
+          id: insertId,
+          packageId: input.packageId,
+          status: input.status,
+          createdAt,
+          description,
+          createdById,
+        },
+      })
+    } else if (input.status === "FAILED_DELIVERY") {
+      const description = getDescriptionForNewPackageStatusLog({
+        status: input.status,
+        reason: input.failureReason!,
       })
 
       const [{ insertId }] = await db.insert(packageStatusLogs).values({
