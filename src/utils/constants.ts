@@ -119,7 +119,6 @@ type NewPackageStatusDescriptionOptions =
         | "DELIVERED"
         | "PREPARING_FOR_DELIVERY"
         | "ARRIVING"
-        | "FAILED_DELIVERY"
     }
   | {
       status: "IN_WAREHOUSE" | "TRANSFERRING_WAREHOUSE"
@@ -128,6 +127,10 @@ type NewPackageStatusDescriptionOptions =
   | {
       status: "TRANSFERRING_FORWARDER" | "TRANSFERRED_FORWARDER"
       forwarderName: string
+    }
+  | {
+      status: "FAILED_DELIVERY"
+      reason: ""
     }
 
 export function getDescriptionForNewPackageStatusLog(
@@ -159,7 +162,7 @@ export function getDescriptionForNewPackageStatusLog(
     return `Your package has been transferred to another forwarder (${options.forwarderName}).`
 
   if (options.status === "FAILED_DELIVERY")
-    return "The delivery attempt for your package has failed."
+    return `The delivery attempt for your package has failed. Reason: ${options.reason}`
 
   return ""
 }
