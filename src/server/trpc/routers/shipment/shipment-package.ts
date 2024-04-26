@@ -93,6 +93,11 @@ async function getDescriptionForStatus(options: {
       status: options.status,
       forwarderName: displayName,
     })
+  } else if (options.status === "FAILED_DELIVERY") {
+    return getDescriptionForNewPackageStatusLog({
+      status: options.status,
+      reason: "Unspecified (By Warehouse Staff)",
+    })
   } else {
     return getDescriptionForNewPackageStatusLog({
       status: options.status,

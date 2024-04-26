@@ -130,7 +130,7 @@ type NewPackageStatusDescriptionOptions =
     }
   | {
       status: "FAILED_DELIVERY"
-      reason: ""
+      reason: string
     }
 
 export function getDescriptionForNewPackageStatusLog(
