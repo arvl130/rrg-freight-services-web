@@ -309,7 +309,7 @@ function ChooseAgentForm({
               <option value="">Choose ...</option>
               {agents.map((agent) => (
                 <option key={agent.id} value={agent.id}>
-                  {agent.displayName}
+                  {agent.displayName} ({agent.companyName})
                 </option>
               ))}
             </select>
