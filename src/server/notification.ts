@@ -43,8 +43,6 @@ export async function notifyByEmailWithHtmlifiedComponent({
 }) {
   if (serverEnv.OFFLINE_MODE === "1") return
   if (serverEnv.IS_EMAIL_ENABLED === "1") {
-    // For now, we're not able to use this feature in Turpoback
-    // because of this bug: https://github.com/vercel/next.js/issues/57936
     const componentTextVersion = render(component, {
       plainText: true,
     })
