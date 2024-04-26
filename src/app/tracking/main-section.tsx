@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { VerticalTimeline } from "./timeline"
 import { CheckCircle } from "@phosphor-icons/react/dist/ssr/CheckCircle"
+import { GpsFix } from "@phosphor-icons/react/dist/ssr/GpsFix"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -14,6 +15,7 @@ import { getEstimatedDeliveryOfPackage } from "@/utils/estimated-delivery"
 import { PackageNotFound } from "@/components/vector/package-not-found"
 import { DeliveryTruckWithPeople } from "@/components/vector/delivery-truck-with-people"
 import Link from "next/link"
+import { SendMonitoringLinkModal } from "./send-monitor-link-modal"
 
 function First() {
   return (
@@ -251,6 +253,33 @@ function Fourth() {
   )
 }
 
+function RequestMonitoringLinkButton(props: { packageId: string }) {
+  const [isVisible, setIsVisible] = useState(false)
+
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        className="font-medium inline-flex gap-1 items-center bg-green-500 hover:bg-green-400 transition-colors text-white px-4 py-2 rounded-md"
+        onClick={() => {
+          setIsVisible(true)
+        }}
+      >
+        <GpsFix size={16} />
+        View Location History
+      </button>
+
+      <SendMonitoringLinkModal
+        packageId={props.packageId}
+        isOpen={isVisible}
+        onClose={() => {
+          setIsVisible(false)
+        }}
+      />
+    </div>
+  )
+}
+
 function censorWords(words: string) {
   return words.replaceAll(/(?<=\w{2,})\w/g, "*")
 }
@@ -305,6 +334,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
             <div className="text-center">
               {getEstimatedDeliveryOfPackage(_package)}
             </div>
+            <RequestMonitoringLinkButton packageId={_package.id} />
           </div>
 
           <div className="bg-[#ACDEE2] w-full rounded-lg flex flex-col items-center px-6 py-4 md:px-0">

@@ -24,6 +24,7 @@ import { addressValidationRouter } from "./address-validation"
 import { provinceRouter } from "./province"
 import { cityRouter } from "./city"
 import { barangayRouter } from "./barangay"
+import { monitoringLinkRouter } from "./monitoring-link"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -48,6 +49,7 @@ export const rootRouter = router({
   activity: activityRouter,
   webauthn: webauthnRouter,
   passwordReset: passwordResetRouter,
+  monitoringLink: monitoringLinkRouter,
   deliverableProvince: deliverableProvinceRouter,
   addressValidation: addressValidationRouter,
   province: provinceRouter,

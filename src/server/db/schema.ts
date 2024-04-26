@@ -444,6 +444,23 @@ export const packages = mysqlTable("packages", {
   areaCode: varchar("area_code", { length: 100 }).notNull(),
 })
 
+export const packageMonitoringAccessKeys = mysqlTable(
+  "package_monitoring_access_keys",
+  {
+    packageId: varchar("package_id", { length: 36 }).notNull(),
+    accessKey: varchar("access_key", { length: 36 }).notNull(),
+    isValid: tinyint("is_valid").notNull().default(1),
+    createdAt: varchar("created_at", {
+      length: 100,
+    }).notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({
+      columns: [table.packageId, table.accessKey],
+    }),
+  }),
+)
+
 export const packageStatusLogs = mysqlTable("package_status_logs", {
   id: bigint("id", {
     mode: "number",
