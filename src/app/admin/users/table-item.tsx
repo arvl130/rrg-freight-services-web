@@ -45,7 +45,10 @@ export function TableItem({ user }: { user: User }) {
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <button type="button">
+            <button
+              type="button"
+              className="border border-gray-300 rounded-full p-1 shadow hover:bg-gray-50 transition-colors duration-200"
+            >
               <span className="sr-only">Actions</span>
               <DotsThree size={16} />
             </button>
