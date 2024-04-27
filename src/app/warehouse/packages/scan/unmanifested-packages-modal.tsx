@@ -73,9 +73,42 @@ export function UnmanifestedPackagesModal({
     isFragile: "",
     declaredValue: 0,
   })
-
+  const utils = api.useUtils()
   const { isLoading, mutate } =
-    api.shipment.incoming.createIndividual.useMutation()
+    api.shipment.incoming.createIndividual.useMutation({
+      onSuccess: () => {
+        utils.package.getIncomingStatusByShipmentId.invalidate()
+        onClose()
+        setNewPackage({
+          sentByAgentId: "",
+          preassignedId: "",
+          shippingMode: "AIR",
+          shippingType: "STANDARD",
+          receptionMode: "FOR_PICKUP",
+          weightInKg: 0,
+          volumeInCubicMeter: 0,
+          senderFullName: "",
+          senderContactNumber: "",
+          senderEmailAddress: "",
+          senderStreetAddress: "",
+          senderCity: "",
+          senderStateOrProvince: "",
+          senderCountryCode: "",
+          senderPostalCode: 0,
+          receiverFullName: "",
+          receiverContactNumber: "",
+          receiverEmailAddress: "",
+          receiverStreetAddress: "",
+          receiverBarangay: "",
+          receiverCity: "",
+          receiverStateOrProvince: "",
+          receiverCountryCode: "PH",
+          receiverPostalCode: 0,
+          isFragile: "",
+          declaredValue: 0,
+        })
+      },
+    })
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
@@ -91,6 +124,7 @@ export function UnmanifestedPackagesModal({
       [name]: value,
     }))
   }
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
@@ -561,10 +595,11 @@ export function UnmanifestedPackagesModal({
                 </button>
               </Dialog.Close>
               <input
+                disabled={isLoading}
                 onClick={() => {}}
                 className="px-3 py-2 bg-[#3DE074] text-white	rounded-md	cursor-pointer	"
                 type="submit"
-                value={"Add Package"}
+                value={`${isLoading ? "Loading..." : "Add Package"}`}
               />
             </div>
           </form>
