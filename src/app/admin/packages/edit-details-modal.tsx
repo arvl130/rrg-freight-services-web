@@ -19,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
 import { useState, useEffect } from "react"
-
+import { Trash } from "@phosphor-icons/react/dist/ssr/Trash"
 const editFormSchema = z.object({
   id: z.string(),
   preassignedId: z.string(),
@@ -64,6 +64,65 @@ const editFormSchema = z.object({
 
 type EditFormType = z.infer<typeof editFormSchema>
 
+function PromptDeletePackageModal({
+  packageId,
+  isOpen,
+  close: closeDeleteModal,
+}: {
+  packageId: string
+  isOpen: boolean
+  close: () => void
+}) {
+  const apiUtils = api.useUtils()
+  const { isLoading: loadingDeletion, mutate: deletePackage } =
+    api.package.deletedById.useMutation({
+      onSuccess: () => {
+        apiUtils.package.getAll.invalidate()
+        toast.success("Delete success!")
+        closeDeleteModal()
+      },
+    })
+
+  return (
+    <Dialog.Root open={isOpen}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="bg-black/40 fixed inset-0" />
+        <Dialog.Content
+          onEscapeKeyDown={close}
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_2rem),_18rem)] h-[15rem] grid grid-rows-[2.5rem_1fr] rounded-lg bg-white "
+        >
+          <Dialog.Title className="[background-color:_#78CFDC] px-4 py-2 rounded-t-lg text-white font-semibold text-center ">
+            Delete Package
+          </Dialog.Title>
+          <div className="p-3 flex flex-col justify-between">
+            {" "}
+            <div>Are ypu sure you want to delete this package?</div>
+            <div className="flex justify-between pt-2 gap-2">
+              <button
+                type="button"
+                onClick={() => closeDeleteModal()}
+                className="bg-red-500 hover:bg-red-400 disabled:bg-red-300 transition-colors text-white px-6 py-2 rounded-md mr-4"
+              >
+                Cancel
+              </button>
+              <button
+                disabled={loadingDeletion}
+                onClick={() => {
+                  deletePackage({ id: packageId })
+                }}
+                type="button"
+                className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 transition-colors text-white px-6 py-2 rounded-md"
+              >
+                {loadingDeletion ? <>Loading..</> : <>Delete</>}
+              </button>
+            </div>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  )
+}
+
 export function EditDetailsModal({
   package: _package,
   isOpen,
@@ -82,6 +141,9 @@ export function EditDetailsModal({
       reset()
     },
   })
+  const [showDeletePackageModal, setShowDeletePackageModal] = useState<
+    "DELETE_PACKAGE" | null
+  >(null)
 
   const defaultValues = {
     id: _package.id,
@@ -536,22 +598,44 @@ export function EditDetailsModal({
                 </div>
               </div>
             </div>
-            <div className="flex justify-end border-t pt-2 gap-2">
-              <button
-                type="button"
-                disabled={isLoading}
-                onClick={() => close()}
-                className="bg-red-500 hover:bg-red-400 disabled:bg-red-300 transition-colors text-white px-6 py-2 rounded-md"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 transition-colors text-white px-6 py-2 rounded-md"
-              >
-                Save
-              </button>
+            <div className="flex justify-between border-t pt-2 gap-2">
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setShowDeletePackageModal("DELETE_PACKAGE")}
+                  className="bg-red-500 hover:bg-red-400 disabled:bg-red-300 transition-colors text-white px-6 py-2 rounded-md flex justify-center items-center"
+                >
+                  <Trash size={20} />
+                  Delete
+                </button>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  disabled={isLoading}
+                  onClick={() => close()}
+                  className="bg-red-500 hover:bg-red-400 disabled:bg-red-300 transition-colors text-white px-6 py-2 rounded-md mr-4"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 transition-colors text-white px-6 py-2 rounded-md"
+                >
+                  Save
+                </button>
+                {
+                  <PromptDeletePackageModal
+                    packageId={_package.id}
+                    isOpen={showDeletePackageModal === "DELETE_PACKAGE"}
+                    close={() => {
+                      setShowDeletePackageModal(null)
+                      close()
+                    }}
+                  />
+                }
+              </div>
             </div>
           </form>
         </Dialog.Content>
