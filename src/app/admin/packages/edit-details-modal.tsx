@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const editFormSchema = z.object({
   id: z.string(),
@@ -123,6 +123,7 @@ export function EditDetailsModal({
     setValue,
     resetField,
     formState: { isDirty },
+    watch,
   } = useForm<EditFormType>({
     resolver: zodResolver(editFormSchema),
     resetOptions: {
@@ -131,9 +132,53 @@ export function EditDetailsModal({
     defaultValues,
   })
 
+  const provinceWatched = watch("receiverStateOrProvince")
+  const cityWatched = watch("receiverCity")
+  const barangayWatched = watch("receiverBarangay")
+
   const [hasDeclaredValue, setHasDeclaredValue] = useState(
     _package.declaredValue !== null,
   )
+
+  const { data: provinces } = api.addressPicker.getAllProvinces.useQuery()
+
+  const [selectedProvinceId, setSelectedProvinceId] = useState("")
+
+  const { data: cities } = api.addressPicker.getAllCitiesByProvinceId.useQuery({
+    provinceId: selectedProvinceId!,
+  })
+  const [selectedCityId, setSelectedCityId] = useState("")
+
+  const { data: barangays } = api.addressPicker.getAllBarangayByCityId.useQuery(
+    {
+      cityId: selectedCityId!,
+    },
+  )
+
+  const [selectedBarangayId, setSelectedBarangayId] = useState("")
+
+  useEffect(() => {
+    const initialSelectedProvinceId =
+      provinces?.find((province) => province.name === provinceWatched)
+        ?.provinceId || ""
+
+    setSelectedProvinceId(initialSelectedProvinceId)
+  }, [provinces, provinceWatched])
+
+  useEffect(() => {
+    const initialSelectedCityId =
+      cities?.find((city) => city.name === cityWatched)?.cityId || ""
+
+    setSelectedCityId(initialSelectedCityId)
+  }, [cities, cityWatched])
+
+  useEffect(() => {
+    const initialSelectedBarangayId =
+      barangays?.find((barangay) => barangay.name === barangayWatched)?.code ||
+      ""
+
+    setSelectedBarangayId(initialSelectedBarangayId)
+  }, [barangayWatched, barangays])
 
   return (
     <Dialog.Root open={isOpen}>
@@ -149,9 +194,14 @@ export function EditDetailsModal({
           <form
             className="px-6 py-4 h-full grid overflow-y-auto"
             onSubmit={handleSubmit((formData) => {
-              console.log("formData.declaredValue", formData.declaredValue)
+              console.log("province;", selectedProvinceId)
+              console.log("barangay;", selectedBarangayId)
+
               mutate({
                 ...formData,
+                receiverStateOrProvince: selectedProvinceId,
+                receiverCity: selectedCityId!,
+                receiverBarangay: selectedBarangayId!,
                 weightInKg: Number(formData.weightInKg),
                 senderPostalCode: Number(formData.senderPostalCode),
                 receiverPostalCode: Number(formData.receiverPostalCode),
@@ -388,38 +438,81 @@ export function EditDetailsModal({
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-3 mb-3">
+                  <div>
+                    <label className="block font-medium">
+                      State / Province
+                    </label>
+
+                    <select
+                      onChange={(e) => {
+                        setSelectedProvinceId(e.currentTarget.value)
+                      }}
+                      value={selectedProvinceId}
+                      className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                    >
+                      {provinces?.map((province) => (
+                        <option
+                          value={province.provinceId}
+                          selected={
+                            province.name === provinceWatched ? true : false
+                          }
+                          key={province.id}
+                        >
+                          {province.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-span-1">
+                    <label className="block font-medium">City</label>
+
+                    <select
+                      onChange={(e) => {
+                        setSelectedCityId(e.currentTarget.value)
+                      }}
+                      value={selectedCityId}
+                      className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                    >
+                      {cities?.map((city) => (
+                        <option
+                          selected={city.name === cityWatched ? true : false}
+                          value={city.cityId}
+                          key={city.id}
+                        >
+                          {city.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-medium">Barangay</label>
+
+                    <select
+                      onChange={(e) => {
+                        setSelectedBarangayId(e.currentTarget.value)
+                      }}
+                      value={selectedBarangayId}
+                      className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
+                    >
+                      {barangays?.map((barangay) => (
+                        <option
+                          selected={
+                            barangay.name === barangayWatched ? true : false
+                          }
+                          value={barangay.code}
+                          key={barangay.id}
+                        >
+                          {barangay.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div className="col-span-1">
                     <label className="block font-medium">Street address</label>
                     <input
                       type="text"
                       className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
                       {...register("receiverStreetAddress")}
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-medium">Barangay</label>
-                    <input
-                      type="text"
-                      className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-                      {...register("receiverBarangay")}
-                    />
-                  </div>
-                  <div className="col-span-1">
-                    <label className="block font-medium">City</label>
-                    <input
-                      type="text"
-                      className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-                      {...register("receiverCity")}
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-medium">
-                      State / Province
-                    </label>
-                    <input
-                      type="text"
-                      className="block text-sm w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-                      {...register("receiverStateOrProvince")}
                     />
                   </div>
                 </div>

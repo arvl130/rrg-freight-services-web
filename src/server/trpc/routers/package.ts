@@ -22,6 +22,9 @@ import {
   packages,
   shipmentPackages,
   incomingShipments,
+  provinces,
+  cities,
+  barangays,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -161,12 +164,26 @@ export const packageRouter = router({
       const deliverableProvinces = await getDeliverableProvinceNames({
         db: ctx.db,
       })
+      const selectedProvince = await ctx.db
+        .select()
+        .from(provinces)
+        .where(eq(provinces.provinceId, input.receiverStateOrProvince))
+
+      const selectedCity = await ctx.db
+        .select()
+        .from(cities)
+        .where(eq(cities.cityId, input.receiverCity))
+
+      const selectedBarangay = await ctx.db
+        .select()
+        .from(barangays)
+        .where(eq(barangays.code, input.receiverBarangay))
 
       const areaCode = await getAreaCode({
         db: ctx.db,
-        provinceName: input.receiverStateOrProvince,
-        cityName: input.receiverCity,
-        barangayName: input.receiverBarangay,
+        provinceName: selectedProvince[0].name,
+        cityName: selectedCity[0].name,
+        barangayName: selectedBarangay[0].name,
       })
 
       return await ctx.db
@@ -189,9 +206,9 @@ export const packageRouter = router({
           receiverContactNumber: input.receiverContactNumber,
           receiverEmailAddress: input.receiverEmailAddress,
           receiverStreetAddress: input.receiverStreetAddress,
-          receiverBarangay: input.receiverBarangay,
-          receiverCity: input.receiverCity,
-          receiverStateOrProvince: input.receiverStateOrProvince,
+          receiverBarangay: selectedBarangay[0].name,
+          receiverCity: selectedCity[0].name,
+          receiverStateOrProvince: selectedProvince[0].name,
           receiverCountryCode: input.receiverCountryCode,
           receiverPostalCode: input.receiverPostalCode,
           updatedById: ctx.user.id,
