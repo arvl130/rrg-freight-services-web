@@ -489,9 +489,7 @@ export const shipmentPackageRouter = router({
               remarks:
                 findRemarkById(packageId)?.remarks === "GOOD_CONDITION"
                   ? "GOOD_CONDITION"
-                  : findRemarkById(packageId)?.remarks === "BAD_CONDITION"
-                    ? "BAD_CONDITION"
-                    : "MISSING",
+                  : "BAD_CONDITION",
             })
             .where(eq(packages.id, packageId))
         }

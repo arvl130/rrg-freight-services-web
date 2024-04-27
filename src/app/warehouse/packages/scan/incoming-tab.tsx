@@ -175,7 +175,6 @@ function TableItem(props: {
           <option value={"0"}>Select Remarks</option>
           <option value={"GOOD_CONDITION"}>Good Condition</option>
           <option value={"BAD_CONDITION"}>Bad Condition</option>
-          <option value={"MISSING"}>Missing</option>
         </select>
       </div>
       <div>

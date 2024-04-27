@@ -43,7 +43,6 @@ export type PackageReceptionMode =
 export const SUPPORTED_PACKAGE_REMARKS = [
   "GOOD_CONDITION",
   "BAD_CONDITION",
-  "MISSING",
 ] as const
 export type PackageRemarks = (typeof SUPPORTED_PACKAGE_REMARKS)[number]
 
