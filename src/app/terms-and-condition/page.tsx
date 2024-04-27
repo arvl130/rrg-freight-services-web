@@ -130,7 +130,7 @@ export default async function TermsCondition() {
               </p>
               <p>
                 ● After two failed delivery attempts, your shipment will be held
-                back at the warehouse{" "} 
+                back at the warehouse{" "}
               </p>
               <p>
                 ● Within Metro Manila for every failed attempts the package will
