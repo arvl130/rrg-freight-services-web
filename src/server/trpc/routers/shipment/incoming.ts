@@ -581,7 +581,7 @@ export const incomingShipmentRouter = router({
           updatedById: input.currentUserId,
           isArchived: 0,
           isDeliverable: validateDeliberable.length > 0 ? 1 : 0,
-          isUnmanifested: 0,
+          isUnmanifested: 1,
           isFragile: input.isFragile ? 1 : 0,
           status: "INCOMING",
           failedAttempts: 0,
