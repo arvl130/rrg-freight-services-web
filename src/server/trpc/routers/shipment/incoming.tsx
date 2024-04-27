@@ -29,11 +29,15 @@ import {
 import { TRPCError } from "@trpc/server"
 import { and, count, eq, getTableColumns, like } from "drizzle-orm"
 import { generateUniqueId } from "@/utils/uuid"
-import { batchNotifyByEmailWithComponentProps } from "@/server/notification"
+import {
+  batchNotifyByEmailWithComponentProps,
+  notifyByEmailWithHtmlifiedComponent,
+} from "@/server/notification"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
 import { getDeliverableProvinceNames } from "@/server/db/helpers/deliverable-provinces"
 import { getAreaCode } from "@/utils/area-code"
+import IncomingShipmentReportEmail from "@/utils/email-templates/overseas-agent/incoming-shipment-arrived-report-email"
 
 export const incomingShipmentRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -229,9 +233,16 @@ export const incomingShipmentRouter = router({
     .mutation(async ({ ctx, input }) => {
       if (ctx.user.role === "WAREHOUSE") {
         await ctx.db.transaction(async (tx) => {
-          const [{ warehouseId }] = await tx
-            .select()
+          const [{ warehouseId, warehouseDisplayName }] = await tx
+            .select({
+              warehouseId: warehouseStaffs.warehouseId,
+              warehouseDisplayName: warehouses.displayName,
+            })
             .from(warehouseStaffs)
+            .innerJoin(
+              warehouses,
+              eq(warehouseStaffs.warehouseId, warehouses.id),
+            )
             .where(eq(warehouseStaffs.userId, ctx.user.id))
 
           await tx
@@ -247,6 +258,87 @@ export const incomingShipmentRouter = router({
               status: "COMPLETED",
             })
             .where(eq(shipments.id, input.id))
+
+          const incomingShipmentColumns = getTableColumns(incomingShipments)
+          const packageColumns = getTableColumns(packages)
+
+          const [incomingShipment] = await tx
+            .select({
+              ...incomingShipmentColumns,
+              agentName: users.displayName,
+              agentEmailAddress: users.emailAddress,
+            })
+            .from(incomingShipments)
+            .innerJoin(users, eq(incomingShipments.sentByAgentId, users.id))
+            .where(eq(incomingShipments.shipmentId, input.id))
+
+          const packageResults = await tx
+            .select(packageColumns)
+            .from(shipmentPackages)
+            .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
+            .where(eq(shipmentPackages.shipmentId, input.id))
+
+          const manifestedPackages = packageResults.map(
+            ({ id, preassignedId }) => ({ id, preassignedId }),
+          )
+          const unmanifestedPackages = packageResults
+            .filter(({ isUnmanifested }) => isUnmanifested)
+            .map(
+              ({
+                id,
+                preassignedId,
+                senderFullName,
+                senderContactNumber,
+                senderEmailAddress,
+                senderStreetAddress,
+                senderCity,
+                senderStateOrProvince,
+                senderCountryCode,
+                senderPostalCode,
+                receiverFullName,
+                receiverContactNumber,
+                receiverEmailAddress,
+                receiverStreetAddress,
+                receiverCity,
+                receiverBarangay,
+                receiverStateOrProvince,
+                receiverCountryCode,
+                receiverPostalCode,
+              }) => ({
+                id,
+                preassignedId,
+                senderFullName,
+                senderContactNumber,
+                senderEmailAddress,
+                senderStreetAddress,
+                senderCity,
+                senderStateOrProvince,
+                senderCountryCode,
+                senderPostalCode,
+                receiverFullName,
+                receiverContactNumber,
+                receiverEmailAddress,
+                receiverStreetAddress,
+                receiverCity,
+                receiverBarangay,
+                receiverStateOrProvince,
+                receiverCountryCode,
+                receiverPostalCode,
+              }),
+            )
+
+          await notifyByEmailWithHtmlifiedComponent({
+            to: incomingShipment.agentEmailAddress,
+            subject: "Shipment Arrival Report",
+            component: (
+              <IncomingShipmentReportEmail
+                agentName={incomingShipment.agentName}
+                warehouseName={warehouseDisplayName}
+                manifestedPackages={manifestedPackages}
+                unmanifestedPackages={unmanifestedPackages}
+              />
+            ),
+          })
         })
       } else {
         await ctx.db
