@@ -194,9 +194,12 @@ export default async function TermsCondition() {
                 ● Handling cargo with care and ensuring its secure
                 transportation.
               </p>
-              <p className="mb-5">
+              <p>
                 ● Maintaining clear communication with clients throughout the
                 shipping process.
+              </p>
+              <p className="mb-5">
+                ● Mobile phones for the Drivers are provided by the Company.
               </p>
             </div>
           </div>
