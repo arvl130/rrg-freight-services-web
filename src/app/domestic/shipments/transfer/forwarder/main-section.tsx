@@ -5,7 +5,7 @@ import * as Table from "@/components/table"
 import { useState } from "react"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
-import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
+import { List } from "@phosphor-icons/react/dist/ssr/List"
 import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import type {
@@ -64,9 +64,12 @@ function TableItem({
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <button type="button">
+            <button
+              type="button"
+              className="border border-gray-300 rounded-full p-2 shadow hover:bg-gray-50 transition-colors duration-200"
+            >
               <span className="sr-only">Actions</span>
-              <DotsThree size={16} />
+              <List size={16} weight="bold" />
             </button>
           </DropdownMenu.Trigger>
 

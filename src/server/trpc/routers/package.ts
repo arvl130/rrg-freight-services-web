@@ -401,8 +401,14 @@ export const packageRouter = router({
       const result = await ctx.db
         .select()
         .from(shipmentPackages)
-        .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
-        .where(eq(shipmentPackages.shipmentId, input.shipmentId))
+        .innerJoin(
+          packages,
+          and(
+            eq(shipmentPackages.packageId, packages.id),
+            eq(packages.status, "INCOMING"),
+          ),
+        )
+        .where(and(eq(shipmentPackages.shipmentId, input.shipmentId)))
         .orderBy(packages.id)
 
       return result.map(({ packages }) => packages)

@@ -53,7 +53,7 @@ export async function GET(
       })
 
     const date = DateTime.now().setZone("Asia/Manila").plus({
-      minutes: 5,
+      hours: 24,
     })
 
     if (!date.isValid)

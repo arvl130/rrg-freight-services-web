@@ -115,8 +115,6 @@ export const shipmentPackageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("function ran ...")
-
       const now = DateTime.now().setZone(CLIENT_TIMEZONE)
       if (!now.isValid) {
         throw new TRPCError({
@@ -151,14 +149,6 @@ export const shipmentPackageRouter = router({
         .from(packages)
         .where(and(inArray(packages.id, input.packageIds)))
 
-      const packageIdsCandidateForPickUp = packageDetails
-        .filter(({ failedAttempts }) => failedAttempts >= 2)
-        .map(({ id }) => id)
-
-      const packageIdsCanBeDelivered = packageDetails
-        .filter(({ isDeliverable }) => isDeliverable)
-        .map(({ id }) => id)
-
       const emailNotifications = [
         ...packageDetails.map(({ id, senderFullName, senderEmailAddress }) => ({
           to: senderEmailAddress,
@@ -175,60 +165,35 @@ export const shipmentPackageRouter = router({
           },
         })),
         ...packageDetails.map(
-          ({ id, receiverFullName, receiverEmailAddress, failedAttempts }) => {
-            const isActionRequired = failedAttempts >= 2
-
-            return {
-              to: receiverEmailAddress,
-              subject: `${
-                isActionRequired ? "[ACTION REQUIRED] " : ""
-              }The delivery for your package failed`,
-              componentProps: {
-                type: "package-status-update" as const,
-                body: `Hi, ${receiverFullName}. The delivery for your package with tracking number ${id} failed and was returned to our warehouse.${
-                  isActionRequired
-                    ? " Please contact customer service (+02) 8461 6027 for further actions."
-                    : " A re-delivery will be automatically scheduled. No further action is required."
-                } For more information, click the button below.`,
-                callToAction: {
-                  label: "Track your Package",
-                  href: `https://www.rrgfreight.services/tracking?id=${id}`,
-                },
+          ({ id, receiverFullName, receiverEmailAddress }) => ({
+            to: receiverEmailAddress,
+            subject: `The status of your package was updated`,
+            componentProps: {
+              type: "package-status-update" as const,
+              body: `Hi, ${receiverFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+                "IN_WAREHOUSE",
+              )}. For more information, click the button below.`,
+              callToAction: {
+                label: "Track your Package",
+                href: `https://www.rrgfreight.services/tracking?id=${id}`,
               },
-            }
-          },
+            },
+          }),
         ),
       ]
 
       const packageReceiverSmsNotifications = packageDetails.map(
-        ({ id, receiverContactNumber, failedAttempts }) => ({
+        ({ id, receiverContactNumber }) => ({
           to: receiverContactNumber,
-          body: `The delivery for your package with tracking number ${id} failed and was returned to our warehouse. ${
-            failedAttempts >= 2
-              ? "Please contact customer service (+02) 8461 6027 for further actions."
-              : "A re-delivery will be automatically scheduled. No further action is required."
+          body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+            "IN_WAREHOUSE",
+          )}. For more info, monitor your package on: ${
+            serverEnv.BITLY_TRACKING_PAGE_URL
           }`,
         }),
       )
 
       await ctx.db.transaction(async (tx) => {
-        if (packageIdsCandidateForPickUp.length > 0)
-          await tx
-            .update(packages)
-            .set({
-              receptionMode: "FOR_PICKUP",
-            })
-            .where(inArray(packages.id, packageIdsCandidateForPickUp))
-
-        // Update expected_has_delivery_at if we're receiving a package.
-        if (packageIdsCanBeDelivered.length > 0)
-          await tx
-            .update(packages)
-            .set({
-              expectedHasDeliveryAt: nowPlusThreeDays.toISO(),
-            })
-            .where(inArray(packages.id, packageIdsCanBeDelivered))
-
         if (ctx.user.role === "WAREHOUSE") {
           const [{ warehouseId }] = await tx
             .select()
@@ -247,7 +212,7 @@ export const shipmentPackageRouter = router({
           .update(packages)
           .set({
             status: "IN_WAREHOUSE",
-            failedAttempts: sql`${packages.failedAttempts} + 1`,
+            expectedHasDeliveryAt: nowPlusThreeDays.toISO(),
           })
           .where(inArray(packages.id, input.packageIds))
 
@@ -489,9 +454,7 @@ export const shipmentPackageRouter = router({
               remarks:
                 findRemarkById(packageId)?.remarks === "GOOD_CONDITION"
                   ? "GOOD_CONDITION"
-                  : findRemarkById(packageId)?.remarks === "BAD_CONDITION"
-                    ? "BAD_CONDITION"
-                    : "MISSING",
+                  : "BAD_CONDITION",
             })
             .where(eq(packages.id, packageId))
         }

@@ -335,7 +335,7 @@ export const deliveryShipmentRouter = router({
         .setZone("Asia/Manila")
         .startOf("day")
         .plus({
-          day: 2,
+          hours: 24,
         })
 
       if (!otpExpiryDate.isValid) {

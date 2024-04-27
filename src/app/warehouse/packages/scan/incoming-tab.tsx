@@ -12,6 +12,7 @@ import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
 import { DateTime } from "luxon"
 import { ViewWaybillsModal } from "@/components/shipments/incoming/view-waybills-modal"
+import { UnmanifestedPackagesModal } from "./unmanifested-packages-modal"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
@@ -175,7 +176,6 @@ function TableItem(props: {
           <option value={"0"}>Select Remarks</option>
           <option value={"GOOD_CONDITION"}>Good Condition</option>
           <option value={"BAD_CONDITION"}>Bad Condition</option>
-          <option value={"MISSING"}>Missing</option>
         </select>
       </div>
       <div>
@@ -744,7 +744,7 @@ function MarkAsCompleted({
 
   if (status === "loading") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
-  if (packages.length === 0) return <p>No packages.</p>
+  // if (packages.length === 0) return <p>No packages.</p>
 
   const hasPendingPackages = packages.some(
     (_package) => _package.status !== "IN_WAREHOUSE",
@@ -753,7 +753,7 @@ function MarkAsCompleted({
   return (
     <button
       type="button"
-      disabled={isLoading || hasPendingPackages}
+      disabled={isLoading || hasPendingPackages || packages.length > 0}
       className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 text-white px-4 py-2 rounded-lg transition-colors font-medium"
       onClick={() => {
         mutate({
@@ -776,6 +776,7 @@ export function IncomingTab({
   userId: string
 }) {
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false)
+  const [isUnmifestedPackagesOpen, setUnmifestedPackagesOpen] = useState(false)
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
     null,
   )
@@ -797,13 +798,25 @@ export function IncomingTab({
         <ShipmentSelector onSelectShipmentId={setSelectedShipmentId} />
       ) : (
         <div className="sm:flex justify-between items-center mb-3">
-          <div className="font-semibold mb-3 sm:mb-0">
-            Shipment ID: {selectedShipmentId}
-          </div>
-          <div className="font-semibold mb-3 sm:mb-0">
-            Receving Warehouse: {warehouseName}
+          <div>
+            <div className="font-semibold mb-3 sm:mb-0">
+              Shipment ID: {selectedShipmentId}
+            </div>
+            <div className="font-semibold mb-3 sm:mb-0">
+              Receving Warehouse: {warehouseName}
+            </div>
           </div>
           <div>
+            <button
+              type="button"
+              className="px-4 py-2 mb-3 sm:mb-0 bg-rose-700	 text-white hover:bg-rose-600	 rounded-md font-medium transition-colors mr-3"
+              onClick={() => {
+                setUnmifestedPackagesOpen(true)
+              }}
+            >
+              Unmanifested Packages
+            </button>
+
             <button
               type="button"
               className="px-4 py-2 mb-3 sm:mb-0 bg-purple-700 text-white hover:bg-purple-600 rounded-md font-medium transition-colors mr-3"
@@ -830,13 +843,21 @@ export function IncomingTab({
               />
             )}
           </div>
-
           <ViewWaybillsModal
             isOpen={isPrintModalOpen}
             onClose={() => {
               setIsPrintModalOpen(false)
             }}
             shipmentId={selectedShipmentId}
+          />
+
+          <UnmanifestedPackagesModal
+            isOpen={isUnmifestedPackagesOpen}
+            shipmentId={selectedShipmentId}
+            currentUserId={userId}
+            onClose={() => {
+              setUnmifestedPackagesOpen(false)
+            }}
           />
         </div>
       )}

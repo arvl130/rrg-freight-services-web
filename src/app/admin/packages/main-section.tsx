@@ -1,6 +1,6 @@
 "use client"
 
-import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
+import { List } from "@phosphor-icons/react/dist/ssr/List"
 import type { Package, Warehouse } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { useState } from "react"
@@ -98,9 +98,12 @@ function TableItem({ package: _package }: { package: Package }) {
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <button type="button">
+            <button
+              type="button"
+              className="border border-gray-300 rounded-full p-2 shadow hover:bg-gray-50 transition-colors duration-200"
+            >
               <span className="sr-only">Actions</span>
-              <DotsThree size={16} />
+              <List size={16} weight="bold" />
             </button>
           </DropdownMenu.Trigger>
 

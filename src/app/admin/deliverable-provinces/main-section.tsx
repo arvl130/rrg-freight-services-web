@@ -11,7 +11,7 @@ import { EditModal } from "./edit-modal"
 import { DeleteModal } from "./delete-modal"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import type { DeliverableProvince } from "@/server/db/entities"
-import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
+import { List } from "@phosphor-icons/react/dist/ssr/List"
 
 function TableItem({ item }: { item: DeliverableProvince }) {
   const [visibleModal, setVisibleModal] = useState<null | "EDIT" | "DELETE">(
@@ -29,9 +29,12 @@ function TableItem({ item }: { item: DeliverableProvince }) {
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <button type="button">
+            <button
+              type="button"
+              className="border border-gray-300 rounded-full p-2 shadow hover:bg-gray-50 transition-colors duration-200"
+            >
               <span className="sr-only">Actions</span>
-              <DotsThree size={16} />
+              <List size={16} weight="bold" />
             </button>
           </DropdownMenu.Trigger>
 
