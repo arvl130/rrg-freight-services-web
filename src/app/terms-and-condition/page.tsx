@@ -144,7 +144,11 @@ export default async function TermsCondition() {
               </div>
               <div className=" pl-10">
                 <p>• Contact RRG Freight Services to arrange a pick-up.</p>
-                <p className="mb-5">• Reschedule a delivery for a fee.</p>
+                <p>• Reschedule a delivery for a fee.</p>
+                <p className="mb-5">
+                  • Pick up schedule for you failed attempt shipment is from
+                  8AM-5PM only.
+                </p>
               </div>
             </div>
           </div>
