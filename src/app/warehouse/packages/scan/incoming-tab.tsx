@@ -726,7 +726,7 @@ function MarkAsCompleted({
     status,
     data: packages,
     error,
-  } = api.package.getWithLatestStatusByShipmentId.useQuery({
+  } = api.package.getIncomingStatusByShipmentId.useQuery({
     shipmentId,
   })
 

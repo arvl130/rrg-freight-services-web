@@ -296,7 +296,7 @@ export const packageRouter = router({
         .where(
           and(
             eq(packages.status, "IN_WAREHOUSE"),
-            lt(packages.failedAttempts, 3),
+            lt(packages.failedAttempts, 2),
             input.warehouseId
               ? eq(packages.lastWarehouseId, input.warehouseId)
               : undefined,
@@ -340,7 +340,7 @@ export const packageRouter = router({
           and(
             eq(packages.status, "IN_WAREHOUSE"),
             eq(sql`substring(${packages.areaCode},1,4)`, input.provinceId),
-            lt(packages.failedAttempts, 3),
+            lt(packages.failedAttempts, 2),
             input.warehouseId
               ? eq(packages.lastWarehouseId, input.warehouseId)
               : undefined,
@@ -391,6 +391,27 @@ export const packageRouter = router({
 
       return results.filter(({ isDeliverable }) => !isDeliverable)
     }),
+  getIncomingStatusByShipmentId: protectedProcedure
+    .input(
+      z.object({
+        shipmentId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .select()
+        .from(shipmentPackages)
+        .innerJoin(packages, and(eq(shipmentPackages.packageId, packages.id)))
+        .where(
+          and(
+            eq(shipmentPackages.shipmentId, input.shipmentId),
+            eq(packages.status, "INCOMING"),
+          ),
+        )
+        .orderBy(packages.id)
+
+      return result.map(({ packages }) => packages)
+    }),
   getWithLatestStatusByShipmentId: protectedProcedure
     .input(
       z.object({
@@ -401,15 +422,11 @@ export const packageRouter = router({
       const result = await ctx.db
         .select()
         .from(shipmentPackages)
-        .innerJoin(
-          packages,
-          and(
-            eq(shipmentPackages.packageId, packages.id),
-            eq(packages.status, "INCOMING"),
-          ),
-        )
+        .innerJoin(packages, and(eq(shipmentPackages.packageId, packages.id)))
         .where(and(eq(shipmentPackages.shipmentId, input.shipmentId)))
         .orderBy(packages.id)
+
+      console.log("result", result)
 
       return result.map(({ packages }) => packages)
     }),
