@@ -129,8 +129,8 @@ export default async function TermsCondition() {
                 text for the update every time for failed attempt delivery
               </p>
               <p>
-                ● After two failed delivery attempts, your shipment will be
-                held back at the warehouse{" "}
+                ● After two failed delivery attempts, your shipment will be held
+                back at the warehouse{" "} 
               </p>
               <p>
                 ● Within Metro Manila for every failed attempts the package will
@@ -171,9 +171,9 @@ export default async function TermsCondition() {
                 email and text message.
               </p>
               <p className="pb-2">
-                ● The recipient&apos;s cargo will be transported and
-                delivered by RRG Freight & Services to the location specified on
-                the waybill, packing list, and delivery receipts.
+                ● The recipient&apos;s cargo will be transported and delivered
+                by RRG Freight & Services to the location specified on the
+                waybill, packing list, and delivery receipts.
               </p>
               <p className="pb-2">
                 ● Consignee or any person of sufficient age and discretion shall
