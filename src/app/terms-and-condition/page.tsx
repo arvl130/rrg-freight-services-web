@@ -28,8 +28,8 @@ export default async function TermsCondition() {
       <Navbar user={user} />
       <main>
         <HeroSection />
-        <div className=" mx-20 my-20 flex flex-col content-center">
-          <div className="text-[#B0A8A8] text-[30px] px-20 font-bold font-'DM Sans'">
+        <div className="mx-10 my-20 flex flex-col content-center">
+          <div className="text-[#B0A8A8] text-[30px] font-bold font-'DM Sans'">
             Effective by April 19, 2024
           </div>
           <div className="text-[#263238] text-2xl mx-20 mt-5 font-bold font-sans pb-2.5">
@@ -65,7 +65,7 @@ export default async function TermsCondition() {
               your deliveries.{" "}
             </p>
           </div>
-          <div className="px-40 text-stone-900 text-xl text-justify font-normal font-poppins leading-loose">
+          <div className="px-4 text-stone-900 text-xl text-justify font-normal font-poppins leading-loose">
             <div className="text-justify pr-20 leading-[3rem]">
               <p>
                 <strong>● Standard Delivery: </strong> 4-5 days after we receive
@@ -121,7 +121,7 @@ export default async function TermsCondition() {
           <div className="text-[#263238] text-2xl mx-20 mt-5 font-bold font-sans pb-2.5">
             VI. Missed Deliveries
           </div>
-          <div className="px-40 text-stone-900 text-xl text-justify font-normal font-poppins leading-loose">
+          <div className="px-4 text-stone-900 text-xl text-justify font-normal font-poppins leading-loose">
             <div className="text-justify pr-20 leading-[3rem]">
               <p>
                 ● If unavailable to receive your delivery, the carrier will
@@ -129,8 +129,8 @@ export default async function TermsCondition() {
                 text for the update every time for failed attempt delivery
               </p>
               <p>
-                ● After three failed delivery attempts, your shipment will be
-                held back at the warehouse{" "}
+                ● After two failed delivery attempts, your shipment will be held
+                back at the warehouse{" "}
               </p>
               <p>
                 ● Within Metro Manila for every failed attempts the package will
@@ -152,7 +152,7 @@ export default async function TermsCondition() {
           <div className="text-[#263238] text-2xl mx-20 mt-5 font-bold font-sans pb-2.5">
             VII. Delivery Verification and Recipient Requirements
           </div>
-          <div className="px-40 text-stone-900 text-xl text-justify font-normal font-poppins leading-loose">
+          <div className="px-4 text-stone-900 text-xl text-justify font-normal font-poppins leading-loose">
             <div className="text-justify pr-20 leading-[3rem]">
               <p className="pb-2">
                 ● We deliver 24/7 except for national holidays.
@@ -171,9 +171,9 @@ export default async function TermsCondition() {
                 email and text message.
               </p>
               <p className="pb-2">
-                ● · The recipient&apos;`s cargo will be transported and
-                delivered by RRG Freight & Services to the location specified on
-                the waybill, packing list, and delivery receipts.
+                ● The recipient&apos;s cargo will be transported and delivered
+                by RRG Freight & Services to the location specified on the
+                waybill, packing list, and delivery receipts.
               </p>
               <p className="pb-2">
                 ● Consignee or any person of sufficient age and discretion shall
@@ -201,7 +201,7 @@ export default async function TermsCondition() {
           <div className="text-[#263238] text-2xl mx-20 mt-5 font-bold font-sans pb-2.5">
             VII. Damaged or Lost Packages
           </div>
-          <div className="px-40 text-stone-900 text-xl text-justify font-normal font-poppins leading-loose">
+          <div className="px-4 text-stone-900 text-xl text-justify font-normal font-poppins leading-loose">
             <div className="flex text-justify pr-20">
               <p className="font-bold">Within Luzon</p>
             </div>
@@ -233,7 +233,7 @@ export default async function TermsCondition() {
           <div className="mx-20 text-stone-900 text-xl text-justify font-normal font-poppins leading-[2.5rem]">
             <p>Have questions? Contact us at:</p>
           </div>
-          <div className="px-40 text-stone-900 text-xl text-justify font-normal font-poppins leading-loose">
+          <div className="px-4 text-stone-900 text-xl text-justify font-normal font-poppins leading-loose">
             <div className="text-justify pr-20 leading-[3rem]">
               <p>
                 <strong>● Phone: </strong> 02-84616027
@@ -244,10 +244,10 @@ export default async function TermsCondition() {
             </div>
           </div>
 
-          <div className=" mt-10 px-20 text-[#263238] text-2xl font-bold font-'DM Sans'">
+          <div className="mt-10 px-4 text-[#263238] text-2xl font-bold font-'DM Sans' padding-0">
             Additional Information
           </div>
-          <div className="mt-2 mb-0 px-20 text-stone-900 text-xl font-normal font-'Poppins'">
+          <div className="mt-2 mb-0 px-4 text-stone-900 text-xl font-normal font-'Poppins'">
             <p className="text-justify mb-5">
               For specific inquiries regarding delivery windows or rescheduling
               deliveries, please refer to the contact information above.
