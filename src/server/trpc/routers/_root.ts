@@ -25,6 +25,7 @@ import { provinceRouter } from "./province"
 import { cityRouter } from "./city"
 import { barangayRouter } from "./barangay"
 import { monitoringLinkRouter } from "./monitoring-link"
+import { addressPickerRouter } from "./address-picker"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -54,6 +55,7 @@ export const rootRouter = router({
   addressValidation: addressValidationRouter,
   province: provinceRouter,
   city: cityRouter,
+  addressPicker: addressPickerRouter,
   barangay: barangayRouter,
   getAllPackagesByDateRange: protectedProcedure
     .input(
