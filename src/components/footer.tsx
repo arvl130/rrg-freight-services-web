@@ -64,14 +64,19 @@ export function Footer() {
                 Legal
               </h2>
               <ul className="text-gray-500 dark:text-gray-700 font-medium">
-                <li className="mb-4">
+                <li className="mb-5">
                   <Link href="/privacy-and-policy" className="hover:underline">
                     Privacy Policy
                   </Link>
                 </li>
-                <li>
+                <li className="mb-5">
                   <Link href="/terms-and-condition" className="hover:underline">
                     Terms &amp; Conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/company-policy" className="hover:underline">
+                    Company Policy
                   </Link>
                 </li>
               </ul>
