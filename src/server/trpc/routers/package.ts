@@ -296,7 +296,7 @@ export const packageRouter = router({
         .where(
           and(
             eq(packages.status, "IN_WAREHOUSE"),
-            lt(packages.failedAttempts, 2),
+            eq(packages.receptionMode, "DOOR_TO_DOOR"),
             input.warehouseId
               ? eq(packages.lastWarehouseId, input.warehouseId)
               : undefined,
@@ -339,8 +339,8 @@ export const packageRouter = router({
         .where(
           and(
             eq(packages.status, "IN_WAREHOUSE"),
+            eq(packages.receptionMode, "DOOR_TO_DOOR"),
             eq(sql`substring(${packages.areaCode},1,4)`, input.provinceId),
-            lt(packages.failedAttempts, 2),
             input.warehouseId
               ? eq(packages.lastWarehouseId, input.warehouseId)
               : undefined,

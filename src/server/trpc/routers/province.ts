@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { protectedProcedure, router } from "../trpc"
 import { packages, provinces } from "@/server/db/schema"
-import { and, eq, sql } from "drizzle-orm"
+import { and, eq, lt, sql } from "drizzle-orm"
 import { TRPCError } from "@trpc/server"
 import type { PackageShippingType } from "@/utils/constants"
 import { SUPPORTED_PACKAGE_SHIPPING_TYPES } from "@/utils/constants"
@@ -60,6 +60,7 @@ export const provinceRouter = router({
         )
         .where(
           and(
+            eq(packages.receptionMode, "DOOR_TO_DOOR"),
             eq(packages.lastWarehouseId, input.warehouseId),
             eq(packages.shippingType, input.deliveryType),
             eq(packages.isDeliverable, 1),
