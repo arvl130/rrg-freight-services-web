@@ -6,6 +6,7 @@ import {
   shipmentPackageOtps,
   shipmentPackages,
 } from "@/server/db/schema"
+import { batchNotifyBySms } from "@/server/notification"
 import {
   CLIENT_TIMEZONE,
   getDescriptionForNewPackageStatusLog,
@@ -13,10 +14,11 @@ import {
 import { HttpError } from "@/utils/errors"
 import {
   HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_SERVER_ERROR,
   HTTP_STATUS_UNAUTHORIZED,
 } from "@/utils/http-status-codes"
-import { and, eq, gt } from "drizzle-orm"
+import { and, eq, sql } from "drizzle-orm"
 import { DateTime } from "luxon"
 import { z } from "zod"
 
@@ -52,20 +54,43 @@ export async function POST(
         validationError: parseResult.error,
       })
 
-    const date = DateTime.now().setZone(CLIENT_TIMEZONE)
-    if (!date.isValid)
+    const now = DateTime.now().setZone(CLIENT_TIMEZONE)
+    if (!now.isValid)
       throw new HttpError({
         message: "Current date is invalid.",
         statusCode: HTTP_STATUS_SERVER_ERROR,
       })
 
     const { shipmentId, packageId, failureReason } = parseResult.data
+    const packagesResults = await db
+      .select()
+      .from(packages)
+      .where(eq(packages.id, packageId))
+
+    if (packagesResults.length === 0) {
+      throw new HttpError({
+        message: "No such package",
+        statusCode: HTTP_STATUS_NOT_FOUND,
+      })
+    }
+
+    if (packagesResults.length > 1) {
+      throw new HttpError({
+        message: "Expected 1 package, but got more",
+        statusCode: HTTP_STATUS_SERVER_ERROR,
+      })
+    }
+
+    const [_package] = packagesResults
+    const isForPickup = _package.failedAttempts + 1 >= 2
 
     await db.transaction(async (tx) => {
       await tx
         .update(packages)
         .set({
           status: "FAILED_DELIVERY",
+          failedAttempts: sql`${packages.failedAttempts} + 1`,
+          receptionMode: isForPickup ? "FOR_PICKUP" : undefined,
         })
         .where(eq(packages.id, packageId))
 
@@ -93,10 +118,9 @@ export async function POST(
           ),
         )
 
-      const createdAt = DateTime.now().toISO()
       await tx.insert(packageStatusLogs).values({
         packageId,
-        createdAt,
+        createdAt: now.toISO(),
         createdById: user.id,
         description: getDescriptionForNewPackageStatusLog({
           status: "FAILED_DELIVERY",
@@ -104,6 +128,19 @@ export async function POST(
         }),
         status: "FAILED_DELIVERY",
       })
+    })
+
+    await batchNotifyBySms({
+      messages: [
+        {
+          to: _package.receiverContactNumber,
+          body: `The delivery for your package with tracking number ${packageId} failed. ${
+            isForPickup
+              ? "Please contact customer service (+02) 8461 6027 for further actions."
+              : "A re-delivery will be automatically scheduled. No further action is required."
+          }`,
+        },
+      ],
     })
 
     return Response.json({
