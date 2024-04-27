@@ -744,7 +744,7 @@ function MarkAsCompleted({
 
   if (status === "loading") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
-  if (packages.length === 0) return <p>No packages.</p>
+  // if (packages.length === 0) return <p>No packages.</p>
 
   const hasPendingPackages = packages.some(
     (_package) => _package.status !== "IN_WAREHOUSE",
@@ -753,7 +753,7 @@ function MarkAsCompleted({
   return (
     <button
       type="button"
-      disabled={isLoading || hasPendingPackages}
+      disabled={isLoading || hasPendingPackages || packages.length > 0}
       className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 text-white px-4 py-2 rounded-lg transition-colors font-medium"
       onClick={() => {
         mutate({
