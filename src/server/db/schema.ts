@@ -278,6 +278,9 @@ export const deliveryShipments = mysqlTable("delivery_shipments", {
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
+  nextToBeDeliveredPackageId: varchar("next_to_be_delivered_package_id", {
+    length: 36,
+  }),
 })
 
 export const warehouses = mysqlTable("warehouses", {

@@ -1,5 +1,7 @@
 import { serverEnv } from "@/server/env.mjs"
 import { Client } from "@googlemaps/google-maps-services-js"
+import type { Package } from "./db/entities"
+import { getDistance } from "geolib"
 
 export async function getLongitudeLatitudeWithMapbox(searchText: string) {
   const response = await fetch(
@@ -51,4 +53,35 @@ export async function getLongitudeLatitudeWithGeoapify(searchText: string) {
     long: number
     lat: number
   }
+}
+
+export async function getPackagesWithDistanceFromOrigin(options: {
+  packages: Package[]
+  origin: {
+    long: number
+    lat: number
+  }
+}) {
+  const packagesWithDistancePromises = options.packages.map(
+    async (_package) => {
+      const fullAddress = `${_package.receiverStreetAddress}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, Philippines`
+      const { lat, long } = await getLongitudeLatitudeWithGoogle(fullAddress)
+
+      return {
+        ..._package,
+        distance: getDistance(
+          {
+            longitude: options.origin.long,
+            latitude: options.origin.lat,
+          },
+          {
+            longitude: long,
+            latitude: lat,
+          },
+        ),
+      }
+    },
+  )
+
+  return await Promise.all(packagesWithDistancePromises)
 }

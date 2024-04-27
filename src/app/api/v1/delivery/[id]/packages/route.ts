@@ -1,42 +1,9 @@
 import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
-import type { Package } from "@/server/db/entities"
 import { packages, shipments, shipmentPackages } from "@/server/db/schema"
 import { eq, getTableColumns } from "drizzle-orm"
 import { ZodError, z } from "zod"
-import { getDistance } from "geolib"
-import { getLongitudeLatitudeWithGoogle } from "@/server/geocoding"
-
-async function getPackagesWithDistanceFromOrigin(options: {
-  packages: Package[]
-  origin: {
-    long: number
-    lat: number
-  }
-}) {
-  const packagesWithDistancePromises = options.packages.map(
-    async (_package) => {
-      const fullAddress = `${_package.receiverStreetAddress}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, Philippines`
-      const { lat, long } = await getLongitudeLatitudeWithGoogle(fullAddress)
-
-      return {
-        ..._package,
-        distance: getDistance(
-          {
-            longitude: options.origin.long,
-            latitude: options.origin.lat,
-          },
-          {
-            longitude: long,
-            latitude: lat,
-          },
-        ),
-      }
-    },
-  )
-
-  return await Promise.all(packagesWithDistancePromises)
-}
+import { getPackagesWithDistanceFromOrigin } from "@/server/geocoding"
 
 const inputSchema = z.object({
   deliveryId: z.number(),
@@ -99,7 +66,10 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
 
     const packageColumns = getTableColumns(packages)
     const packageResults = await db
-      .select(packageColumns)
+      .select({
+        ...packageColumns,
+        shipmentPackageStatus: shipmentPackages.status,
+      })
       .from(shipmentPackages)
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .where(eq(shipmentPackages.shipmentId, deliveryId))
