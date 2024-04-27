@@ -226,6 +226,24 @@ export const packageRouter = router({
         })
         .where(eq(packages.id, input.id))
     }),
+  deletedById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.delete(packages).where(eq(packages.id, input.id))
+
+      await ctx.db
+        .delete(packageStatusLogs)
+        .where(eq(packageStatusLogs.packageId, input.id))
+
+      await ctx.db
+        .delete(shipmentPackages)
+        .where(eq(shipmentPackages.packageId, input.id))
+    }),
+
   getByIds: protectedProcedure
     .input(
       z.object({
