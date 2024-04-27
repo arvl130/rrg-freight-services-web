@@ -78,6 +78,7 @@ type PackageStatusUpdateEmailComponentProps = {
 type OtpEmailComponentProps = {
   type: "otp"
   otp: string
+  validityMessage?: string
 }
 
 type ComponentProps =

@@ -53,7 +53,7 @@ export async function GET(
       })
 
     const date = DateTime.now().setZone("Asia/Manila").plus({
-      hours: 24,
+      days: 3,
     })
 
     if (!date.isValid)
@@ -119,7 +119,7 @@ export async function GET(
         messages: [
           {
             to: receiverContactNumber,
-            body: `Your package ${id} will be delivered soon. Enter the code ${code} for verification.`,
+            body: `Your package ${id} will be delivered soon. Enter the code ${code} for verification. This code will be valid for 3 days.`,
           },
         ],
       })
@@ -131,6 +131,7 @@ export async function GET(
             componentProps: {
               type: "otp",
               otp: code.toString(),
+              validityMessage: "This code will be valid for 3 days.",
             },
           },
         ],
