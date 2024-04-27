@@ -391,7 +391,7 @@ function ShipmentSelector({
                       {shipment.driverDisplayName}
                     </p>
                     <p className="border-y border-gray-300 px-2 py-2 text-left">
-                      {shipment.driverDisplayName}
+                      {shipment.driverContactNumber}
                     </p>
                     <p className="border-y border-gray-300 px-2 py-2 text-left">
                       {shipment.vehicleDisplayName}

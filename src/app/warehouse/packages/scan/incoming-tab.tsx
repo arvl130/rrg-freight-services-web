@@ -471,7 +471,7 @@ function PackagesTable({
   shipmentId: number
   userId: string
 }) {
-  const packagesQuery = api.package.getWithLatestStatusByShipmentId.useQuery({
+  const packagesQuery = api.package.getIncomingStatusByShipmentId.useQuery({
     shipmentId,
   })
   const [scannedPackageIds, setScannedPackageIds] = useState<string[]>([])
@@ -485,11 +485,12 @@ function PackagesTable({
   const { isLoading, mutate } =
     api.shipment.package.updateManyToCompletedStatus.useMutation({
       onSuccess: () => {
-        utils.package.getWithLatestStatusByShipmentId.invalidate({
+        utils.package.getIncomingStatusByShipmentId.invalidate({
           shipmentId,
         })
         utils.package.getAll.invalidate()
         setScannedPackageIds([])
+        setSelectedRemarks([])
       },
       onError: (error) => {
         toast.error(error.message)
