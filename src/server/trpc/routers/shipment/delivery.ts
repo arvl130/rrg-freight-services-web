@@ -17,10 +17,18 @@ import {
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
+import {
+  CLIENT_TIMEZONE,
+  getDescriptionForNewPackageStatusLog,
+} from "@/utils/constants"
 import { DateTime } from "luxon"
 import { generateOtp } from "@/utils/uuid"
-import { notifyByExpoPush, notifyByWebPush } from "@/server/notification"
+import {
+  batchNotifyByEmailWithComponentProps,
+  batchNotifyBySms,
+  notifyByExpoPush,
+  notifyByWebPush,
+} from "@/server/notification"
 import { createLog } from "@/utils/logging"
 
 export const deliveryShipmentRouter = router({
@@ -332,10 +340,10 @@ export const deliveryShipmentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const otpExpiryDate = DateTime.now()
-        .setZone("Asia/Manila")
+        .setZone(CLIENT_TIMEZONE)
         .startOf("day")
         .plus({
-          hours: 24,
+          days: 7,
         })
 
       if (!otpExpiryDate.isValid) {
@@ -444,6 +452,29 @@ export const deliveryShipmentRouter = router({
           verb: "CREATE",
           entity: "DELIVERY_SHIPMENT",
           createdById: ctx.user.id,
+        })
+
+        await batchNotifyBySms({
+          messages: packageResultsWithOtp.map(
+            ({ id, receiverContactNumber, otp }) => ({
+              to: receiverContactNumber,
+              body: `Your package ${id} will be delivered soon. Enter the code ${otp} for verification. This code will be valid for 7 days.`,
+            }),
+          ),
+        })
+
+        await batchNotifyByEmailWithComponentProps({
+          messages: packageResultsWithOtp.map(
+            ({ receiverEmailAddress, otp }) => ({
+              to: receiverEmailAddress,
+              subject: `Your package will be delivered soon`,
+              componentProps: {
+                type: "otp",
+                otp: otp.toString(),
+                validityMessage: "This code will be valid for 7 days.",
+              },
+            }),
+          ),
         })
 
         if (webPushSubscriptionResults.length > 0)
