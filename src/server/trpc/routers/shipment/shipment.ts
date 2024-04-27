@@ -153,4 +153,18 @@ export const shipmentRouter = router({
         })
       })
     }),
+  getSentAgentIdByShipmentId: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const agentId = await ctx.db
+        .select()
+        .from(incomingShipments)
+        .where(eq(incomingShipments.shipmentId, input.id))
+
+      return agentId[0].sentByAgentId
+    }),
 })

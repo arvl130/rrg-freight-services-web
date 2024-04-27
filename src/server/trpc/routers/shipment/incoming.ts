@@ -10,6 +10,10 @@ import {
   overseasAgents,
   warehouseStaffs,
   warehouses,
+  barangays,
+  cities,
+  provinces,
+  deliverableProvinces,
 } from "@/server/db/schema"
 import type {
   PackageReceptionMode,
@@ -444,6 +448,155 @@ export const incomingShipmentRouter = router({
         verb: "UPDATE",
         entity: "INCOMING_SHIPMENT",
         createdById: ctx.user.id,
+      })
+    }),
+  createIndividual: protectedProcedure
+    .input(
+      z.object({
+        currentUserId: z.string(),
+        sentByAgentId: z.string().length(28),
+        shipmentId: z.number(),
+        preassignedId: z.string().min(1).max(100),
+        shippingMode: z.custom<PackageShippingMode>((val) =>
+          SUPPORTED_PACKAGE_SHIPPING_MODES.includes(val as PackageShippingMode),
+        ),
+        shippingType: z.custom<PackageShippingType>((val) =>
+          SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(val as PackageShippingType),
+        ),
+        receptionMode: z.custom<PackageReceptionMode>((val) =>
+          SUPPORTED_PACKAGE_RECEPTION_MODES.includes(
+            val as PackageReceptionMode,
+          ),
+        ),
+        weightInKg: z.number(),
+        volumeInCubicMeter: z.number(),
+        isFragile: z.boolean(),
+        declaredValue: z.number().nullable(),
+        senderFullName: z.string().min(1).max(100),
+        senderContactNumber: z.string().min(1).max(15),
+        senderEmailAddress: z
+          .string()
+          .min(1)
+          .max(100)
+          .endsWith("@gmail.com")
+          .email(),
+        senderStreetAddress: z.string().min(1).max(255),
+        senderCity: z.string().min(1).max(100),
+        senderStateOrProvince: z.string().min(1).max(100),
+        senderCountryCode: z.string().min(1).max(3),
+        senderPostalCode: z.number(),
+        receiverFullName: z.string().min(1).max(100),
+        receiverContactNumber: z.string().min(1).max(15),
+        receiverEmailAddress: z
+          .string()
+          .min(1)
+          .max(100)
+          .endsWith("@gmail.com")
+          .email(),
+        receiverStreetAddress: z.string().min(1).max(255),
+        receiverBarangay: z.string().min(1).max(100),
+        receiverCity: z.string().min(1).max(100),
+        receiverStateOrProvince: z.string().min(1).max(100),
+        receiverCountryCode: z.string().min(1).max(3),
+        receiverPostalCode: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const createdAt = DateTime.now().toISO()
+
+      await ctx.db.transaction(async (tx) => {
+        const generatedPackagedId = generateUniqueId()
+        let validateDeliberable
+        await tx.insert(shipmentPackages).values({
+          packageId: generatedPackagedId,
+          shipmentId: input.shipmentId,
+          status: "IN_TRANSIT",
+          createdAt: createdAt,
+        })
+        //list of table needs to update 1by1
+        //package status logs
+
+        const barangayById = await tx
+          .select()
+          .from(barangays)
+          .where(eq(barangays.code, input.receiverBarangay))
+
+        const cityById = await tx
+          .select()
+          .from(cities)
+          .where(eq(cities.cityId, input.receiverCity))
+
+        const provinceById = await tx
+          .select()
+          .from(provinces)
+          .where(eq(provinces.provinceId, input.receiverStateOrProvince))
+
+        if (
+          provinceById[0].name === "National Capital Region (First District)" ||
+          provinceById[0].name ===
+            "National Capital Region (Second District)" ||
+          provinceById[0].name === "National Capital Region (Third District)" ||
+          provinceById[0].name === "National Capital Region (Fourth District)"
+        ) {
+          validateDeliberable = await tx
+            .select()
+            .from(deliverableProvinces)
+            .where(
+              eq(deliverableProvinces.displayName, "National Capital Region"),
+            )
+        } else {
+          validateDeliberable = await tx
+            .select()
+            .from(deliverableProvinces)
+            .where(eq(deliverableProvinces.displayName, provinceById[0].name))
+        }
+
+        await tx.insert(packages).values({
+          id: generatedPackagedId,
+          preassignedId: input.preassignedId,
+          shippingMode: input.shippingMode,
+          shippingType: input.shippingType,
+          receptionMode: input.receptionMode,
+          weightInKg: input.weightInKg,
+          volumeInCubicMeter: input.volumeInCubicMeter,
+          senderFullName: input.senderFullName,
+          senderContactNumber: input.senderContactNumber,
+          senderEmailAddress: input.senderEmailAddress,
+          senderStreetAddress: input.senderStreetAddress,
+          senderCity: input.senderCity,
+          senderStateOrProvince: input.senderStateOrProvince,
+          senderCountryCode: input.senderCountryCode,
+          senderPostalCode: input.senderPostalCode,
+          receiverFullName: input.receiverFullName,
+          receiverContactNumber: input.receiverContactNumber,
+          receiverEmailAddress: input.receiverEmailAddress,
+          receiverStreetAddress: input.receiverStreetAddress,
+          receiverBarangay: barangayById[0].name,
+          receiverCity: cityById[0].name,
+          receiverStateOrProvince: provinceById[0].name,
+          receiverCountryCode: input.receiverCountryCode,
+          receiverPostalCode: input.receiverPostalCode,
+          createdAt: createdAt,
+          createdById: input.currentUserId,
+          updatedById: input.currentUserId,
+          isArchived: 0,
+          isDeliverable: validateDeliberable.length > 0 ? 1 : 0,
+          isUnmanifested: 0,
+          isFragile: input.isFragile ? 1 : 0,
+          status: "INCOMING",
+          failedAttempts: 0,
+          areaCode: barangayById[0].code,
+        })
+
+        await tx.insert(packageStatusLogs).values({
+          packageId: generatedPackagedId,
+          status: "INCOMING",
+          description: getDescriptionForNewPackageStatusLog({
+            status: "INCOMING",
+          }),
+          createdAt: createdAt,
+          createdById: input.currentUserId,
+        })
       })
     }),
 })
