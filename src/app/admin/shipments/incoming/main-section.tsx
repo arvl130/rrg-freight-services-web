@@ -5,11 +5,13 @@ import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
 import { CreateModal } from "@/app/admin/shipments/incoming/create-modal"
 import { api } from "@/utils/api"
 import { LoadingSpinner } from "@/components/spinner"
+import toast from "react-hot-toast"
 import type {
   NormalizedIncomingShipment,
   Warehouse,
 } from "@/server/db/entities"
 import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight"
+import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple"
 import { List } from "@phosphor-icons/react/dist/ssr/List"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Table from "@/components/table"
@@ -388,13 +390,34 @@ export function HeaderSection() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
   const [shipmentId, setShipmentId] = useState<null | number>(null)
 
+  const handleDownload = () => {
+    const url = "/assets/excel/RRG-Template.xlsx"
+    const link = document.createElement("a")
+    link.href = url
+    link.setAttribute("download", "RRG-Template.xlsx")
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <>
       <h1 className="text-2xl font-black mb-2 [color:_#00203F] flex items-center gap-1">
         <span>Shipments</span> <CaretRight size={20} />
         <span>Incoming</span>
       </h1>
-      <div className="grid">
+      <div className="flex gap-5">
+        <button
+          type="button"
+          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
+          onClick={() => {
+            handleDownload()
+            toast.success("Template Downloaded")
+          }}
+        >
+          <DownloadSimple size={16} />
+          <span>Download Template</span>
+        </button>
         <button
           type="button"
           className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
