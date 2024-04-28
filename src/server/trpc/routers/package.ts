@@ -464,8 +464,6 @@ export const packageRouter = router({
         .where(and(eq(shipmentPackages.shipmentId, input.shipmentId)))
         .orderBy(packages.id)
 
-      console.log("result", result)
-
       return result.map(({ packages }) => packages)
     }),
   getTotalPackageInWarehouse: protectedProcedure.query(async ({ ctx }) => {
