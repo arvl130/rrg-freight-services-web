@@ -72,7 +72,7 @@ function AllTab(props: {
   ]
 
   return (
-    <div className="grid grid-cols-[16rem_1fr]">
+    <div className="grid grid-cols-[16rem_1fr] overflow-auto">
       {shipments.length === 0 ? (
         <>
           <div className="border-r border-gray-300 text-center pt-4 text-gray-500 text-sm">
@@ -82,7 +82,7 @@ function AllTab(props: {
         </>
       ) : (
         <>
-          <div className="border-r border-gray-300">
+          <div className="border-r border-gray-300 overflow-auto">
             <button
               type="button"
               className={`block text-left text-sm px-4 py-2 w-full ${
@@ -129,7 +129,7 @@ function DeliveryTab(props: { shipments: NormalizedDeliveryShipment[] }) {
   )
 
   return (
-    <div className="grid grid-cols-[16rem_1fr]">
+    <div className="grid grid-cols-[16rem_1fr] overflow-auto">
       {props.shipments.length === 0 ? (
         <>
           <div className="border-r border-gray-300 text-center pt-4 text-gray-500 text-sm">
@@ -139,7 +139,7 @@ function DeliveryTab(props: { shipments: NormalizedDeliveryShipment[] }) {
         </>
       ) : (
         <>
-          <div className="border-r border-gray-300">
+          <div className="border-r border-gray-300 overflow-auto">
             <button
               type="button"
               className={`block text-left text-sm px-4 py-2 w-full ${
@@ -188,7 +188,7 @@ function ForwarderTransferTab(props: {
   )
 
   return (
-    <div className="grid grid-cols-[16rem_1fr]">
+    <div className="grid grid-cols-[16rem_1fr] overflow-auto">
       {props.shipments.length === 0 ? (
         <>
           <div className="border-r border-gray-300 text-center pt-4 text-gray-500 text-sm">
@@ -198,7 +198,7 @@ function ForwarderTransferTab(props: {
         </>
       ) : (
         <>
-          <div className="border-r border-gray-300">
+          <div className="border-r border-gray-300 overflow-auto">
             <button
               type="button"
               className={`block text-left text-sm px-4 py-2 w-full ${
@@ -247,7 +247,7 @@ function WarehouseTransferTab(props: {
   )
 
   return (
-    <div className="grid grid-cols-[16rem_1fr]">
+    <div className="grid grid-cols-[16rem_1fr] overflow-auto">
       {props.shipments.length === 0 ? (
         <>
           <div className="border-r border-gray-300 text-center pt-4 text-gray-500 text-sm">
@@ -257,7 +257,7 @@ function WarehouseTransferTab(props: {
         </>
       ) : (
         <>
-          <div className="border-r border-gray-300">
+          <div className="border-r border-gray-300 overflow-auto">
             <button
               type="button"
               className={`block text-left text-sm px-4 py-2 w-full ${
@@ -309,7 +309,7 @@ export function MainSection(props: {
   const [selectedTab, setSelectedTab] = useState<Tab>("")
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] min-h-dvh">
+    <div className="grid grid-rows-[auto_1fr_auto] h-dvh">
       <div className="px-6 py-4 grid grid-cols-[1fr_auto] bg-brand-cyan-500">
         <div>
           <Image
