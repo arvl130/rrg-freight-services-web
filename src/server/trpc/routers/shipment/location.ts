@@ -1,14 +1,14 @@
 import { desc, eq, inArray } from "drizzle-orm"
-import { protectedProcedure, router } from "../../trpc"
+import { publicProcedure, router } from "../../trpc"
 import { shipmentLocations } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
 export const shipmentLocationRouter = router({
-  getAll: protectedProcedure.query(async ({ ctx }) => {
+  getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(shipmentLocations)
   }),
-  getById: protectedProcedure
+  getById: publicProcedure
     .input(
       z.object({
         id: z.number(),
@@ -33,7 +33,7 @@ export const shipmentLocationRouter = router({
 
       return results[0]
     }),
-  getByShipmentId: protectedProcedure
+  getByShipmentId: publicProcedure
     .input(
       z.object({
         shipmentId: z.number(),
@@ -46,7 +46,7 @@ export const shipmentLocationRouter = router({
         .where(eq(shipmentLocations.shipmentId, input.shipmentId))
         .orderBy(desc(shipmentLocations.createdAt))
     }),
-  getByShipmentIds: protectedProcedure
+  getByShipmentIds: publicProcedure
     .input(
       z.object({
         shipmentIds: z.number().array(),
