@@ -69,7 +69,12 @@ function AllTab(props: {
     ...props.deliveryShipments,
     ...props.forwarderTransferShipments,
     ...props.warehouseTransferShipments,
-  ]
+  ].toSorted((a, b) => {
+    const date1 = new Date(a.createdAt)
+    const date2 = new Date(b.createdAt)
+
+    return date2.valueOf() - date1.valueOf()
+  })
 
   return (
     <div className="grid grid-cols-[16rem_1fr] overflow-auto">
@@ -356,13 +361,34 @@ export function MainSection(props: {
         />
       )}
       {selectedTab === "DELIVERY" && (
-        <DeliveryTab shipments={props.deliveryShipments} />
+        <DeliveryTab
+          shipments={props.deliveryShipments.toSorted((a, b) => {
+            const date1 = new Date(a.createdAt)
+            const date2 = new Date(b.createdAt)
+
+            return date2.valueOf() - date1.valueOf()
+          })}
+        />
       )}
       {selectedTab === "FORWARDER" && (
-        <ForwarderTransferTab shipments={props.forwarderTransferShipments} />
+        <ForwarderTransferTab
+          shipments={props.forwarderTransferShipments.toSorted((a, b) => {
+            const date1 = new Date(a.createdAt)
+            const date2 = new Date(b.createdAt)
+
+            return date2.valueOf() - date1.valueOf()
+          })}
+        />
       )}
       {selectedTab === "WAREHOUSE" && (
-        <WarehouseTransferTab shipments={props.warehouseTransferShipments} />
+        <WarehouseTransferTab
+          shipments={props.warehouseTransferShipments.toSorted((a, b) => {
+            const date1 = new Date(a.createdAt)
+            const date2 = new Date(b.createdAt)
+
+            return date2.valueOf() - date1.valueOf()
+          })}
+        />
       )}
       <div></div>
     </div>
