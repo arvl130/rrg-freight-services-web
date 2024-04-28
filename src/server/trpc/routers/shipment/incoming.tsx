@@ -437,6 +437,7 @@ export const incomingShipmentRouter = router({
           cityName: newPackage.receiverCity,
           barangayName: newPackage.receiverBarangay,
         }),
+        sentByAgentId: input.sentByAgentId,
       }))
 
       const newPackages = await Promise.all(newPackagePromises)
@@ -678,6 +679,7 @@ export const incomingShipmentRouter = router({
           status: "INCOMING",
           failedAttempts: 0,
           areaCode: barangayById[0].code,
+          sentByAgentId: input.sentByAgentId,
         })
 
         await tx.insert(packageStatusLogs).values({

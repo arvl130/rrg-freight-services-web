@@ -445,6 +445,7 @@ export const packages = mysqlTable("packages", {
   failedAttempts: tinyint("failed_attempts").notNull().default(0),
   declaredValue: double("declared_value"),
   areaCode: varchar("area_code", { length: 100 }).notNull(),
+  sentByAgentId: varchar("sent_by_agent_id", { length: 28 }).notNull(),
 })
 
 export const packageMonitoringAccessKeys = mysqlTable(

@@ -5,6 +5,7 @@ import {
   packages,
   shipmentPackageOtps,
   shipmentPackages,
+  users,
 } from "@/server/db/schema"
 import { serverEnv } from "@/server/env.mjs"
 import {
@@ -19,7 +20,7 @@ import {
   HTTP_STATUS_SERVER_ERROR,
   HTTP_STATUS_UNAUTHORIZED,
 } from "@/utils/http-status-codes"
-import { and, eq, gt } from "drizzle-orm"
+import { and, eq, getTableColumns, gt } from "drizzle-orm"
 import { DateTime } from "luxon"
 import { z } from "zod"
 
@@ -107,9 +108,15 @@ export async function POST(
           ),
         )
 
+      const packageColumns = getTableColumns(packages)
       const packagesResults = await tx
-        .select()
+        .select({
+          ...packageColumns,
+          sentByAgentDisplayName: users.displayName,
+          sentByAgentEmailAddress: users.emailAddress,
+        })
         .from(packages)
+        .innerJoin(users, eq(packages.sentByAgentId, users.id))
         .where(eq(packages.id, packageId))
 
       if (packagesResults.length === 0) {
@@ -167,6 +174,18 @@ export async function POST(
 
       await batchNotifyByEmailWithComponentProps({
         messages: [
+          {
+            to: _package.sentByAgentEmailAddress,
+            subject: "Your package has been delivered",
+            componentProps: {
+              type: "package-status-update",
+              body: `Hi, ${_package.sentByAgentDisplayName}. Your package with RRG tracking number ${_package.id} has been delivered. Visit our agents dashboard for more information on your packages.`,
+              callToAction: {
+                label: "Monitor your Packages",
+                href: "https://www.rrgfreight.services/overseas/packages",
+              },
+            },
+          },
           {
             to: _package.senderEmailAddress,
             subject: "Your package has been delivered",
