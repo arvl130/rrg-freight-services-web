@@ -60,7 +60,7 @@ export function ChooseVehicle({
                 deliveryType,
               ).map((vehicle) => (
                 <option key={vehicle.id} value={vehicle.id.toString()}>
-                  {vehicle.displayName}
+                  {vehicle.displayName} ({vehicle.plateNumber})
                 </option>
               ))}
             </select>
