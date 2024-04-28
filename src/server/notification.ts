@@ -81,9 +81,17 @@ type OtpEmailComponentProps = {
   validityMessage?: string
 }
 
+type OutForDeliveryMonitoringLinkEmailComponentProps = {
+  type: "out-for-delivery-monitoring-link"
+  receiverFullName: string
+  packageId: string
+  accessKey: string
+}
+
 type ComponentProps =
   | PackageStatusUpdateEmailComponentProps
   | OtpEmailComponentProps
+  | OutForDeliveryMonitoringLinkEmailComponentProps
 
 export async function batchNotifyByEmailWithComponentProps(options: {
   messages: {

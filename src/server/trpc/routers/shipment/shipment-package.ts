@@ -22,6 +22,7 @@ import {
   warehouseTransferShipments,
   warehouses,
   warehouseStaffs,
+  packageMonitoringAccessKeys,
 } from "@/server/db/schema"
 import { and, count, eq, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
@@ -220,6 +221,142 @@ export const shipmentPackageRouter = router({
           .update(shipmentPackages)
           .set({
             status: "COMPLETED",
+          })
+          .where(
+            and(
+              eq(shipmentPackages.shipmentId, input.shipmentId),
+              inArray(shipmentPackages.packageId, input.packageIds),
+            ),
+          )
+
+        await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
+        await createLog(tx, {
+          verb: "UPDATE",
+          entity: "SHIPMENT_PACKAGE",
+          createdById: ctx.user.id,
+        })
+      })
+
+      await batchNotifyByEmailWithComponentProps({
+        messages: emailNotifications,
+      })
+      await batchNotifyBySms({
+        messages: packageReceiverSmsNotifications,
+      })
+    }),
+  updateManyToCompletedStatusFromDelivery: protectedProcedure
+    .input(
+      z.object({
+        shipmentId: z.number(),
+        packageIds: z.string().array().nonempty(),
+        createdById: z.string().length(28),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const now = DateTime.now().setZone(CLIENT_TIMEZONE)
+      if (!now.isValid) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Invalid timezone set.",
+        })
+      }
+
+      const nowPlusThreeDays = now
+        .plus({
+          days: 3,
+        })
+        .endOf("day")
+
+      const description = await getDescriptionForStatus({
+        db: ctx.db,
+        currentUser: ctx.user,
+        shipmentId: input.shipmentId,
+        status: "OUT_FOR_DELIVERY",
+      })
+
+      const newPackageStatusLogs = input.packageIds.map((packageId) => ({
+        packageId,
+        status: "OUT_FOR_DELIVERY" as const,
+        description,
+        createdAt: now.toISO(),
+        createdById: input.createdById,
+      }))
+
+      const packageDetails = await ctx.db
+        .select()
+        .from(packages)
+        .where(and(inArray(packages.id, input.packageIds)))
+
+      const packageDetailsWithAccessKey = packageDetails.map((_package) => ({
+        ..._package,
+        accessKey: crypto.randomUUID(),
+      }))
+
+      const newPackageMonitoringAccessKeys = packageDetailsWithAccessKey.map(
+        ({ id, accessKey }) => ({
+          packageId: id,
+          accessKey,
+          createdAt: now.toISO(),
+        }),
+      )
+
+      const emailNotifications = [
+        ...packageDetails.map(({ id, senderFullName, senderEmailAddress }) => ({
+          to: senderEmailAddress,
+          subject: `The status of your package was updated`,
+          componentProps: {
+            type: "package-status-update" as const,
+            body: `Hi, ${senderFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+              "IN_WAREHOUSE",
+            )}. For more information, click the button below.`,
+            callToAction: {
+              label: "Track your Package",
+              href: `https://www.rrgfreight.services/tracking?id=${id}`,
+            },
+          },
+        })),
+        ...packageDetailsWithAccessKey.map(
+          ({ id, receiverFullName, receiverEmailAddress, accessKey }) => ({
+            to: receiverEmailAddress,
+            subject: `The status of your package was updated`,
+            componentProps: {
+              type: "out-for-delivery-monitoring-link" as const,
+              receiverFullName,
+              packageId: id,
+              accessKey,
+            },
+          }),
+        ),
+      ]
+
+      const packageReceiverSmsNotifications = packageDetails.map(
+        ({ id, receiverContactNumber }) => ({
+          to: receiverContactNumber,
+          body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+            "OUT_FOR_DELIVERY",
+          )}. For more info, monitor your package on: ${
+            serverEnv.BITLY_TRACKING_PAGE_URL
+          }`,
+        }),
+      )
+
+      await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(packages)
+          .set({
+            status: "OUT_FOR_DELIVERY",
+            expectedIsDeliveredAt: nowPlusThreeDays.toISO(),
+          })
+          .where(inArray(packages.id, input.packageIds))
+
+        await tx
+          .insert(packageMonitoringAccessKeys)
+          .values(newPackageMonitoringAccessKeys)
+
+        await tx
+          .update(shipmentPackages)
+          .set({
+            status: "IN_TRANSIT",
           })
           .where(
             and(
