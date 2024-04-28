@@ -2,10 +2,12 @@ import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
   deliveryShipments,
+  packageMonitoringAccessKeys,
   packages,
   shipmentPackages,
 } from "@/server/db/schema"
 import { getPackagesWithDistanceFromOrigin } from "@/server/geocoding"
+import { batchNotifyByEmailWithComponentProps } from "@/server/notification"
 import { HttpError } from "@/utils/errors"
 import {
   HTTP_STATUS_BAD_REQUEST,
@@ -92,7 +94,21 @@ export async function POST(
       return 0
     })
 
-    const nextToBeDeliveredPackageId = packagesSortedByDistance[0].id
+    const [
+      {
+        id: nextToBeDeliveredPackageId,
+        receiverEmailAddress,
+        receiverFullName,
+      },
+    ] = packagesSortedByDistance
+
+    const [{ accessKey }] = await db
+      .select()
+      .from(packageMonitoringAccessKeys)
+      .where(
+        eq(packageMonitoringAccessKeys.packageId, nextToBeDeliveredPackageId),
+      )
+      .limit(1)
 
     await db
       .update(deliveryShipments)
@@ -100,6 +116,23 @@ export async function POST(
         nextToBeDeliveredPackageId,
       })
       .where(eq(deliveryShipments.shipmentId, shipmentId))
+
+    await batchNotifyByEmailWithComponentProps({
+      messages: [
+        {
+          to: receiverEmailAddress,
+          subject: "Your package has been assigned as the next delivery.",
+          componentProps: {
+            type: "package-status-update",
+            body: `Hi, ${receiverFullName}. Your package with tracking number ${nextToBeDeliveredPackageId} has been automatically selected by our system as the next package to be delivered. Live viewing of your package for shipment ID ${shipmentId} is now available. Click the button below to view the location of your package.`,
+            callToAction: {
+              label: "View Location History",
+              href: `https://www.rrgfreight.services/tracking/${nextToBeDeliveredPackageId}/location?accessKey=${accessKey}`,
+            },
+          },
+        },
+      ],
+    })
 
     return Response.json({
       message: "Package set as next delivery.",
