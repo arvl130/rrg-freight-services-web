@@ -1,8 +1,9 @@
 import { desc, eq, inArray } from "drizzle-orm"
-import { publicProcedure, router } from "../../trpc"
+import { protectedProcedure, publicProcedure, router } from "../../trpc"
 import { shipmentLocations } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
+import { getEstimatedTimeOfArrival } from "@/server/geocoding"
 
 export const shipmentLocationRouter = router({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -65,5 +66,23 @@ export const shipmentLocationRouter = router({
         .from(shipmentLocations)
         .where(inArray(shipmentLocations.shipmentId, input.shipmentIds))
         .orderBy(desc(shipmentLocations.createdAt))
+    }),
+  getEstimatedTimeOfArrival: publicProcedure
+    .input(
+      z.object({
+        source: z.object({
+          lat: z.number(),
+          long: z.number(),
+        }),
+        destination: z.object({
+          lat: z.number(),
+          long: z.number(),
+        }),
+      }),
+    )
+    .query(async ({ input }) => {
+      const result = await getEstimatedTimeOfArrival(input)
+
+      return result
     }),
 })

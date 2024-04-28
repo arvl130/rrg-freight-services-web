@@ -1,5 +1,5 @@
 import { serverEnv } from "@/server/env.mjs"
-import { Client } from "@googlemaps/google-maps-services-js"
+import { Client, TravelMode } from "@googlemaps/google-maps-services-js"
 import type { Package } from "./db/entities"
 import { getDistance } from "geolib"
 
@@ -84,4 +84,31 @@ export async function getPackagesWithDistanceFromOrigin(options: {
   )
 
   return await Promise.all(packagesWithDistancePromises)
+}
+
+export async function getEstimatedTimeOfArrival(options: {
+  source: { lat: number; long: number }
+  destination: { lat: number; long: number }
+}) {
+  const result = await client.distancematrix({
+    params: {
+      key: serverEnv.GOOGLE_API_KEY,
+      mode: TravelMode.driving,
+      departure_time: new Date(),
+      origins: [
+        {
+          lat: options.source.lat,
+          lng: options.source.long,
+        },
+      ],
+      destinations: [
+        {
+          lat: options.destination.lat,
+          lng: options.destination.long,
+        },
+      ],
+    },
+  })
+
+  return result.data.rows[0].elements[0].duration_in_traffic.text
 }
