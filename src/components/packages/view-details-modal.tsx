@@ -12,13 +12,9 @@ import { Check } from "@phosphor-icons/react/dist/ssr/Check"
 import { useState } from "react"
 import { DateTime } from "luxon"
 import { getEstimatedDeliveryOfPackage } from "@/utils/estimated-delivery"
+import { getHumanizedOfPackageStatus } from "@/utils/humanize"
 
 function TopLayer({ package: _package }: { package: Package }) {
-  const { status, data: statusLog } =
-    api.packageStatusLog.getLatestByPackageId.useQuery({
-      packageId: _package.id,
-    })
-
   return (
     <div className="grid grid-cols-3 px-16 py-3 [background-color:_#54BCCC] text-white">
       <div>
@@ -30,8 +26,7 @@ function TopLayer({ package: _package }: { package: Package }) {
       <div>
         <p className="font-medium">Status</p>
         <p className="capitalize">
-          {status === "success" &&
-            statusLog.status.toLowerCase().replaceAll("_", " ")}
+          {getHumanizedOfPackageStatus(_package.status)}
         </p>
       </div>
       <div>
