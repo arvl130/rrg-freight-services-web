@@ -214,7 +214,7 @@ export const packageRouter = router({
           updatedById: ctx.user.id,
           updatedAt: new Date(),
           isDeliverable: deliverableProvinces.includes(
-            input.receiverStateOrProvince.trim().toUpperCase(),
+            selectedProvince[0].name.trim().toUpperCase(),
           )
             ? 1
             : 0,
