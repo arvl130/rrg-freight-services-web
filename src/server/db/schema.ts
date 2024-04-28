@@ -427,6 +427,9 @@ export const packages = mysqlTable("packages", {
   })
     .notNull()
     .defaultNow(),
+  settledAt: varchar("created_at", {
+    length: 255,
+  }),
   updatedById: varchar("updated_by_id", { length: 28 }).notNull(),
   isArchived: tinyint("is_archived").notNull().default(0),
   isDeliverable: tinyint("is_deliverable").notNull(),

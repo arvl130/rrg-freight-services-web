@@ -587,6 +587,7 @@ export const packageRouter = router({
           .update(packages)
           .set({
             status: "DELIVERED",
+            settledAt: createdAt,
           })
           .where(eq(packages.id, input.id))
 

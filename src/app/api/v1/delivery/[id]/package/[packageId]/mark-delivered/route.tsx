@@ -154,14 +154,15 @@ export async function POST(
           ),
         )
 
+      const createdAt = DateTime.now().toISO()
       await tx
         .update(packages)
         .set({
           status: "DELIVERED",
+          settledAt: createdAt,
         })
         .where(eq(packages.id, packageId))
 
-      const createdAt = DateTime.now().toISO()
       await tx.insert(packageStatusLogs).values({
         packageId,
         createdAt,

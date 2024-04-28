@@ -4,13 +4,13 @@ import {
   forwarderTransferShipments,
   incomingShipments,
   packageMonitoringAccessKeys,
+  packages,
   shipmentPackages,
   shipments,
   warehouseTransferShipments,
 } from "@/server/db/schema"
 import { and, eq, getTableColumns } from "drizzle-orm"
 import { MainSection } from "./main-section"
-import Image from "next/image"
 
 async function getAllShipmentTypesByPackageId(input: { packageId: string }) {
   const shipmentColumns = getTableColumns(shipments)
@@ -140,8 +140,14 @@ export default async function Page({
     packageId: params.packageId,
   })
 
+  const [_package] = await db
+    .select()
+    .from(packages)
+    .where(eq(packages.id, params.packageId))
+
   return (
     <MainSection
+      settledAt={_package.settledAt}
       packageId={params.packageId}
       deliveryShipments={deliveryShipments}
       forwarderTransferShipments={forwarderTransferShipments}

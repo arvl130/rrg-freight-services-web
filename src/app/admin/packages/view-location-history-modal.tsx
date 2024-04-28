@@ -1,4 +1,7 @@
-import type { NormalizedForwarderTransferShipment } from "@/server/db/entities"
+import type {
+  NormalizedForwarderTransferShipment,
+  ShipmentLocation,
+} from "@/server/db/entities"
 import type {
   NormalizedDeliveryShipment,
   Package,
@@ -11,7 +14,24 @@ import { useState } from "react"
 import { ViewLocationsSection } from "@/components/shipments/view-locations-section"
 import { LoadingSpinner } from "@/components/spinner"
 
-function MultipleShipmentsMapView(props: { shipmentIds: number[] }) {
+function removeAfterSettledAt(options: {
+  settledAt: null | string
+  locations: ShipmentLocation[]
+}) {
+  if (options.settledAt !== null) {
+    return options.locations.filter((l) => {
+      const locationRecordedAt = new Date(l.createdAt)
+      const settledAt = new Date(options.settledAt!)
+
+      return locationRecordedAt.valueOf() < settledAt.valueOf()
+    })
+  } else return options.locations
+}
+
+function MultipleShipmentsMapView(props: {
+  settledAt: null | string
+  shipmentIds: number[]
+}) {
   const { status, data, error } =
     api.shipment.location.getByShipmentIds.useQuery(
       {
@@ -30,10 +50,20 @@ function MultipleShipmentsMapView(props: { shipmentIds: number[] }) {
     )
   if (status === "error") return <div>Error occured: {error.message}</div>
 
-  return <ViewLocationsSection locations={data} />
+  return (
+    <ViewLocationsSection
+      locations={removeAfterSettledAt({
+        settledAt: props.settledAt,
+        locations: data,
+      })}
+    />
+  )
 }
 
-function ShipmentMapView(props: { shipmentId: number }) {
+function ShipmentMapView(props: {
+  settledAt: null | string
+  shipmentId: number
+}) {
   const { status, data, error } =
     api.shipment.location.getByShipmentId.useQuery(
       {
@@ -52,10 +82,18 @@ function ShipmentMapView(props: { shipmentId: number }) {
     )
   if (status === "error") return <div>Error occured: {error.message}</div>
 
-  return <ViewLocationsSection locations={data} />
+  return (
+    <ViewLocationsSection
+      locations={removeAfterSettledAt({
+        settledAt: props.settledAt,
+        locations: data,
+      })}
+    />
+  )
 }
 
 function AllTab(props: {
+  settledAt: null | string
   deliveryShipments: NormalizedDeliveryShipment[]
   forwarderTransferShipments: NormalizedForwarderTransferShipment[]
   warehouseTransferShipments: NormalizedWarehouseTransferShipment[]
@@ -111,10 +149,14 @@ function AllTab(props: {
           </div>
           {selectedShipmentId === null ? (
             <MultipleShipmentsMapView
+              settledAt={props.settledAt}
               shipmentIds={shipments.map((shipment) => shipment.id)}
             />
           ) : (
-            <ShipmentMapView shipmentId={selectedShipmentId} />
+            <ShipmentMapView
+              settledAt={props.settledAt}
+              shipmentId={selectedShipmentId}
+            />
           )}
         </>
       )}
@@ -122,7 +164,10 @@ function AllTab(props: {
   )
 }
 
-function DeliveryTab(props: { shipments: NormalizedDeliveryShipment[] }) {
+function DeliveryTab(props: {
+  settledAt: null | string
+  shipments: NormalizedDeliveryShipment[]
+}) {
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
     null,
   )
@@ -168,10 +213,14 @@ function DeliveryTab(props: { shipments: NormalizedDeliveryShipment[] }) {
           </div>
           {selectedShipmentId === null ? (
             <MultipleShipmentsMapView
+              settledAt={props.settledAt}
               shipmentIds={props.shipments.map((shipment) => shipment.id)}
             />
           ) : (
-            <ShipmentMapView shipmentId={selectedShipmentId} />
+            <ShipmentMapView
+              settledAt={props.settledAt}
+              shipmentId={selectedShipmentId}
+            />
           )}
         </>
       )}
@@ -180,6 +229,7 @@ function DeliveryTab(props: { shipments: NormalizedDeliveryShipment[] }) {
 }
 
 function ForwarderTransferTab(props: {
+  settledAt: null | string
   shipments: NormalizedForwarderTransferShipment[]
 }) {
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
@@ -227,10 +277,14 @@ function ForwarderTransferTab(props: {
           </div>
           {selectedShipmentId === null ? (
             <MultipleShipmentsMapView
+              settledAt={props.settledAt}
               shipmentIds={props.shipments.map((shipment) => shipment.id)}
             />
           ) : (
-            <ShipmentMapView shipmentId={selectedShipmentId} />
+            <ShipmentMapView
+              settledAt={props.settledAt}
+              shipmentId={selectedShipmentId}
+            />
           )}
         </>
       )}
@@ -239,6 +293,7 @@ function ForwarderTransferTab(props: {
 }
 
 function WarehouseTransferTab(props: {
+  settledAt: null | string
   shipments: NormalizedWarehouseTransferShipment[]
 }) {
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
@@ -286,10 +341,14 @@ function WarehouseTransferTab(props: {
           </div>
           {selectedShipmentId === null ? (
             <MultipleShipmentsMapView
+              settledAt={props.settledAt}
               shipmentIds={props.shipments.map((shipment) => shipment.id)}
             />
           ) : (
-            <ShipmentMapView shipmentId={selectedShipmentId} />
+            <ShipmentMapView
+              settledAt={props.settledAt}
+              shipmentId={selectedShipmentId}
+            />
           )}
         </>
       )}
@@ -300,6 +359,7 @@ function WarehouseTransferTab(props: {
 type Tab = "" | "DELIVERY" | "WAREHOUSE" | "FORWARDER"
 
 function MainSection(props: {
+  settledAt: null | string
   deliveryShipments: NormalizedDeliveryShipment[]
   forwarderTransferShipments: NormalizedForwarderTransferShipment[]
   warehouseTransferShipments: NormalizedWarehouseTransferShipment[]
@@ -327,19 +387,29 @@ function MainSection(props: {
       </div>
       {selectedTab === "" && (
         <AllTab
+          settledAt={props.settledAt}
           deliveryShipments={props.deliveryShipments}
           forwarderTransferShipments={props.forwarderTransferShipments}
           warehouseTransferShipments={props.warehouseTransferShipments}
         />
       )}
       {selectedTab === "DELIVERY" && (
-        <DeliveryTab shipments={props.deliveryShipments} />
+        <DeliveryTab
+          settledAt={props.settledAt}
+          shipments={props.deliveryShipments}
+        />
       )}
       {selectedTab === "FORWARDER" && (
-        <ForwarderTransferTab shipments={props.forwarderTransferShipments} />
+        <ForwarderTransferTab
+          settledAt={props.settledAt}
+          shipments={props.forwarderTransferShipments}
+        />
       )}
       {selectedTab === "WAREHOUSE" && (
-        <WarehouseTransferTab shipments={props.warehouseTransferShipments} />
+        <WarehouseTransferTab
+          settledAt={props.settledAt}
+          shipments={props.warehouseTransferShipments}
+        />
       )}
       <div></div>
     </div>
@@ -381,6 +451,7 @@ export function ViewLocationHistoryModal({
           {status === "error" && <div>Error occured: {error.message}</div>}
           {status === "success" && (
             <MainSection
+              settledAt={item.settledAt}
               deliveryShipments={data.deliveryShipments}
               forwarderTransferShipments={data.forwarderTransferShipments}
               warehouseTransferShipments={data.warehouseTransferShipments}
