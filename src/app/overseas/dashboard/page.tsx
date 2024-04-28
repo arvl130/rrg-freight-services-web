@@ -35,6 +35,7 @@ import {
   incomingShipments,
   shipmentPackages,
 } from "@/server/db/schema"
+import { DownloadTemplateBtn } from "./download-template-btn"
 import { eq, and, count, like, desc, not, max, lt } from "drizzle-orm"
 import { DateTime } from "luxon"
 import { LogsTile } from "./logs-tile"
@@ -158,16 +159,7 @@ export default async function DashboardPage() {
       <RevalidatedPageProvider>
         <section className="mb-6">
           <div className="mb-4 flex flex-wrap sm:justify-end gap-3">
-            <div className="flex text-sm">
-              <input
-                type="date"
-                className="rounded-l-md border-y border-l border-gray-300 pl-2"
-              />
-              <span className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-r-md">
-                <CalendarBlank size={24} />
-              </span>
-            </div>
-
+            <DownloadTemplateBtn />
             <RefreshButton />
 
             <button

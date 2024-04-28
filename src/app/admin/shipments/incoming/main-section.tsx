@@ -390,16 +390,6 @@ export function HeaderSection() {
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
   const [shipmentId, setShipmentId] = useState<null | number>(null)
 
-  const handleDownload = () => {
-    const url = "/assets/excel/RRG-Template.xlsx"
-    const link = document.createElement("a")
-    link.href = url
-    link.setAttribute("download", "RRG-Template.xlsx")
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
   return (
     <>
       <h1 className="text-2xl font-black mb-2 [color:_#00203F] flex items-center gap-1">
@@ -407,17 +397,6 @@ export function HeaderSection() {
         <span>Incoming</span>
       </h1>
       <div className="flex gap-5">
-        <button
-          type="button"
-          className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
-          onClick={() => {
-            handleDownload()
-            toast.success("Template Downloaded")
-          }}
-        >
-          <DownloadSimple size={16} />
-          <span>Download Template</span>
-        </button>
         <button
           type="button"
           className="flex items-center gap-1 bg-brand-cyan-500 text-white px-6 py-2 font-medium mt-auto"
