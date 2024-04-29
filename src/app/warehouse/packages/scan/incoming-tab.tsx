@@ -13,6 +13,7 @@ import { TabSelector } from "./tab-selector"
 import { DateTime } from "luxon"
 import { ViewWaybillsModal } from "@/components/shipments/incoming/view-waybills-modal"
 import { UnmanifestedPackagesModal } from "./unmanifested-packages-modal"
+import { MissingPackagesModal } from "./missing-modal"
 
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
@@ -467,9 +468,11 @@ function PackagesTableTabs(props: {
 function PackagesTable({
   shipmentId,
   userId,
+  updatePackageCount,
 }: {
   shipmentId: number
   userId: string
+  updatePackageCount: (count: number) => void
 }) {
   const packagesQuery = api.package.getIncomingStatusByShipmentId.useQuery({
     shipmentId,
@@ -481,6 +484,11 @@ function PackagesTable({
       remarks: string
     }[]
   >([])
+
+  useEffect(() => {
+    updatePackageCount(scannedPackageIds.length)
+  }, [scannedPackageIds, updatePackageCount])
+
   const utils = api.useUtils()
   const { isLoading, mutate } =
     api.shipment.package.updateManyToCompletedStatus.useMutation({
@@ -488,6 +496,8 @@ function PackagesTable({
         utils.package.getIncomingStatusByShipmentId.invalidate({
           shipmentId,
         })
+        utils.package.getCountWithLatestStatusByShipmentId.invalidate()
+
         utils.package.getAll.invalidate()
         setScannedPackageIds([])
         setSelectedRemarks([])
@@ -778,10 +788,32 @@ export function IncomingTab({
 }) {
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false)
   const [isUnmifestedPackagesOpen, setUnmifestedPackagesOpen] = useState(false)
+  const [isMissingPackagesOpen, setMissingPackagesOpen] = useState(false)
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
     null,
   )
 
+  const { data: packagesQuery } =
+    api.package.getWithLatestStatusByShipmentId.useQuery({
+      shipmentId: selectedShipmentId!,
+    })
+  const { data: packagesRemaining } =
+    api.package.getIncomingStatusByShipmentId.useQuery({
+      shipmentId: selectedShipmentId!,
+    })
+  const { data: packagesScannedCount } =
+    api.package.getCountWithLatestStatusByShipmentId.useQuery({
+      shipmentId: selectedShipmentId!,
+    })
+
+  const [scannedPackages, setScannedPackages] = useState<number>(0)
+  const [packageCount, setPackageCount] = useState<number>(0)
+
+  useEffect(() => {
+    if (packagesScannedCount!) {
+      setScannedPackages(packagesScannedCount)
+    }
+  }, [packagesScannedCount])
   const {
     status,
     data: warehouseName,
@@ -792,6 +824,10 @@ export function IncomingTab({
     id: userId,
   })
 
+  const updatePackageCount = (count: number) => {
+    setPackageCount(count)
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-lg px-4 py-2">
       <TabSelector selectedTab={selectedTab} onSelectTab={setSelectedTab} />
@@ -801,13 +837,31 @@ export function IncomingTab({
         <div className="sm:flex justify-between items-center mb-3">
           <div>
             <div className="font-semibold mb-3 sm:mb-0">
-              Shipment ID: {selectedShipmentId}
+              Shipment ID:{" "}
+              <span className="font-normal">{selectedShipmentId}</span>
             </div>
             <div className="font-semibold mb-3 sm:mb-0">
-              Receving Warehouse: {warehouseName}
+              Receiving Warehouse:{" "}
+              <span className="font-normal">{warehouseName}</span>
+            </div>
+            <div className="font-semibold mb-3 sm:mb-0">
+              Count:{" "}
+              <span className="font-normal">
+                {" "}
+                {packageCount + scannedPackages}/{packagesQuery?.length}
+              </span>
             </div>
           </div>
           <div>
+            <button
+              type="button"
+              className="px-4 py-2 mb-3 sm:mb-0 bg-rose-700	 text-white hover:bg-rose-600	 rounded-md font-medium transition-colors mr-3"
+              onClick={() => {
+                setMissingPackagesOpen(true)
+              }}
+            >
+              Mark as Missing Packages
+            </button>
             <button
               type="button"
               className="px-4 py-2 mb-3 sm:mb-0 bg-rose-700	 text-white hover:bg-rose-600	 rounded-md font-medium transition-colors mr-3"
@@ -860,11 +914,24 @@ export function IncomingTab({
               setUnmifestedPackagesOpen(false)
             }}
           />
+          <MissingPackagesModal
+            isOpen={isMissingPackagesOpen}
+            onClose={() => {
+              setMissingPackagesOpen(false)
+            }}
+            shipmentId={selectedShipmentId}
+            currentUserId={userId}
+            packages={packagesRemaining!}
+          />
         </div>
       )}
 
       {selectedShipmentId && (
-        <PackagesTable shipmentId={selectedShipmentId} userId={userId} />
+        <PackagesTable
+          shipmentId={selectedShipmentId}
+          updatePackageCount={updatePackageCount}
+          userId={userId}
+        />
       )}
     </div>
   )
