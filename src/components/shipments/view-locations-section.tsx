@@ -136,8 +136,10 @@ function LocationAccessPrompt(props: { lat: number; long: number }) {
 
 export function ViewLocationsSection({
   locations,
+  hasEta,
 }: {
   locations: ShipmentLocation[]
+  hasEta?: true
 }) {
   const [map, setMap] = useState<null | TMap>(null)
   const [selectedItemIndex, setSelectedItemIndex] = useState<
@@ -236,10 +238,14 @@ export function ViewLocationsSection({
             <>
               {selectedItemIndex === "LIVE" ? (
                 <div className="grid grid-rows-[auto_1fr]">
-                  <LocationAccessPrompt
-                    long={locations[0].long}
-                    lat={locations[0].lat}
-                  />
+                  {hasEta ? (
+                    <LocationAccessPrompt
+                      long={locations[0].long}
+                      lat={locations[0].lat}
+                    />
+                  ) : (
+                    <div></div>
+                  )}
                   <div className="h-full w-full bg-gray-50">
                     <Map
                       long={locations[0].long}

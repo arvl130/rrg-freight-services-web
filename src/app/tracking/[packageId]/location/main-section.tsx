@@ -39,6 +39,7 @@ function MultipleShipmentsMapView(props: {
 
   return (
     <ViewLocationsSection
+      hasEta
       locations={removeAfterSettledAt({
         settledAt: props.settledAt,
         locations: data,
