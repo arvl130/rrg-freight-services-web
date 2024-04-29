@@ -16,7 +16,7 @@ export async function getAreaCode({
   const [matchedProvince] = await db
     .select()
     .from(provinces)
-    .where(eq(provinces.name, provinceName))
+    .where(eq(provinces.name, provinceName.trim()))
 
   const [matchedCity] = await db
     .select()
@@ -24,7 +24,7 @@ export async function getAreaCode({
     .where(
       and(
         eq(cities.provinceId, matchedProvince.provinceId),
-        eq(cities.name, cityName),
+        eq(cities.name, cityName.trim()),
       ),
     )
 
@@ -35,7 +35,7 @@ export async function getAreaCode({
       and(
         eq(barangays.provinceId, matchedProvince.provinceId),
         eq(barangays.cityId, matchedCity.cityId),
-        eq(barangays.name, barangayName),
+        eq(barangays.name, barangayName.trim()),
       ),
     )
 
