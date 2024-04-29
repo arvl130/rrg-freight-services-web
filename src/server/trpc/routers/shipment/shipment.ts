@@ -9,6 +9,7 @@ import { z } from "zod"
 import { createLog } from "@/utils/logging"
 import { eq, getTableColumns } from "drizzle-orm"
 import {
+  assignedDrivers,
   deliveryShipments,
   forwarderTransferShipments,
   incomingShipments,
@@ -166,5 +167,22 @@ export const shipmentRouter = router({
         .where(eq(incomingShipments.shipmentId, input.id))
 
       return agentId[0].sentByAgentId
+    }),
+  getActiveShipmentByDriverId: protectedProcedure
+    .input(
+      z.object({
+        driverId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const shipmentColumns = getTableColumns(shipments)
+      const assignedShipments = await ctx.db
+        .select(shipmentColumns)
+        .from(assignedDrivers)
+        .innerJoin(shipments, eq(assignedDrivers.shipmentId, shipments.id))
+        .where(eq(assignedDrivers.driverId, input.driverId))
+
+      if (assignedShipments.length !== 1) return null
+      else return assignedShipments[0]
     }),
 })

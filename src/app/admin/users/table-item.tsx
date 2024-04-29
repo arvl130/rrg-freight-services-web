@@ -6,9 +6,12 @@ import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { getHumanizedOfUserRole } from "@/utils/humanize"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { EditModal } from "./edit-modal"
+import { ViewActiveShipmentLocationsModal } from "./view-active-shipment-locations-modal"
 
 export function TableItem({ user }: { user: User }) {
-  const [visibleModal, setVisibleModal] = useState<null | "EDIT">(null)
+  const [visibleModal, setVisibleModal] = useState<
+    null | "EDIT" | "VIEW_ACTIVE_SHIPMENT_LOCATION"
+  >(null)
 
   return (
     <>
@@ -62,6 +65,16 @@ export function TableItem({ user }: { user: User }) {
               >
                 Edit
               </DropdownMenu.Item>
+              {user.role === "DRIVER" && (
+                <DropdownMenu.Item
+                  className="transition-colors bg-white rounded-md hover:bg-sky-50 px-3 py-2"
+                  onClick={() =>
+                    setVisibleModal("VIEW_ACTIVE_SHIPMENT_LOCATION")
+                  }
+                >
+                  View Active Shipment
+                </DropdownMenu.Item>
+              )}
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
@@ -71,6 +84,11 @@ export function TableItem({ user }: { user: User }) {
           userRecord={user}
           onClose={() => setVisibleModal(null)}
           isOpen={visibleModal === "EDIT"}
+        />
+        <ViewActiveShipmentLocationsModal
+          driverId={user.id}
+          onClose={() => setVisibleModal(null)}
+          isOpen={visibleModal === "VIEW_ACTIVE_SHIPMENT_LOCATION"}
         />
       </div>
     </>
