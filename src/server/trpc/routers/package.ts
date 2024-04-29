@@ -7,6 +7,7 @@ import {
   getTableColumns,
   like,
   lt,
+  ne,
   sql,
 } from "drizzle-orm"
 import {
@@ -25,6 +26,7 @@ import {
   provinces,
   cities,
   barangays,
+  missingPackages,
 } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
@@ -468,6 +470,27 @@ export const packageRouter = router({
 
       return result.map(({ packages }) => packages)
     }),
+  getCountWithLatestStatusByShipmentId: protectedProcedure
+    .input(
+      z.object({
+        shipmentId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .select()
+        .from(shipmentPackages)
+        .innerJoin(packages, and(eq(shipmentPackages.packageId, packages.id)))
+        .where(
+          and(
+            eq(shipmentPackages.shipmentId, input.shipmentId),
+            ne(packages.status, "INCOMING"),
+          ),
+        )
+        .orderBy(packages.id)
+
+      return result.length
+    }),
   getTotalPackageInWarehouse: protectedProcedure.query(async ({ ctx }) => {
     const [{ value }] = await ctx.db
       .select({
@@ -608,5 +631,79 @@ export const packageRouter = router({
           createdById: ctx.user.id,
         })
       })
+    }),
+
+  tagAsMissingByShipmentId: protectedProcedure
+    .input(
+      z.object({
+        misingPackages: z
+          .object({
+            packageId: z.string(),
+            shipmentId: z.number(),
+            preassignedId: z.string(),
+            shippingMode: z.custom<PackageShippingMode>((val) =>
+              SUPPORTED_PACKAGE_SHIPPING_MODES.includes(
+                val as PackageShippingMode,
+              ),
+            ),
+            shippingType: z.custom<PackageShippingType>((val) =>
+              SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(
+                val as PackageShippingType,
+              ),
+            ),
+
+            weightInKg: z.number(),
+            volumeInCubicMeter: z.number(),
+            senderFullName: z.string(),
+            senderContactNumber: z.string(),
+            senderEmailAddress: z.string(),
+            senderStreetAddress: z.string(),
+            senderCity: z.string(),
+            senderStateOrProvince: z.string(),
+
+            senderCountryCode: z.string(),
+            senderPostalCode: z.number(),
+            receiverFullName: z.string(),
+            receiverContactNumber: z.string(),
+            receiverEmailAddress: z.string(),
+            receiverStreetAddress: z.string(),
+            receiverBarangay: z.string(),
+            receiverCity: z.string(),
+            receiverStateOrProvince: z.string(),
+
+            receiverCountryCode: z.string(),
+            receiverPostalCode: z.number(),
+
+            createdAt: z.string(),
+            createdById: z.string(),
+
+            isFragile: z.number(),
+
+            sentByAgentId: z.string(),
+          })
+          .array(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(missingPackages).values(input.misingPackages)
+
+      await ctx.db.delete(packages).where(
+        inArray(
+          packages.id,
+          input.misingPackages.map((_package) => _package.packageId),
+        ),
+      )
+      await ctx.db.delete(packageStatusLogs).where(
+        inArray(
+          packageStatusLogs.packageId,
+          input.misingPackages.map((_package) => _package.packageId),
+        ),
+      )
+      await ctx.db.delete(shipmentPackages).where(
+        inArray(
+          shipmentPackages.packageId,
+          input.misingPackages.map((_package) => _package.packageId),
+        ),
+      )
     }),
 })

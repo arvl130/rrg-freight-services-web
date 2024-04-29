@@ -447,6 +447,89 @@ export const packages = mysqlTable("packages", {
   areaCode: varchar("area_code", { length: 100 }).notNull(),
   sentByAgentId: varchar("sent_by_agent_id", { length: 28 }).notNull(),
 })
+export const missingPackages = mysqlTable("missing_packages", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  packageId: varchar("package_id", { length: 36 }).notNull(),
+  shipmentId: bigint("shipment_id", {
+    mode: "number",
+  }).notNull(),
+  preassignedId: varchar("preassigned_id", { length: 100 }).notNull(),
+  shippingMode: mysqlEnum(
+    "shipping_mode",
+    SUPPORTED_PACKAGE_SHIPPING_MODES,
+  ).notNull(),
+  shippingType: mysqlEnum(
+    "shippingtype",
+    SUPPORTED_PACKAGE_SHIPPING_TYPES,
+  ).notNull(),
+
+  weightInKg: double("weight_in_kg", {
+    precision: 8,
+    scale: 2,
+  }).notNull(),
+  volumeInCubicMeter: double("volume_in_cubic_meter", {
+    precision: 8,
+    scale: 2,
+  }).notNull(),
+  senderFullName: varchar("sender_full_name", { length: 100 }).notNull(),
+  senderContactNumber: varchar("sender_contact_number", {
+    length: 15,
+  }).notNull(),
+  senderEmailAddress: varchar("sender_email_address", {
+    length: 100,
+  }).notNull(),
+  senderStreetAddress: varchar("sender_street_address", {
+    length: 255,
+  }).notNull(),
+  senderCity: varchar("sender_city", {
+    length: 100,
+  }).notNull(),
+  senderStateOrProvince: varchar("sender_state_province", {
+    length: 100,
+  }).notNull(),
+  // Uses ISO 3166-1 alpha-3 format.
+  // See: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
+  senderCountryCode: varchar("sender_country_code", { length: 3 }).notNull(),
+  senderPostalCode: int("sender_postal_code").notNull(),
+  receiverFullName: varchar("receiver_full_name", { length: 100 }).notNull(),
+  receiverContactNumber: varchar("receiver_contact_number", {
+    length: 15,
+  }).notNull(),
+  receiverEmailAddress: varchar("receiver_email_address", {
+    length: 100,
+  }).notNull(),
+  receiverStreetAddress: varchar("receiver_street_address", {
+    length: 255,
+  }).notNull(),
+  receiverBarangay: varchar("receiver_barangay", {
+    length: 100,
+  }).notNull(),
+  receiverCity: varchar("receiver_city", {
+    length: 100,
+  }).notNull(),
+  receiverStateOrProvince: varchar("receiver_state_province", {
+    length: 100,
+  }).notNull(),
+  // Uses ISO 3166-1 alpha-3 format.
+  // See: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
+  receiverCountryCode: varchar("receiver_country_code", {
+    length: 3,
+  }).notNull(),
+  receiverPostalCode: int("receiver_postal_code").notNull(),
+
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
+  createdById: varchar("created_by_id", { length: 28 }).notNull(),
+
+  isFragile: tinyint("is_fragile").notNull(),
+
+  sentByAgentId: varchar("sent_by_agent_id", { length: 28 }).notNull(),
+})
 
 export const packageMonitoringAccessKeys = mysqlTable(
   "package_monitoring_access_keys",
