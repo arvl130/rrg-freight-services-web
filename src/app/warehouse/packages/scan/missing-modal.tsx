@@ -57,7 +57,7 @@ export function MissingPackagesModal({
           </Dialog.Title>
           <div className="px-4 overflow-auto">
             <div className="py-5 font-semibold">
-              Scan fingerprint to mark missing packages
+              Are you sure you want to mark package/s as missing?
             </div>
             <div className="">
               {packages?.map((_package) => (
