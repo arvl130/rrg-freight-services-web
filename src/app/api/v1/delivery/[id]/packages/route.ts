@@ -69,6 +69,7 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
       .select({
         ...packageColumns,
         shipmentPackageStatus: shipmentPackages.status,
+        shipmentPackageIsDriverApproved: shipmentPackages.isDriverApproved,
       })
       .from(shipmentPackages)
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))

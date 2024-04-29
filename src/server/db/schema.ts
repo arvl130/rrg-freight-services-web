@@ -134,6 +134,7 @@ export const shipmentPackages = mysqlTable(
     }).notNull(),
     packageId: varchar("package_id", { length: 36 }).notNull(),
     status: mysqlEnum("status", SUPPORTED_SHIPMENT_PACKAGE_STATUSES).notNull(),
+    isDriverApproved: tinyint("is_driver_approved").notNull().default(0),
     createdAt: varchar("created_at", {
       length: 255,
     }).notNull(),
