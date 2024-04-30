@@ -238,14 +238,10 @@ export function ViewLocationsSection({
             <>
               {selectedItemIndex === "LIVE" ? (
                 <div className="grid grid-rows-[auto_1fr]">
-                  {hasEta ? (
-                    <LocationAccessPrompt
-                      long={locations[0].long}
-                      lat={locations[0].lat}
-                    />
-                  ) : (
-                    <div></div>
-                  )}
+                  <LocationAccessPrompt
+                    long={locations[0].long}
+                    lat={locations[0].lat}
+                  />
                   <div className="h-full w-full bg-gray-50">
                     <Map
                       long={locations[0].long}
