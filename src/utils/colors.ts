@@ -1,4 +1,9 @@
-import type { ActivityVerb, PackageStatus, ShipmentStatus } from "./constants"
+import type {
+  ActivityVerb,
+  PackageStatus,
+  ShipmentStatus,
+  UploadedManifestStatus,
+} from "./constants"
 
 const packageStatusColors: Record<PackageStatus, string> = {
   INCOMING: "bg-blue-500",
@@ -39,4 +44,16 @@ const activityVerbColors: Record<ActivityVerb, string> = {
 
 export function getColorFromActivityVerb(status: ActivityVerb) {
   return activityVerbColors[status] ?? ""
+}
+
+const uploadedManifestStatusColors: Record<UploadedManifestStatus, string> = {
+  PENDING_REVIEW: "bg-purple-500",
+  SHIPMENT_CREATED: "bg-green-500",
+  REUPLOAD_REQUESTED: "bg-red-500",
+}
+
+export function getColorOfUploadedManifestStatus(
+  status: UploadedManifestStatus,
+) {
+  return uploadedManifestStatusColors[status] ?? ""
 }

@@ -26,6 +26,7 @@ import { cityRouter } from "./city"
 import { barangayRouter } from "./barangay"
 import { monitoringLinkRouter } from "./monitoring-link"
 import { addressPickerRouter } from "./address-picker"
+import { uploadedManifestRouter } from "./uploaded-manifest"
 
 export const rootRouter = router({
   hello: publicProcedure
@@ -57,6 +58,7 @@ export const rootRouter = router({
   city: cityRouter,
   addressPicker: addressPickerRouter,
   barangay: barangayRouter,
+  uploadedManifest: uploadedManifestRouter,
   getAllPackagesByDateRange: protectedProcedure
     .input(
       z.object({

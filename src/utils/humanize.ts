@@ -3,6 +3,7 @@ import type {
   UserRole,
   PackageShippingType,
   ShipmentStatus,
+  UploadedManifestStatus,
 } from "./constants"
 
 export function toTitleCase(word: string) {
@@ -41,4 +42,19 @@ export function getHumanizedOfPackageShippingType(
   shippingType: PackageShippingType,
 ) {
   return displayNameOfshippingTypes[shippingType]
+}
+
+const displayNameOfuploadedManifestStatus: Record<
+  UploadedManifestStatus,
+  string
+> = {
+  PENDING_REVIEW: "Pending Review",
+  REUPLOAD_REQUESTED: "Reupload Requested",
+  SHIPMENT_CREATED: "Shipment Created",
+}
+
+export function getHumanizedOfuploadedManifestStatus(
+  status: UploadedManifestStatus,
+) {
+  return displayNameOfuploadedManifestStatus[status]
 }

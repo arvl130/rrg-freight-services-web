@@ -14,7 +14,7 @@ import { getColorFromShipmentStatus } from "@/utils/colors"
 import { DateTime } from "luxon"
 import { usePaginatedItems } from "@/hooks/paginated-items"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
-import { ViewWaybillsModal } from "@/components/shipments/incoming/view-waybills-modal"
+import { File } from "@phosphor-icons/react/dist/ssr/File"
 import {
   SUPPORTED_SHIPMENT_STATUSES,
   type ShipmentStatus,
@@ -24,6 +24,7 @@ import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
 import { WarehouseDetails } from "@/components/warehouse-details"
+import { UploadedManifestsModal } from "./uploaded-manifests-modal"
 
 type NormalizedIncomingShipmentWithAgentDetails = NormalizedIncomingShipment & {
   agentDisplayName: string
@@ -345,22 +346,25 @@ function ShipmentsTable({
 }
 
 export function HeaderSection() {
-  const [shipmentId, setShipmentId] = useState<null | number>(null)
+  const [isOpenCreateModal, setIsOpenCreateModal] = useState(false)
 
   return (
     <>
       <h1 className="text-2xl font-black mb-2 [color:_#00203F] flex items-center gap-1">
         <span>Shipments</span>
       </h1>
-      <div className="grid"></div>
-
-      {shipmentId !== null && (
-        <ViewWaybillsModal
-          shipmentId={shipmentId}
-          isOpen={true}
-          onClose={() => setShipmentId(null)}
-        />
-      )}
+      <button
+        type="button"
+        className="flex items-center gap-1 bg-brand-cyan-500 text-white px-4 py-2 font-medium mt-auto"
+        onClick={() => setIsOpenCreateModal(true)}
+      >
+        <File size={24} />
+        <span>Uploaded Manifests</span>
+      </button>
+      <UploadedManifestsModal
+        isOpen={isOpenCreateModal}
+        onClose={() => setIsOpenCreateModal(false)}
+      />
     </>
   )
 }

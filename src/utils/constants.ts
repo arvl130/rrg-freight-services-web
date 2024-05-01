@@ -224,7 +224,8 @@ export const SUPPORTED_UPLOADED_MANIFEST_STATUS = [
   "REUPLOAD_REQUESTED",
   "SHIPMENT_CREATED",
 ] as const
-export type UploadedManifest =
+
+export type UploadedManifestStatus =
   (typeof SUPPORTED_UPLOADED_MANIFEST_STATUS)[number]
 
 // Source: https://dev.mysql.com/doc/refman/8.0/en/string-type-syntax.html

@@ -27,6 +27,7 @@ import type {
   provinces,
   cities,
   barangays,
+  uploadedManifests,
 } from "./schema"
 
 export type DbWithEntities = MySql2Database<typeof schema>
@@ -55,6 +56,9 @@ export type NormalizedPublicOverseasAgentUser = Omit<
   PublicUser & OverseasAgent,
   "userId"
 >
+
+export type UploadedManifest = typeof uploadedManifests.$inferSelect
+export type NewUploadedManifest = typeof uploadedManifests.$inferInsert
 
 export type DomesticAgent = typeof domesticAgents.$inferSelect
 export type NewDomesticAgent = typeof domesticAgents.$inferInsert
