@@ -1,13 +1,20 @@
-import { eq } from "drizzle-orm"
+import { and, eq, sql } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { cities, provinces } from "@/server/db/schema"
+import { cities, packages, provinces } from "@/server/db/schema"
 import { z } from "zod"
 import { TRPCError } from "@trpc/server"
+import type { PackageShippingType } from "@/utils/constants"
+import { SUPPORTED_PACKAGE_SHIPPING_TYPES } from "@/utils/constants"
 
 export const cityRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(cities)
+    return await ctx.db
+      .select()
+      .from(cities)
+      .orderBy(cities.name)
+      .innerJoin(provinces, eq(provinces.provinceId, cities.provinceId))
   }),
+
   getByProvinceId: protectedProcedure
     .input(
       z.object({
@@ -53,5 +60,37 @@ export const cityRouter = router({
         ...matchedCity,
         provinceName: matchedProvince.name,
       }
+    }),
+  getHasPackagesToBeDelivered: protectedProcedure
+    .input(
+      z.object({
+        warehouseId: z.number(),
+        deliveryType: z.custom<PackageShippingType>((val) =>
+          SUPPORTED_PACKAGE_SHIPPING_TYPES.includes(val as PackageShippingType),
+        ),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const inWarehousePackageAreaCodes = await ctx.db
+        .selectDistinct({
+          areaCode: sql<string>`substring(${packages.areaCode},1,6)`,
+          cityName: cities.name,
+        })
+        .from(packages)
+        .innerJoin(
+          cities,
+          eq(sql<string>`substring(${packages.areaCode},1,6)`, cities.cityId),
+        )
+        .where(
+          and(
+            eq(packages.receptionMode, "DOOR_TO_DOOR"),
+            eq(packages.lastWarehouseId, input.warehouseId),
+            eq(packages.shippingType, input.deliveryType),
+            eq(packages.isDeliverable, 1),
+            eq(packages.status, "IN_WAREHOUSE"),
+          ),
+        )
+
+      return inWarehousePackageAreaCodes
     }),
 })

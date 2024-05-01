@@ -110,7 +110,7 @@ function filterBySearchTerm(items: Package[], searchTerm: string) {
 }
 
 export function ChoosePackageTable({
-  selectedProvinceId,
+  selectedCityId,
   hasExceededWeightLimit,
   totalWeightOfSelectedPackages,
   selectedDepartingWarehouseId,
@@ -121,7 +121,7 @@ export function ChoosePackageTable({
   onCheckboxChange,
   onResetSelection,
 }: {
-  selectedProvinceId: string
+  selectedCityId: string
   hasExceededWeightLimit: boolean
   totalWeightOfSelectedPackages: number
   selectedDepartingWarehouseId: null | number
@@ -140,7 +140,7 @@ export function ChoosePackageTable({
     status,
     data: packages,
   } = api.package.getInWarehouseAndCanBeDeliveredInProvinceId.useQuery({
-    provinceId: selectedProvinceId,
+    cityId: selectedCityId,
     shippingType: selectedDeliveryType,
     sortOrder,
     searchTerm,

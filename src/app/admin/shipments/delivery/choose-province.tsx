@@ -5,19 +5,20 @@ import type { PackageShippingType } from "@/utils/constants"
 export function ChooseProvinceWithPackages({
   warehouseId,
   deliveryType,
-  provinceId,
+  cityId,
   onChange,
 }: {
   warehouseId: number
   deliveryType: PackageShippingType
-  provinceId: string
+  cityId: string
   onChange: (newProvinceId: string) => void
 }) {
-  const { status, data, error } =
-    api.province.getHasPackagesToBeDelivered.useQuery({
+  const { status, data, error } = api.city.getHasPackagesToBeDelivered.useQuery(
+    {
       warehouseId,
       deliveryType,
-    })
+    },
+  )
 
   return (
     <div className="text-gray-700 mt-3">
@@ -33,15 +34,15 @@ export function ChooseProvinceWithPackages({
           ) : (
             <select
               className="w-full bg-white px-3 py-1.5 border border-gray-300 rounded-md"
-              value={provinceId}
+              value={cityId}
               onChange={(e) => {
                 onChange(e.currentTarget.value)
               }}
             >
-              <option value="">Choose a province ...</option>
-              {data.map(({ areaCode, provinceName }) => (
+              <option value="">Choose a city ...</option>
+              {data.map(({ areaCode, cityName }) => (
                 <option key={areaCode} value={areaCode}>
-                  {provinceName}
+                  {cityName}
                 </option>
               ))}
             </select>

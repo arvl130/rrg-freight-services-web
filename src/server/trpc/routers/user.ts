@@ -645,7 +645,7 @@ export const userRouter = router({
   getAvailableDriverInProvinceId: protectedProcedure
     .input(
       z.object({
-        provinceId: z.string(),
+        cityId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -660,7 +660,7 @@ export const userRouter = router({
           and(
             eq(users.role, "DRIVER"),
             isNull(assignedDrivers.driverId),
-            eq(driverAssignedAreas.areaCode, input.provinceId),
+            eq(driverAssignedAreas.areaCode, input.cityId),
           ),
         )
     }),
