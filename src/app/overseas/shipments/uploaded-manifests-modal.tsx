@@ -20,7 +20,7 @@ function ListView(props: {
         <div className="text-center">
           <p>No manifests have been uploaded.</p>
           <button
-            type="submit"
+            type="button"
             className="mt-3 px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
             onClick={() => setIsOpen(true)}
           >
@@ -41,7 +41,7 @@ function ListView(props: {
             </div>
             <div>
               <button
-                type="submit"
+                type="button"
                 className="mt-3 px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
                 onClick={() => setIsOpen(true)}
               >
