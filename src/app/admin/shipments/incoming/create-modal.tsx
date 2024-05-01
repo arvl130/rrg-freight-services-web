@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import type { WorkBook } from "xlsx"
 import { utils, read } from "xlsx"
-import { Fragment, useCallback, useEffect, useState } from "react"
+import { Fragment, useCallback, useEffect, useRef, useState } from "react"
 import type {
   PackageReceptionMode,
   PackageShippingMode,
@@ -368,6 +368,7 @@ function ReceiverAddressValidity({
   barangayName: string
   onAllValid: () => void
 }) {
+  const hasAttemptedValidation = useRef(false)
   const { status, data, error } =
     api.addressValidation.getValidityByName.useQuery(
       {
@@ -377,12 +378,21 @@ function ReceiverAddressValidity({
       },
       {
         refetchOnWindowFocus: false,
-        onSuccess: ({ province, city, barangay }) => {
-          if ([province.isValid, city.isValid, barangay.isValid].every(Boolean))
-            onAllValid()
-        },
       },
     )
+
+  useEffect(() => {
+    if (
+      !hasAttemptedValidation.current &&
+      data &&
+      [data.province.isValid, data.city.isValid, data.barangay.isValid].every(
+        Boolean,
+      )
+    ) {
+      hasAttemptedValidation.current = true
+      onAllValid()
+    }
+  }, [data, hasAttemptedValidation, onAllValid])
 
   return (
     <div
@@ -548,35 +558,33 @@ function ValidSheetRow(props: {
 }
 
 function HasValidSheetRows({
+  sheetName,
   sheetRows,
+  validAddressCount,
   reset,
   onClose,
   onSuccess,
+  onValidAddress,
 }: {
+  sheetName: string
   sheetRows: SheetRow[]
+  validAddressCount: number
   reset: () => void
   onClose: () => void
   onSuccess: (newShipmentId: number) => void
+  onValidAddress: () => void
 }) {
   const { status, data, error } = api.user.getOverseasAgents.useQuery()
-  const [validIndexes, setValidIndexes] = useState<number[]>([])
-
-  useEffect(() => {
-    setValidIndexes([])
-  }, [sheetRows])
 
   return (
     <div className="px-4 grid grid-rows-[1fr_auto] overflow-auto">
       <div className="h-full overflow-auto border border-gray-300 grid auto-rows-min">
         {sheetRows.map((newPackage, index) => (
           <ValidSheetRow
-            key={index}
+            key={`${sheetName}-${index}`}
             sheetRow={newPackage}
             onAddressValid={() => {
-              setValidIndexes((currValidIndexes) => [
-                ...currValidIndexes,
-                index,
-              ])
+              onValidAddress()
             }}
           />
         ))}
@@ -592,7 +600,7 @@ function HasValidSheetRows({
           reset={() => reset()}
           onClose={onClose}
           onSuccess={onSuccess}
-          invalidAddressesCount={sheetRows.length - validIndexes.length}
+          invalidAddressesCount={sheetRows.length - validAddressCount}
         />
       )}
     </div>
@@ -605,12 +613,16 @@ function HasValidSheetName({
   reset,
   onClose,
   onSuccess,
+  validAddressCount,
+  onValidAddress,
 }: {
   selectedWorkBook: WorkBook
   selectedSheetName: string
   reset: () => void
   onClose: () => void
   onSuccess: (newShipmentId: number) => void
+  validAddressCount: number
+  onValidAddress: () => void
 }) {
   const sheetRowsRaw = utils.sheet_to_json<Record<string, unknown>>(
     selectedWorkBook.Sheets[selectedSheetName],
@@ -624,10 +636,13 @@ function HasValidSheetName({
     else
       return (
         <HasValidSheetRows
+          sheetName={selectedSheetName}
           sheetRows={parseArrayResult.data}
           reset={reset}
           onClose={onClose}
+          validAddressCount={validAddressCount}
           onSuccess={onSuccess}
+          onValidAddress={onValidAddress}
         />
       )
   } else {
@@ -707,6 +722,7 @@ function HasValidWorkBook(props: {
   const [selectedSheetName, setSelectedSheetName] = useState(
     props.workbook.SheetNames[0],
   )
+  const [validAddressCount, setValidAddressCount] = useState(0)
 
   return (
     <>
@@ -714,7 +730,10 @@ function HasValidWorkBook(props: {
         <SelectSheetNameForm
           selectedWorkBook={props.workbook}
           selectedSheetName={selectedSheetName}
-          setSelectedSheetName={(sheetName) => setSelectedSheetName(sheetName)}
+          setSelectedSheetName={(sheetName) => {
+            setSelectedSheetName(sheetName)
+            setValidAddressCount(0)
+          }}
         />
         {selectedSheetName && (
           <HasValidSheetName
@@ -723,6 +742,12 @@ function HasValidWorkBook(props: {
             reset={props.onReset}
             onClose={props.onClose}
             onSuccess={props.onSuccess}
+            validAddressCount={validAddressCount}
+            onValidAddress={() => {
+              setValidAddressCount(
+                (currValidAddressCount) => currValidAddressCount + 1,
+              )
+            }}
           />
         )}
       </div>
