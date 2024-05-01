@@ -30,7 +30,7 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
   const [selectedDepartingWarehouseId, setSelectedDepartingWarehouseId] =
     useState<null | number>(null)
   const [selectedDriverId, setSelectedDriverId] = useState("")
-  const [selectedProvinceId, setSelectedProvinceId] = useState("")
+  const [selectedCityId, setSelectedCityId] = useState("")
   const [selectedVehicle, setSelectedVehicle] = useState<null | Vehicle>(null)
   const [selectedDeliveryType, setSelectedDeliveryType] =
     useState<PackageShippingType>("STANDARD")
@@ -66,8 +66,8 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
             onChange={(deliveryType) => {
               setSelectedDeliveryType(deliveryType)
               setSelectedPackages([])
-              setSelectedProvinceId("")
               setSelectedDriverId("")
+              setSelectedCityId("")
             }}
           />
         </div>
@@ -75,17 +75,18 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
           <ChooseProvinceWithPackages
             warehouseId={selectedDepartingWarehouseId}
             deliveryType={selectedDeliveryType}
-            provinceId={selectedProvinceId}
-            onChange={(newProvinceId) => {
-              setSelectedProvinceId(newProvinceId)
+            cityId={selectedCityId}
+            onChange={(newCityId) => {
+              setSelectedCityId(newCityId)
+
               setSelectedDriverId("")
             }}
           />
         )}
 
-        {selectedProvinceId !== "" && (
+        {selectedCityId !== "" && (
           <ChooseDriver
-            provinceId={selectedProvinceId}
+            cityId={selectedCityId}
             driverId={selectedDriverId}
             onChange={(driverId) => {
               setSelectedDriverId(driverId)
@@ -110,7 +111,7 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
             <ChoosePackageTable
               selectedDepartingWarehouseId={selectedDepartingWarehouseId}
               selectedDeliveryType={selectedDeliveryType}
-              selectedProvinceId={selectedProvinceId}
+              selectedCityId={selectedCityId}
               selectedPackageIds={selectedPackages.map(({ id }) => id)}
               selectedVehicle={selectedVehicle}
               onAutoSelect={(packages) => {

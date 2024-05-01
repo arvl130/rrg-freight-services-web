@@ -27,6 +27,7 @@ import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 import { EditDetailsModal } from "./edit-details-modal"
 import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
+import { ViewWaybillsModal } from "@/components/shipments/incoming/view-waybills-modal"
 
 type NormalizedDeliveryShipmentWithDetails = NormalizedDeliveryShipment & {
   warehouseDisplayName: string
@@ -40,6 +41,7 @@ function TableItem({ item }: { item: NormalizedDeliveryShipmentWithDetails }) {
     | "EDIT_DETAILS"
     | "VIEW_LOCATIONS"
     | "ARCHIVE"
+    | "PRINT_WAYBIILS"
     | "UNARCHIVE"
   >(null)
 
@@ -97,11 +99,18 @@ function TableItem({ item }: { item: NormalizedDeliveryShipmentWithDetails }) {
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 className="transition-colors hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("PRINT_WAYBIILS")}
+              >
+                Print Waybills
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Item
+                className="transition-colors hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("VIEW_LOCATIONS")}
               >
                 View Locations
               </DropdownMenu.Item>
-              {item.isArchived ? (
+              {/* {item.isArchived ? (
                 <DropdownMenu.Item
                   className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
                   onClick={() => setVisibleModal("UNARCHIVE")}
@@ -115,6 +124,25 @@ function TableItem({ item }: { item: NormalizedDeliveryShipmentWithDetails }) {
                 >
                   Archive
                 </DropdownMenu.Item>
+              )} */}
+              {item.status === "COMPLETED" ? (
+                item.isArchived ? (
+                  <DropdownMenu.Item
+                    className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                    onClick={() => setVisibleModal("UNARCHIVE")}
+                  >
+                    Unarchive
+                  </DropdownMenu.Item>
+                ) : (
+                  <DropdownMenu.Item
+                    className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                    onClick={() => setVisibleModal("ARCHIVE")}
+                  >
+                    Archive
+                  </DropdownMenu.Item>
+                )
+              ) : (
+                <></>
               )}
 
               <DropdownMenu.Arrow className="fill-white" />
@@ -146,6 +174,11 @@ function TableItem({ item }: { item: NormalizedDeliveryShipmentWithDetails }) {
           id={item.id}
           close={() => setVisibleModal(null)}
           isOpen={visibleModal === "UNARCHIVE"}
+        />
+        <ViewWaybillsModal
+          shipmentId={item.id}
+          isOpen={visibleModal === "PRINT_WAYBIILS"}
+          onClose={() => setVisibleModal(null)}
         />
       </div>
     </>

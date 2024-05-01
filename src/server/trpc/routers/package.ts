@@ -357,7 +357,7 @@ export const packageRouter = router({
   getInWarehouseAndCanBeDeliveredInProvinceId: protectedProcedure
     .input(
       z.object({
-        provinceId: z.string(),
+        cityId: z.string(),
         searchTerm: z.string(),
         warehouseId: z.number().optional(),
         shippingType: z
@@ -379,7 +379,7 @@ export const packageRouter = router({
             eq(packages.status, "IN_WAREHOUSE"),
             eq(packages.receptionMode, "DOOR_TO_DOOR"),
             eq(packages.remarks, "GOOD_CONDITION"),
-            eq(sql`substring(${packages.areaCode},1,4)`, input.provinceId),
+            eq(sql`substring(${packages.areaCode},1,6)`, input.cityId),
             input.warehouseId
               ? eq(packages.lastWarehouseId, input.warehouseId)
               : undefined,

@@ -10,7 +10,7 @@ import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight"
 import type { SelectedTab } from "./tab-selector"
 import { TabSelector } from "./tab-selector"
 import { DateTime } from "luxon"
-
+import { ViewWaybillsModal } from "@/components/shipments/incoming/view-waybills-modal"
 const scanPackageSchemaFormSchema = z.object({
   packageId: z.string().min(1, {
     message: "Please enter a package ID.",
@@ -429,6 +429,7 @@ export function DeliveryTab({
   const [selectedShipmentId, setSelectedShipmentId] = useState<null | number>(
     null,
   )
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false)
 
   return (
     <div className="bg-white rounded-lg shadow-lg px-4 py-2">
@@ -450,12 +451,28 @@ export function DeliveryTab({
             >
               Change Shipment
             </button>
+            <button
+              type="button"
+              className="px-4 py-2 mb-3 sm:mb-0 bg-purple-700 text-white hover:bg-purple-600 rounded-md font-medium transition-colors mr-3"
+              onClick={() => {
+                setIsPrintModalOpen(true)
+              }}
+            >
+              Print Waybills
+            </button>
             {selectedShipmentId && (
               <MarkAsInTransit
                 shipmentId={selectedShipmentId}
                 resetSelectedShipmentId={() => setSelectedShipmentId(null)}
               />
             )}
+            <ViewWaybillsModal
+              isOpen={isPrintModalOpen}
+              onClose={() => {
+                setIsPrintModalOpen(false)
+              }}
+              shipmentId={selectedShipmentId}
+            />
           </div>
         </div>
       )}

@@ -3,17 +3,17 @@ import Link from "next/link"
 import { useEffect } from "react"
 
 export function ChooseDriver({
-  provinceId,
+  cityId,
   driverId,
   onChange,
 }: {
-  provinceId: string
+  cityId: string
   driverId: string
   onChange: (driverId: string) => void
 }) {
   const { status, data, error } =
     api.user.getAvailableDriverInProvinceId.useQuery({
-      provinceId,
+      cityId,
     })
 
   useEffect(() => {
