@@ -501,13 +501,34 @@ export const deliveryShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(deliveryShipments)
-        .set({
-          driverId: input.driverId,
-          departureAt: input.departureAt,
-        })
+      const [{ driverId: previousDriverId }] = await ctx.db
+        .select()
+        .from(deliveryShipments)
         .where(eq(deliveryShipments.shipmentId, input.id))
+
+      await ctx.db.transaction(async (tx) => {
+        await tx.insert(assignedDrivers).values({
+          driverId: input.driverId,
+          shipmentId: input.id,
+        })
+
+        await tx
+          .delete(assignedDrivers)
+          .where(
+            and(
+              eq(assignedDrivers.driverId, previousDriverId),
+              eq(assignedDrivers.shipmentId, input.id),
+            ),
+          )
+
+        await tx
+          .update(deliveryShipments)
+          .set({
+            driverId: input.driverId,
+            departureAt: input.departureAt,
+          })
+          .where(eq(deliveryShipments.shipmentId, input.id))
+      })
 
       await createLog(ctx.db, {
         verb: "UPDATE",

@@ -434,13 +434,34 @@ export const forwarderTransferShipmentRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(forwarderTransferShipments)
-        .set({
-          driverId: input.driverId,
-          sentToAgentId: input.sentToAgentId,
-        })
+      const [{ driverId: previousDriverId }] = await ctx.db
+        .select()
+        .from(forwarderTransferShipments)
         .where(eq(forwarderTransferShipments.shipmentId, input.id))
+
+      await ctx.db.transaction(async (tx) => {
+        await tx.insert(assignedDrivers).values({
+          driverId: input.driverId,
+          shipmentId: input.id,
+        })
+
+        await tx
+          .delete(assignedDrivers)
+          .where(
+            and(
+              eq(assignedDrivers.driverId, previousDriverId),
+              eq(assignedDrivers.shipmentId, input.id),
+            ),
+          )
+
+        await tx
+          .update(forwarderTransferShipments)
+          .set({
+            driverId: input.driverId,
+            sentToAgentId: input.sentToAgentId,
+          })
+          .where(eq(forwarderTransferShipments.shipmentId, input.id))
+      })
 
       await createLog(ctx.db, {
         verb: "UPDATE",
