@@ -172,6 +172,16 @@ export const incomingShipmentRouter = router({
       const { shipmentId, ...incomingShipmentColumns } =
         getTableColumns(incomingShipments)
 
+      let currentUserWarehouseId: null | number = null
+      if (ctx.user.role === "WAREHOUSE") {
+        const [{ warehouseId }] = await ctx.db
+          .select()
+          .from(warehouseStaffs)
+          .where(eq(warehouseStaffs.userId, ctx.user.id))
+
+        currentUserWarehouseId = warehouseId
+      }
+
       return await ctx.db
         .selectDistinct({
           ...shipmentColumns,
@@ -191,6 +201,12 @@ export const incomingShipmentRouter = router({
         .where(
           and(
             eq(shipments.status, "IN_TRANSIT"),
+            currentUserWarehouseId === null
+              ? undefined
+              : eq(
+                  incomingShipments.destinationWarehouseId,
+                  currentUserWarehouseId,
+                ),
             input.searchTerm === ""
               ? undefined
               : input.searchWith === "SHIPMENT_ID"
