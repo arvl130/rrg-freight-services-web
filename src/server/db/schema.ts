@@ -105,7 +105,7 @@ export const overseasAgents = mysqlTable("overseas_agents", {
   }).notNull(),
 })
 
-export const uploadedManifests = mysqlTable("uploaded_manifest", {
+export const uploadedManifests = mysqlTable("uploaded_manifests", {
   id: bigint("id", {
     mode: "number",
   })
