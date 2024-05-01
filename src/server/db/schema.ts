@@ -12,6 +12,7 @@ import {
   SUPPORTED_ACTIVITY_VERB,
   SUPPORTED_ACTIVITY_ENTITY,
   SUPPORTED_PACKAGE_REMARKS,
+  SUPPORTED_UPLOADED_MANIFEST_STATUS,
 } from "../../utils/constants"
 import {
   bigint,
@@ -100,6 +101,25 @@ export const overseasAgents = mysqlTable("overseas_agents", {
     .notNull()
     .primaryKey(),
   companyName: varchar("company_name", {
+    length: 100,
+  }).notNull(),
+})
+
+export const uploadedManifest = mysqlTable("uploaded_manifest", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  userId: varchar("user_id", {
+    length: 28,
+  }).notNull(),
+  downloadUrl: text("download_url").notNull(),
+  status: mysqlEnum("status", SUPPORTED_UPLOADED_MANIFEST_STATUS).notNull(),
+  shipmentId: bigint("shipment_id", {
+    mode: "number",
+  }),
+  createdAt: varchar("created_at", {
     length: 100,
   }).notNull(),
 })
