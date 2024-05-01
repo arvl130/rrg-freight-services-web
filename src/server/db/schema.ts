@@ -689,7 +689,7 @@ export const deliverableProvinces = mysqlTable("deliverable_provinces", {
 export const assignedDrivers = mysqlTable("assigned_drivers", {
   driverId: varchar("user_id", {
     length: 28,
-  }).notNull(),
+  }).primaryKey(),
   shipmentId: bigint("shipment_id", {
     mode: "number",
   }).notNull(),
