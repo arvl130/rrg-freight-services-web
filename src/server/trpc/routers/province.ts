@@ -8,7 +8,7 @@ import { SUPPORTED_PACKAGE_SHIPPING_TYPES } from "@/utils/constants"
 
 export const provinceRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(provinces)
+    return await ctx.db.select().from(provinces).orderBy(provinces.name)
   }),
   getById: protectedProcedure
     .input(

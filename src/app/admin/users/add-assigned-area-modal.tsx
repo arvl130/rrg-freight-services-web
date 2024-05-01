@@ -5,19 +5,22 @@ import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { City, Province } from "@/server/db/entities"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
 
 const formSchema = z.object({
   cityId: z.string(),
+  provinceId: z.string(),
 })
 
 type FormSchema = z.infer<typeof formSchema>
 
 function AddForm({
-  cities,
+  provinces,
   onClose,
   onAddAreaCode,
 }: {
-  cities: { cities: City; provinces: Province }[]
+  provinces: Province[]
   onClose: () => void
   onAddAreaCode: (newAreaCode: string) => void
 }) {
@@ -35,6 +38,20 @@ function AddForm({
   })
 
   const selectedCityIdWatched = watch("cityId")
+  const selectedProvinceIdWatched = watch("provinceId")
+  const [selectedProvinceId, setSelectedProvinceId] = useState("")
+
+  const {
+    status,
+    data: citiesData,
+    error,
+  } = api.city.getByProvinceId.useQuery({
+    provinceId: selectedProvinceId,
+  })
+
+  useEffect(() => {
+    reset()
+  }, [selectedProvinceId, reset])
 
   return (
     <form
@@ -43,13 +60,36 @@ function AddForm({
         e.stopPropagation()
 
         handleSubmit((formData) => {
-          if (selectedCityIdWatched !== "") {
+          if (
+            selectedCityIdWatched !== "" &&
+            selectedProvinceIdWatched !== ""
+          ) {
             onAddAreaCode(formData.cityId)
+            onClose()
+          } else {
+            toast.error("All inputs are required")
           }
-          onClose()
         })(e)
       }}
     >
+      <div className="grid mb-3">
+        <label className="font-medium mb-1">Province</label>
+        <select
+          {...register("provinceId")}
+          onChange={(e) => {
+            setSelectedProvinceId(e.currentTarget.value)
+          }}
+          value={selectedProvinceId}
+          className="bg-white px-2 py-2 border border-gray-300"
+        >
+          <option value="">Choose a province ...</option>
+          {provinces.map((province) => (
+            <option key={province.id} value={province.provinceId}>
+              {province.name}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="grid mb-3">
         <label className="font-medium mb-1">City</label>
         <select
@@ -57,9 +97,9 @@ function AddForm({
           {...register("cityId")}
         >
           <option value="">Choose a city ...</option>
-          {cities.map((city) => (
-            <option key={city.cities.cityId} value={city.cities.cityId}>
-              {city.cities.name} - {city.provinces.name}
+          {citiesData?.map((city) => (
+            <option key={city.cityId} value={city.cityId}>
+              {city.name}
             </option>
           ))}
         </select>
@@ -70,7 +110,7 @@ function AddForm({
           type="submit"
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
         >
-          Create
+          Add
         </button>
       </div>
     </form>
@@ -86,7 +126,8 @@ export function AddAssignedAreaModal({
   onClose: () => void
   onAddAreaCode: (newAreaCode: string) => void
 }) {
-  const { status, data, error } = api.city.getAll.useQuery()
+  // const { status, data, error } = api.city.getAll.useQuery()
+  const { status, data, error } = api.province.getAll.useQuery()
   return (
     <Dialog.Root open={isOpen}>
       <Dialog.Portal>
@@ -105,7 +146,7 @@ export function AddAssignedAreaModal({
           {status === "error" && <p>Error occured: {error.message}</p>}
           {status === "success" && (
             <AddForm
-              cities={data}
+              provinces={data}
               onAddAreaCode={onAddAreaCode}
               onClose={onClose}
             />

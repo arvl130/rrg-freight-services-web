@@ -25,6 +25,7 @@ export const cityRouter = router({
       return await ctx.db
         .select()
         .from(cities)
+        .orderBy(cities.name)
         .where(eq(cities.provinceId, input.provinceId))
     }),
   getById: protectedProcedure
