@@ -14,6 +14,7 @@ import {
   cities,
   provinces,
   deliverableProvinces,
+  uploadedManifests,
 } from "@/server/db/schema"
 import type {
   PackageReceptionMode,
@@ -375,6 +376,7 @@ export const incomingShipmentRouter = router({
   create: protectedProcedure
     .input(
       z.object({
+        manifestId: z.number().optional(),
         sentByAgentId: z.string().length(28),
         destinationWarehouseId: z.number(),
         newPackages: z
@@ -520,6 +522,17 @@ export const incomingShipmentRouter = router({
           status: "IN_TRANSIT" as const,
           createdAt,
         }))
+
+        if (input.manifestId !== undefined) {
+          console.log("updated manifests")
+          await tx
+            .update(uploadedManifests)
+            .set({
+              status: "SHIPMENT_CREATED",
+              shipmentId,
+            })
+            .where(eq(uploadedManifests.id, input.manifestId))
+        }
 
         await tx.insert(shipmentPackages).values(newShipmentPackages)
         await createLog(tx, {

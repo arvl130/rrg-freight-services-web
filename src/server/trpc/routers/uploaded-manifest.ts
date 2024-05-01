@@ -1,13 +1,20 @@
-import { eq } from "drizzle-orm"
+import { eq, getTableColumns } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { uploadedManifests } from "@/server/db/schema"
+import { uploadedManifests, users } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { DateTime } from "luxon"
 
 export const uploadedManifestRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(uploadedManifests)
+    const uploadedManifestColumns = getTableColumns(uploadedManifests)
+    return await ctx.db
+      .select({
+        ...uploadedManifestColumns,
+        agentName: users.displayName,
+      })
+      .from(uploadedManifests)
+      .innerJoin(users, eq(uploadedManifests.userId, users.id))
   }),
   getByCurrentUser: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db
