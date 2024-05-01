@@ -53,11 +53,7 @@ function TableItem({
         )}
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
-        {item.receivedAtWarehouseId === null ? (
-          "Not Received Yet"
-        ) : (
-          <WarehouseDetails warehouseId={item.receivedAtWarehouseId} />
-        )}
+        <WarehouseDetails warehouseId={item.destinationWarehouseId} />
       </div>
       <div className="px-4 py-2 border-b border-gray-300 text-sm">
         <div
@@ -169,15 +165,11 @@ function filterByShipmentStatus(
 
 function filterByWarehouseId(
   items: NormalizedIncomingShipmentWithAgentDetails[],
-  warehouseId: "ALL" | "NONE" | number,
+  warehouseId: "ALL" | number,
 ) {
   if (warehouseId === "ALL") return items
-  if (warehouseId === "NONE")
-    return items.filter(
-      ({ receivedAtWarehouseId }) => receivedAtWarehouseId === null,
-    )
 
-  return items.filter((item) => item.receivedAtWarehouseId === warehouseId)
+  return items.filter((item) => item.destinationWarehouseId === warehouseId)
 }
 
 function ShipmentsTable({
@@ -196,7 +188,7 @@ function ShipmentsTable({
   )
 
   const [selectedWarehouseId, setSelectedWarehouseId] = useState<
-    "ALL" | "NONE" | number
+    "ALL" | number
   >("ALL")
 
   const [searchTerm, setSearchTerm] = useState("")
@@ -262,10 +254,7 @@ function ShipmentsTable({
               }
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
               onChange={(e) => {
-                if (
-                  e.currentTarget.value === "ALL" ||
-                  e.currentTarget.value === "NONE"
-                ) {
+                if (e.currentTarget.value === "ALL") {
                   setSelectedWarehouseId(e.currentTarget.value)
                 } else {
                   setSelectedWarehouseId(Number(e.currentTarget.value))
@@ -278,7 +267,6 @@ function ShipmentsTable({
                   {warehouse.displayName}
                 </option>
               ))}
-              <option value="NONE">Not Received Yet</option>
             </select>
             <select
               className="bg-white border border-gray-300 px-2 py-1.5 w-full sm:w-32 h-[2.375rem] rounded-md text-gray-400 font-medium"
@@ -331,7 +319,7 @@ function ShipmentsTable({
             Created At
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
-            Received at Warehouse
+            Destination Warehouse
           </div>
           <div className="uppercase px-4 py-2 border-y border-gray-300 font-medium">
             Status

@@ -22,6 +22,7 @@ import type {
 } from "@/utils/constants"
 import {
   getDescriptionForNewPackageStatusLog,
+  REGEX_ONE_OR_MORE_DIGITS,
   SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_PACKAGE_SHIPPING_MODES,
   SUPPORTED_PACKAGE_SHIPPING_TYPES,
@@ -248,7 +249,7 @@ export const incomingShipmentRouter = router({
           await tx
             .update(incomingShipments)
             .set({
-              receivedAtWarehouseId: warehouseId,
+              destinationWarehouseId: warehouseId,
             })
             .where(eq(incomingShipments.shipmentId, input.id))
 
@@ -359,6 +360,7 @@ export const incomingShipmentRouter = router({
     .input(
       z.object({
         sentByAgentId: z.string().length(28),
+        destinationWarehouseId: z.number(),
         newPackages: z
           .object({
             preassignedId: z.string().min(1).max(100),
@@ -492,6 +494,7 @@ export const incomingShipmentRouter = router({
         await tx.insert(incomingShipments).values({
           shipmentId,
           sentByAgentId: input.sentByAgentId,
+          destinationWarehouseId: input.destinationWarehouseId,
           createdAt,
         })
 

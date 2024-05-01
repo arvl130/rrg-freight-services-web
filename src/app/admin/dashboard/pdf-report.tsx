@@ -611,12 +611,12 @@ const PDFReportTemplate = (props: {
                   >
                     <Text>
                       {}
-                      {_shipment.incoming_shipments.receivedAtWarehouseId !==
+                      {_shipment.incoming_shipments.destinationWarehouseId !==
                         null ||
-                      _shipment.incoming_shipments.receivedAtWarehouseId !==
+                      _shipment.incoming_shipments.destinationWarehouseId !==
                         undefined ? (
                         <>
-                          {_shipment.incoming_shipments.receivedAtWarehouseId}
+                          {_shipment.incoming_shipments.destinationWarehouseId}
                         </>
                       ) : (
                         <>Not Yet Received</>

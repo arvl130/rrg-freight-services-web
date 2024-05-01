@@ -201,9 +201,9 @@ export const incomingShipments = mysqlTable("incoming_shipments", {
   sentByAgentId: varchar("sent_by_agent_id", {
     length: 28,
   }).notNull(),
-  receivedAtWarehouseId: bigint("received_at_warehouse_id", {
+  destinationWarehouseId: bigint("destination_warehouse_id", {
     mode: "number",
-  }),
+  }).notNull(),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),

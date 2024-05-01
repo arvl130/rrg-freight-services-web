@@ -11,6 +11,7 @@ import type {
   PackageShippingType,
 } from "@/utils/constants"
 import {
+  REGEX_ONE_OR_MORE_DIGITS,
   REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS_INSIDE_PARENTHESIS,
   SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_PACKAGE_SHIPPING_MODES,
@@ -22,7 +23,10 @@ import { X } from "@phosphor-icons/react/dist/ssr/X"
 import { Check } from "@phosphor-icons/react/dist/ssr/Check"
 import { CloudArrowUp } from "@phosphor-icons/react/dist/ssr/CloudArrowUp"
 import { ArrowCircleDown } from "@phosphor-icons/react/dist/ssr/ArrowCircleDown"
-import type { NormalizedPublicOverseasAgentUser } from "@/server/db/entities"
+import type {
+  NormalizedPublicOverseasAgentUser,
+  Warehouse,
+} from "@/server/db/entities"
 import type { FileRejection } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
 
@@ -218,17 +222,20 @@ type SheetRow = z.infer<typeof sheetRowSchema>
 
 const chooseAgentFormSchema = z.object({
   sentByAgentId: z.string().length(28),
+  warehouseId: z.string().regex(REGEX_ONE_OR_MORE_DIGITS),
 })
 
 type ChooseAgentFormType = z.infer<typeof chooseAgentFormSchema>
 
 function ChooseAgentForm({
+  warehouses,
   agents,
   sheetRows,
   reset,
   onSuccess,
   invalidAddressesCount,
 }: {
+  warehouses: Warehouse[]
   agents: NormalizedPublicOverseasAgentUser[]
   sheetRows: SheetRow[]
   invalidAddressesCount: number
@@ -261,6 +268,7 @@ function ChooseAgentForm({
     <form
       onSubmit={handleSubmit((formData) => {
         mutate({
+          destinationWarehouseId: Number(formData.warehouseId),
           sentByAgentId: formData.sentByAgentId,
           newPackages: sheetRows.map((newPackage) => ({
             preassignedId: newPackage["Received Number"],
@@ -295,63 +303,83 @@ function ChooseAgentForm({
           })),
         })
       })}
-      className="flex justify-between gap-3 pt-2"
     >
-      {invalidAddressesCount === 0 ? (
-        <div>
-          <p className="font-medium">
-            Select the agent that will monitor this shipment:
-            <select
-              {...register("sentByAgentId")}
-              defaultValue=""
-              className="bg-white ml-2 px-3 py-1.5 border border-gray-300 rounded-md"
-            >
-              <option value="">Choose ...</option>
-              {agents.map((agent) => (
-                <option key={agent.id} value={agent.id}>
-                  {agent.displayName} ({agent.companyName})
-                </option>
-              ))}
-            </select>
-          </p>
-          <p className="text-gray-500">
-            Typically, this is the agent that sent the file.
-          </p>
-        </div>
-      ) : (
-        <div className="text-red-500 font-medium">
-          {invalidAddressesCount} invalid{" "}
-          {invalidAddressesCount === 1 ? "address has" : "addresses have"} been
-          detected. Please fix them and re-import the file.
-          <div className="text-black">
-            {" "}
-            <a
-              className="underline font-extrabold"
-              href="/assets/pdf/location_cheker.pdf"
-              target="_blank"
-            >
-              click here
-            </a>{" "}
-            to see correct location&apos;s name
+      {invalidAddressesCount === 0 && (
+        <div className="mt-3">
+          <div>
+            <p className="font-medium">
+              Select the warehouse that will receive this shipment:
+              <select
+                {...register("warehouseId")}
+                className="bg-white ml-2 px-3 py-1.5 border border-gray-300 rounded-md"
+              >
+                <option value="">Choose ...</option>
+                {warehouses.map((warehouse) => (
+                  <option key={warehouse.id} value={warehouse.id}>
+                    {warehouse.displayName}
+                  </option>
+                ))}
+              </select>
+            </p>
           </div>
         </div>
       )}
-      <div className="space-x-3">
-        <button
-          type="button"
-          className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
-          onClick={reset}
-        >
-          Change File
-        </button>
+      <div className="flex justify-between gap-3 pt-2">
+        {invalidAddressesCount === 0 ? (
+          <div>
+            <p className="font-medium">
+              Select the agent that will monitor this shipment:
+              <select
+                {...register("sentByAgentId")}
+                className="bg-white ml-2 px-3 py-1.5 border border-gray-300 rounded-md"
+              >
+                <option value="">Choose ...</option>
+                {agents.map((agent) => (
+                  <option key={agent.id} value={agent.id}>
+                    {agent.displayName} ({agent.companyName})
+                  </option>
+                ))}
+              </select>
+            </p>
+            <p className="text-gray-500">
+              Typically, this is the agent that sent the file.
+            </p>
+          </div>
+        ) : (
+          <div className="text-red-500 font-medium">
+            {invalidAddressesCount} invalid{" "}
+            {invalidAddressesCount === 1 ? "address has" : "addresses have"}{" "}
+            been detected. Please fix them and re-import the file.
+            <div className="text-black">
+              {" "}
+              <a
+                className="underline font-extrabold"
+                href="/assets/pdf/location_cheker.pdf"
+                target="_blank"
+              >
+                click here
+              </a>{" "}
+              to see correct location&apos;s name
+            </div>
+          </div>
+        )}
+        <div className="space-x-3">
+          <button
+            type="button"
+            className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
+            onClick={reset}
+          >
+            Change File
+          </button>
 
-        <button
-          type="submit"
-          className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
-          disabled={isLoading || !isValid || invalidAddressesCount > 0}
-        >
-          Import
-        </button>
+          <button
+            type="submit"
+            className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
+            disabled={isLoading || !isValid || invalidAddressesCount > 0}
+          >
+            Import
+          </button>
+        </div>
       </div>
     </form>
   )
@@ -574,7 +602,8 @@ function HasValidSheetRows({
   onSuccess: (newShipmentId: number) => void
   onValidAddress: () => void
 }) {
-  const { status, data, error } = api.user.getOverseasAgents.useQuery()
+  const getOverseasAgentsQuery = api.user.getOverseasAgents.useQuery()
+  const getWarehousesQuery = api.warehouse.getAll.useQuery()
 
   return (
     <div className="px-4 grid grid-rows-[1fr_auto] overflow-auto">
@@ -589,19 +618,36 @@ function HasValidSheetRows({
           />
         ))}
       </div>
-      {status === "loading" && <div>Loading agents ...</div>}
-      {status === "error" && (
-        <div>Error while loading agents. {error.message}</div>
+      {getOverseasAgentsQuery.status === "loading" && (
+        <div>Loading agents ...</div>
       )}
-      {status === "success" && (
-        <ChooseAgentForm
-          agents={data}
-          sheetRows={sheetRows}
-          reset={() => reset()}
-          onClose={onClose}
-          onSuccess={onSuccess}
-          invalidAddressesCount={sheetRows.length - validAddressCount}
-        />
+      {getOverseasAgentsQuery.status === "error" && (
+        <div>
+          Error while loading agents: {getOverseasAgentsQuery.error.message}
+        </div>
+      )}
+      {getOverseasAgentsQuery.status === "success" && (
+        <>
+          {getWarehousesQuery.status === "loading" && (
+            <div>Loading warehouses ...</div>
+          )}
+          {getWarehousesQuery.status === "error" && (
+            <div>
+              Error while loading warehouses: {getWarehousesQuery.error.message}
+            </div>
+          )}
+          {getWarehousesQuery.status === "success" && (
+            <ChooseAgentForm
+              warehouses={getWarehousesQuery.data}
+              agents={getOverseasAgentsQuery.data}
+              sheetRows={sheetRows}
+              reset={() => reset()}
+              onClose={onClose}
+              onSuccess={onSuccess}
+              invalidAddressesCount={sheetRows.length - validAddressCount}
+            />
+          )}
+        </>
       )}
     </div>
   )
