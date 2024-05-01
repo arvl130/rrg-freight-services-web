@@ -1,16 +1,16 @@
-import "@/utils/firebase"
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
-import * as Dialog from "@radix-ui/react-dialog"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
 import type { WorkBook } from "xlsx"
 import { utils, read } from "xlsx"
-import { Fragment, useCallback, useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import type {
   PackageReceptionMode,
   PackageShippingMode,
   PackageShippingType,
 } from "@/utils/constants"
 import {
+  REGEX_ONE_OR_MORE_DIGITS,
   REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS_INSIDE_PARENTHESIS,
   SUPPORTED_PACKAGE_RECEPTION_MODES,
   SUPPORTED_PACKAGE_SHIPPING_MODES,
@@ -20,98 +20,164 @@ import { api } from "@/utils/api"
 import toast from "react-hot-toast"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import { Check } from "@phosphor-icons/react/dist/ssr/Check"
-import { CloudArrowUp } from "@phosphor-icons/react/dist/ssr/CloudArrowUp"
-import { ArrowCircleDown } from "@phosphor-icons/react/dist/ssr/ArrowCircleDown"
-import type { FileRejection } from "react-dropzone"
-import { useDropzone } from "react-dropzone"
+import type {
+  NormalizedPublicOverseasAgentUser,
+  UploadedManifest,
+  Warehouse,
+} from "@/server/db/entities"
+import { DateTime } from "luxon"
+import { getColorOfUploadedManifestStatus } from "@/utils/colors"
+import { getHumanizedOfuploadedManifestStatus } from "@/utils/humanize"
 
 function SelectFileForm({
-  setSelectedFileAndWorkBook,
+  uploadedManifests,
+  setSelectedWorkBook,
+  onSwitchTab,
 }: {
-  setSelectedFileAndWorkBook: (input: { wb: WorkBook; file: File }) => void
+  uploadedManifests: UploadedManifest[]
+  setSelectedWorkBook: (wb: WorkBook) => void
+  onSwitchTab: (tab: "DND" | "REMOTE_FILE") => void
 }) {
-  const onDrop = useCallback(
-    async (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-      const combinedFiles = [...acceptedFiles, ...rejectedFiles]
-      if (combinedFiles.length === 0) return
-      if (combinedFiles.length > 1) {
-        toast.error("Please drop only one (1) file.")
-        return
-      }
+  const [isDownloading, setIsDownloading] = useState(false)
 
-      if (acceptedFiles.length === 0) return
-      if (acceptedFiles.length > 1) {
-        toast.error("Please drop only one (1) file.")
-        return
-      }
-
-      const [sheetFile] = acceptedFiles
-      const buffer = await sheetFile.arrayBuffer()
-      const workBook = read(buffer)
-
-      setSelectedFileAndWorkBook({
-        file: sheetFile,
-        wb: workBook,
-      })
-    },
-    [setSelectedFileAndWorkBook],
-  )
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "application/vnd.ms-excel": [".xls"],
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-        ".xlsx",
-      ],
-      "application/vnd.oasis.opendocument.spreadsheet": [".ods"],
-    },
-  })
+  const apiUtils = api.useUtils()
+  const requestReuploadMutation =
+    api.uploadedManifest.updateStatusToRequestReuploadById.useMutation({
+      onSuccess: () => {
+        apiUtils.uploadedManifest.getAll.invalidate()
+        toast.success("Re-upload requested.")
+      },
+    })
 
   return (
-    <div className="px-4 pt-2 pb-4 grid grid-rows-[auto_1fr]">
-      <div className="mb-3">
-        <p className="font-semibold text-lg">Choose a file to import</p>
-        <p className="text-gray-500">
-          Supported file formats are <code>.xlsx</code>, <code>.xls</code>, and{" "}
-          <code>.ods</code>.
-        </p>
-      </div>
-      <div
-        {...getRootProps({
-          className: `px-4 py-2 border-4 border-dashed border-cyan-300 rounded-2xl ${
-            isDragActive ? "bg-cyan-100" : "bg-cyan-50"
-          } transition-colors duration-75 flex items-center justify-center`,
-        })}
-      >
-        <input
-          {...getInputProps({
-            className:
-              "block w-full text-sm border border-gray-300 px-1.5 py-1.5 mb-3 rounded-lg",
-          })}
-        />
-
-        <div className="flex flex-col items-center">
-          {isDragActive ? (
-            <>
-              <ArrowCircleDown size={96} className="text-gray-700" />
-
-              <p className="font-semibold mb-3 text-center">Drop it here!</p>
-            </>
-          ) : (
-            <>
-              <CloudArrowUp size={96} className="text-gray-700" />
-
-              <p className="font-semibold mb-3 text-center">
-                Drag & Drop your file here
-              </p>
-              <span className="bg-cyan-500 disabled:bg-cyan-300 hover:bg-cyan-400 transition-colors text-white font-medium px-4 py-2 rounded-md">
-                Select File
-              </span>
-            </>
-          )}
+    <div className="px-4 py-3">
+      {uploadedManifests.length === 0 ? (
+        <div className="text-center">
+          <p>No manifests have been uploaded.</p>
+          <button
+            type="button"
+            className="mt-3 px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
+            onClick={() => {
+              onSwitchTab("DND")
+            }}
+          >
+            Use Local File
+          </button>
         </div>
-      </div>
+      ) : (
+        <div>
+          <div className="flex justify-between ">
+            <div className="flex items-center font-semibold">
+              List of manifests uploaded
+            </div>
+            <div>
+              <button
+                type="button"
+                className="mt-3 px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
+                onClick={() => {
+                  onSwitchTab("DND")
+                }}
+              >
+                Use Local File
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-[repeat(3,_auto),_1fr] mt-3">
+            <div className="grid grid-cols-subgrid col-span-4 border border-gray-300 bg-gray-100">
+              <div className="font-semibold px-3 py-2 border-r border-gray-300">
+                ID
+              </div>
+              <div className="font-semibold px-3 py-2 border-r border-gray-300">
+                Upload Date
+              </div>
+              <div className="font-semibold px-3 py-2 border-r border-gray-300">
+                Status
+              </div>
+              <div className="font-semibold px-3 py-2">Actions</div>
+            </div>
+            {uploadedManifests.map((manifest) => (
+              <div
+                key={manifest.id}
+                className="grid grid-cols-subgrid col-span-4 border-x border-b border-gray-300"
+              >
+                <div className="px-3 py-2 border-r border-gray-300">
+                  {manifest.id}
+                </div>
+                <div className="px-3 py-2 border-r border-gray-300">
+                  {DateTime.fromISO(manifest.createdAt).toLocaleString(
+                    DateTime.DATETIME_FULL,
+                  )}
+                </div>
+                <div className="px-3 py-2 border-r border-gray-300">
+                  <span
+                    className={`${getColorOfUploadedManifestStatus(
+                      manifest.status,
+                    )} text-white font-medium px-3 rounded-full text-sm py-1`}
+                  >
+                    {getHumanizedOfuploadedManifestStatus(manifest.status)}
+                  </span>
+                </div>
+                <div className="px-3 py-2 flex gap-x-3 gap-y-2 flex-wrap">
+                  {manifest.status === "PENDING_REVIEW" && (
+                    <>
+                      <button
+                        type="button"
+                        className="px-4 py-2 bg-green-500 hover:bg-green-400 transition-colors duration-200 disabled:bg-green-300 rounded-md text-white font-medium"
+                        disabled={isDownloading}
+                        onClick={async () => {
+                          setIsDownloading(true)
+                          try {
+                            const response = await fetch(manifest.downloadUrl)
+                            const data = await response.arrayBuffer()
+                            const workbook = read(data)
+
+                            setSelectedWorkBook(workbook)
+                            setIsDownloading(false)
+                          } catch (e) {
+                            if (e instanceof Error) {
+                              toast.error(e.message)
+                            }
+
+                            setIsDownloading(false)
+                          }
+                        }}
+                      >
+                        Create Shipment for Manifest
+                      </button>
+                      <button
+                        type="button"
+                        className="px-4 py-2 bg-purple-500 hover:bg-purple-400 transition-colors duration-200 disabled:bg-purple-300 rounded-md text-white font-medium"
+                        disabled={requestReuploadMutation.isLoading}
+                        onClick={() => {
+                          requestReuploadMutation.mutate({
+                            id: manifest.id,
+                          })
+                        }}
+                      >
+                        Request Re-upload
+                      </button>
+                    </>
+                  )}
+                  {manifest.status === "SHIPMENT_CREATED" && (
+                    <button
+                      type="button"
+                      className="px-4 py-2 bg-green-500 hover:bg-green-400 transition-colors duration-200 disabled:bg-green-300 rounded-md text-white font-medium"
+                    >
+                      View Shipment
+                    </button>
+                  )}
+                  <a
+                    href={manifest.downloadUrl}
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
+                  >
+                    Download
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -218,54 +284,146 @@ const sheetRowSchema = z.object({
 
 type SheetRow = z.infer<typeof sheetRowSchema>
 
-function UploadFileForm({
-  invalidAddressesCount,
-  sheetFile,
+const chooseAgentFormSchema = z.object({
+  sentByAgentId: z.string().length(28),
+  warehouseId: z.string().regex(REGEX_ONE_OR_MORE_DIGITS),
+})
+
+type ChooseAgentFormType = z.infer<typeof chooseAgentFormSchema>
+
+function ChooseAgentForm({
+  warehouses,
+  agents,
+  sheetRows,
   reset,
-  onClose,
+  onSuccess,
+  invalidAddressesCount,
 }: {
+  warehouses: Warehouse[]
+  agents: NormalizedPublicOverseasAgentUser[]
+  sheetRows: SheetRow[]
   invalidAddressesCount: number
-  sheetFile: File
   reset: () => void
   onClose: () => void
+  onSuccess: (newShipmentId: number) => void
 }) {
-  const [isUploading, setIsUploading] = useState(false)
-
   const apiUtils = api.useUtils()
-  const { isLoading, mutate } = api.uploadedManifest.create.useMutation({
-    onSuccess: () => {
-      apiUtils.uploadedManifest.getByCurrentUser.invalidate()
-      toast.success("Manifest Uploaded")
-      onClose()
+  const { isLoading, mutate } = api.shipment.incoming.create.useMutation({
+    onSuccess: ({ shipmentId }) => {
+      apiUtils.shipment.incoming.getAll.invalidate()
+      apiUtils.package.getInWarehouse.invalidate()
+      apiUtils.package.getAll.invalidate()
+      onSuccess(shipmentId)
+      toast.success("Shipment Created")
     },
     onError: (error) => {
       toast.error(error.message)
     },
-    onSettled: () => {
-      setIsUploading(false)
-    },
+  })
+  const {
+    handleSubmit,
+    register,
+    formState: { isValid },
+  } = useForm<ChooseAgentFormType>({
+    resolver: zodResolver(chooseAgentFormSchema),
   })
 
   return (
-    <div>
+    <form
+      onSubmit={handleSubmit((formData) => {
+        mutate({
+          destinationWarehouseId: Number(formData.warehouseId),
+          sentByAgentId: formData.sentByAgentId,
+          newPackages: sheetRows.map((newPackage) => ({
+            preassignedId: newPackage["Received Number"],
+            shippingMode: newPackage["Shipping Mode"],
+            shippingType: newPackage["Shipping Type"],
+            receptionMode: newPackage["Reception Mode"],
+            weightInKg: newPackage["Weight In Kg"],
+            volumeInCubicMeter: Number(
+              newPackage["Dimensions (Space Use)"].match(
+                REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS_INSIDE_PARENTHESIS,
+              )![1],
+            ),
+            senderFullName: newPackage["Sender Full Name"],
+            senderContactNumber: newPackage["Sender Contact Number"],
+            senderEmailAddress: newPackage["Sender Email Address"],
+            senderStreetAddress: newPackage["Sender Street Address"],
+            senderCity: newPackage["Sender City"],
+            senderStateOrProvince: newPackage["Sender State/Province"],
+            senderCountryCode: newPackage["Sender Country Code"],
+            senderPostalCode: newPackage["Sender Postal Code"],
+            receiverFullName: newPackage["Receiver Full Name"],
+            receiverContactNumber: newPackage["Receiver Contact Number"],
+            receiverEmailAddress: newPackage["Receiver Email Address"],
+            receiverStreetAddress: newPackage["Receiver Street Address"],
+            receiverBarangay: newPackage["Receiver Barangay"],
+            receiverCity: newPackage["Receiver City"],
+            receiverStateOrProvince: newPackage["Receiver State/Province"],
+            receiverCountryCode: newPackage["Receiver Country Code"],
+            receiverPostalCode: newPackage["Receiver Postal Code"],
+            isFragile: newPackage["Fragile?"] === "Yes",
+            declaredValue: newPackage["Declared Value"] ?? null,
+          })),
+        })
+      })}
+    >
+      {invalidAddressesCount === 0 && (
+        <div className="mt-3">
+          <div>
+            <p className="font-medium">
+              Select the warehouse that will receive this shipment:
+              <select
+                {...register("warehouseId")}
+                className="bg-white ml-2 px-3 py-1.5 border border-gray-300 rounded-md"
+              >
+                <option value="">Choose ...</option>
+                {warehouses.map((warehouse) => (
+                  <option key={warehouse.id} value={warehouse.id}>
+                    {warehouse.displayName}
+                  </option>
+                ))}
+              </select>
+            </p>
+          </div>
+        </div>
+      )}
       <div className="flex justify-between gap-3 pt-2">
         {invalidAddressesCount === 0 ? (
-          <div></div>
+          <div>
+            <p className="font-medium">
+              Select the agent that will monitor this shipment:
+              <select
+                {...register("sentByAgentId")}
+                className="bg-white ml-2 px-3 py-1.5 border border-gray-300 rounded-md"
+              >
+                <option value="">Choose ...</option>
+                {agents.map((agent) => (
+                  <option key={agent.id} value={agent.id}>
+                    {agent.displayName} ({agent.companyName})
+                  </option>
+                ))}
+              </select>
+            </p>
+            <p className="text-gray-500">
+              Typically, this is the agent that sent the file.
+            </p>
+          </div>
         ) : (
           <div className="text-red-500 font-medium">
             {invalidAddressesCount} invalid{" "}
             {invalidAddressesCount === 1 ? "address has" : "addresses have"}{" "}
             been detected. Please fix them and re-import the file.
-            <div className="">
-              Click{" "}
+            <div className="text-black">
+              {" "}
               <a
-                className="text-black underline font-semibold"
+                className="underline font-extrabold"
                 href="/assets/pdf/location_cheker.pdf"
                 target="_blank"
               >
-                here
+                click here
               </a>{" "}
-              to see the list of valid addresses.
+              to see correct location&apos;s name
             </div>
           </div>
         )}
@@ -281,32 +439,13 @@ function UploadFileForm({
           <button
             type="button"
             className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
-            disabled={isUploading || invalidAddressesCount > 0 || isLoading}
-            onClick={async () => {
-              setIsUploading(true)
-              try {
-                const storage = getStorage()
-                const refPath = `manifests/${crypto.randomUUID()}`
-                const manifestRef = ref(storage, refPath)
-
-                await uploadBytes(manifestRef, sheetFile, {
-                  contentType: sheetFile.type,
-                })
-
-                const downloadUrl = await getDownloadURL(manifestRef)
-                mutate({
-                  downloadUrl,
-                })
-              } catch {
-                setIsUploading(false)
-              }
-            }}
+            disabled={isLoading || !isValid || invalidAddressesCount > 0}
           >
-            Upload
+            Import
           </button>
         </div>
       </div>
-    </div>
+    </form>
   )
 }
 
@@ -513,20 +652,23 @@ function ValidSheetRow(props: {
 function HasValidSheetRows({
   sheetName,
   sheetRows,
-  sheetFile,
   validAddressCount,
   reset,
   onClose,
+  onSuccess,
   onValidAddress,
 }: {
   sheetName: string
   sheetRows: SheetRow[]
-  sheetFile: File
   validAddressCount: number
   reset: () => void
   onClose: () => void
+  onSuccess: (newShipmentId: number) => void
   onValidAddress: () => void
 }) {
+  const getOverseasAgentsQuery = api.user.getOverseasAgents.useQuery()
+  const getWarehousesQuery = api.warehouse.getAll.useQuery()
+
   return (
     <div className="px-4 grid grid-rows-[1fr_auto] overflow-auto">
       <div className="h-full overflow-auto border border-gray-300 grid auto-rows-min">
@@ -540,30 +682,55 @@ function HasValidSheetRows({
           />
         ))}
       </div>
-      <UploadFileForm
-        sheetFile={sheetFile}
-        reset={() => reset()}
-        onClose={onClose}
-        invalidAddressesCount={sheetRows.length - validAddressCount}
-      />
+      {getOverseasAgentsQuery.status === "loading" && (
+        <div>Loading agents ...</div>
+      )}
+      {getOverseasAgentsQuery.status === "error" && (
+        <div>
+          Error while loading agents: {getOverseasAgentsQuery.error.message}
+        </div>
+      )}
+      {getOverseasAgentsQuery.status === "success" && (
+        <>
+          {getWarehousesQuery.status === "loading" && (
+            <div>Loading warehouses ...</div>
+          )}
+          {getWarehousesQuery.status === "error" && (
+            <div>
+              Error while loading warehouses: {getWarehousesQuery.error.message}
+            </div>
+          )}
+          {getWarehousesQuery.status === "success" && (
+            <ChooseAgentForm
+              warehouses={getWarehousesQuery.data}
+              agents={getOverseasAgentsQuery.data}
+              sheetRows={sheetRows}
+              reset={() => reset()}
+              onClose={onClose}
+              onSuccess={onSuccess}
+              invalidAddressesCount={sheetRows.length - validAddressCount}
+            />
+          )}
+        </>
+      )}
     </div>
   )
 }
 
 function HasValidSheetName({
   selectedWorkBook,
-  sheetFile,
   selectedSheetName,
   reset,
   onClose,
+  onSuccess,
   validAddressCount,
   onValidAddress,
 }: {
   selectedWorkBook: WorkBook
-  sheetFile: File
   selectedSheetName: string
   reset: () => void
   onClose: () => void
+  onSuccess: (newShipmentId: number) => void
   validAddressCount: number
   onValidAddress: () => void
 }) {
@@ -581,10 +748,10 @@ function HasValidSheetName({
         <HasValidSheetRows
           sheetName={selectedSheetName}
           sheetRows={parseArrayResult.data}
-          validAddressCount={validAddressCount}
-          sheetFile={sheetFile}
           reset={reset}
           onClose={onClose}
+          validAddressCount={validAddressCount}
+          onSuccess={onSuccess}
           onValidAddress={onValidAddress}
         />
       )
@@ -658,9 +825,9 @@ function HasValidSheetName({
 
 function HasValidWorkBook(props: {
   workbook: WorkBook
-  sheetFile: File
   onReset: () => void
   onClose: () => void
+  onSuccess: (newShipmentId: number) => void
 }) {
   const [selectedSheetName, setSelectedSheetName] = useState(
     props.workbook.SheetNames[0],
@@ -681,10 +848,10 @@ function HasValidWorkBook(props: {
         {selectedSheetName && (
           <HasValidSheetName
             selectedWorkBook={props.workbook}
-            sheetFile={props.sheetFile}
             selectedSheetName={selectedSheetName}
             reset={props.onReset}
             onClose={props.onClose}
+            onSuccess={props.onSuccess}
             validAddressCount={validAddressCount}
             onValidAddress={() => {
               setValidAddressCount(
@@ -698,76 +865,57 @@ function HasValidWorkBook(props: {
   )
 }
 
-export function UploadManifestModal({
+export function CreateWithRemoteFile({
+  uploadedManifests,
   isOpen,
   onClose,
+  onSuccess,
+  onSwitchTab,
 }: {
+  uploadedManifests: UploadedManifest[]
   isOpen: boolean
   onClose: () => void
+  onSwitchTab: (tab: "DND" | "REMOTE_FILE") => void
+  onSuccess: (newShipmentId: number) => void
 }) {
-  const [selectedFileAndWorkbook, setSelectedFileAndWorkBook] =
-    useState<null | {
-      wb: WorkBook
-      file: File
-    }>(null)
+  const [selectedWorkbook, setSelectedWorkBook] = useState<null | WorkBook>(
+    null,
+  )
 
   useEffect(() => {
     if (!isOpen) {
-      setSelectedFileAndWorkBook(null)
+      setSelectedWorkBook(null)
     }
   }, [isOpen])
 
-  return (
-    <Dialog.Root open={isOpen}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="bg-black/40 fixed inset-0" />
-        <Dialog.Content
-          onEscapeKeyDown={onClose}
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_72rem)] h-[calc(100svh_-_1rem)] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
-        >
-          <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
-            New Manifest
-          </Dialog.Title>
-          {selectedFileAndWorkbook === null ? (
-            <SelectFileForm
-              setSelectedFileAndWorkBook={(input) =>
-                setSelectedFileAndWorkBook(input)
-              }
-            />
-          ) : (
-            <>
-              {selectedFileAndWorkbook.wb.SheetNames.length === 0 ? (
-                <div className="px-4 py-2 flex justify-center items-center">
-                  <p className="max-w-md">
-                    This file selected seems to be broken (no sheets were
-                    found). Please try using another file.
-                  </p>
-                </div>
-              ) : (
-                <HasValidWorkBook
-                  workbook={selectedFileAndWorkbook.wb}
-                  sheetFile={selectedFileAndWorkbook.file}
-                  onReset={() => {
-                    setSelectedFileAndWorkBook(null)
-                  }}
-                  onClose={onClose}
-                />
-              )}
-            </>
-          )}
+  if (selectedWorkbook === null)
+    return (
+      <SelectFileForm
+        uploadedManifests={uploadedManifests}
+        setSelectedWorkBook={(wb) => setSelectedWorkBook(wb)}
+        onSwitchTab={onSwitchTab}
+      />
+    )
 
-          <Dialog.Close asChild>
-            <button
-              type="button"
-              className="text-white absolute top-3 right-3"
-              onClick={onClose}
-            >
-              <X size={20} />
-              <span className="sr-only">Close</span>
-            </button>
-          </Dialog.Close>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+  return (
+    <>
+      {selectedWorkbook.SheetNames.length === 0 ? (
+        <div className="px-4 py-2 flex justify-center items-center">
+          <p className="max-w-md">
+            This file selected seems to be broken (no sheets were found). Please
+            try using another file.
+          </p>
+        </div>
+      ) : (
+        <HasValidWorkBook
+          workbook={selectedWorkbook}
+          onReset={() => {
+            setSelectedWorkBook(null)
+          }}
+          onClose={onClose}
+          onSuccess={onSuccess}
+        />
+      )}
+    </>
   )
 }

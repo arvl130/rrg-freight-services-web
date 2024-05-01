@@ -71,6 +71,20 @@ export const uploadedManifestRouter = router({
         })
         .where(eq(uploadedManifests.id, input.id))
     }),
+  updateStatusToRequestReuploadById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .update(uploadedManifests)
+        .set({
+          status: "REUPLOAD_REQUESTED",
+        })
+        .where(eq(uploadedManifests.id, input.id))
+    }),
   deleteById: protectedProcedure
     .input(
       z.object({
