@@ -142,7 +142,7 @@ function TableItem({ package: _package }: { package: Package }) {
                     Mark as Picked Up
                   </DropdownMenu.Item>
                 )}
-              {_package.isArchived ? (
+              {/* {_package.isArchived ? (
                 <DropdownMenu.Item
                   className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
                   onClick={() => setVisibleModal("UNARCHIVE")}
@@ -156,6 +156,27 @@ function TableItem({ package: _package }: { package: Package }) {
                 >
                   Archive
                 </DropdownMenu.Item>
+              )} */}
+
+              {_package.status === "DELIVERED" ||
+              _package.status === "TRANSFERRED_FORWARDER" ? (
+                _package.isArchived ? (
+                  <DropdownMenu.Item
+                    className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                    onClick={() => setVisibleModal("UNARCHIVE")}
+                  >
+                    Unarchive
+                  </DropdownMenu.Item>
+                ) : (
+                  <DropdownMenu.Item
+                    className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                    onClick={() => setVisibleModal("ARCHIVE")}
+                  >
+                    Archive
+                  </DropdownMenu.Item>
+                )
+              ) : (
+                <></>
               )}
 
               <DropdownMenu.Arrow className="fill-white" />

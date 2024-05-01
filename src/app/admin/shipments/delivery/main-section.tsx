@@ -110,7 +110,7 @@ function TableItem({ item }: { item: NormalizedDeliveryShipmentWithDetails }) {
               >
                 View Locations
               </DropdownMenu.Item>
-              {item.isArchived ? (
+              {/* {item.isArchived ? (
                 <DropdownMenu.Item
                   className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
                   onClick={() => setVisibleModal("UNARCHIVE")}
@@ -124,6 +124,25 @@ function TableItem({ item }: { item: NormalizedDeliveryShipmentWithDetails }) {
                 >
                   Archive
                 </DropdownMenu.Item>
+              )} */}
+              {item.status === "COMPLETED" ? (
+                item.isArchived ? (
+                  <DropdownMenu.Item
+                    className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                    onClick={() => setVisibleModal("UNARCHIVE")}
+                  >
+                    Unarchive
+                  </DropdownMenu.Item>
+                ) : (
+                  <DropdownMenu.Item
+                    className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                    onClick={() => setVisibleModal("ARCHIVE")}
+                  >
+                    Archive
+                  </DropdownMenu.Item>
+                )
+              ) : (
+                <></>
               )}
 
               <DropdownMenu.Arrow className="fill-white" />
