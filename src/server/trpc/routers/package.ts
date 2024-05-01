@@ -305,9 +305,6 @@ export const packageRouter = router({
             input.warehouseId
               ? eq(packages.lastWarehouseId, input.warehouseId)
               : undefined,
-            input.searchTerm === ""
-              ? undefined
-              : like(packages.id, `%${input.searchTerm}%`),
           ),
         )
     }),
@@ -386,9 +383,6 @@ export const packageRouter = router({
             input.shippingType
               ? eq(packages.shippingType, input.shippingType)
               : undefined,
-            input.searchTerm === ""
-              ? undefined
-              : like(packages.id, `%${input.searchTerm}%`),
           ),
         )
         .orderBy(
@@ -418,9 +412,6 @@ export const packageRouter = router({
             input.warehouseId
               ? eq(packages.lastWarehouseId, input.warehouseId)
               : undefined,
-            input.searchTerm === ""
-              ? undefined
-              : like(packages.id, `%${input.searchTerm}%`),
           ),
         )
         .orderBy(
