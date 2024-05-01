@@ -67,7 +67,7 @@ const defaultWeightCapacityInKg = {
   TRUCK: "2000",
 }
 
-function CreateForm({ close }: { close: () => void }) {
+function CreateForm({ onClose }: { onClose: () => void }) {
   const {
     handleSubmit,
     register,
@@ -86,7 +86,7 @@ function CreateForm({ close }: { close: () => void }) {
     onSuccess: () => {
       toast.success("Vehicle updated.")
       apiUtils.vehicle.getAll.invalidate()
-      close()
+      onClose()
       reset()
     },
     onError: (error) => {
@@ -180,28 +180,31 @@ function CreateForm({ close }: { close: () => void }) {
 
 export function CreateModal({
   isOpen,
-  close,
+  onClose,
 }: {
   isOpen: boolean
-  close: () => void
+  onClose: () => void
 }) {
   return (
     <Dialog.Root open={isOpen}>
       <Dialog.Portal>
-        <Dialog.Overlay className="bg-black/40 fixed inset-0" onClick={close} />
+        <Dialog.Overlay
+          className="bg-black/40 fixed inset-0"
+          onClick={onClose}
+        />
         <Dialog.Content
-          onEscapeKeyDown={close}
+          onEscapeKeyDown={onClose}
           className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_32rem)] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
         >
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             New Vehicle
           </Dialog.Title>
-          <CreateForm close={close} />
+          <CreateForm onClose={onClose} />
           <Dialog.Close asChild>
             <button
               type="button"
               className="text-white absolute top-3 right-3"
-              onClick={close}
+              onClick={onClose}
             >
               <X size={20} />
               <span className="sr-only">Close</span>

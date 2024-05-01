@@ -265,7 +265,7 @@ export function HeaderSection() {
       </button>
       <CreateModal
         isOpen={isOpenCreateModal}
-        close={() => setIsOpenCreateModal(false)}
+        onClose={() => setIsOpenCreateModal(false)}
       />
     </>
   )
