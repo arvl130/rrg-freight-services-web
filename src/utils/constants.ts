@@ -13,7 +13,7 @@ export type UserRole = (typeof SUPPORTED_USER_ROLES)[number]
 export const SUPPORTED_PACKAGE_STATUSES = [
   "INCOMING",
   "IN_WAREHOUSE",
-  "SORTING",
+  "PREPARING_FOR_TRANSFER",
   "PREPARING_FOR_DELIVERY",
   "OUT_FOR_DELIVERY",
   "ARRIVING",
@@ -113,7 +113,7 @@ type NewPackageStatusDescriptionOptions =
   | {
       status:
         | "INCOMING"
-        | "SORTING"
+        | "PREPARING_FOR_TRANSFER"
         | "OUT_FOR_DELIVERY"
         | "DELIVERED"
         | "PREPARING_FOR_DELIVERY"
@@ -144,7 +144,8 @@ export function getDescriptionForNewPackageStatusLog(
   if (options.status === "PREPARING_FOR_DELIVERY")
     return "Your package is being prepared for delivery."
 
-  if (options.status === "SORTING") return "Your package is being sorted."
+  if (options.status === "PREPARING_FOR_TRANSFER")
+    return "Your package is being prepared for transfer."
 
   if (options.status === "TRANSFERRING_WAREHOUSE")
     return `Your package is being transferred to another warehouse (${options.warehouseName}).`

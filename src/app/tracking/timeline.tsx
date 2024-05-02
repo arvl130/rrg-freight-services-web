@@ -21,7 +21,8 @@ function TimelineItem({
         {packageStatusLog.status === "OUT_FOR_DELIVERY" && (
           <Moped size={44} color="#1d798b" />
         )}
-        {packageStatusLog.status === "SORTING" && (
+        {(packageStatusLog.status === "PREPARING_FOR_DELIVERY" ||
+          packageStatusLog.status === "PREPARING_FOR_TRANSFER") && (
           <MagnifyingGlass size={44} color="#1d798b" />
         )}
         {(packageStatusLog.status === "INCOMING" ||

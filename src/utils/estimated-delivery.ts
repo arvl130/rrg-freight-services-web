@@ -6,7 +6,10 @@ export function getEstimatedDeliveryOfPackage(_package: Package) {
   if (!_package.isDeliverable) return "N/A"
   if (_package.status === "DELIVERED") return "N/A"
 
-  if (_package.status === "IN_WAREHOUSE" || _package.status === "SORTING") {
+  if (
+    _package.status === "IN_WAREHOUSE" ||
+    _package.status === "PREPARING_FOR_TRANSFER"
+  ) {
     if (_package.expectedHasDeliveryAt === null) return "N/A"
 
     const expectedHasDeliveryAt = DateTime.fromISO(

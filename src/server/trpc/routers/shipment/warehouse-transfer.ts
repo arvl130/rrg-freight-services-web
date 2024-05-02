@@ -282,9 +282,9 @@ export const warehouseTransferShipmentRouter = router({
         packageId,
         createdById: ctx.user.id,
         description: getDescriptionForNewPackageStatusLog({
-          status: "SORTING",
+          status: "PREPARING_FOR_TRANSFER",
         }),
-        status: "SORTING" as const,
+        status: "PREPARING_FOR_TRANSFER" as const,
         createdAt,
       }))
 
@@ -337,7 +337,7 @@ export const warehouseTransferShipmentRouter = router({
         await tx
           .update(packages)
           .set({
-            status: "SORTING",
+            status: "PREPARING_FOR_TRANSFER",
           })
           .where(inArray(packages.id, input.packageIds))
         await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
