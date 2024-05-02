@@ -70,9 +70,38 @@ function MobileNav(props: { packageId: string }) {
         <ul
           className={`absolute top-20 [background-color:_#79CFDC] px-3 w-full space-y-1 pb-3`}
         >
-          <div className="bg-white text-brand-cyan-500 rounded-lg px-4 py-2 grid grid-cols-[1fr_auto]">
-            <div className="font-medium">Tracking number:</div>
-            <div>{props.packageId}</div>
+          <div className="bg-white text-brand-cyan-500 rounded-lg px-4 py-2">
+            <div className=" grid grid-cols-[auto_1fr] gap-x-3">
+              <div className="font-medium">Tracking number:</div>
+              <div>{props.packageId}</div>
+              <div className="col-span-2 mt-1 inline-flex flex-wrap gap-x-3 gap-y-2 text-sm">
+                <div className="grid grid-cols-[1.75rem_1fr] gap-x-1 items-center">
+                  <div className="flex justify-center">
+                    <Image
+                      height={41}
+                      width={25}
+                      src="/assets/img/location-marker/marker.png"
+                      alt="Your current location"
+                      className="h-6 w-4"
+                    />
+                  </div>
+                  <p>Your current location</p>
+                </div>
+                <div className="grid grid-cols-[1.75rem_1fr] gap-x-1 items-center">
+                  <div className="flex justify-center">
+                    <Image
+                      height={50}
+                      width={50}
+                      src="/assets/img/location-marker/current-location.png"
+                      alt="Your current location"
+                      className="h-6 w-6"
+                    />
+                  </div>
+
+                  <p>Package location</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <li className="font-medium">

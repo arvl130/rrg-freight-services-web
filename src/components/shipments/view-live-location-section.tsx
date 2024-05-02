@@ -8,6 +8,7 @@ import { LEAFLET_DEFAULT_ZOOM_LEVEL } from "@/utils/constants"
 import { api } from "@/utils/api"
 import usePermission from "@custom-react-hooks/use-permission"
 import toast from "react-hot-toast"
+import Image from "next/image"
 
 function SmallLoadingSpinner() {
   return (
@@ -169,13 +170,45 @@ export function ViewLastLocationSection({
 
   return (
     <div>
-      <LocationAccessPrompt
-        long={location.long}
-        lat={location.lat}
-        onDetectCurrentCoordinates={(coords) => {
-          setCurrentCoordinates(coords)
-        }}
-      />
+      <div className="md:grid grid-cols-[1fr_auto]">
+        <div className="hidden px-4 py-2 md:flex items-center">
+          <div className="inline-flex flex-wrap gap-x-3 gap-y-2 text-sm">
+            <div className="grid grid-cols-[1.75rem_1fr] gap-x-1 items-center">
+              <div className="flex justify-center">
+                <Image
+                  height={41}
+                  width={25}
+                  src="/assets/img/location-marker/marker.png"
+                  alt="Your current location"
+                  className="h-6 w-4"
+                />
+              </div>
+              <p>Your current location</p>
+            </div>
+            <div className="grid grid-cols-[1.75rem_1fr] gap-x-1 items-center">
+              <div className="flex justify-center">
+                <Image
+                  height={50}
+                  width={50}
+                  src="/assets/img/location-marker/current-location.png"
+                  alt="Your current location"
+                  className="h-6 w-6"
+                />
+              </div>
+
+              <p>Package location</p>
+            </div>
+          </div>
+        </div>
+        <LocationAccessPrompt
+          long={location.long}
+          lat={location.lat}
+          onDetectCurrentCoordinates={(coords) => {
+            setCurrentCoordinates(coords)
+          }}
+        />
+      </div>
+
       <div className="h-full w-full overflow-y-auto">
         <Map
           long={location.long}
