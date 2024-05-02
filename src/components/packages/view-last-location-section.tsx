@@ -3,6 +3,7 @@ import { Map } from "@/components/shipments/map/map"
 import { useState } from "react"
 import { api } from "@/utils/api"
 import Image from "next/image"
+import { LoadingSpinner } from "../spinner"
 
 function EstimatedTimeOfArrivalWithCoordinates(props: {
   source: { lat: number; long: number }
@@ -78,7 +79,7 @@ function HasNoDestinationCoordinates(props: {
                 className="h-6 w-4"
               />
             </div>
-            <p>Consignee address/location</p>
+            <p>Consignee address</p>
           </div>
           <div className="grid grid-cols-[1.75rem_1fr] gap-x-1 items-center">
             <div className="flex justify-center">
@@ -96,7 +97,11 @@ function HasNoDestinationCoordinates(props: {
         </div>
       </div>
 
-      {status === "loading" && <div>...</div>}
+      {status === "loading" && (
+        <div className="flex justify-center items-center">
+          <LoadingSpinner />
+        </div>
+      )}
       {status === "error" && <div>Error occured: {error.message}</div>}
       {status === "success" && (
         <div className="h-full w-full overflow-y-auto">
@@ -149,7 +154,7 @@ export function ViewLastLocationSection({
                     className="h-6 w-4"
                   />
                 </div>
-                <p>Consignee address/location</p>
+                <p>Consignee address</p>
               </div>
               <div className="grid grid-cols-[1.75rem_1fr] gap-x-1 items-center">
                 <div className="flex justify-center">

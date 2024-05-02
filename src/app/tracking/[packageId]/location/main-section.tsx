@@ -1,12 +1,13 @@
 "use client"
 
-import type { ShipmentLocation } from "@/server/db/entities"
+import type { Package, ShipmentLocation } from "@/server/db/entities"
 import { api } from "@/utils/api"
-import { ViewLastLocationSection } from "@/components/shipments/view-live-location-section"
+import { ViewLastLocationSection } from "@/components/packages/view-last-location-section"
 import { List } from "@phosphor-icons/react/dist/ssr/List"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
+import { LoadingSpinner } from "@/components/spinner"
 
 function removeAfterSettledAt(options: {
   settledAt: null | string
@@ -25,6 +26,7 @@ function removeAfterSettledAt(options: {
 function HasShipmentLocations(props: {
   settledAt: string | null
   locations: ShipmentLocation[]
+  package: Package
 }) {
   const locations = removeAfterSettledAt({
     settledAt: props.settledAt,
@@ -38,7 +40,9 @@ function HasShipmentLocations(props: {
       </div>
     )
 
-  return <ViewLastLocationSection hasEta location={locations[0]} />
+  return (
+    <ViewLastLocationSection package={props.package} location={locations[0]} />
+  )
 }
 
 function MobileNav(props: { packageId: string }) {
@@ -160,11 +164,11 @@ function Navbar(props: { packageId: string }) {
 
 export function MainSection(props: {
   settledAt: string | null
-  packageId: string
+  package: Package
 }) {
   const { status, data, error } = api.shipment.location.getByPackageId.useQuery(
     {
-      packageId: props.packageId,
+      packageId: props.package.id,
     },
     {
       refetchInterval: 5000,
@@ -173,11 +177,19 @@ export function MainSection(props: {
 
   return (
     <div className="grid grid-rows-[auto_1fr] h-dvh">
-      <Navbar packageId={props.packageId} />
-      {status === "loading" && <div>...</div>}
+      <Navbar packageId={props.package.id} />
+      {status === "loading" && (
+        <div className="flex justify-center items-center">
+          <LoadingSpinner />
+        </div>
+      )}
       {status === "error" && <div>Error occured: {error.message}</div>}
       {status === "success" && (
-        <HasShipmentLocations settledAt={props.settledAt} locations={data} />
+        <HasShipmentLocations
+          settledAt={props.settledAt}
+          locations={data}
+          package={props.package}
+        />
       )}
     </div>
   )
