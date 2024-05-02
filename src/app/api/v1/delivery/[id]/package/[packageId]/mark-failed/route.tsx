@@ -134,11 +134,9 @@ export async function POST(
       messages: [
         {
           to: _package.receiverContactNumber,
-          body: `The delivery for your package with tracking number ${packageId} failed. ${
-            isForPickup
-              ? "Please contact customer service (+02) 8461 6027 for further actions."
-              : "A re-delivery will be automatically scheduled. No further action is required."
-          }`,
+          body: isForPickup
+            ? `The delivery attempt on Package ${packageId} has failed. Please contact customer service (+02) 8461 6027 for further actions.`
+            : `The delivery attempt on Package ${packageId} has failed. A re-delivery will be automatically scheduled. No further action is required.`,
         },
       ],
     })
