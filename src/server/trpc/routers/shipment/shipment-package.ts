@@ -301,6 +301,15 @@ export const shipmentPackageRouter = router({
         }),
       )
 
+      const userColumns = getTableColumns(users)
+      const [
+        { displayName: driverDisplayName, contactNumber: driverContactNumber },
+      ] = await ctx.db
+        .select(userColumns)
+        .from(deliveryShipments)
+        .innerJoin(users, eq(deliveryShipments.driverId, users.id))
+        .where(eq(deliveryShipments.shipmentId, input.shipmentId))
+
       const emailNotifications = [
         ...packageDetails.map(({ id, senderFullName, senderEmailAddress }) => ({
           to: senderEmailAddress,
@@ -329,15 +338,6 @@ export const shipmentPackageRouter = router({
           }),
         ),
       ]
-
-      const userColumns = getTableColumns(users)
-      const [
-        { displayName: driverDisplayName, contactNumber: driverContactNumber },
-      ] = await ctx.db
-        .select(userColumns)
-        .from(deliveryShipments)
-        .innerJoin(users, eq(deliveryShipments.driverId, users.id))
-        .where(eq(deliveryShipments.shipmentId, input.shipmentId))
 
       const packageReceiverSmsNotifications = packageDetails.map(
         ({ id, receiverContactNumber }) => ({

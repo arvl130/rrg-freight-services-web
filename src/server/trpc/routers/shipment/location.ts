@@ -3,7 +3,10 @@ import { protectedProcedure, publicProcedure, router } from "../../trpc"
 import { shipmentLocations, shipmentPackages } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import { getEstimatedTimeOfArrival } from "@/server/geocoding"
+import {
+  getEstimatedTimeOfArrival,
+  getLongitudeLatitudeWithGoogle,
+} from "@/server/geocoding"
 
 export const shipmentLocationRouter = router({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -90,6 +93,15 @@ export const shipmentLocationRouter = router({
         .where(inArray(shipmentLocations.shipmentId, input.shipmentIds))
         .orderBy(desc(shipmentLocations.createdAt))
     }),
+  getLatLongFromAddress: publicProcedure
+    .input(
+      z.object({
+        address: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      return await getLongitudeLatitudeWithGoogle(input.address)
+    }),
   getEstimatedTimeOfArrival: publicProcedure
     .input(
       z.object({
@@ -105,6 +117,31 @@ export const shipmentLocationRouter = router({
     )
     .query(async ({ input }) => {
       const result = await getEstimatedTimeOfArrival(input)
+
+      return result
+    }),
+  getEstimatedTimeOfArrivalWithDestinationAddress: publicProcedure
+    .input(
+      z.object({
+        source: z.object({
+          lat: z.number(),
+          long: z.number(),
+        }),
+        destinationAddress: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { lat, long } = await getLongitudeLatitudeWithGoogle(
+        input.destinationAddress,
+      )
+
+      const result = await getEstimatedTimeOfArrival({
+        source: input.source,
+        destination: {
+          lat,
+          long,
+        },
+      })
 
       return result
     }),

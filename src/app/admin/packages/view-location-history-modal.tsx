@@ -12,7 +12,7 @@ import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useState } from "react"
 import { LoadingSpinner } from "@/components/spinner"
-import { ViewLocationWithHistorySection } from "@/components/shipments/view-location-with-history-section"
+import { ViewLocationWithHistorySection } from "@/components/packages/view-location-with-history-section"
 
 function removeAfterSettledAt(options: {
   settledAt: null | string
@@ -29,6 +29,7 @@ function removeAfterSettledAt(options: {
 }
 
 function MultipleShipmentsMapView(props: {
+  package: Package
   settledAt: null | string
   shipmentIds: number[]
 }) {
@@ -52,6 +53,7 @@ function MultipleShipmentsMapView(props: {
 
   return (
     <ViewLocationWithHistorySection
+      package={props.package}
       locations={removeAfterSettledAt({
         settledAt: props.settledAt,
         locations: data,
@@ -61,6 +63,7 @@ function MultipleShipmentsMapView(props: {
 }
 
 function ShipmentMapView(props: {
+  package: Package
   settledAt: null | string
   shipmentId: number
 }) {
@@ -84,6 +87,7 @@ function ShipmentMapView(props: {
 
   return (
     <ViewLocationWithHistorySection
+      package={props.package}
       locations={removeAfterSettledAt({
         settledAt: props.settledAt,
         locations: data,
@@ -93,6 +97,7 @@ function ShipmentMapView(props: {
 }
 
 function AllTab(props: {
+  package: Package
   settledAt: null | string
   deliveryShipments: NormalizedDeliveryShipment[]
   forwarderTransferShipments: NormalizedForwarderTransferShipment[]
@@ -109,7 +114,7 @@ function AllTab(props: {
   ]
 
   return (
-    <div className="grid grid-cols-[16rem_1fr]">
+    <div className="grid grid-cols-[16rem_1fr] overflow-auto">
       {shipments.length === 0 ? (
         <>
           <div className="border-r border-gray-300 text-center pt-4 text-gray-500 text-sm">
@@ -149,11 +154,13 @@ function AllTab(props: {
           </div>
           {selectedShipmentId === null ? (
             <MultipleShipmentsMapView
+              package={props.package}
               settledAt={props.settledAt}
               shipmentIds={shipments.map((shipment) => shipment.id)}
             />
           ) : (
             <ShipmentMapView
+              package={props.package}
               settledAt={props.settledAt}
               shipmentId={selectedShipmentId}
             />
@@ -165,6 +172,7 @@ function AllTab(props: {
 }
 
 function DeliveryTab(props: {
+  package: Package
   settledAt: null | string
   shipments: NormalizedDeliveryShipment[]
 }) {
@@ -213,11 +221,13 @@ function DeliveryTab(props: {
           </div>
           {selectedShipmentId === null ? (
             <MultipleShipmentsMapView
+              package={props.package}
               settledAt={props.settledAt}
               shipmentIds={props.shipments.map((shipment) => shipment.id)}
             />
           ) : (
             <ShipmentMapView
+              package={props.package}
               settledAt={props.settledAt}
               shipmentId={selectedShipmentId}
             />
@@ -229,6 +239,7 @@ function DeliveryTab(props: {
 }
 
 function ForwarderTransferTab(props: {
+  package: Package
   settledAt: null | string
   shipments: NormalizedForwarderTransferShipment[]
 }) {
@@ -277,11 +288,13 @@ function ForwarderTransferTab(props: {
           </div>
           {selectedShipmentId === null ? (
             <MultipleShipmentsMapView
+              package={props.package}
               settledAt={props.settledAt}
               shipmentIds={props.shipments.map((shipment) => shipment.id)}
             />
           ) : (
             <ShipmentMapView
+              package={props.package}
               settledAt={props.settledAt}
               shipmentId={selectedShipmentId}
             />
@@ -293,6 +306,7 @@ function ForwarderTransferTab(props: {
 }
 
 function WarehouseTransferTab(props: {
+  package: Package
   settledAt: null | string
   shipments: NormalizedWarehouseTransferShipment[]
 }) {
@@ -341,11 +355,13 @@ function WarehouseTransferTab(props: {
           </div>
           {selectedShipmentId === null ? (
             <MultipleShipmentsMapView
+              package={props.package}
               settledAt={props.settledAt}
               shipmentIds={props.shipments.map((shipment) => shipment.id)}
             />
           ) : (
             <ShipmentMapView
+              package={props.package}
               settledAt={props.settledAt}
               shipmentId={selectedShipmentId}
             />
@@ -359,6 +375,7 @@ function WarehouseTransferTab(props: {
 type Tab = "" | "DELIVERY" | "WAREHOUSE" | "FORWARDER"
 
 function MainSection(props: {
+  package: Package
   settledAt: null | string
   deliveryShipments: NormalizedDeliveryShipment[]
   forwarderTransferShipments: NormalizedForwarderTransferShipment[]
@@ -367,7 +384,7 @@ function MainSection(props: {
   const [selectedTab, setSelectedTab] = useState<Tab>("")
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto]">
+    <div className="grid grid-rows-[auto_1fr_auto] overflow-auto">
       <div className="px-4 py-2">
         <p>
           Showing History for:{" "}
@@ -387,6 +404,7 @@ function MainSection(props: {
       </div>
       {selectedTab === "" && (
         <AllTab
+          package={props.package}
           settledAt={props.settledAt}
           deliveryShipments={props.deliveryShipments}
           forwarderTransferShipments={props.forwarderTransferShipments}
@@ -395,18 +413,21 @@ function MainSection(props: {
       )}
       {selectedTab === "DELIVERY" && (
         <DeliveryTab
+          package={props.package}
           settledAt={props.settledAt}
           shipments={props.deliveryShipments}
         />
       )}
       {selectedTab === "FORWARDER" && (
         <ForwarderTransferTab
+          package={props.package}
           settledAt={props.settledAt}
           shipments={props.forwarderTransferShipments}
         />
       )}
       {selectedTab === "WAREHOUSE" && (
         <WarehouseTransferTab
+          package={props.package}
           settledAt={props.settledAt}
           shipments={props.warehouseTransferShipments}
         />
@@ -451,6 +472,7 @@ export function ViewLocationHistoryModal({
           {status === "error" && <div>Error occured: {error.message}</div>}
           {status === "success" && (
             <MainSection
+              package={item}
               settledAt={item.settledAt}
               deliveryShipments={data.deliveryShipments}
               forwarderTransferShipments={data.forwarderTransferShipments}

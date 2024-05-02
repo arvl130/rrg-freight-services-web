@@ -458,6 +458,9 @@ export const packages = mysqlTable("packages", {
   lastWarehouseId: bigint("last_warehouse_id", {
     mode: "number",
   }),
+  lastCoordinates: varchar("last_coordinates", {
+    length: 100,
+  }),
   expectedHasDeliveryAt: varchar("expected_has_delivery_at", {
     length: 100,
   }),
