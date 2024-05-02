@@ -375,6 +375,22 @@ export const inquiries = mysqlTable("inquiries", {
   }).notNull(),
 })
 
+export const survey = mysqlTable("survey", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  serviceRate: tinyint("service_rate", {}).notNull(),
+  message: varchar("message", {
+    length: 100,
+  }).notNull(),
+  isArchived: tinyint("is_archived").notNull().default(0),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
+})
+
 export const packageCategories = mysqlTable("package_categories", {
   id: bigint("id", {
     mode: "number",

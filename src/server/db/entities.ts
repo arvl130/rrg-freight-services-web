@@ -17,6 +17,7 @@ import type {
   deliveryShipments,
   vehicles,
   inquiries,
+  survey,
   warehouses,
   packages,
   packageStatusLogs,
@@ -123,6 +124,9 @@ export type NewVehicle = typeof vehicles.$inferInsert
 
 export type Inquiries = typeof inquiries.$inferSelect
 export type NewInquiries = typeof inquiries.$inferInsert
+
+export type Survey = typeof survey.$inferSelect
+export type NewSurvey = typeof survey.$inferInsert
 
 export type PackageCategory = typeof packageCategories.$inferSelect
 export type NewPackageCategory = typeof packageCategories.$inferInsert

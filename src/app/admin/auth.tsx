@@ -3,6 +3,7 @@
 import { Gauge } from "@phosphor-icons/react/dist/ssr/Gauge"
 import { Package } from "@phosphor-icons/react/dist/ssr/Package"
 import { Scroll } from "@phosphor-icons/react/dist/ssr/Scroll"
+import { PencilLine } from "@phosphor-icons/react/dist/ssr/PencilLine"
 import { Question } from "@phosphor-icons/react/dist/ssr/Question"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
 import { UsersThree } from "@phosphor-icons/react/dist/ssr/UsersThree"
@@ -212,6 +213,14 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
                   icon={<Question size={32} />}
                   name="Inquiries"
                   href="/admin/inquiries"
+                />
+              </Accordion.Content>
+              <Accordion.Content className="[background-color:_#6BB6C1]">
+                <AccordionLink
+                  isMinimized={props.isMinimized}
+                  icon={<PencilLine size={32} />}
+                  name="Survey"
+                  href="/admin/survey"
                 />
               </Accordion.Content>
             </Accordion.Item>

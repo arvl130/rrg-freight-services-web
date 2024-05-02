@@ -2,6 +2,7 @@ import { z } from "zod"
 import { protectedProcedure, publicProcedure, router } from "../trpc"
 import { packageRouter } from "./package"
 import { userRouter } from "./user"
+import { surveyRouter } from "./survey"
 import { packageStatusLogRouter } from "./package-status-logs"
 import { vehicleRouter } from "./vehicle"
 import { warehouseRouter } from "./warehouse"
@@ -45,6 +46,7 @@ export const rootRouter = router({
   packageStatusLog: packageStatusLogRouter,
   shipment: shipmentRouter,
   vehicle: vehicleRouter,
+  survey: surveyRouter,
   warehouse: warehouseRouter,
   packageCategory: packageCategoryRouter,
   webpushSubscription: webpushSubscriptionRouter,
