@@ -70,8 +70,8 @@ function DesktopNav(props: { user: User | null }) {
         <Image
           src="/assets/img/logos/new-logo-nav-bar.png"
           alt="Logo of RRG Freight Services"
-          width={350}
-          height={120}
+          width={180}
+          height={180}
         />
       </Link>
 
@@ -155,7 +155,7 @@ export function Navbar(props: { user: User | null }) {
     <>
       <div className="h-20 bg-[#79CFDC]"></div>
       <div
-        className={`h-36 bg-[#79CFDC] w-full top-0 fixed z-50 transition-all duration-300 ${
+        className={`h-20 bg-[#79CFDC] w-full top-0 fixed z-50 transition-all duration-300 ${
           hasScrolled ? "drop-shadow-xl" : ""
         }`}
       >
