@@ -84,6 +84,8 @@ type OtpEmailComponentProps = {
 type OutForDeliveryMonitoringLinkEmailComponentProps = {
   type: "out-for-delivery-monitoring-link"
   receiverFullName: string
+  driverFullName: string
+  driverContactNumber: string
   packageId: string
   accessKey: string
 }

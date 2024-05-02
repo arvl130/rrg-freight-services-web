@@ -334,6 +334,8 @@ export const shipmentPackageRouter = router({
               receiverFullName,
               packageId: id,
               accessKey,
+              driverFullName: driverDisplayName,
+              driverContactNumber,
             },
           }),
         ),
