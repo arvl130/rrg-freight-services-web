@@ -13,6 +13,7 @@ import {
   assignedVehicles,
   webpushSubscriptions,
   expopushTokens,
+  warehouseStaffs,
 } from "@/server/db/schema"
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
@@ -169,6 +170,16 @@ export const warehouseTransferShipmentRouter = router({
       const { shipmentId, ...warehouseTransferShipmentColumns } =
         getTableColumns(warehouseTransferShipments)
 
+      let currentUserWarehouseId: null | number = null
+      if (ctx.user.role === "WAREHOUSE") {
+        const [{ warehouseId }] = await ctx.db
+          .select()
+          .from(warehouseStaffs)
+          .where(eq(warehouseStaffs.userId, ctx.user.id))
+
+        currentUserWarehouseId = warehouseId
+      }
+
       return await ctx.db
         .selectDistinct({
           ...shipmentColumns,
@@ -195,6 +206,12 @@ export const warehouseTransferShipmentRouter = router({
         .where(
           and(
             eq(shipments.status, "IN_TRANSIT"),
+            currentUserWarehouseId === null
+              ? undefined
+              : eq(
+                  warehouseTransferShipments.sentToWarehouseId,
+                  currentUserWarehouseId,
+                ),
             input.searchTerm === ""
               ? undefined
               : input.searchWith === "SHIPMENT_ID"
