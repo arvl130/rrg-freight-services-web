@@ -465,11 +465,12 @@ export const deliveryShipmentRouter = router({
 
         await batchNotifyByEmailWithComponentProps({
           messages: packageResultsWithOtp.map(
-            ({ receiverEmailAddress, otp }) => ({
+            ({ id, receiverEmailAddress, otp }) => ({
               to: receiverEmailAddress,
               subject: `Your package will be delivered soon`,
               componentProps: {
                 type: "otp",
+                id,
                 otp: otp.toString(),
                 validityMessage: "This code will be valid for 7 days.",
               },

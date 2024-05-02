@@ -130,6 +130,7 @@ export async function GET(
             subject: `Your package will be delivered soon`,
             componentProps: {
               type: "otp",
+              id,
               otp: code.toString(),
               validityMessage: "This code will be valid for 3 days.",
             },
