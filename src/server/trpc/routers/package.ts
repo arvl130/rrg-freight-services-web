@@ -450,14 +450,16 @@ export const packageRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const result = await ctx.db
-        .select()
+      const packageColumns = getTableColumns(packages)
+      return await ctx.db
+        .select({
+          ...packageColumns,
+          shipmentPackageIsDriverApproved: shipmentPackages.isDriverApproved,
+        })
         .from(shipmentPackages)
         .innerJoin(packages, and(eq(shipmentPackages.packageId, packages.id)))
         .where(and(eq(shipmentPackages.shipmentId, input.shipmentId)))
         .orderBy(packages.id)
-
-      return result.map(({ packages }) => packages)
     }),
   getCountWithLatestStatusByShipmentId: protectedProcedure
     .input(
