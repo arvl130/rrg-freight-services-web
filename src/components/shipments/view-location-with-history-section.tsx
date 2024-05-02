@@ -144,7 +144,7 @@ export function ViewLocationWithHistorySection({
   const [map, setMap] = useState<null | TMap>(null)
   const [selectedItemIndex, setSelectedItemIndex] = useState<
     "ALL" | "LIVE" | number
-  >("ALL")
+  >("LIVE")
 
   return (
     <div className="grid grid-cols-[20rem_1fr] h-full overflow-y-auto">
@@ -238,10 +238,14 @@ export function ViewLocationWithHistorySection({
             <>
               {selectedItemIndex === "LIVE" ? (
                 <div className="grid grid-rows-[auto_1fr]">
-                  <LocationAccessPrompt
-                    long={locations[0].long}
-                    lat={locations[0].lat}
-                  />
+                  {hasEta ? (
+                    <LocationAccessPrompt
+                      long={locations[0].long}
+                      lat={locations[0].lat}
+                    />
+                  ) : (
+                    <div></div>
+                  )}
                   <div className="h-full w-full bg-gray-50">
                     <Map
                       long={locations[0].long}
