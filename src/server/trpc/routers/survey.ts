@@ -50,29 +50,19 @@ export const surveyRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      try {
-        const createdAt = DateTime.now().toISO()
-        const result = await ctx.db.insert(survey).values({
-          ...input,
-          createdAt,
-        })
+      const createdAt = DateTime.now().toISO()
+      const result = await ctx.db.insert(survey).values({
+        ...input,
+        createdAt,
+      })
 
-        await createLog(ctx.db, {
-          verb: "CREATE",
-          createdById: ctx.user.id,
-        })
+      await createLog(ctx.db, {
+        verb: "CREATE",
+        entity: "PACKAGE",
+        createdById: ctx.user.id,
+      })
 
-        return result
-      } catch (e) {
-        if ((e as QueryError).errno === MYSQL_ERROR_DUPLICATE_ENTRY) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Survey already exists.",
-          })
-        } else {
-          throw e
-        }
-      }
+      return result
     }),
 
   deleteById: protectedProcedure
@@ -86,6 +76,7 @@ export const surveyRouter = router({
 
       await createLog(ctx.db, {
         verb: "DELETE",
+        entity: "PACKAGE",
         createdById: ctx.user.id,
       })
 
@@ -109,6 +100,7 @@ export const surveyRouter = router({
 
         await createLog(tx, {
           verb: "UPDATE",
+          entity: "PACKAGE",
           createdById: ctx.user.id,
         })
       })
@@ -131,6 +123,7 @@ export const surveyRouter = router({
 
         await createLog(tx, {
           verb: "UPDATE",
+          entity: "PACKAGE",
           createdById: ctx.user.id,
         })
       })

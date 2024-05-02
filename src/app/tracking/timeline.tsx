@@ -8,98 +8,133 @@ import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
 import { Warehouse } from "@phosphor-icons/react/dist/ssr/Warehouse"
 import { useState } from "react"
 import Image from "next/image"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { api } from "@/utils/api"
+import toast from "react-hot-toast"
+import { zodResolver } from "@hookform/resolvers/zod"
 
-function SurveyModal({ onClose }) {
-  const [review, setReview] = useState("")
+const formSchema = z.object({
+  serviceRate: z.string().min(1).max(100),
+  message: z.string().min(1).max(100),
+})
+
+type FormSchema = z.infer<typeof formSchema>
+function SurveyModal({ onClose }: { onClose: () => void }) {
   const [rating, setRating] = useState(0)
-
-  const handleReviewChange = (event) => {
-    setReview(event.target.value)
-  }
 
   const handleRatingChange = (value) => {
     setRating(value)
   }
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+  })
 
-  const handleSubmit = () => {
-    onClose()
-  }
+  const apiUtils = api.useUtils()
+  const { mutate, isLoading } = api.survey.create.useMutation({
+    onSuccess: () => {
+      toast.success("Survey updated.")
+      apiUtils.survey.getAll.invalidate()
+      onClose()
+      reset()
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center rounded-lg overflow-x-hidden overflow-y-auto">
-      <div className="absolute inset-0 bg-black opacity-60"></div>
-      <div className="relative w-full max-w-lg mx-auto my-6">
-        <div className="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
-          <div className="flex items-start justify-center bg-[#78CFDC] p-5 border-b border-solid border-blueGray-200 rounded-t">
-            <div className="flex justify-center mb-2">
-              <Image
-                src="/assets/img/logos/new-logo-nav-bar.png"
-                alt="RRG Freight Services logo with its name on the right"
-                className="w-[180px] h-[60px] object-contain"
-                width={168}
-                height={60}
-              />
-            </div>
-            <h2 className="font-bold mt-4 ml-10 text-lg text-white text-center">
-              Customer Survey{" "}
-            </h2>
-            <button
-              className="p-1 ml-auto bg-transparent border-0 text-white float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-              onClick={onClose}
-            >
-              <span className="text-white h-10 w-10  text-3xl block outline-none focus:outline-none">
-                ×
-              </span>
-            </button>
-          </div>
-
-          <div className="relative p-6 flex-auto">
-            <div className="mb-2">
-              <label className="block text-lg font-semibold mb-2">
-                Services Rate
-              </label>
-              <div className="flex items-center">
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <button
-                    key={value}
-                    className={`mr-2 p-2 text-3xl focus:outline-none ${
-                      value <= rating ? "text-[#78CFDC]" : "text-gray-300"
-                    }`}
-                    onClick={() => handleRatingChange(value)}
-                  >
-                    ★
-                  </button>
-                ))}
+    <form
+      className="px-4 pt-2 pb-4"
+      onSubmit={handleSubmit((formData) =>
+        mutate({
+          ...formData,
+        }),
+      )}
+    >
+      <div className="fixed inset-0 z-50 flex items-center justify-center rounded-lg overflow-x-hidden overflow-y-auto">
+        <div className="absolute inset-0 bg-black opacity-60"></div>
+        <div className="relative w-full max-w-lg mx-auto my-6">
+          <div className="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
+            <div className="flex items-start justify-center bg-[#78CFDC] p-5 border-b border-solid border-blueGray-200 rounded-t">
+              <div className="flex justify-center mb-2">
+                <Image
+                  src="/assets/img/logos/new-logo-nav-bar.png"
+                  alt="RRG Freight Services logo with its name on the right"
+                  className="w-[180px] h-[60px] object-contain"
+                  width={168}
+                  height={60}
+                />
               </div>
+              <h2 className="font-bold mt-4 ml-10 text-lg text-white text-center">
+                Customer Survey{" "}
+              </h2>
+              <button
+                className="p-1 ml-auto bg-transparent border-0 text-white float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                onClick={onClose}
+              >
+                <span className="text-white h-10 w-10  text-3xl block outline-none focus:outline-none">
+                  ×
+                </span>
+              </button>
             </div>
-            <label className="block text-lg font-semibold mb-2">
-              Write a Review (optional)
-            </label>
-            <textarea
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-              value={review}
-              onChange={handleReviewChange}
-            ></textarea>
-          </div>
-          <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
-            <button
-              className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 ease-linear transition-all duration-150"
-              type="button"
-              onClick={handleSubmit}
-            >
-              Submit
-            </button>
-            <button
-              className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
-              type="button"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
+
+            <div className="relative p-6 flex-auto">
+              <div className="mb-2">
+                <label className="block text-lg font-semibold mb-2">
+                  Services Rate
+                </label>
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((value) => (
+                    <button
+                      key={value}
+                      className={`mr-2 p-2 text-3xl focus:outline-none ${
+                        value <= rating ? "text-[#78CFDC]" : "text-gray-300"
+                      }`}
+                      onClick={() => handleRatingChange(value)}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <label className="block text-lg font-semibold mb-2">
+                Write a Review (optional)
+              </label>
+              <textarea
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                {...register("message")}
+              >
+                {errors.message && (
+                  <div className="mt-1 text-red-500">
+                    {errors.message.message}.
+                  </div>
+                )}
+              </textarea>
+            </div>
+            <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+              <button
+                className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 ease-linear transition-all duration-150"
+                type="submit"
+              >
+                Submit
+              </button>
+              <button
+                className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   )
 }
 
