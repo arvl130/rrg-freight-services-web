@@ -8,7 +8,7 @@ import type {
 const packageStatusColors: Record<PackageStatus, string> = {
   INCOMING: "bg-blue-500",
   IN_WAREHOUSE: "bg-pink-500",
-  SORTING: "bg-cyan-400",
+  PREPARING_FOR_TRANSFER: "bg-cyan-400",
   PREPARING_FOR_DELIVERY: "bg-cyan-400",
   TRANSFERRING_FORWARDER: "bg-blue-500",
   TRANSFERRING_WAREHOUSE: "bg-blue-500",
