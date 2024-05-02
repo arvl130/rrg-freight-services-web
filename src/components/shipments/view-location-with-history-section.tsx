@@ -134,7 +134,7 @@ function LocationAccessPrompt(props: { lat: number; long: number }) {
   )
 }
 
-export function ViewLocationsSection({
+export function ViewLocationWithHistorySection({
   locations,
   hasEta,
 }: {

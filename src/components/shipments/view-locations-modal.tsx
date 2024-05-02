@@ -2,7 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 import type { Shipment } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
-import { ViewLocationsSection } from "./view-locations-section"
+import { ViewLocationWithHistorySection } from "./view-location-with-history-section"
 
 export function ViewLocationsModal({
   shipment,
@@ -54,7 +54,9 @@ export function ViewLocationsModal({
               An error occured while retrieving locations: {error.message}
             </div>
           )}
-          {status === "success" && <ViewLocationsSection locations={data} />}
+          {status === "success" && (
+            <ViewLocationWithHistorySection locations={data} />
+          )}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

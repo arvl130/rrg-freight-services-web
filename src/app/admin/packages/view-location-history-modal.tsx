@@ -11,8 +11,8 @@ import { api } from "@/utils/api"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useState } from "react"
-import { ViewLocationsSection } from "@/components/shipments/view-locations-section"
 import { LoadingSpinner } from "@/components/spinner"
+import { ViewLocationWithHistorySection } from "@/components/shipments/view-location-with-history-section"
 
 function removeAfterSettledAt(options: {
   settledAt: null | string
@@ -51,7 +51,7 @@ function MultipleShipmentsMapView(props: {
   if (status === "error") return <div>Error occured: {error.message}</div>
 
   return (
-    <ViewLocationsSection
+    <ViewLocationWithHistorySection
       locations={removeAfterSettledAt({
         settledAt: props.settledAt,
         locations: data,
@@ -83,7 +83,7 @@ function ShipmentMapView(props: {
   if (status === "error") return <div>Error occured: {error.message}</div>
 
   return (
-    <ViewLocationsSection
+    <ViewLocationWithHistorySection
       locations={removeAfterSettledAt({
         settledAt: props.settledAt,
         locations: data,

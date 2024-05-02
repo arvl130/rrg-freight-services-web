@@ -1,6 +1,6 @@
 import { desc, eq, inArray } from "drizzle-orm"
 import { protectedProcedure, publicProcedure, router } from "../../trpc"
-import { shipmentLocations } from "@/server/db/schema"
+import { shipmentLocations, shipmentPackages } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { getEstimatedTimeOfArrival } from "@/server/geocoding"
@@ -45,6 +45,29 @@ export const shipmentLocationRouter = router({
         .select()
         .from(shipmentLocations)
         .where(eq(shipmentLocations.shipmentId, input.shipmentId))
+        .orderBy(desc(shipmentLocations.createdAt))
+    }),
+  getByPackageId: publicProcedure
+    .input(
+      z.object({
+        packageId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const allShipments = await ctx.db
+        .selectDistinct({
+          shipmentId: shipmentPackages.shipmentId,
+        })
+        .from(shipmentPackages)
+        .where(eq(shipmentPackages.packageId, input.packageId))
+
+      const allShipmentIds = allShipments.map(({ shipmentId }) => shipmentId)
+      if (allShipmentIds.length === 0) return []
+
+      return await ctx.db
+        .select()
+        .from(shipmentLocations)
+        .where(inArray(shipmentLocations.shipmentId, allShipmentIds))
         .orderBy(desc(shipmentLocations.createdAt))
     }),
   getByShipmentIds: publicProcedure

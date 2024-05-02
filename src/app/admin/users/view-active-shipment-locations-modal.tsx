@@ -1,7 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import { api } from "@/utils/api"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
-import { ViewLocationsSection } from "@/components/shipments/view-locations-section"
+import { ViewLocationWithHistorySection } from "@/components/shipments/view-location-with-history-section"
 
 function ActiveShipment(props: { shipmentId: number }) {
   const { status, data, error } =
@@ -22,7 +22,9 @@ function ActiveShipment(props: { shipmentId: number }) {
           An error occured while retrieving locations: {error.message}
         </div>
       )}
-      {status === "success" && <ViewLocationsSection locations={data} />}
+      {status === "success" && (
+        <ViewLocationWithHistorySection locations={data} />
+      )}
     </>
   )
 }

@@ -146,12 +146,6 @@ export default async function Page({
     .where(eq(packages.id, params.packageId))
 
   return (
-    <MainSection
-      settledAt={_package.settledAt}
-      packageId={params.packageId}
-      deliveryShipments={deliveryShipments}
-      forwarderTransferShipments={forwarderTransferShipments}
-      warehouseTransferShipments={warehouseTransferShipments}
-    />
+    <MainSection settledAt={_package.settledAt} packageId={params.packageId} />
   )
 }
