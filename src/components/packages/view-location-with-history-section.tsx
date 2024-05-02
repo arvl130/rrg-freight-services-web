@@ -241,6 +241,7 @@ export function ViewLocationWithHistorySection({
             <>
               {selectedItemIndex === "LIVE" ? (
                 <ViewLastLocationSection
+                  hasEta={_package.status === "OUT_FOR_DELIVERY"}
                   location={locations[0]}
                   package={_package}
                 />

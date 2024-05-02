@@ -41,7 +41,11 @@ function HasShipmentLocations(props: {
     )
 
   return (
-    <ViewLastLocationSection package={props.package} location={locations[0]} />
+    <ViewLastLocationSection
+      hasEta={props.package.status === "OUT_FOR_DELIVERY"}
+      package={props.package}
+      location={locations[0]}
+    />
   )
 }
 
