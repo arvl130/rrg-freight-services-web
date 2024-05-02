@@ -23,8 +23,9 @@ import {
   warehouses,
   warehouseStaffs,
   packageMonitoringAccessKeys,
+  deliveryShipments,
 } from "@/server/db/schema"
-import { and, count, eq, inArray, sql } from "drizzle-orm"
+import { and, count, eq, getTableColumns, inArray, sql } from "drizzle-orm"
 import { createLog } from "@/utils/logging"
 import type { DbWithEntities, Package } from "@/server/db/entities"
 import { getHumanizedOfPackageStatus } from "@/utils/humanize"
@@ -308,7 +309,7 @@ export const shipmentPackageRouter = router({
             type: "package-status-update" as const,
             body: `Hi, ${senderFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
               "IN_WAREHOUSE",
-            )}. For more information, click the button below.`,
+            )}. Driver: ${driverDisplayName} Contact: ${driverContactNumber}. For more information, click the button below.`,
             callToAction: {
               label: "Track your Package",
               href: `https://www.rrgfreight.services/tracking?id=${id}`,
@@ -329,14 +330,23 @@ export const shipmentPackageRouter = router({
         ),
       ]
 
+      const userColumns = getTableColumns(users)
+      const [
+        { displayName: driverDisplayName, contactNumber: driverContactNumber },
+      ] = await ctx.db
+        .select(userColumns)
+        .from(deliveryShipments)
+        .innerJoin(users, eq(deliveryShipments.driverId, users.id))
+        .where(eq(deliveryShipments.shipmentId, input.shipmentId))
+
       const packageReceiverSmsNotifications = packageDetails.map(
         ({ id, receiverContactNumber }) => ({
           to: receiverContactNumber,
-          body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+          body: `Package ${id} is now ${getHumanizedOfPackageStatus(
             "OUT_FOR_DELIVERY",
-          )}. For more info, monitor your package on: ${
+          )}. Driver: ${driverDisplayName} Contact: ${driverContactNumber}. For more info, monitor your package on: ${
             serverEnv.BITLY_TRACKING_PAGE_URL
-          }`,
+          }`.substring(0, 160),
         }),
       )
 
