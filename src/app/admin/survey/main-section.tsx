@@ -13,7 +13,13 @@ import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
 import { XCircle } from "@phosphor-icons/react/dist/ssr/XCircle"
 import { List } from "@phosphor-icons/react/dist/ssr/List"
-function Modal({ onClose, children }: { onClose: () => void }) {
+function Modal({
+  onClose,
+  children,
+}: {
+  onClose: () => void
+  children?: React.ReactNode
+}) {
   return (
     <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white rounded-lg p-4 max-w-md w-full">
