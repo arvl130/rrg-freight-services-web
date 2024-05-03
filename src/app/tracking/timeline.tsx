@@ -14,6 +14,8 @@ import { z } from "zod"
 import { api } from "@/utils/api"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { json } from "stream/consumers"
+import { SurveyRatings } from "../admin/dashboard/survey-ratings"
 
 const formSchema = z.object({
   serviceRate: z.number().gt(0),
@@ -26,11 +28,13 @@ function SurveyModal({ onClose }: { onClose: () => void }) {
 
   const handleRatingChange = (value: number) => {
     setRating(value)
+    setValue("serviceRate", value)
   }
   const {
     handleSubmit,
     register,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -52,12 +56,14 @@ function SurveyModal({ onClose }: { onClose: () => void }) {
   return (
     <form
       className="px-4 pt-2 pb-4"
-      onSubmit={handleSubmit((formData) =>
+      onSubmit={handleSubmit((formData) => {
+        console.log("hello")
         mutate({
           ...formData,
-        }),
-      )}
+        })
+      })}
     >
+      <div>{JSON.stringify(errors?.serviceRate?.message)}</div>
       <div className="fixed inset-0 z-50 flex items-center justify-center rounded-lg overflow-x-hidden overflow-y-auto">
         <div className="absolute inset-0 bg-black opacity-60"></div>
         <div className="relative w-full max-w-lg mx-auto my-6">
@@ -98,11 +104,15 @@ function SurveyModal({ onClose }: { onClose: () => void }) {
                         value <= rating ? "text-[#78CFDC]" : "text-gray-300"
                       }`}
                       onClick={() => handleRatingChange(value)}
-                      {...register("serviceRate")}
                     >
                       <Star size={32} weight="fill" />
                     </button>
                   ))}
+                  {errors.serviceRate && (
+                    <div className="mt-1 text-red-500">
+                      {errors.serviceRate.message}.
+                    </div>
+                  )}
                 </div>
               </div>
               <label className="block text-lg font-semibold mb-2">
@@ -111,13 +121,12 @@ function SurveyModal({ onClose }: { onClose: () => void }) {
               <textarea
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                 {...register("message")}
-              >
-                {errors.message && (
-                  <div className="mt-1 text-red-500">
-                    {errors.message.message}.
-                  </div>
-                )}
-              </textarea>
+              ></textarea>
+              {errors.message && (
+                <div className="mt-1 text-red-500">
+                  {errors.message.message}.
+                </div>
+              )}
             </div>
             <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
               <button
@@ -146,7 +155,7 @@ function TimelineItem({
   packageStatusLog: PackageStatusLog
 }) {
   const [showSurveyModal, setShowSurveyModal] = useState(false)
-  const isDelivered = packageStatusLog.status === "DELIVERED"
+  const isDelivered = packageStatusLog.status === "INCOMING"
 
   const handleTakeSurvey = () => {
     setShowSurveyModal(true)
