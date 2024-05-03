@@ -5,7 +5,6 @@ import {
   PackagesInWarehouseTile,
   SkeletonPackagesInWarehouseTile,
 } from "./total-warehouse-packages"
-import { SurveyRatings } from "./survey-ratings"
 import { unstable_noStore as noStore } from "next/cache"
 import {
   DelayPackagesTile,
@@ -181,10 +180,6 @@ export default async function DashboardPage() {
 
       <section className="grid sm:grid-cols-2 gap-x-6 gap-y-4 [color:_#404040] mb-6">
         <PackagePerMonth
-          packagesPerMonth={packagePerMonthsResult}
-          monthsLabel={months}
-        />
-        <SurveyRatings
           packagesPerMonth={packagePerMonthsResult}
           monthsLabel={months}
         />
