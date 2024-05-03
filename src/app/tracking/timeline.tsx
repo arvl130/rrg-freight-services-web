@@ -146,7 +146,7 @@ function TimelineItem({
   packageStatusLog: PackageStatusLog
 }) {
   const [showSurveyModal, setShowSurveyModal] = useState(false)
-  const isDelivered = packageStatusLog.status === "INCOMING"
+  const isDelivered = packageStatusLog.status === "DELIVERED"
 
   const handleTakeSurvey = () => {
     setShowSurveyModal(true)
