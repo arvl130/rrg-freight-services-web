@@ -354,6 +354,43 @@ export const vehicles = mysqlTable("vehicles", {
   }).notNull(),
 })
 
+export const inquiries = mysqlTable("inquiries", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  fullName: varchar("full_name", {
+    length: 100,
+  }).notNull(),
+  emailAddress: varchar("email_address", {
+    length: 15,
+  }).notNull(),
+  message: varchar("message", {
+    length: 100,
+  }).notNull(),
+  isArchived: tinyint("is_archived").notNull().default(0),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
+})
+
+export const survey = mysqlTable("survey", {
+  id: bigint("id", {
+    mode: "number",
+  })
+    .primaryKey()
+    .autoincrement(),
+  serviceRate: tinyint("service_rate", {}).notNull(),
+  message: varchar("message", {
+    length: 100,
+  }).notNull(),
+  isArchived: tinyint("is_archived").notNull().default(0),
+  createdAt: varchar("created_at", {
+    length: 255,
+  }).notNull(),
+})
+
 export const packageCategories = mysqlTable("package_categories", {
   id: bigint("id", {
     mode: "number",

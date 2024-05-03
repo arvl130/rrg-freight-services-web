@@ -183,7 +183,6 @@ export default async function DashboardPage() {
           packagesPerMonth={packagePerMonthsResult}
           monthsLabel={months}
         />
-
         <WarehouseCapacityTile
           warehouses={warehouseData}
           packages={warehouseCapacity}
