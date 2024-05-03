@@ -226,6 +226,7 @@ export const shipmentPackageRouter = router({
           .where(
             and(
               eq(shipmentPackages.shipmentId, input.shipmentId),
+              eq(shipmentPackages.status, "IN_TRANSIT"),
               inArray(shipmentPackages.packageId, input.packageIds),
             ),
           )
