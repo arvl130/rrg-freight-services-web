@@ -12,8 +12,8 @@ import { DotsThree } from "@phosphor-icons/react/dist/ssr/DotsThree"
 import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
 import { XCircle } from "@phosphor-icons/react/dist/ssr/XCircle"
-
-function Modal({ onClose, children }) {
+import { List } from "@phosphor-icons/react/dist/ssr/List"
+function Modal({ onClose, children }: { onClose: () => void }) {
   return (
     <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white rounded-lg p-4 max-w-md w-full">
@@ -73,9 +73,12 @@ function TableItem({ item }: { item: Survey }) {
       <div className="px-14 py-2 border-b border-gray-300 text-sm">
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <button type="button">
+            <button
+              type="button"
+              className="border border-gray-300 rounded-full p-2 shadow hover:bg-gray-50 transition-colors duration-200"
+            >
               <span className="sr-only">Actions</span>
-              <DotsThree size={16} />
+              <List size={16} weight="bold" />
             </button>
           </DropdownMenu.Trigger>
 

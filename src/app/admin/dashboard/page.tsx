@@ -5,6 +5,7 @@ import {
   PackagesInWarehouseTile,
   SkeletonPackagesInWarehouseTile,
 } from "./total-warehouse-packages"
+import { SurveyRatings } from "./survey-ratings"
 import { unstable_noStore as noStore } from "next/cache"
 import {
   DelayPackagesTile,
@@ -183,7 +184,10 @@ export default async function DashboardPage() {
           packagesPerMonth={packagePerMonthsResult}
           monthsLabel={months}
         />
-
+        <SurveyRatings
+          packagesPerMonth={packagePerMonthsResult}
+          monthsLabel={months}
+        />
         <WarehouseCapacityTile
           warehouses={warehouseData}
           packages={warehouseCapacity}

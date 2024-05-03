@@ -5,6 +5,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { Moped } from "@phosphor-icons/react/dist/ssr/Moped"
 import { DateTime } from "luxon"
 import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
+import { Star } from "@phosphor-icons/react/dist/ssr/Star"
 import { Warehouse } from "@phosphor-icons/react/dist/ssr/Warehouse"
 import { useState } from "react"
 import Image from "next/image"
@@ -15,7 +16,7 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 const formSchema = z.object({
-  serviceRate: z.string().min(1).max(100),
+  serviceRate: z.number().gt(0),
   message: z.string().min(1).max(100),
 })
 
@@ -23,7 +24,7 @@ type FormSchema = z.infer<typeof formSchema>
 function SurveyModal({ onClose }: { onClose: () => void }) {
   const [rating, setRating] = useState(0)
 
-  const handleRatingChange = (value) => {
+  const handleRatingChange = (value: number) => {
     setRating(value)
   }
   const {
@@ -87,7 +88,7 @@ function SurveyModal({ onClose }: { onClose: () => void }) {
             <div className="relative p-6 flex-auto">
               <div className="mb-2">
                 <label className="block text-lg font-semibold mb-2">
-                  Services Rate
+                  How would you rate the RRG Freight Services
                 </label>
                 <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((value) => (
@@ -97,14 +98,15 @@ function SurveyModal({ onClose }: { onClose: () => void }) {
                         value <= rating ? "text-[#78CFDC]" : "text-gray-300"
                       }`}
                       onClick={() => handleRatingChange(value)}
+                      {...register("serviceRate")}
                     >
-                      ★
+                      <Star size={32} weight="fill" />
                     </button>
                   ))}
                 </div>
               </div>
               <label className="block text-lg font-semibold mb-2">
-                Write a Review (optional)
+                Leave us a comment or suggestion to help improve our service.
               </label>
               <textarea
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
@@ -119,16 +121,16 @@ function SurveyModal({ onClose }: { onClose: () => void }) {
             </div>
             <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
               <button
-                className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 ease-linear transition-all duration-150"
-                type="submit"
-              >
-                Submit
-              </button>
-              <button
-                className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+                className="bg-slate-500 text-white active:bg-green-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-4 ease-linear transition-all duration-150"
                 onClick={onClose}
               >
                 Cancel
+              </button>
+              <button
+                className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+                type="submit"
+              >
+                Submit
               </button>
             </div>
           </div>
@@ -144,7 +146,7 @@ function TimelineItem({
   packageStatusLog: PackageStatusLog
 }) {
   const [showSurveyModal, setShowSurveyModal] = useState(false)
-  const isDelivered = packageStatusLog.status === "DELIVERED"
+  const isDelivered = packageStatusLog.status === "INCOMING"
 
   const handleTakeSurvey = () => {
     setShowSurveyModal(true)

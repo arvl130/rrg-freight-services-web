@@ -45,16 +45,14 @@ export const surveyRouter = router({
   create: protectedProcedure
     .input(
       z.object({
-        serviceRate: z.string().min(1).max(100),
+        serviceRate: z.number().gt(0),
         message: z.string().min(1).max(100),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const createdAt = DateTime.now().toISO()
-      const result = await ctx.db.insert(survey).values({
-        ...input,
-        createdAt,
-      })
+
+      const result = await ctx.db.insert(survey).values({ ...input, createdAt })
 
       await createLog(ctx.db, {
         verb: "CREATE",

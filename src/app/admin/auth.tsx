@@ -210,14 +210,6 @@ export function AdminSideBar(props: { isMinimized: boolean }) {
               <Accordion.Content className="[background-color:_#6BB6C1]">
                 <AccordionLink
                   isMinimized={props.isMinimized}
-                  icon={<Question size={32} />}
-                  name="Inquiries"
-                  href="/admin/inquiries"
-                />
-              </Accordion.Content>
-              <Accordion.Content className="[background-color:_#6BB6C1]">
-                <AccordionLink
-                  isMinimized={props.isMinimized}
                   icon={<PencilLine size={32} />}
                   name="Survey"
                   href="/admin/survey"
