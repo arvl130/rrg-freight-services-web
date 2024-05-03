@@ -26,7 +26,7 @@ function UpdateForm({ survey, close }: { survey: Survey; close: () => void }) {
     >
       <div className="mb-3">
         Are you sure you want to unarchive this survey?{" "}
-        <span className="font-medium">{survey.displayName}</span>
+        <span className="font-medium">{survey.message}</span>
       </div>
       <div className="flex justify-end">
         <button
