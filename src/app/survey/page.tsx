@@ -18,9 +18,7 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
-
-export default async function CustomerSurvey({ onClose }: { onClose: () => void }) {
-
+export default function CustomerSurvey() {
   const [rating, setRating] = useState(0)
 
   const handleRatingChange = (value: number) => {
@@ -42,7 +40,6 @@ export default async function CustomerSurvey({ onClose }: { onClose: () => void 
     onSuccess: () => {
       toast.success("Survey updated.")
       apiUtils.survey.getAll.invalidate()
-      onClose()
       reset()
     },
     onError: (error) => {
@@ -54,100 +51,94 @@ export default async function CustomerSurvey({ onClose }: { onClose: () => void 
       <title>Customer Survey &#x2013; RRG Freight Services</title>
       <main className="bg-gradient-to-b from-[#79CFDC] to-white">
         <form
-      className="px-4 pt-2 pb-4"
-      onSubmit={handleSubmit((formData) => {
-        console.log("hello")
-        mutate({
-          ...formData,
-        })
-      })}
-    >
-      <div className="flex flex-col justify-center  text-white font-semibold">
+          className="px-4 pt-2 pb-4"
+          onSubmit={handleSubmit((formData) => {
+            console.log("hello")
+            mutate({
+              ...formData,
+            })
+          })}
+        >
+          <div className="flex flex-col justify-center  text-white font-semibold">
             <p className="text-4xl w-full text-center mt-5 font-bold">
               Customer Survey
             </p>
           </div>
-      <div>{JSON.stringify(errors?.serviceRate?.message)}</div>
-        <div className=" mx-20 my-8 flex flex-col content-center">
-        <div className="relative w-full max-w-[600px] mx-auto ">
-          <div className="relative flex flex-col w-full  bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
-            <div className="flex items-start justify-center bg-[#78CFDC] p-5 border-b border-solid border-blueGray-200 rounded-t">
-              <div className="flex justify-center mb-2">
-                <Image
-                  src="/assets/img/logos/new-logo-nav-bar.png"
-                  alt="RRG Freight Services logo with its name on the right"
-                  className="w-[180px] h-[60px] object-contain"
-                  width={168}
-                  height={60}
-                />
-              </div>
-            
-            </div>
+          <div className=" mx-20 my-8 flex flex-col content-center">
+            <div className="relative w-full max-w-[600px] mx-auto ">
+              <div className="relative flex flex-col w-full  bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
+                <div className="flex items-start justify-center bg-[#78CFDC] p-5 border-b border-solid border-blueGray-200 rounded-t">
+                  <div className="flex justify-center mb-2">
+                    <Image
+                      src="/assets/img/logos/new-logo-nav-bar.png"
+                      alt="RRG Freight Services logo with its name on the right"
+                      className="w-[180px] h-[60px] object-contain"
+                      width={168}
+                      height={60}
+                    />
+                  </div>
+                </div>
 
-            <div className="relative p-6 flex-auto">
-              <div className="mb-2">
-                <label className="block text-lg font-semibold mb-2">
-                  How would you rate the RRG Freight Services
-                </label>
-                <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <button
-                      key={value}
-                      className={`mr-2 p-2 text-3xl focus:outline-none ${
-                        value <= rating ? "text-[#78CFDC]" : "text-gray-300"
-                      }`}
-                      onClick={() => handleRatingChange(value)}
-                    >
-                      <Star size={32} weight="fill" />
-                    </button>
-                  ))}
-                  {errors.serviceRate && (
+                <div className="relative p-6 flex-auto">
+                  <div className="mb-2">
+                    <label className="block text-lg font-semibold mb-2">
+                      How would you rate the RRG Freight Services
+                    </label>
+                    <div className="flex items-center">
+                      {[1, 2, 3, 4, 5].map((value) => (
+                        <button
+                          key={value}
+                          className={`mr-2 p-2 text-3xl focus:outline-none ${
+                            value <= rating ? "text-[#78CFDC]" : "text-gray-300"
+                          }`}
+                          onClick={() => handleRatingChange(value)}
+                        >
+                          <Star size={32} weight="fill" />
+                        </button>
+                      ))}
+                      {errors.serviceRate && (
+                        <div className="mt-1 text-red-500">
+                          {errors.serviceRate.message}.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <label className="block text-lg font-semibold mb-2">
+                    Leave us a comment or suggestion to help improve our
+                    service.
+                  </label>
+                  <textarea
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                    {...register("message")}
+                  ></textarea>
+                  {errors.message && (
                     <div className="mt-1 text-red-500">
-                      {errors.serviceRate.message}.
+                      {errors.message.message}.
                     </div>
                   )}
                 </div>
-              </div>
-              <label className="block text-lg font-semibold mb-2">
-                Leave us a comment or suggestion to help improve our service.
-              </label>
-              <textarea
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                {...register("message")}
-              ></textarea>
-              {errors.message && (
-                <div className="mt-1 text-red-500">
-                  {errors.message.message}.
+                <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+                  <button
+                    className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+                    type="submit"
+                  >
+                    Submit
+                  </button>
                 </div>
-              )}
-            </div>
-            <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
-          
-              <button
-                className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
-                type="submit"
-              >
-                Submit
-              </button>
+              </div>
             </div>
           </div>
-        </div>
-        </div>
         </form>
         <div className="flex flex-col justify-center items-center">
-  <Link
-    href="/"
-    className="font-bold text-blue-400 inline-flex items-center text-sm"
-    passHref
-  >   
-    <CaretLeft height={12} /> Back to Homepage
-  </Link>
-</div>
-
-
+          <Link
+            href="/"
+            className="font-bold text-blue-400 inline-flex items-center text-sm"
+            passHref
+          >
+            <CaretLeft height={12} /> Back to Homepage
+          </Link>
+        </div>
       </main>
- 
     </>
   )
 }
-
