@@ -331,7 +331,6 @@ export const packageRouter = router({
           and(
             eq(packages.status, "IN_WAREHOUSE"),
             eq(packages.receptionMode, "DOOR_TO_DOOR"),
-            eq(packages.remarks, "GOOD_CONDITION"),
             input.warehouseId
               ? eq(packages.lastWarehouseId, input.warehouseId)
               : undefined,
