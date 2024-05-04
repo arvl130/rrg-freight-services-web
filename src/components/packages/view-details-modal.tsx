@@ -263,6 +263,16 @@ export function ViewDetailsModal({
                         </span>
                       </p>
                     )}
+                    {_package.remarks && (
+                      <p className="mt-3 font-medium">
+                        Condition:{" "}
+                        <span className="text-gray-500 text-sm">
+                          {_package.remarks === "GOOD_CONDITION"
+                            ? "Good Condition"
+                            : "Bad Condition"}
+                        </span>
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
