@@ -697,4 +697,18 @@ export const packageRouter = router({
         ),
       )
     }),
+  getMissingPackagesByShipmentId: protectedProcedure
+    .input(
+      z.object({
+        shipmentId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .select()
+        .from(missingPackages)
+        .where(eq(missingPackages.shipmentId, input.shipmentId))
+
+      return result
+    }),
 })

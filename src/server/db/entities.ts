@@ -30,6 +30,7 @@ import type {
   cities,
   barangays,
   uploadedManifests,
+  missingPackages,
 } from "./schema"
 
 export type DbWithEntities = MySql2Database<typeof schema>
@@ -112,6 +113,9 @@ export type NormalizedDeliveryShipment = Omit<
 
 export type Package = typeof packages.$inferSelect
 export type NewPackage = typeof packages.$inferInsert
+
+export type MissingPackage = typeof missingPackages.$inferSelect
+export type NewMissingPackage = typeof missingPackages.$inferInsert
 
 export type PackageStatusLog = typeof packageStatusLogs.$inferSelect
 export type NewPackageStatusLog = typeof packageStatusLogs.$inferInsert

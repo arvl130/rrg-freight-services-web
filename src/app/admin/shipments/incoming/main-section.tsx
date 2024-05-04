@@ -29,6 +29,7 @@ import { EditDetailsModal } from "./edit-details-modal"
 import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
 import { WarehouseDetails } from "@/components/warehouse-details"
+import { MissingPackagesModal } from "./missing-packages-modal"
 
 type NormalizedIncomingShipmentWithAgentDetails = NormalizedIncomingShipment & {
   agentDisplayName: string
@@ -46,6 +47,7 @@ function TableItem({
     | "EDIT_DETAILS"
     | "PRINT_WAYBILLS"
     | "ARCHIVE"
+    | "MISSING_PACKAGES"
     | "UNARCHIVE"
   >(null)
 
@@ -100,6 +102,12 @@ function TableItem({
                 onClick={() => setVisibleModal("EDIT_DETAILS")}
               >
                 Edit Details
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                className="transition-colors rounded-t-lg hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("MISSING_PACKAGES")}
+              >
+                Missing Packages
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 className="transition-colors hover:bg-sky-50 px-3 py-2"
@@ -158,6 +166,11 @@ function TableItem({
           id={item.id}
           close={() => setVisibleModal(null)}
           isOpen={visibleModal === "UNARCHIVE"}
+        />
+        <MissingPackagesModal
+          isOpen={visibleModal === "MISSING_PACKAGES"}
+          onClose={() => setVisibleModal(null)}
+          shipmentId={item.id}
         />
       </div>
     </>
