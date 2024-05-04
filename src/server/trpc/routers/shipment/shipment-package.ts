@@ -317,9 +317,9 @@ export const shipmentPackageRouter = router({
           subject: `The status of your package was updated`,
           componentProps: {
             type: "package-status-update" as const,
-            body: `Hi, ${senderFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
+            body: `Hi, ${senderFullName}. Your package with the tracking number ${id} is now ${getHumanizedOfPackageStatus(
               "IN_WAREHOUSE",
-            )}. Driver: ${driverDisplayName} Contact: ${driverContactNumber}. For more information, click the button below.`,
+            )}. Driver: ${driverDisplayName} Contact Number: ${driverContactNumber}. You can monitor the location history of your package as it gets shipped by RRG Freight Services through our Location History page. To see the page, simply click the button below.`,
             callToAction: {
               label: "Track your Package",
               href: `https://www.rrgfreight.services/tracking?id=${id}`,
@@ -466,9 +466,12 @@ export const shipmentPackageRouter = router({
           subject: `The status of your package was updated`,
           componentProps: {
             type: "package-status-update" as const,
-            body: `Hi, ${senderFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
-              input.packageStatus,
-            )}. For more information, click the button below.`,
+            body:
+              input.packageStatus === "IN_WAREHOUSE"
+                ? `Hi, ${senderFullName}. Your package with the tracking number ${id} has arrived at RRG Warehouse. For more information, click the button below.`
+                : `Hi, ${senderFullName}. Your package with the tracking number ${id} is now ${getHumanizedOfPackageStatus(
+                    input.packageStatus,
+                  )}. For more information, click the button below.`,
             callToAction: {
               label: "Track your Package",
               href: `https://www.rrgfreight.services/tracking?id=${id}`,
@@ -481,9 +484,12 @@ export const shipmentPackageRouter = router({
             subject: `The status of your package was updated`,
             componentProps: {
               type: "package-status-update" as const,
-              body: `Hi, ${receiverFullName}. Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
-                input.packageStatus,
-              )}. For more information, click the button below.`,
+              body:
+                input.packageStatus === "IN_WAREHOUSE"
+                  ? `Hi, ${receiverFullName}. Your package with the tracking number ${id} has arrived at RRG Warehouse. For more information, click the button below.`
+                  : `Hi, ${receiverFullName}. Your package with the tracking number ${id} is now ${getHumanizedOfPackageStatus(
+                      input.packageStatus,
+                    )}. For more information, click the button below.`,
               callToAction: {
                 label: "Track your Package",
                 href: `https://www.rrgfreight.services/tracking?id=${id}`,
@@ -496,11 +502,15 @@ export const shipmentPackageRouter = router({
       const packageReceiverSmsNotifications = packageDetails.map(
         ({ id, receiverContactNumber }) => ({
           to: receiverContactNumber,
-          body: `Your package with tracking number ${id} now has the status ${getHumanizedOfPackageStatus(
-            input.packageStatus,
-          )}. For more info, monitor your package on: ${
-            serverEnv.BITLY_TRACKING_PAGE_URL
-          }`,
+          body:
+            input.packageStatus === "IN_WAREHOUSE"
+              ? `Your package with the tracking number ${id} has arrived at RRG Warehouse. For more
+              information, monitor your package on: ${serverEnv.BITLY_TRACKING_PAGE_URL}`
+              : `Package ${id} is now ${getHumanizedOfPackageStatus(
+                  input.packageStatus,
+                )}. For more information, monitor your package on: ${
+                  serverEnv.BITLY_TRACKING_PAGE_URL
+                }`,
         }),
       )
 

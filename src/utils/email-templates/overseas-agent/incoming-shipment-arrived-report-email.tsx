@@ -59,8 +59,12 @@ export function IncomingShipmentReportEmail(props: {
               <Heading className="m-0">Hello!</Heading>
               <Text className="text-sm font-medium text-gray-700">
                 Hi, {props.agentName}. Your shipment was received at one of the
-                warehouses of RRG Freight Services ({props.warehouseName}). Here
-                are the total packages we received.
+                warehouses of RRG Freight Services ({props.warehouseName}). A
+                total of{" "}
+                {props.manifestedPackages.length +
+                  props.unmanifestedPackages.length}{" "}
+                packages have been received by RRG Freight Services. Here are
+                the lists of packages
               </Text>
               {props.manifestedPackages.map(({ id, preassignedId }) => (
                 <Text key={id} className="text-sm font-medium text-gray-700">

@@ -487,10 +487,10 @@ export const incomingShipmentRouter = router({
         ...newPackages.map(
           ({ receiverFullName, receiverEmailAddress, id }) => ({
             to: receiverEmailAddress,
-            subject: `A package will be sent to you`,
+            subject: `A Package will be sent to you`,
             componentProps: {
               type: "package-status-update" as const,
-              body: `Hi, ${receiverFullName}. A package with RRG tracking number ${id} will be sent to you through our system. Click the button below to track your package.`,
+              body: `Hi, ${receiverFullName}. Your package is now forwarded to RRG Freight Services with a tracking number of ${id}. Click the button below to track your package.`,
               callToAction: {
                 label: "Track your Package",
                 href: `https://www.rrgfreight.services/tracking?id=${id}`,
