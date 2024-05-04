@@ -1,12 +1,10 @@
 import { eq } from "drizzle-orm"
-import { protectedProcedure, router } from "../trpc"
+import { protectedProcedure, publicProcedure, router } from "../trpc"
 import { survey } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import { MYSQL_ERROR_DUPLICATE_ENTRY } from "@/utils/constants"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
-import type { QueryError } from "mysql2"
 
 export const surveyRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -42,7 +40,7 @@ export const surveyRouter = router({
       return results[0]
     }),
 
-  create: protectedProcedure
+  create: publicProcedure
     .input(
       z.object({
         serviceRate: z.number().gt(0),
@@ -52,15 +50,7 @@ export const surveyRouter = router({
     .mutation(async ({ ctx, input }) => {
       const createdAt = DateTime.now().toISO()
 
-      const result = await ctx.db.insert(survey).values({ ...input, createdAt })
-
-      await createLog(ctx.db, {
-        verb: "CREATE",
-        entity: "PACKAGE",
-        createdById: ctx.user.id,
-      })
-
-      return result
+      return await ctx.db.insert(survey).values({ ...input, createdAt })
     }),
 
   deleteById: protectedProcedure

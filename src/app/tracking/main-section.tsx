@@ -16,6 +16,7 @@ import { PackageNotFound } from "@/components/vector/package-not-found"
 import { DeliveryTruckWithPeople } from "@/components/vector/delivery-truck-with-people"
 import Link from "next/link"
 import { SendMonitoringLinkModal } from "./send-monitor-link-modal"
+import { SurveyModal } from "./survey-modal"
 
 function First() {
   return (
@@ -285,6 +286,16 @@ function censorWords(words: string) {
 }
 
 function PackageDetailsSections({ packageId }: { packageId: string }) {
+  const [showSurveyModal, setShowSurveyModal] = useState(false)
+
+  const handleTakeSurvey = () => {
+    setShowSurveyModal(true)
+  }
+
+  const handleCloseSurveyModal = () => {
+    setShowSurveyModal(false)
+  }
+
   const {
     status,
     data: _package,
@@ -363,6 +374,17 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
       </section>
 
       <VerticalTimeline packageStatusLogs={_package.statusLogs} />
+      <div className="text-center pb-16">
+        {_package.status === "DELIVERED" && (
+          <button
+            className="ml-2 bg-[#ED5959] hover:bg-red-700 text-white font-bold px-12 py-4 text-lg rounded-lg"
+            onClick={handleTakeSurvey}
+          >
+            Take Survey
+          </button>
+        )}
+        {showSurveyModal && <SurveyModal onClose={handleCloseSurveyModal} />}
+      </div>
     </>
   )
 }
