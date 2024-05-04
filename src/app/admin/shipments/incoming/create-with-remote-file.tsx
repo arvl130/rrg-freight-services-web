@@ -93,7 +93,7 @@ function ListViewItem(props: {
                 }
               }}
             >
-              Create Shipment for Manifest
+              Import Shipment Manifest
             </button>
             <button
               type="button"
@@ -122,6 +122,7 @@ function ListViewItem(props: {
         )}
         <a
           href={props.item.downloadUrl}
+          download="Shipment.xlsx"
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
         >
           Download
