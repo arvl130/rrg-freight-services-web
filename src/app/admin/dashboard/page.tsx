@@ -38,6 +38,7 @@ import {
 import { eq, and, count, like, desc, not, max } from "drizzle-orm"
 import { DateTime } from "luxon"
 import { LogsTile } from "./logs-tile"
+import { SurveyRatings } from "./survey-ratings"
 
 const months = [
   "JAN",
@@ -54,6 +55,13 @@ const months = [
   "DEC",
 ]
 
+const rates = [
+  "1",
+  "2",
+  "3",
+  "4",
+  "5", 
+]
 export default async function DashboardPage() {
   const { user } = await validateSessionWithCookies()
   if (!user) {
@@ -105,7 +113,7 @@ export default async function DashboardPage() {
       .where(like(packages.createdAt, `%${currentYear}-${monthIndex}%`))
     return value
   })
-
+ 
   const packagePerMonthsResult = await Promise.all(packagePerMonths)
 
   const logs = await db
@@ -187,6 +195,7 @@ export default async function DashboardPage() {
           warehouses={warehouseData}
           packages={warehouseCapacity}
         />
+          <SurveyRatings packagesPerMonth={[]} monthsLabel={[]}/>
       </section>
 
       <section className="grid lg:grid-cols-[25rem_20rem_1fr] gap-x-6 gap-y-4 [color:_#404040]">

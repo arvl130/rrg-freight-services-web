@@ -207,7 +207,7 @@ export async function POST(
               body: `Hi, ${_package.receiverFullName}. Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`,
               callToAction: {
                 label: "Fill-up our Survey",
-                href: serverEnv.SURVEY_URL,
+                href: "http://localhost:3000/survey", 
               },
             },
           },
