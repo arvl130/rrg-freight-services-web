@@ -286,7 +286,7 @@ function UploadFileForm({
               setIsUploading(true)
               try {
                 const storage = getStorage()
-                const refPath = `manifests/${crypto.randomUUID()}`
+                const refPath = `manifests/${crypto.randomUUID()}.xlsx`
                 const manifestRef = ref(storage, refPath)
 
                 await uploadBytes(manifestRef, sheetFile, {
