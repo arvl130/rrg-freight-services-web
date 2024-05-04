@@ -25,6 +25,7 @@ import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
 import { WarehouseDetails } from "@/components/warehouse-details"
 import { UploadedManifestsModal } from "./uploaded-manifests-modal"
+import { ViewWaybillsModal } from "./view-report-modal"
 
 type NormalizedIncomingShipmentWithAgentDetails = NormalizedIncomingShipment & {
   agentDisplayName: string
@@ -37,7 +38,12 @@ function TableItem({
   item: NormalizedIncomingShipmentWithAgentDetails
 }) {
   const [visibleModal, setVisibleModal] = useState<
-    null | "VIEW_DETAILS" | "PRINT_WAYBILLS" | "ARCHIVE" | "UNARCHIVE"
+    | null
+    | "VIEW_DETAILS"
+    | "PRINT_WAYBILLS"
+    | "ARCHIVE"
+    | "UNARCHIVE"
+    | "VIEW_REPORT"
   >(null)
 
   return (
@@ -102,6 +108,14 @@ function TableItem({
                   Archive
                 </DropdownMenu.Item>
               )}
+              {item.status === "COMPLETED" && (
+                <DropdownMenu.Item
+                  className="transition-colors rounded-b-lg hover:bg-sky-50 px-3 py-2"
+                  onClick={() => setVisibleModal("VIEW_REPORT")}
+                >
+                  View Report
+                </DropdownMenu.Item>
+              )}
 
               <DropdownMenu.Arrow className="fill-white" />
             </DropdownMenu.Content>
@@ -125,6 +139,11 @@ function TableItem({
           isOpen={visibleModal === "UNARCHIVE"}
         />
       </div>
+      <ViewWaybillsModal
+        shipmentId={item.id}
+        isOpen={visibleModal === "VIEW_REPORT"}
+        onClose={() => setVisibleModal(null)}
+      />
     </>
   )
 }

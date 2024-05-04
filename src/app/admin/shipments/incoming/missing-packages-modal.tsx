@@ -49,7 +49,7 @@ export function MissingPackagesModal({
                       <div>
                         <div className="grid grid-cols-4">
                           <div className="font-semibold ">Package ID: </div>
-                          <div className="col-span-3">{_package.id}</div>
+                          <div className="col-span-3">{_package.packageId}</div>
                         </div>
                         <div className="grid grid-cols-4">
                           <div className="font-semibold ">Sender: </div>
@@ -64,7 +64,7 @@ export function MissingPackagesModal({
                           </div>
                         </div>
                         <div className="grid grid-cols-4">
-                          <div className="font-semibold ">address:</div>
+                          <div className="font-semibold ">Address:</div>
                           <div className="col-span-3">
                             <p>
                               {_package.receiverStreetAddress},{" "}
