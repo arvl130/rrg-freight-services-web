@@ -4,6 +4,7 @@ import type { Package, ShipmentLocation } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { ViewLastLocationSection } from "@/components/packages/view-last-location-section"
 import { List } from "@phosphor-icons/react/dist/ssr/List"
+import { CheckFat } from "@phosphor-icons/react/dist/ssr/CheckFat"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
@@ -27,6 +28,8 @@ function HasShipmentLocations(props: {
   settledAt: string | null
   locations: ShipmentLocation[]
   package: Package
+  hasTakenSurvey: boolean
+  accessKey: string
 }) {
   const locations = removeAfterSettledAt({
     settledAt: props.settledAt,
@@ -41,11 +44,34 @@ function HasShipmentLocations(props: {
     )
 
   return (
-    <ViewLastLocationSection
-      hasEta={props.package.status === "OUT_FOR_DELIVERY"}
-      package={props.package}
-      location={locations[0]}
-    />
+    <>
+      {props.package.status === "DELIVERED" && (
+        <div className="flex justify-between bg-green-500 px-4 py-2">
+          <div className=" text-white inline-flex gap-2 font-medium items-center">
+            <CheckFat size={24} />
+            This package has been delivered.
+          </div>
+          {!props.hasTakenSurvey ? (
+            <div className="flex">
+              <Link
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
+                href={`/tracking/${props.package.id}/survey?accessKey=${props.accessKey}`}
+              >
+                Fill up our Survey
+              </Link>
+            </div>
+          ) : (
+            <div></div>
+          )}
+        </div>
+      )}
+
+      <ViewLastLocationSection
+        hasEta={props.package.status === "OUT_FOR_DELIVERY"}
+        package={props.package}
+        location={locations[0]}
+      />
+    </>
   )
 }
 
@@ -169,6 +195,8 @@ function Navbar(props: { packageId: string }) {
 export function MainSection(props: {
   settledAt: string | null
   package: Package
+  hasTakenSurvey: boolean
+  accessKey: string
 }) {
   const { status, data, error } = api.shipment.location.getByPackageId.useQuery(
     {
@@ -180,12 +208,15 @@ export function MainSection(props: {
   )
 
   return (
-    <div className="grid grid-rows-[auto_1fr] h-dvh">
+    <div className="grid grid-rows-[auto_auto_1fr] h-dvh">
       <Navbar packageId={props.package.id} />
       {status === "loading" && (
-        <div className="flex justify-center items-center">
-          <LoadingSpinner />
-        </div>
+        <>
+          <div></div>
+          <div className="flex justify-center items-center">
+            <LoadingSpinner />
+          </div>
+        </>
       )}
       {status === "error" && <div>Error occured: {error.message}</div>}
       {status === "success" && (
@@ -193,6 +224,8 @@ export function MainSection(props: {
           settledAt={props.settledAt}
           locations={data}
           package={props.package}
+          hasTakenSurvey={props.hasTakenSurvey}
+          accessKey={props.accessKey}
         />
       )}
     </div>

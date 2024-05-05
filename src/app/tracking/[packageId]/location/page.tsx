@@ -8,6 +8,7 @@ import {
   shipmentPackages,
   shipments,
   warehouseTransferShipments,
+  survey as surveys,
 } from "@/server/db/schema"
 import { and, eq, getTableColumns } from "drizzle-orm"
 import { MainSection } from "./main-section"
@@ -103,6 +104,15 @@ async function hasValidAccessKey(options: {
   return matchingKeys.length !== 0
 }
 
+async function hasTakenSurvey(options: { packageId: string }) {
+  const results = await db
+    .select()
+    .from(surveys)
+    .where(eq(surveys.packageId, options.packageId))
+
+  return results.length > 0
+}
+
 function ErrorView() {
   return (
     <div className="min-h-dvh flex flex-col justify-center items-center">
@@ -145,5 +155,16 @@ export default async function Page({
     .from(packages)
     .where(eq(packages.id, params.packageId))
 
-  return <MainSection settledAt={_package.settledAt} package={_package} />
+  const hasTaken = await hasTakenSurvey({
+    packageId: params.packageId,
+  })
+
+  return (
+    <MainSection
+      settledAt={_package.settledAt}
+      package={_package}
+      hasTakenSurvey={hasTaken}
+      accessKey={accessKey}
+    />
+  )
 }
