@@ -105,7 +105,7 @@ function ListView(props: {
             className="mt-3 px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
             onClick={() => setIsOpen(true)}
           >
-            New Manifest
+            Upload New Manifest
           </button>
           <UploadManifestModal
             isOpen={isOpen}
@@ -126,7 +126,7 @@ function ListView(props: {
                 className="mt-3 px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
                 onClick={() => setIsOpen(true)}
               >
-                New Manifest
+                Upload New Manifest
               </button>
               <UploadManifestModal
                 isOpen={isOpen}
