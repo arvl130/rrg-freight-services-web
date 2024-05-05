@@ -374,7 +374,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
       </section>
 
       <VerticalTimeline packageStatusLogs={_package.statusLogs} />
-      <div className="text-center pb-16">
+      {/* <div className="text-center pb-16">
         {_package.status === "DELIVERED" && (
           <button
             className="ml-2 bg-[#ED5959] hover:bg-red-700 text-white font-bold px-12 py-4 text-lg rounded-lg"
@@ -384,7 +384,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
           </button>
         )}
         {showSurveyModal && <SurveyModal onClose={handleCloseSurveyModal} />}
-      </div>
+      </div> */}
     </>
   )
 }
