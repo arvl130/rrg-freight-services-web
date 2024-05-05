@@ -1,6 +1,7 @@
 import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import {
+  packageMonitoringAccessKeys,
   packageStatusLogs,
   packages,
   shipmentPackageOtps,
@@ -66,6 +67,12 @@ export async function POST(
       })
 
     const { shipmentId, packageId, imageUrl, code } = parseResult.data
+
+    const [accessKey] = await db
+      .select()
+      .from(packageMonitoringAccessKeys)
+      .where(eq(packageMonitoringAccessKeys.packageId, packageId))
+      .limit(1)
 
     const { package: _package } = await db.transaction(async (tx) => {
       const otpResults = await tx
@@ -188,18 +195,6 @@ export async function POST(
             },
           },
           {
-            to: _package.senderEmailAddress,
-            subject: "Your package has been delivered",
-            componentProps: {
-              type: "package-status-update",
-              body: `Hi, ${_package.senderFullName}. Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`,
-              callToAction: {
-                label: "Fill-up our Survey",
-                href: serverEnv.SURVEY_URL,
-              },
-            },
-          },
-          {
             to: _package.receiverEmailAddress,
             subject: "Your package has been delivered",
             componentProps: {
@@ -207,7 +202,7 @@ export async function POST(
               body: `Hi, ${_package.receiverFullName}. Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`,
               callToAction: {
                 label: "Fill-up our Survey",
-                href: "http://localhost:3000/survey",
+                href: `https://www.rrgfreight.services/tracking/${_package.id}/survey?accessKey=${accessKey.accessKey}`,
               },
             },
           },

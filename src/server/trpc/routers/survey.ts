@@ -43,6 +43,7 @@ export const surveyRouter = router({
   create: publicProcedure
     .input(
       z.object({
+        packageId: z.string(),
         serviceRate: z.number().gt(0),
         message: z.string().min(1).max(100),
       }),

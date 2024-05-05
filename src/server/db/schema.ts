@@ -381,6 +381,7 @@ export const survey = mysqlTable("survey", {
   })
     .primaryKey()
     .autoincrement(),
+  packageId: varchar("package_id", { length: 36 }).notNull(),
   serviceRate: tinyint("service_rate", {}).notNull(),
   message: varchar("message", {
     length: 100,

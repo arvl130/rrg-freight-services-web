@@ -10,6 +10,8 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
 import { CaretLeft } from "@phosphor-icons/react/dist/ssr/CaretLeft"
+import type { Package } from "@/server/db/entities"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
   serviceRate: z.number().gt(0),
@@ -18,13 +20,9 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
-export default function CustomerSurvey() {
+export function MainSection(props: { package: Package }) {
   const [rating, setRating] = useState(0)
 
-  const handleRatingChange = (value: number) => {
-    setRating(value)
-    setValue("serviceRate", value)
-  }
   const {
     handleSubmit,
     register,
@@ -36,11 +34,13 @@ export default function CustomerSurvey() {
   })
 
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.survey.create.useMutation({
+  const router = useRouter()
+  const { mutate, isLoading, isSuccess } = api.survey.create.useMutation({
     onSuccess: () => {
+      reset()
       toast.success("Survey updated.")
       apiUtils.survey.getAll.invalidate()
-      reset()
+      router.replace(`/tracking?id=${props.package.id}`)
     },
     onError: (error) => {
       toast.error(error.message)
@@ -53,8 +53,8 @@ export default function CustomerSurvey() {
         <form
           className="px-4 pt-2 pb-4"
           onSubmit={handleSubmit((formData) => {
-            console.log("hello")
             mutate({
+              packageId: props.package.id,
               ...formData,
             })
           })}
@@ -65,7 +65,7 @@ export default function CustomerSurvey() {
             </p>
           </div>
           <div className=" mx-20 my-8 flex flex-col content-center">
-            <div className="relative w-full max-w-[600px] mx-auto ">
+            <div className="relative w-full max-w-[38rem] mx-auto ">
               <div className="relative flex flex-col w-full  bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
                 <div className="flex items-start justify-center bg-[#78CFDC] p-5 border-b border-solid border-blueGray-200 rounded-t">
                   <div className="flex justify-center mb-2">
@@ -82,16 +82,20 @@ export default function CustomerSurvey() {
                 <div className="relative p-6 flex-auto">
                   <div className="mb-2">
                     <label className="block text-lg font-semibold mb-2">
-                      How would you rate the RRG Freight Services
+                      How would you rate the services of RRG Freight Services?
                     </label>
                     <div className="flex items-center">
                       {[1, 2, 3, 4, 5].map((value) => (
                         <button
                           key={value}
+                          type="button"
                           className={`mr-2 p-2 text-3xl focus:outline-none ${
                             value <= rating ? "text-[#78CFDC]" : "text-gray-300"
                           }`}
-                          onClick={() => handleRatingChange(value)}
+                          onClick={() => {
+                            setRating(value)
+                            setValue("serviceRate", value)
+                          }}
                         >
                           <Star size={32} weight="fill" />
                         </button>
@@ -105,12 +109,12 @@ export default function CustomerSurvey() {
                   </div>
                   <label className="block text-lg font-semibold mb-2">
                     Leave us a comment or suggestion to help improve our
-                    service.
+                    services.
                   </label>
                   <textarea
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     {...register("message")}
-                  ></textarea>
+                  />
                   {errors.message && (
                     <div className="mt-1 text-red-500">
                       {errors.message.message}.
@@ -119,8 +123,9 @@ export default function CustomerSurvey() {
                 </div>
                 <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                   <button
-                    className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
                     type="submit"
+                    className="bg-green-500 disabled:bg-green-300 text-white hover:bg-green-400 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+                    disabled={isLoading || isSuccess}
                   >
                     Submit
                   </button>
