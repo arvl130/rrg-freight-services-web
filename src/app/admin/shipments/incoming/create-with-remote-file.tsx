@@ -292,12 +292,12 @@ function ValidateRemainingCapacityOfWarehouse(props: {
           {data.total.toLocaleString()} m³
         </p>
         <p>
-          <span className="font-medium">Used Warehouse Capacity:</span>{" "}
-          {data.used.toLocaleString()} m³
-        </p>
-        <p>
           <span className="font-medium">Free Warehouse Capacity:</span>{" "}
           {data.free.toLocaleString()} m³
+        </p>
+        <p>
+          <span className="font-medium">Used Warehouse Capacity:</span>{" "}
+          {data.used.toLocaleString()} m³
         </p>
         <p>
           <span className="font-medium">Needed Warehouse Capacity:</span>{" "}
