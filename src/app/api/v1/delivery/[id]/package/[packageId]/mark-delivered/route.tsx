@@ -201,7 +201,7 @@ export async function POST(
               type: "package-status-update",
               body: `Hi, ${_package.receiverFullName}. Your package with RRG tracking number ${_package.id} has been delivered. We would love to hear more from you on how we can improve.`,
               callToAction: {
-                label: "Fill-up our Survey",
+                label: "Fill up our Survey",
                 href: `https://www.rrgfreight.services/tracking/${_package.id}/survey?accessKey=${accessKey.accessKey}`,
               },
             },
