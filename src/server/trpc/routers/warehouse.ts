@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { warehouses } from "@/server/db/schema"
+import { packages, warehouses } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 import { createLog } from "@/utils/logging"
@@ -34,6 +34,45 @@ export const warehouseRouter = router({
         })
 
       return results[0]
+    }),
+  getRemainingCapacityById: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select()
+        .from(warehouses)
+        .where(eq(warehouses.id, input.id))
+
+      if (results.length === 0)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+        })
+
+      if (results.length > 1)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Expected 1 result, but got multiple.",
+        })
+
+      const [warehouse] = results
+      const packagesInsideWarehouse = await ctx.db
+        .select()
+        .from(packages)
+        .where(eq(packages.lastWarehouseId, warehouse.id))
+
+      const totalSpaceUsed = packagesInsideWarehouse.reduce((prev, curr) => {
+        return prev + curr.volumeInCubicMeter
+      }, 0)
+
+      return {
+        total: warehouse.volumeCapacityInCubicMeter,
+        used: totalSpaceUsed,
+        free: warehouse.volumeCapacityInCubicMeter - totalSpaceUsed,
+      }
     }),
   create: protectedProcedure
     .input(

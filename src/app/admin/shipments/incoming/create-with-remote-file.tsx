@@ -222,25 +222,151 @@ function SelectFileForm({
 function SelectSheetNameForm({
   selectedWorkBook,
   setSelectedSheetName,
+  onReset,
 }: {
   selectedWorkBook: WorkBook
   selectedSheetName: string
   setSelectedSheetName: (sheetName: string) => void
+  onReset: () => void
 }) {
   return (
-    <div className="px-4 py-2">
-      <label className="mr-3">Choose a sheet to import:</label>
-      <select
-        className="px-3 py-1 bg-white border border-gray-300 rounded-md w-56"
-        onChange={(e) => setSelectedSheetName(e.currentTarget.value)}
-        defaultValue=""
-      >
-        {selectedWorkBook.SheetNames.map((sheetName) => (
-          <option key={sheetName} value={sheetName}>
-            {sheetName}
-          </option>
-        ))}
-      </select>
+    <div className="px-4 py-2 flex justify-between items-center">
+      <div>
+        <label className="mr-3">Choose a sheet to import:</label>
+        <select
+          className="px-3 py-1 bg-white border border-gray-300 rounded-md w-56"
+          onChange={(e) => setSelectedSheetName(e.currentTarget.value)}
+          defaultValue=""
+        >
+          {selectedWorkBook.SheetNames.map((sheetName) => (
+            <option key={sheetName} value={sheetName}>
+              {sheetName}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <button
+          type="button"
+          className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
+          onClick={onReset}
+        >
+          Change File
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function ValidateRemainingCapacityOfWarehouse(props: {
+  manifestId: number
+  warehouseId: number
+  sheetRows: SheetRow[]
+  onSuccess: (newShipmentId: number) => void
+}) {
+  const getOverseasAgentsQuery = api.user.getOverseasAgents.useQuery()
+  const { status, data, error } =
+    api.warehouse.getRemainingCapacityById.useQuery({
+      id: props.warehouseId,
+    })
+
+  if (status === "loading") return <div>...</div>
+  if (status === "error") return <div>Error occured: {error.message}</div>
+
+  const needed = props.sheetRows.reduce((prev, curr) => {
+    return (
+      prev +
+      Number(
+        curr["Dimensions (Space Use)"].match(
+          REGEX_ONE_OR_MORE_DIGITS_WITH_DECIMALS_INSIDE_PARENTHESIS,
+        )![1],
+      )
+    )
+  }, 0)
+
+  return (
+    <div className="mt-2">
+      <div className="grid grid-cols-[auto_1fr] gap-x-3 pl-4 text-gray-500">
+        <p>
+          <span className="font-medium">Total Warehouse Capacity:</span>{" "}
+          {data.total.toLocaleString()} m³
+        </p>
+        <p>
+          <span className="font-medium">Used Warehouse Capacity:</span>{" "}
+          {data.used.toLocaleString()} m³
+        </p>
+        <p>
+          <span className="font-medium">Free Warehouse Capacity:</span>{" "}
+          {data.free.toLocaleString()} m³
+        </p>
+        <p>
+          <span className="font-medium">Needed Warehouse Capacity:</span>{" "}
+          {needed.toLocaleString()} m³
+        </p>
+      </div>
+      {data.free > needed ? (
+        <>
+          {getOverseasAgentsQuery.status === "loading" && (
+            <div>Loading agents ...</div>
+          )}
+          {getOverseasAgentsQuery.status === "error" && (
+            <div>
+              Error while loading agents: {getOverseasAgentsQuery.error.message}
+            </div>
+          )}
+          {getOverseasAgentsQuery.status === "success" && (
+            <ChooseAgentForm
+              manifestId={props.manifestId}
+              sheetRows={props.sheetRows}
+              warehouseId={props.warehouseId}
+              agents={getOverseasAgentsQuery.data}
+              onSuccess={props.onSuccess}
+            />
+          )}
+        </>
+      ) : (
+        <p className="text-red-500 font-medium">
+          Not enough capacity in warehouse.
+        </p>
+      )}
+    </div>
+  )
+}
+
+function ChooseWarehouseForm(props: {
+  manifestId: number
+  warehouses: Warehouse[]
+  sheetRows: SheetRow[]
+  onSuccess: (newShipmentId: number) => void
+}) {
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState("")
+
+  return (
+    <div>
+      <p className="font-medium">
+        Select the warehouse that will receive this shipment:{" "}
+        <select
+          className="mt-1 bg-white px-3 py-1.5 border border-gray-300 rounded-md"
+          onChange={(e) => {
+            setSelectedWarehouseId(e.currentTarget.value)
+          }}
+        >
+          <option value="">Choose ...</option>
+          {props.warehouses.map((warehouse) => (
+            <option key={warehouse.id} value={warehouse.id}>
+              {warehouse.displayName}
+            </option>
+          ))}
+        </select>
+      </p>
+      {selectedWarehouseId !== "" && (
+        <ValidateRemainingCapacityOfWarehouse
+          manifestId={props.manifestId}
+          warehouseId={Number(selectedWarehouseId)}
+          sheetRows={props.sheetRows}
+          onSuccess={props.onSuccess}
+        />
+      )}
     </div>
   )
 }
@@ -323,27 +449,21 @@ type SheetRow = z.infer<typeof sheetRowSchema>
 
 const chooseAgentFormSchema = z.object({
   sentByAgentId: z.string().length(28),
-  warehouseId: z.string().regex(REGEX_ONE_OR_MORE_DIGITS),
 })
 
 type ChooseAgentFormType = z.infer<typeof chooseAgentFormSchema>
 
 function ChooseAgentForm({
   manifestId,
-  warehouses,
+  warehouseId,
   agents,
   sheetRows,
-  reset,
   onSuccess,
-  invalidAddressesCount,
 }: {
   manifestId: number
-  warehouses: Warehouse[]
+  warehouseId: number
   agents: NormalizedPublicOverseasAgentUser[]
   sheetRows: SheetRow[]
-  invalidAddressesCount: number
-  reset: () => void
-  onClose: () => void
   onSuccess: (newShipmentId: number) => void
 }) {
   const apiUtils = api.useUtils()
@@ -352,6 +472,11 @@ function ChooseAgentForm({
       apiUtils.shipment.incoming.getAll.invalidate()
       apiUtils.package.getInWarehouse.invalidate()
       apiUtils.package.getAll.invalidate()
+      apiUtils.uploadedManifest.getAll.invalidate()
+      apiUtils.warehouse.getRemainingCapacityById.invalidate({
+        id: warehouseId,
+      })
+
       onSuccess(shipmentId)
       toast.success("Shipment Created")
     },
@@ -369,11 +494,11 @@ function ChooseAgentForm({
 
   return (
     <form
+      className="mt-3 flex justify-between items-end"
       onSubmit={handleSubmit((formData) => {
-        console.log("manifestId", manifestId)
         mutate({
           manifestId,
-          destinationWarehouseId: Number(formData.warehouseId),
+          destinationWarehouseId: warehouseId,
           sentByAgentId: formData.sentByAgentId,
           newPackages: sheetRows.map((newPackage) => ({
             preassignedId: newPackage["Received Number"],
@@ -409,82 +534,33 @@ function ChooseAgentForm({
         })
       })}
     >
-      {invalidAddressesCount === 0 && (
-        <div className="mt-3">
-          <div>
-            <p className="font-medium">
-              Select the warehouse that will receive this shipment:
-              <select
-                {...register("warehouseId")}
-                className="bg-white ml-2 px-3 py-1.5 border border-gray-300 rounded-md"
-              >
-                <option value="">Choose ...</option>
-                {warehouses.map((warehouse) => (
-                  <option key={warehouse.id} value={warehouse.id}>
-                    {warehouse.displayName}
-                  </option>
-                ))}
-              </select>
-            </p>
-          </div>
-        </div>
-      )}
-      <div className="flex justify-between gap-3 pt-2">
-        {invalidAddressesCount === 0 ? (
-          <div>
-            <p className="font-medium">
-              Select the agent that will monitor this shipment:
-              <select
-                {...register("sentByAgentId")}
-                className="bg-white ml-2 px-3 py-1.5 border border-gray-300 rounded-md"
-              >
-                <option value="">Choose ...</option>
-                {agents.map((agent) => (
-                  <option key={agent.id} value={agent.id}>
-                    {agent.displayName} ({agent.companyName})
-                  </option>
-                ))}
-              </select>
-            </p>
-            <p className="text-gray-500">
-              Typically, this is the agent that sent the file.
-            </p>
-          </div>
-        ) : (
-          <div className="text-red-500 font-medium">
-            {invalidAddressesCount} invalid{" "}
-            {invalidAddressesCount === 1 ? "address has" : "addresses have"}{" "}
-            been detected. Please fix them and re-import the file.
-            <div className="text-black">
-              {" "}
-              <a
-                className="underline font-extrabold"
-                href="/assets/pdf/location_cheker.pdf"
-                target="_blank"
-              >
-                click here
-              </a>{" "}
-              to see correct location&apos;s name
-            </div>
-          </div>
-        )}
-        <div className="space-x-3">
-          <button
-            type="button"
-            className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
-            onClick={reset}
+      <div>
+        <p className="font-medium">
+          Select the agent that will monitor this shipment:
+          <select
+            {...register("sentByAgentId")}
+            className="bg-white ml-2 px-3 py-1.5 border border-gray-300 rounded-md"
           >
-            Change File
-          </button>
-
-          <button
-            type="submit"
-            className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
-            disabled={isLoading || !isValid || invalidAddressesCount > 0}
-          >
-            Import
-          </button>
-        </div>
+            <option value="">Choose ...</option>
+            {agents.map((agent) => (
+              <option key={agent.id} value={agent.id}>
+                {agent.displayName} ({agent.companyName})
+              </option>
+            ))}
+          </select>
+        </p>
+        <p className="text-gray-500">
+          Typically, this is the agent that sent the file.
+        </p>
+      </div>
+      <div>
+        <button
+          type="submit"
+          className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
+          disabled={isLoading || !isValid}
+        >
+          Import
+        </button>
       </div>
     </form>
   )
@@ -695,8 +771,6 @@ function HasValidSheetRows({
   sheetName,
   sheetRows,
   validAddressCount,
-  reset,
-  onClose,
   onSuccess,
   onValidAddress,
 }: {
@@ -704,13 +778,12 @@ function HasValidSheetRows({
   sheetName: string
   sheetRows: SheetRow[]
   validAddressCount: number
-  reset: () => void
   onClose: () => void
   onSuccess: (newShipmentId: number) => void
   onValidAddress: () => void
 }) {
-  const getOverseasAgentsQuery = api.user.getOverseasAgents.useQuery()
   const getWarehousesQuery = api.warehouse.getAll.useQuery()
+  const invalidAddressesCount = sheetRows.length - validAddressCount
 
   return (
     <div className="px-4 grid grid-rows-[1fr_auto] overflow-auto">
@@ -725,38 +798,47 @@ function HasValidSheetRows({
           />
         ))}
       </div>
-      {getOverseasAgentsQuery.status === "loading" && (
-        <div>Loading agents ...</div>
-      )}
-      {getOverseasAgentsQuery.status === "error" && (
-        <div>
-          Error while loading agents: {getOverseasAgentsQuery.error.message}
-        </div>
-      )}
-      {getOverseasAgentsQuery.status === "success" && (
-        <>
-          {getWarehousesQuery.status === "loading" && (
-            <div>Loading warehouses ...</div>
-          )}
-          {getWarehousesQuery.status === "error" && (
-            <div>
-              Error while loading warehouses: {getWarehousesQuery.error.message}
+
+      <div className="mt-3">
+        {invalidAddressesCount === 0 ? (
+          <>
+            {getWarehousesQuery.status === "loading" && (
+              <div>Loading warehouses ...</div>
+            )}
+            {getWarehousesQuery.status === "error" && (
+              <div>
+                Error while loading warehouses:{" "}
+                {getWarehousesQuery.error.message}
+              </div>
+            )}
+            {getWarehousesQuery.status === "success" && (
+              <ChooseWarehouseForm
+                manifestId={manifestId}
+                warehouses={getWarehousesQuery.data}
+                onSuccess={onSuccess}
+                sheetRows={sheetRows}
+              />
+            )}
+          </>
+        ) : (
+          <div className="text-red-500 font-medium">
+            {invalidAddressesCount} invalid{" "}
+            {invalidAddressesCount === 1 ? "address has" : "addresses have"}{" "}
+            been detected. Please fix them and re-import the file.
+            <div className="text-black">
+              {" "}
+              <a
+                className="underline font-extrabold"
+                href="/assets/pdf/location_cheker.pdf"
+                target="_blank"
+              >
+                click here
+              </a>{" "}
+              to see correct location&apos;s name
             </div>
-          )}
-          {getWarehousesQuery.status === "success" && (
-            <ChooseAgentForm
-              manifestId={manifestId}
-              warehouses={getWarehousesQuery.data}
-              agents={getOverseasAgentsQuery.data}
-              sheetRows={sheetRows}
-              reset={() => reset()}
-              onClose={onClose}
-              onSuccess={onSuccess}
-              invalidAddressesCount={sheetRows.length - validAddressCount}
-            />
-          )}
-        </>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -765,7 +847,7 @@ function HasValidSheetName({
   manifestId,
   selectedWorkBook,
   selectedSheetName,
-  reset,
+  onReset,
   onClose,
   onSuccess,
   validAddressCount,
@@ -774,7 +856,7 @@ function HasValidSheetName({
   manifestId: number
   selectedWorkBook: WorkBook
   selectedSheetName: string
-  reset: () => void
+  onReset: () => void
   onClose: () => void
   onSuccess: (newShipmentId: number) => void
   validAddressCount: number
@@ -795,7 +877,6 @@ function HasValidSheetName({
           manifestId={manifestId}
           sheetName={selectedSheetName}
           sheetRows={parseArrayResult.data}
-          reset={reset}
           onClose={onClose}
           validAddressCount={validAddressCount}
           onSuccess={onSuccess}
@@ -860,7 +941,7 @@ function HasValidSheetName({
           <button
             type="button"
             className="px-4 py-2 border border-sky-500 hover:bg-sky-50 transition-colors rounded-lg text-sky-500 font-medium"
-            onClick={reset}
+            onClick={onReset}
           >
             Change File
           </button>
@@ -892,13 +973,14 @@ function HasValidWorkBook(props: {
             setSelectedSheetName(sheetName)
             setValidAddressCount(0)
           }}
+          onReset={props.onReset}
         />
         {selectedSheetName && (
           <HasValidSheetName
             manifestId={props.manifestId}
             selectedWorkBook={props.workbook}
             selectedSheetName={selectedSheetName}
-            reset={props.onReset}
+            onReset={props.onReset}
             onClose={props.onClose}
             onSuccess={props.onSuccess}
             validAddressCount={validAddressCount}
