@@ -14,7 +14,13 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
-export function SurveyModal({ onClose }: { onClose: () => void }) {
+export function SurveyModal({
+  packageId,
+  onClose,
+}: {
+  packageId: string
+  onClose: () => void
+}) {
   const [rating, setRating] = useState(0)
 
   const handleRatingChange = (value: number) => {
@@ -49,6 +55,7 @@ export function SurveyModal({ onClose }: { onClose: () => void }) {
       className="px-4 pt-2 pb-4"
       onSubmit={handleSubmit((formData) => {
         mutate({
+          packageId,
           ...formData,
         })
       })}
