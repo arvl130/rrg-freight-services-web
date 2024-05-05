@@ -108,6 +108,18 @@ export function ViewWaybillsModal({
                         </p>
                       </div>
                     </div>
+                    <div className="grid grid-cols-4">
+                      <div className="font-semibold ">Condition: </div>
+                      <div
+                        className={`col-span-3 font-semibold ${
+                          manifestedPackage.remarks === "GOOD_CONDITION"
+                            ? "text-green-500"
+                            : "text-rose-500	"
+                        }`}
+                      >
+                        {manifestedPackage.remarks?.replace("_", " ")}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -156,6 +168,18 @@ export function ViewWaybillsModal({
                           {unmanifestedPackage.receiverStateOrProvince}{" "}
                           {unmanifestedPackage.receiverPostalCode}
                         </p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-4">
+                      <div className="font-semibold ">Condition: </div>
+                      <div
+                        className={`col-span-3 font-semibold ${
+                          unmanifestedPackage.remarks === "GOOD_CONDITION"
+                            ? "text-green-500"
+                            : "text-rose-500	"
+                        }`}
+                      >
+                        {unmanifestedPackage.remarks?.replace("_", " ")}
                       </div>
                     </div>
                   </div>
