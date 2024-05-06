@@ -34,6 +34,7 @@ import {
   vehicles,
   deliveryShipments,
   shipments,
+  survey,
 } from "@/server/db/schema"
 import { eq, and, count, like, desc, not, max } from "drizzle-orm"
 import { DateTime } from "luxon"
@@ -55,7 +56,7 @@ const months = [
   "DEC",
 ]
 
-const rates = ["1", "2", "3", "4", "5"]
+const rates = ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"]
 export default async function DashboardPage() {
   const { user } = await validateSessionWithCookies()
   if (!user) {
@@ -109,6 +110,18 @@ export default async function DashboardPage() {
   })
 
   const packagePerMonthsResult = await Promise.all(packagePerMonths)
+
+  const surveyRatings = Array(5).fill(0)
+
+  for (let i = 0; i < 5; i++) {
+    const [{ value }] = await db
+      .select({ value: count() })
+      .from(survey)
+      .where(eq(survey.serviceRate, i + 1))
+    surveyRatings[i] = value
+  }
+
+  const surveyRatingsResult = await Promise.all(surveyRatings)
 
   const logs = await db
     .select()
@@ -189,7 +202,7 @@ export default async function DashboardPage() {
           warehouses={warehouseData}
           packages={warehouseCapacity}
         />
-        <SurveyRatings packagesPerMonth={[]} monthsLabel={[]} />
+        <SurveyRatings surveyRatings={surveyRatingsResult} ratesLabel={rates} />
       </section>
 
       <section className="grid lg:grid-cols-[25rem_20rem_1fr] gap-x-6 gap-y-4 [color:_#404040]">
