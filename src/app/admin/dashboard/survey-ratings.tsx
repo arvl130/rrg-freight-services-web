@@ -27,7 +27,6 @@ export function SurveyRatings(props: {
         backgroundColor: ["#79CFDC"],
         pointBorderColor: "rgb(75, 192, 192)",
         fill: true,
-        borderWidth: 1,
       },
     ],
   }
@@ -38,17 +37,6 @@ export function SurveyRatings(props: {
       <div className="font-bold mb-4">Number of Responses</div>
       <Bar
         data={ratingsData}
-        options={{
-          scales: {
-            yAxes: [
-              {
-                ticks: {
-                  beginAtZero: true,
-                },
-              },
-            ],
-          },
-        }}
       />
     </article>
   )
