@@ -202,13 +202,16 @@ export default async function DashboardPage() {
           warehouses={warehouseData}
           packages={warehouseCapacity}
         />
-        <SurveyRatings surveyRatings={surveyRatingsResult} ratesLabel={rates} />
       </section>
 
       <section className="grid lg:grid-cols-[25rem_20rem_1fr] gap-x-6 gap-y-4 [color:_#404040]">
         <LogsTile logs={logs} />
         <VehicleStatusTile vehicleStatuses={vehicleStatus} />
         <DriverStatusTile />
+      </section>
+
+      <section className="mt-6 grid sm:grid-cols-2">
+        <SurveyRatings surveyRatings={surveyRatingsResult} ratesLabel={rates} />
       </section>
     </AdminLayout>
   )
