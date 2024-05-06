@@ -68,17 +68,6 @@ export function LogsTile(props: { logs: Logs }) {
           )}
         </tbody>
       </table>
-      {/* Table */}
-      {/* <div className="text-sm">
-        
-        <div className="grid grid-cols-5 text-gray-400 mb-1">
-          <div>ID</div>
-          <div>Date Issued</div>
-          <div>Col 3</div>
-          <div>Col 4</div>
-          <div>Col 5</div>
-        </div>
-      </div> */}
     </article>
   )
 }
