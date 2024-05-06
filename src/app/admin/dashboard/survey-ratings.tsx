@@ -12,35 +12,30 @@ import {
   Legend,
   plugins,
 } from "chart.js"
-
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement)
 
 export function SurveyRatings(props: {
-  packagesPerMonth: number[]
-  monthsLabel: string[]
+  surveyRatings: number[]
+  ratesLabel: string[]
 }) {
   noStore()
-
-  const date = new Date()
-  let month = date.getMonth()
-  const data = {
-    labels: props.monthsLabel.slice(0, month + 1),
+  const ratingsData = {
+    labels: props.ratesLabel,
     datasets: [
       {
-        labels: "Package of Month",
-        data: props.packagesPerMonth,
-        tension: 0.5,
-
+        data: props.surveyRatings,
+        backgroundColor: ["#79CFDC"],
         pointBorderColor: "rgb(75, 192, 192)",
         fill: true,
-        backgroundColor: ["#79CFDC"],
       },
     ],
   }
+
   return (
-    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem] overflow-auto ">
+    <article className="bg-white rounded-lg px-6 py-4 shadow-md min-h-[24rem] overflow-auto">
       <h2 className="font-semibold mb-2">Survey Ratings</h2>
-      <Bar data={data} />
+      <div className="font-bold mb-4">Number of Responses</div>
+      <Bar data={ratingsData} />
     </article>
   )
 }
