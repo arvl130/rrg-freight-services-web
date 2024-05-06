@@ -210,7 +210,7 @@ export default async function DashboardPage() {
         <DriverStatusTile />
       </section>
 
-      <section className="mt-6 grid sm:grid-cols-2">
+      <section className="mt-6 grid sm:grid-cols-2 gap-x-6">
         <SurveyRatings surveyRatings={surveyRatingsResult} ratesLabel={rates} />
       </section>
     </AdminLayout>
