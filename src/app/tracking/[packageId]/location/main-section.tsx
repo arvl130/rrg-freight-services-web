@@ -44,8 +44,8 @@ function HasShipmentLocations(props: {
     )
 
   return (
-    <>
-      {props.package.status === "DELIVERED" && (
+    <div className="grid grid-rows-[auto_1fr]">
+      {props.package.status === "DELIVERED" ? (
         <div className="flex justify-between bg-green-500 px-4 py-2">
           <div className=" text-white inline-flex gap-2 font-medium items-center">
             <CheckFat size={24} />
@@ -64,6 +64,8 @@ function HasShipmentLocations(props: {
             <div></div>
           )}
         </div>
+      ) : (
+        <div></div>
       )}
 
       <ViewLastLocationSection
@@ -71,7 +73,7 @@ function HasShipmentLocations(props: {
         package={props.package}
         location={locations[0]}
       />
-    </>
+    </div>
   )
 }
 
