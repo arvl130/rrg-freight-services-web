@@ -208,8 +208,10 @@ export function MainSection(props: {
   )
 
   return (
-    <div className="grid grid-rows-[auto_auto_1fr] h-dvh">
-      <Navbar packageId={props.package.id} />
+    <div className="grid grid-rows-[auto_1fr] h-dvh">
+      <div>
+        <Navbar packageId={props.package.id} />
+      </div>
       {status === "loading" && (
         <>
           <div></div>
