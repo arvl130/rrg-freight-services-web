@@ -60,7 +60,7 @@ export async function DriverStatusTile() {
                   <td className="text-gray-400">N/A</td>
                   <td className="text-gray-400">N/A</td>
                   <td className=" uppercase flex justify-center">
-                    <span className="bg-[#3DE074] text-white rounded-lg py-1 px-3">
+                    <span className="bg-[#3DE074] text-white rounded-lg py-1 px-3 font-bold">
                       Standby
                     </span>
                   </td>
@@ -77,12 +77,12 @@ export async function DriverStatusTile() {
                       <>Express</>
                     )}
                   </td>
-                  <td className=" uppercase flex justify-center">
+                  <td className=" uppercase flex justify-center font-bold ">
                     <span
                       className={
                         driver.shipments?.status === "PREPARING"
-                          ? "bg-[#D34DD6] text-white rounded-lg py-1 px-3"
-                          : "bg-[#F17834] text-white rounded-lg py-1 px-3"
+                          ? "bg-[#D34DD6] text-white rounded-lg py-1 px-3 "
+                          : "bg-[#F17834] text-white rounded-lg py-1 px-3 "
                       }
                     >
                       {driver.shipments?.status === "PREPARING" ? (

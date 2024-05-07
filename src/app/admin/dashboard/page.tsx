@@ -14,6 +14,11 @@ import {
   IncomingShipmentsTile,
   SkeletonIncomingShipmentsTile,
 } from "./total-incoming-shipments"
+
+import {
+  ManifestReviewTile,
+  SkeletonManifestReviewTile,
+} from "./total-manifest-to-review"
 import { WarehouseCapacityTile } from "./warehouse-capacity-tile"
 import { VehicleStatusTile } from "./vehicle-status-tile"
 import { RefreshButton } from "./refresh-button"
@@ -25,6 +30,7 @@ import { getUserRoleRedirectPath } from "@/utils/redirects"
 import { DriverStatusTile } from "./driver-status-tile"
 import { PackagePerMonth } from "./package-per-month"
 import { PDFReportGeneratorBtn } from "./generate-pdf-report"
+import { RecentUploadedManifestTile } from "./recent-uploaded-manifest-tile"
 import { db } from "@/server/db/client"
 import {
   packages,
@@ -175,7 +181,7 @@ export default async function DashboardPage() {
             <PDFReportGeneratorBtn />
           </div>
 
-          <div className="grid sm:grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8 gap-y-4 justify-center">
+          <div className="grid sm:grid-cols-[repeat(4,_minmax(0,_24rem))] gap-x-8 gap-y-4 justify-center">
             <RevalidatedPageBoundary
               fallback={<SkeletonPackagesInWarehouseTile />}
             >
@@ -189,11 +195,14 @@ export default async function DashboardPage() {
             >
               <IncomingShipmentsTile />
             </RevalidatedPageBoundary>
+            <RevalidatedPageBoundary fallback={<SkeletonManifestReviewTile />}>
+              <ManifestReviewTile />
+            </RevalidatedPageBoundary>
           </div>
         </section>
       </RevalidatedPageProvider>
 
-      <section className="grid sm:grid-cols-2 gap-x-6 gap-y-4 [color:_#404040] mb-6">
+      <section className="grid  sm:grid-cols-2 gap-x-6 gap-y-4 [color:_#404040] mb-6">
         <PackagePerMonth
           packagesPerMonth={packagePerMonthsResult}
           monthsLabel={months}
@@ -203,15 +212,14 @@ export default async function DashboardPage() {
           packages={warehouseCapacity}
         />
       </section>
-
+      <section className="my-6 grid lg:grid-cols-[30rem_1fr] sm:grid-cols-2 gap-x-6">
+        <RecentUploadedManifestTile />
+        <SurveyRatings surveyRatings={surveyRatingsResult} ratesLabel={rates} />
+      </section>
       <section className="grid lg:grid-cols-[25rem_20rem_1fr] gap-x-6 gap-y-4 [color:_#404040]">
         <LogsTile logs={logs} />
         <VehicleStatusTile vehicleStatuses={vehicleStatus} />
         <DriverStatusTile />
-      </section>
-
-      <section className="mt-6 grid sm:grid-cols-2 gap-x-6">
-        <SurveyRatings surveyRatings={surveyRatingsResult} ratesLabel={rates} />
       </section>
     </AdminLayout>
   )

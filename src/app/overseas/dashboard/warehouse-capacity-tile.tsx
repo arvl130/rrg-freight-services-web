@@ -96,7 +96,7 @@ export function WarehouseCapacityTile(props: {
                     ctx.textAlign = "center"
                     ctx.textBaseline = "middle"
                     ctx.fillText(
-                      `${data.datasets[0].data[0]}%`,
+                      `${data.datasets[0].data[0].toFixed(2)}%`,
                       chart.getDatasetMeta(0).data[0].x,
                       chart.getDatasetMeta(0).data[0].y,
                     )
