@@ -3,6 +3,7 @@ import { protectedProcedure, publicProcedure, router } from "../trpc"
 import { packageRouter } from "./package"
 import { userRouter } from "./user"
 import { surveyRouter } from "./survey"
+import { inquiriesRouter } from "./inquiries"
 import { packageStatusLogRouter } from "./package-status-logs"
 import { vehicleRouter } from "./vehicle"
 import { warehouseRouter } from "./warehouse"
@@ -47,6 +48,7 @@ export const rootRouter = router({
   shipment: shipmentRouter,
   vehicle: vehicleRouter,
   survey: surveyRouter,
+  inquiries: inquiriesRouter,
   warehouse: warehouseRouter,
   packageCategory: packageCategoryRouter,
   webpushSubscription: webpushSubscriptionRouter,

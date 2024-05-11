@@ -364,7 +364,7 @@ export const inquiries = mysqlTable("inquiries", {
     length: 100,
   }).notNull(),
   emailAddress: varchar("email_address", {
-    length: 15,
+    length: 100,
   }).notNull(),
   message: varchar("message", {
     length: 100,
