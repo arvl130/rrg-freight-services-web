@@ -1,12 +1,48 @@
+"use client"
+
 import { EnvelopeSimple } from "@phosphor-icons/react/dist/ssr/EnvelopeSimple"
 import { FacebookLogo } from "@phosphor-icons/react/dist/ssr/FacebookLogo"
 import { InstagramLogo } from "@phosphor-icons/react/dist/ssr/InstagramLogo"
 import { MapPin } from "@phosphor-icons/react/dist/ssr/MapPin"
 import { Phone } from "@phosphor-icons/react/dist/ssr/Phone"
 import { TwitterLogo } from "@phosphor-icons/react/dist/ssr/TwitterLogo"
+import { useForm } from "react-hook-form"
 import Link from "next/link"
+import { z } from "zod"
+import { api } from "@/utils/api"
+import toast from "react-hot-toast"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
+
+const formSchema = z.object({
+  fullName: z.string().min(1).max(100),
+  emailAddress: z.string().min(1).max(100),
+  message: z.string().min(1).max(100),
+})
+
+type FormSchema = z.infer<typeof formSchema>
 
 export function ContactSection() {
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { errors },
+  } = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+  })
+
+  const apiUtils = api.useUtils()
+  const { mutate, isLoading, isSuccess } = api.inquiries.create.useMutation({
+    onSuccess: () => {
+      reset()
+      toast.success("Inquiries updated.")
+      apiUtils.inquiries.getAll.invalidate()
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
   return (
     <section
       id="contact-us"
@@ -86,13 +122,21 @@ export function ContactSection() {
           </div>
 
           <div className="pb-4">
-            <form className="w-2/3 m-auto">
+            <form
+              className="w-2/3 m-auto"
+              onSubmit={handleSubmit((formData) =>
+                mutate({
+                  ...formData,
+                }),
+              )}
+            >
               <div className="flex flex-col mb-3">
                 <label className="mb-1">Full Name</label>
                 <input
                   type="text"
                   style={{ borderBottom: "2px solid #79CFDC" }}
                   className="outline-none px-2"
+                  {...register("fullName")}
                   required
                 ></input>
               </div>
@@ -102,22 +146,35 @@ export function ContactSection() {
                   type="email"
                   style={{ borderBottom: "2px solid #79CFDC" }}
                   className="outline-none px-2"
+                  {...register("emailAddress")}
                   required
                 ></input>
+                {errors.emailAddress && (
+                  <div className="mt-1 text-red-500">
+                    {errors.emailAddress.message}.
+                  </div>
+                )}
               </div>
               <div className="flex flex-col mb-3">
                 <label className="mb-1">Message</label>
                 <textarea
                   style={{ borderBottom: "2px solid #79CFDC" }}
                   className="outline-none px-2"
+                  {...register("message")}
                   required
-                ></textarea>
+                />
+                {errors.message && (
+                  <div className="mt-1 text-red-500">
+                    {errors.message.message}.
+                  </div>
+                )}
               </div>
               <div className="flex flex-col mb-3">
                 <button
                   style={{ borderRadius: "10px" }}
                   className="p-2 bg-red-500 text-white font-semibold duration-500 hover:bg-red-800"
                   type="submit"
+                  disabled={isLoading || isSuccess}
                 >
                   Submit
                 </button>
