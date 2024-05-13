@@ -34,7 +34,7 @@ function CreateForm({ onClose }: { onClose: () => void }) {
   const apiUtils = api.useUtils()
   const { mutate, isLoading } = api.warehouse.create.useMutation({
     onSuccess: () => {
-      toast.success("Warehouse updated.")
+      toast.success("Warehouse created.")
       apiUtils.warehouse.getAll.invalidate()
       onClose()
       reset()

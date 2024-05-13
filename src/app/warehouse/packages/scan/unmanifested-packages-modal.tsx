@@ -6,6 +6,7 @@ import { Plus } from "@phosphor-icons/react/dist/ssr/Plus"
 import { api } from "@/utils/api"
 import { generateUniqueId } from "@/utils/uuid"
 import { Package } from "@/server/db/entities"
+import toast from "react-hot-toast"
 export function UnmanifestedPackagesModal({
   isOpen,
   onClose,
@@ -107,6 +108,7 @@ export function UnmanifestedPackagesModal({
           isFragile: "",
           declaredValue: 0,
         })
+        toast.success("Unmanifested package added successfully!")
       },
     })
 
@@ -128,36 +130,43 @@ export function UnmanifestedPackagesModal({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    mutate({
-      currentUserId: currentUserId,
-      shipmentId: shipmentId,
-      sentByAgentId: agentId!,
-      preassignedId: newPackage.preassignedId,
-      shippingMode: shippingMode,
-      shippingType: shippingType,
-      receptionMode: receptionMode,
-      weightInKg: parseInt(newPackage.weightInKg.toString()),
-      volumeInCubicMeter: parseInt(newPackage.volumeInCubicMeter.toString()),
-      senderFullName: newPackage.senderFullName,
-      senderContactNumber: newPackage.senderContactNumber,
-      senderEmailAddress: newPackage.senderEmailAddress,
-      senderStreetAddress: newPackage.senderStreetAddress,
-      senderCity: newPackage.senderCity,
-      senderStateOrProvince: newPackage.senderStateOrProvince,
-      senderCountryCode: newPackage.senderCountryCode,
-      senderPostalCode: parseInt(newPackage.senderPostalCode.toString()),
-      receiverFullName: newPackage.receiverFullName,
-      receiverContactNumber: newPackage.receiverContactNumber,
-      receiverEmailAddress: newPackage.receiverEmailAddress,
-      receiverStreetAddress: newPackage.receiverStreetAddress,
-      receiverBarangay: choosenBarangay,
-      receiverCity: choosenCity,
-      receiverStateOrProvince: choosenProvince,
-      receiverCountryCode: newPackage.receiverCountryCode,
-      receiverPostalCode: parseInt(newPackage.receiverPostalCode.toString()),
-      isFragile: fragile,
-      declaredValue: parseInt(newPackage.declaredValue.toString()),
-    })
+    if (
+      !newPackage.senderEmailAddress.includes("@gmail.com") ||
+      !newPackage.receiverEmailAddress.includes("@gmail.com")
+    ) {
+      toast.error("email should be gmail.com")
+    } else {
+      mutate({
+        currentUserId: currentUserId,
+        shipmentId: shipmentId,
+        sentByAgentId: agentId!,
+        preassignedId: newPackage.preassignedId,
+        shippingMode: shippingMode,
+        shippingType: shippingType,
+        receptionMode: receptionMode,
+        weightInKg: parseInt(newPackage.weightInKg.toString()),
+        volumeInCubicMeter: parseInt(newPackage.volumeInCubicMeter.toString()),
+        senderFullName: newPackage.senderFullName,
+        senderContactNumber: newPackage.senderContactNumber,
+        senderEmailAddress: newPackage.senderEmailAddress,
+        senderStreetAddress: newPackage.senderStreetAddress,
+        senderCity: newPackage.senderCity,
+        senderStateOrProvince: newPackage.senderStateOrProvince,
+        senderCountryCode: newPackage.senderCountryCode,
+        senderPostalCode: parseInt(newPackage.senderPostalCode.toString()),
+        receiverFullName: newPackage.receiverFullName,
+        receiverContactNumber: newPackage.receiverContactNumber,
+        receiverEmailAddress: newPackage.receiverEmailAddress,
+        receiverStreetAddress: newPackage.receiverStreetAddress,
+        receiverBarangay: choosenBarangay,
+        receiverCity: choosenCity,
+        receiverStateOrProvince: choosenProvince,
+        receiverCountryCode: newPackage.receiverCountryCode,
+        receiverPostalCode: parseInt(newPackage.receiverPostalCode.toString()),
+        isFragile: fragile,
+        declaredValue: parseInt(newPackage.declaredValue.toString()),
+      })
+    }
 
     console.log(newPackage)
   }
@@ -393,12 +402,13 @@ export function UnmanifestedPackagesModal({
                     <div className="flex flex-col">
                       <label className="text-sm	">Sender Country Code</label>
                       <input
-                        max={3}
+                        maxLength={3}
+                        type="text"
                         onChange={handleInputChange}
                         value={newPackage.senderCountryCode}
                         name={"senderCountryCode"}
                         required
-                        className="px-1 py-2 border border-gray-700	rounded-md	"
+                        className="px-1 py-2 border border-gray-700	rounded-md"
                         placeholder="Sender Country Code"
                       />
                     </div>

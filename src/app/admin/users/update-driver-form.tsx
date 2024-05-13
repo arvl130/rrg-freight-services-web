@@ -45,6 +45,7 @@ function EditForm(props: {
       reset()
       utils.user.getAll.invalidate()
       utils.user.getDriverDetailsById.invalidate()
+      toast.success("User modified successfully!")
     },
   })
 

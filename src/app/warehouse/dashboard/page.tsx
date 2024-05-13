@@ -138,25 +138,7 @@ export default async function DashboardPage() {
       <RevalidatedPageProvider>
         <section className="mb-6">
           <div className="mb-4 flex flex-wrap sm:justify-end gap-3">
-            <div className="flex text-sm">
-              <input
-                type="date"
-                className="rounded-l-md border-y border-l border-gray-300 pl-2"
-              />
-              <span className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-r-md">
-                <CalendarBlank size={24} />
-              </span>
-            </div>
-
             <RefreshButton />
-
-            <button
-              type="button"
-              className="bg-brand-cyan-500 text-white h-10 aspect-square flex justify-center items-center rounded-md"
-            >
-              <span className="sr-only">Filter</span>
-              <FunnelSimple size={24} />
-            </button>
           </div>
 
           <div className="grid sm:grid-cols-[repeat(3,_minmax(0,_24rem))] gap-x-8 gap-y-4 justify-center">

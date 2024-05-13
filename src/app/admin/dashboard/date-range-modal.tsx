@@ -26,6 +26,7 @@ import {
 import { eq, and, count, like, desc, not, max } from "drizzle-orm"
 import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple"
 import { api } from "@/utils/api"
+import toast from "react-hot-toast"
 
 import { DateTime } from "luxon"
 import PDFReportTemplate from "./pdf-report"
@@ -103,15 +104,17 @@ export function DateRangeModal({
                   endDate={DateTime.fromJSDate(state[0].endDate).toISO()!}
                 />
               }
-              // {DateTime.fromISO(DateTime.fromJSDate(
-              //   state[0].startDate,
-              // ).toISO()!)}
-
               fileName={`RRG-ADMIN-REPORT-${DateTime.fromISO(
                 DateTime.fromJSDate(state[0].startDate).toISO()!,
               ).toLocaleString(DateTime.DATE_MED)}-${DateTime.fromISO(
                 DateTime.fromJSDate(state[0].endDate).toISO()!,
               ).toLocaleString(DateTime.DATE_MED)}.pdf`}
+              onClick={() => {
+                toast.success("PDF Report Downloaded Successfully")
+                setTimeout(() => {
+                  close()
+                }, 300)
+              }}
             >
               <button
                 disabled={

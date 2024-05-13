@@ -2,7 +2,7 @@ import type { Vehicle } from "@/server/db/entities"
 import { api } from "@/utils/api"
 import { X } from "@phosphor-icons/react/dist/ssr/X"
 import * as Dialog from "@radix-ui/react-dialog"
-
+import toast from "react-hot-toast"
 function DeleteForm({
   vehicle,
   close,
@@ -15,6 +15,7 @@ function DeleteForm({
     onSuccess: () => {
       apiUtils.vehicle.getAll.invalidate()
       close()
+      toast.success("Vehicle deleted")
     },
   })
 

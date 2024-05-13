@@ -7,7 +7,7 @@ import { useFormState } from "react-dom"
 import { updateDetailsAction } from "./actions"
 import { useEffect, useRef, useTransition } from "react"
 import { updateDetailsInputSchema } from "./form-schema"
-
+import toast from "react-hot-toast"
 type UpdateInformationFormType = z.infer<typeof updateDetailsInputSchema>
 
 export function UpdateInformationForm({ user }: { user: User }) {
@@ -72,6 +72,7 @@ export function UpdateInformationForm({ user }: { user: User }) {
             handleSubmit(() => {
               if (formRef.current) {
                 const formData = new FormData(formRef.current)
+                toast.success("Profile updated")
                 startTransition(() => {
                   formAction(formData)
                 })
