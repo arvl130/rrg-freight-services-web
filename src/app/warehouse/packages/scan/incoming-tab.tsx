@@ -852,7 +852,7 @@ export function IncomingTab({
               </span>
             </div>
           </div>
-          <div>
+          <div className="flex flex-wrap gap-y-2">
             <button
               type="button"
               className="px-4 py-2 mb-3 sm:mb-0 bg-rose-700	 text-white hover:bg-rose-600	 rounded-md font-medium transition-colors mr-3"
