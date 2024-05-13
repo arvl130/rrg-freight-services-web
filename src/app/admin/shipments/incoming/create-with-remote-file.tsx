@@ -29,6 +29,7 @@ import { DateTime } from "luxon"
 import { getColorOfUploadedManifestStatus } from "@/utils/colors"
 import { getHumanizedOfuploadedManifestStatus } from "@/utils/humanize"
 import { ViewDetailsModal } from "@/components/shipments/view-details-modal"
+import { RequestReuploadModal } from "./request-reupload-modal"
 
 type UploadedManifestWithDetails = UploadedManifest & { agentName: string }
 
@@ -37,16 +38,9 @@ function ListViewItem(props: {
   onSelectWorkbook: (wb: WorkBook) => void
 }) {
   const [isDownloading, setIsDownloading] = useState(false)
-  const [visibleModal, setVisibleModal] = useState<null | "VIEW_SHIPMENT">(null)
-
-  const apiUtils = api.useUtils()
-  const requestReuploadMutation =
-    api.uploadedManifest.updateStatusToRequestReuploadById.useMutation({
-      onSuccess: () => {
-        apiUtils.uploadedManifest.getAll.invalidate()
-        toast.success("Re-upload requested.")
-      },
-    })
+  const [visibleModal, setVisibleModal] = useState<
+    null | "VIEW_SHIPMENT" | "REQUEST_REUPLOAD"
+  >(null)
 
   return (
     <div className="grid grid-cols-subgrid col-span-5 border-x border-b border-gray-300">
@@ -68,65 +62,71 @@ function ListViewItem(props: {
           {getHumanizedOfuploadedManifestStatus(props.item.status)}
         </span>
       </div>
-      <div className="px-3 py-2 flex gap-x-3 gap-y-2 flex-wrap">
-        {props.item.status === "PENDING_REVIEW" && (
-          <>
+      <div className="px-3 py-2">
+        <div className="flex gap-x-3 gap-y-2 flex-wrap">
+          {props.item.status === "PENDING_REVIEW" && (
+            <>
+              <button
+                type="button"
+                className="px-4 py-2 bg-green-500 hover:bg-green-400 transition-colors duration-200 disabled:bg-green-300 rounded-md text-white font-medium"
+                disabled={isDownloading}
+                onClick={async () => {
+                  setIsDownloading(true)
+                  try {
+                    const response = await fetch(props.item.downloadUrl)
+                    const data = await response.arrayBuffer()
+                    const workbook = read(data)
+
+                    props.onSelectWorkbook(workbook)
+                    setIsDownloading(false)
+                  } catch (e) {
+                    if (e instanceof Error) {
+                      toast.error(e.message)
+                    }
+
+                    setIsDownloading(false)
+                  }
+                }}
+              >
+                Import Shipment Manifest
+              </button>
+              <button
+                type="button"
+                className="px-4 py-2 bg-purple-500 hover:bg-purple-400 transition-colors duration-200 disabled:bg-purple-300 rounded-md text-white font-medium"
+                onClick={() => {
+                  setVisibleModal("REQUEST_REUPLOAD")
+                }}
+              >
+                Request Re-upload
+              </button>
+            </>
+          )}
+          {props.item.status === "SHIPMENT_CREATED" && (
             <button
               type="button"
               className="px-4 py-2 bg-green-500 hover:bg-green-400 transition-colors duration-200 disabled:bg-green-300 rounded-md text-white font-medium"
-              disabled={isDownloading}
-              onClick={async () => {
-                setIsDownloading(true)
-                try {
-                  const response = await fetch(props.item.downloadUrl)
-                  const data = await response.arrayBuffer()
-                  const workbook = read(data)
-
-                  props.onSelectWorkbook(workbook)
-                  setIsDownloading(false)
-                } catch (e) {
-                  if (e instanceof Error) {
-                    toast.error(e.message)
-                  }
-
-                  setIsDownloading(false)
-                }
-              }}
-            >
-              Import Shipment Manifest
-            </button>
-            <button
-              type="button"
-              className="px-4 py-2 bg-purple-500 hover:bg-purple-400 transition-colors duration-200 disabled:bg-purple-300 rounded-md text-white font-medium"
-              disabled={requestReuploadMutation.isLoading}
               onClick={() => {
-                requestReuploadMutation.mutate({
-                  id: props.item.id,
-                })
+                setVisibleModal("VIEW_SHIPMENT")
               }}
             >
-              Request Re-upload
+              View Shipment
             </button>
-          </>
-        )}
-        {props.item.status === "SHIPMENT_CREATED" && (
-          <button
-            type="button"
-            className="px-4 py-2 bg-green-500 hover:bg-green-400 transition-colors duration-200 disabled:bg-green-300 rounded-md text-white font-medium"
-            onClick={() => {
-              setVisibleModal("VIEW_SHIPMENT")
-            }}
+          )}
+          <a
+            href={props.item.downloadUrl}
+            download="Shipment.xlsx"
+            className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
           >
-            View Shipment
-          </button>
-        )}
-        <a
-          href={props.item.downloadUrl}
-          download="Shipment.xlsx"
-          className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
-        >
-          Download
-        </a>
+            Download
+          </a>
+        </div>
+        {props.item.status === "REUPLOAD_REQUESTED" &&
+          props.item.reuploadRequestRemarks !== null && (
+            <div className="mt-1">
+              <span className="font-medium">Re-upload request reason</span>:{" "}
+              {props.item.reuploadRequestRemarks}
+            </div>
+          )}
 
         {props.item.shipmentId !== null && (
           <ViewDetailsModal
@@ -137,6 +137,13 @@ function ListViewItem(props: {
             }}
           />
         )}
+        <RequestReuploadModal
+          uploadedManifestId={props.item.id}
+          isOpen={visibleModal === "REQUEST_REUPLOAD"}
+          onClose={() => {
+            setVisibleModal(null)
+          }}
+        />
       </div>
     </div>
   )

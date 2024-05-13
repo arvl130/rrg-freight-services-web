@@ -82,6 +82,7 @@ export const uploadedManifestRouter = router({
     .input(
       z.object({
         id: z.number(),
+        remarks: z.string().min(1).max(100),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -89,6 +90,7 @@ export const uploadedManifestRouter = router({
         .update(uploadedManifests)
         .set({
           status: "REUPLOAD_REQUESTED",
+          reuploadRequestRemarks: input.remarks,
         })
         .where(eq(uploadedManifests.id, input.id))
     }),

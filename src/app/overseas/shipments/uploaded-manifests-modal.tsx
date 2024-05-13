@@ -38,35 +38,44 @@ function ListViewItem(props: { item: UploadedManifest }) {
             {getHumanizedOfuploadedManifestStatus(props.item.status)}
           </span>
         </div>
-        <div className="px-3 py-2 flex gap-x-3 gap-y-2 flex-wrap">
-          {props.item.status === "REUPLOAD_REQUESTED" && (
-            <button
-              type="submit"
-              className="px-4 py-2 bg-purple-500 hover:bg-purple-400 transition-colors duration-200 disabled:bg-purple-300 rounded-md text-white font-medium"
-              onClick={() => {
-                setVisibleModal("REUPLOAD")
-              }}
+        <div className="px-3 py-2">
+          <div className="flex gap-x-3 gap-y-2 flex-wrap">
+            {props.item.status === "REUPLOAD_REQUESTED" && (
+              <button
+                type="submit"
+                className="px-4 py-2 bg-purple-500 hover:bg-purple-400 transition-colors duration-200 disabled:bg-purple-300 rounded-md text-white font-medium"
+                onClick={() => {
+                  setVisibleModal("REUPLOAD")
+                }}
+              >
+                Re-upload
+              </button>
+            )}
+            {props.item.status === "SHIPMENT_CREATED" && (
+              <button
+                type="submit"
+                className="px-4 py-2 bg-green-500 hover:bg-green-400 transition-colors duration-200 disabled:bg-green-300 rounded-md text-white font-medium"
+                onClick={() => {
+                  setVisibleModal("VIEW_SHIPMENT")
+                }}
+              >
+                View Shipment
+              </button>
+            )}
+            <a
+              href={props.item.downloadUrl}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
             >
-              Re-upload
-            </button>
-          )}
-          {props.item.status === "SHIPMENT_CREATED" && (
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-500 hover:bg-green-400 transition-colors duration-200 disabled:bg-green-300 rounded-md text-white font-medium"
-              onClick={() => {
-                setVisibleModal("VIEW_SHIPMENT")
-              }}
-            >
-              View Shipment
-            </button>
-          )}
-          <a
-            href={props.item.downloadUrl}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
-          >
-            Download
-          </a>
+              Download
+            </a>
+          </div>
+          {props.item.status === "REUPLOAD_REQUESTED" &&
+            props.item.reuploadRequestRemarks !== null && (
+              <div className="mt-1">
+                <span className="font-medium">Re-upload request reason</span>:{" "}
+                {props.item.reuploadRequestRemarks}
+              </div>
+            )}
         </div>
         {props.item.shipmentId !== null && (
           <ViewDetailsModal

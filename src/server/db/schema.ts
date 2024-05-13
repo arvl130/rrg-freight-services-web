@@ -116,6 +116,9 @@ export const uploadedManifests = mysqlTable("uploaded_manifests", {
   }).notNull(),
   downloadUrl: text("download_url").notNull(),
   status: mysqlEnum("status", SUPPORTED_UPLOADED_MANIFEST_STATUS).notNull(),
+  reuploadRequestRemarks: varchar("reupload_request_remarks", {
+    length: 100,
+  }),
   shipmentId: bigint("shipment_id", {
     mode: "number",
   }),

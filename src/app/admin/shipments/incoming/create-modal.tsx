@@ -27,7 +27,7 @@ export function CreateModal({
         <Dialog.Overlay className="bg-black/40 fixed inset-0" />
         <Dialog.Content
           onEscapeKeyDown={onClose}
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_72rem)] h-[calc(100svh_-_1rem)] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_72rem)] h-[calc(100svh_-_2.5rem)] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
         >
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             New Incoming Shipment
