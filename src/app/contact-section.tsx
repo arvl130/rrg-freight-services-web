@@ -36,7 +36,7 @@ export function ContactSection() {
   const { mutate, isLoading, isSuccess } = api.inquiries.create.useMutation({
     onSuccess: () => {
       reset()
-      toast.success("Inquiries updated.")
+      toast.success("Inquiries sent!")
       apiUtils.inquiries.getAll.invalidate()
     },
     onError: (error) => {
