@@ -45,7 +45,7 @@ import {
 import { eq, and, count, like, desc, not, max } from "drizzle-orm"
 import { DateTime } from "luxon"
 import { LogsTile } from "./logs-tile"
-import { SurveyRatings } from "./survey-ratings"
+import { SurveyRatingsTile } from "./survey-ratings"
 
 const months = [
   "JAN",
@@ -214,7 +214,10 @@ export default async function DashboardPage() {
       </section>
       <section className="my-6 grid lg:grid-cols-[30rem_1fr] sm:grid-cols-2 gap-x-6">
         <RecentUploadedManifestTile />
-        <SurveyRatings surveyRatings={surveyRatingsResult} ratesLabel={rates} />
+        <SurveyRatingsTile
+          surveyRatings={surveyRatingsResult}
+          ratesLabel={rates}
+        />
       </section>
       <section className="grid lg:grid-cols-[25rem_20rem_1fr] gap-x-6 gap-y-4 [color:_#404040]">
         <LogsTile logs={logs} />
