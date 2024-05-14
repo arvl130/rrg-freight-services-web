@@ -1,7 +1,7 @@
 import { validateSessionWithHeaders } from "@/server/auth"
 import { db } from "@/server/db/client"
 import { packages, shipments, shipmentPackages } from "@/server/db/schema"
-import { eq } from "drizzle-orm"
+import { eq, getTableColumns } from "drizzle-orm"
 import { ZodError, z } from "zod"
 
 const getLocationsSchema = z.object({
@@ -47,19 +47,20 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
       )
     }
 
-    const transferShipmentPackagesResults = await db
-      .select()
+    const packageColumns = getTableColumns(packages)
+    const packageResults = await db
+      .select({
+        ...packageColumns,
+        shipmentPackageStatus: shipmentPackages.status,
+        shipmentPackageIsDriverApproved: shipmentPackages.isDriverApproved,
+      })
       .from(shipmentPackages)
       .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
       .where(eq(shipmentPackages.shipmentId, transferShipmentId))
 
-    const packagesResults = transferShipmentPackagesResults.map(
-      ({ packages }) => packages,
-    )
-
     return Response.json({
       message: "Transfer shipment packages retrieved",
-      packages: packagesResults,
+      packages: packageResults,
     })
   } catch (e) {
     if (e instanceof ZodError) {
