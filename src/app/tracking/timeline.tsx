@@ -5,17 +5,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass"
 import { Moped } from "@phosphor-icons/react/dist/ssr/Moped"
 import { DateTime } from "luxon"
 import { Truck } from "@phosphor-icons/react/dist/ssr/Truck"
-import { Star } from "@phosphor-icons/react/dist/ssr/Star"
 import { Warehouse } from "@phosphor-icons/react/dist/ssr/Warehouse"
-import { useState } from "react"
-import Image from "next/image"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { api } from "@/utils/api"
-import toast from "react-hot-toast"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { json } from "stream/consumers"
-import { SurveyRatings } from "../admin/dashboard/survey-ratings"
 
 function TimelineItem({
   packageStatusLog,
