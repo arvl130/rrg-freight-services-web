@@ -51,16 +51,7 @@ export async function GET(req: Request) {
       eq(shipmentPackages.shipmentId, deliveryShipments.shipmentId),
     )
     .innerJoin(packages, eq(shipmentPackages.packageId, packages.id))
-    .where(
-      and(
-        eq(shipments.status, "IN_TRANSIT"),
-        eq(deliveryShipments.driverId, user.id),
-        or(
-          eq(shipmentPackages.status, "IN_TRANSIT"),
-          eq(shipmentPackages.status, "COMPLETED"),
-        ),
-      ),
-    )
+    .where(and(eq(deliveryShipments.driverId, user.id)))
 
   try {
     const pendingPackages = deliveryPackageResults.filter(
