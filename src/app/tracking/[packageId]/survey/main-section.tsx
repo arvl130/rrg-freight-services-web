@@ -64,11 +64,11 @@ export function MainSection(props: { package: Package }) {
               Customer Survey
             </p>
           </div>
-          <div className=" mx-20 my-8 flex flex-col content-center">
-            <div className="relative w-full max-w-[38rem] mx-auto ">
-              <div className="relative flex flex-col w-full  bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
-                <div className="flex items-start justify-center bg-[#78CFDC] p-5 border-b border-solid border-blueGray-200 rounded-t">
-                  <div className="flex justify-center mb-2">
+          <div className="mx-2 md:mx-20 my-4 md:my-8 flex flex-col content-center">
+            <div className="relative w-full max-w-[38rem] mx-auto">
+              <div className="relative flex flex-col w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
+                <div className="flex items-start justify-center bg-[#78CFDC] p-3 md:p-5 border-b border-solid border-blueGray-200 rounded-t">
+                  <div className="flex justify-center mb-1 md:mb-2">
                     <Image
                       src="/assets/img/logos/new-logo-nav-bar.png"
                       alt="RRG Freight Services logo with its name on the right"
@@ -79,7 +79,7 @@ export function MainSection(props: { package: Package }) {
                   </div>
                 </div>
 
-                <div className="relative p-6 flex-auto">
+                <div className="relative p-4 md:p-6 flex-auto">
                   <div className="mb-2">
                     <label className="block text-lg font-semibold mb-2">
                       How would you rate the services of RRG Freight Services?
@@ -89,7 +89,7 @@ export function MainSection(props: { package: Package }) {
                         <button
                           key={value}
                           type="button"
-                          className={`mr-2 p-2 text-3xl focus:outline-none ${
+                          className={`mr-1 md:mr-2 p-1 md:p-2 text-xl md:text-3xl focus:outline-none ${
                             value <= rating ? "text-[#78CFDC]" : "text-gray-300"
                           }`}
                           onClick={() => {
@@ -97,11 +97,11 @@ export function MainSection(props: { package: Package }) {
                             setValue("serviceRate", value)
                           }}
                         >
-                          <Star size={32} weight="fill" />
+                          <Star size={24} weight="fill" />
                         </button>
                       ))}
                       {errors.serviceRate && (
-                        <div className="mt-1 text-red-500">
+                        <div className="mt-1 md:mt-0 text-red-500">
                           {errors.serviceRate.message}.
                         </div>
                       )}
@@ -112,19 +112,19 @@ export function MainSection(props: { package: Package }) {
                     services.
                   </label>
                   <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+                    className="w-full px-2 py-1 md:px-3 md:py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
                     {...register("message")}
                   />
                   {errors.message && (
-                    <div className="mt-1 text-red-500">
+                    <div className="mt-1 md:mt-0 text-red-500">
                       {errors.message.message}.
                     </div>
                   )}
                 </div>
-                <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+                <div className="flex items-center justify-end p-3 md:p-6 border-t border-solid border-blueGray-200 rounded-b">
                   <button
                     type="submit"
-                    className="bg-green-500 disabled:bg-green-300 text-white hover:bg-green-400 font-bold uppercase text-sm px-4 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
+                    className="bg-green-500 disabled:bg-green-300 text-white hover:bg-green-400 font-bold uppercase text-xs md:text-sm px-3 md:px-4 py-2 md:py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
                     disabled={isLoading || isSuccess}
                   >
                     Submit
