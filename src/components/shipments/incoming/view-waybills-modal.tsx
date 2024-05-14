@@ -4,6 +4,7 @@ import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple"
 import { api } from "@/utils/api"
 import { PDFDownloadLink } from "@react-pdf/renderer"
 import WaybillsPdf from "./pdf-waybills"
+import toast from "react-hot-toast"
 
 export function ViewWaybillsModal({
   shipmentId,
@@ -106,6 +107,12 @@ export function ViewWaybillsModal({
               <PDFDownloadLink
                 document={<WaybillsPdf package={packages} />}
                 fileName={`RRG-SHIPMENT-ID-${shipmentId}.pdf`}
+                onClick={() => {
+                  toast.success("Waybills Downloaded Successfully")
+                  setTimeout(() => {
+                    onClose()
+                  }, 300)
+                }}
               >
                 <button className="bg-green-600 px-4 py-1 rounded-lg text-white	flex">
                   <span className="mr-2">Download PDF</span>

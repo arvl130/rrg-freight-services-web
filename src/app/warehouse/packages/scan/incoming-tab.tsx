@@ -501,6 +501,7 @@ function PackagesTable({
         utils.package.getAll.invalidate()
         setScannedPackageIds([])
         setSelectedRemarks([])
+        toast.success("Status changed successfully!")
       },
       onError: (error) => {
         toast.error(error.message)
@@ -747,6 +748,7 @@ function MarkAsCompleted({
       onSuccess: () => {
         utils.shipment.incoming.getInTransit.invalidate()
         resetSelectedShipmentId()
+        toast.success("Shipment successfully mark as arrived!")
       },
       onError: (error) => {
         toast.error(error.message)

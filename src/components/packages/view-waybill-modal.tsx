@@ -5,6 +5,7 @@ import QRCode from "react-qr-code"
 import type { Package } from "@/server/db/entities"
 import { PDFDownloadLink } from "@react-pdf/renderer"
 import WaybillPdf from "../waybill-pdf"
+import toast from "react-hot-toast"
 
 export function ViewWaybillModal({
   package: _package,
@@ -156,6 +157,12 @@ export function ViewWaybillModal({
             <PDFDownloadLink
               document={<WaybillPdf package={_package} />}
               fileName={`RRG-WAYBILL-${_package.id}.pdf`}
+              onClick={() => {
+                toast.success("Waybill Downloaded Successfully")
+                setTimeout(() => {
+                  close()
+                }, 300)
+              }}
             >
               <button>Download</button>
             </PDFDownloadLink>

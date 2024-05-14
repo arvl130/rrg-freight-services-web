@@ -84,7 +84,7 @@ function CreateForm({ onClose }: { onClose: () => void }) {
   const apiUtils = api.useUtils()
   const { mutate, isLoading } = api.vehicle.create.useMutation({
     onSuccess: () => {
-      toast.success("Vehicle updated.")
+      toast.success("Vehicle created.")
       apiUtils.vehicle.getAll.invalidate()
       onClose()
       reset()
