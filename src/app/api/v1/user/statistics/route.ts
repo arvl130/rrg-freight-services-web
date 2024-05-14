@@ -64,11 +64,9 @@ export async function GET(req: Request) {
         shipmentPackage.status === "COMPLETED",
     )
 
-    const packageAddresses = deliveryPackageResults.map(
-      ({ packages: _package }) => {
-        return `${_package.receiverStreetAddress}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, Philippines`
-      },
-    )
+    const packageAddresses = pendingPackages.map(({ packages: _package }) => {
+      return `${_package.receiverStreetAddress}, ${_package.receiverCity}, ${_package.receiverStateOrProvince}, Philippines`
+    })
 
     const coordinates = await getCoordinatesFromAddresses([
       ...new Set(packageAddresses),
