@@ -20,5 +20,5 @@ export function generatePasswordResetToken() {
 }
 
 export function generateRandomPassword() {
-  return generateId(64)
+  return generateId(16)
 }
