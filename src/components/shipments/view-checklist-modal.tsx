@@ -50,7 +50,7 @@ export function ViewChecklistModal({
         />
         <Dialog.Content
           onEscapeKeyDown={onClose}
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_32rem)] h-[min(calc(100%_-_3rem),_40rem)] grid grid-rows-[auto_1fr] bg-white rounded-2xl"
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_32rem)] h-[min(calc(100%_-_3rem),_40rem)] grid grid-rows-[auto_1fr] bg-white rounded-2xl overflow-auto"
         >
           <Dialog.Title className="text-white font-bold px-4 py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             <span className="inline-flex items-center gap-3">
@@ -71,7 +71,7 @@ export function ViewChecklistModal({
           {status === "loading" && <div>loading ...</div>}
           {status === "error" && <div>An error occured: {error.message}</div>}
           {status === "success" && (
-            <div>
+            <div className="overflow-auto">
               <StatusBar
                 total={packages.length}
                 approved={
