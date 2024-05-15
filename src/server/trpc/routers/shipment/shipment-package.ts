@@ -125,9 +125,9 @@ export const shipmentPackageRouter = router({
         })
       }
 
-      const nowPlusThreeDays = now
+      const nowPlusFourDays = now
         .plus({
-          days: 3,
+          days: 4,
         })
         .endOf("day")
 
@@ -214,7 +214,7 @@ export const shipmentPackageRouter = router({
           .update(packages)
           .set({
             status: "IN_WAREHOUSE",
-            expectedHasDeliveryAt: nowPlusThreeDays.toISO(),
+            expectedHasDeliveryAt: nowPlusFourDays.toISO(),
           })
           .where(inArray(packages.id, input.packageIds))
 
@@ -428,6 +428,11 @@ export const shipmentPackageRouter = router({
           days: 3,
         })
         .endOf("day")
+      const nowPlusFourDays = now
+        .plus({
+          days: 4,
+        })
+        .endOf("day")
 
       const description = await getDescriptionForStatus({
         db: ctx.db,
@@ -528,7 +533,7 @@ export const shipmentPackageRouter = router({
           await tx
             .update(packages)
             .set({
-              expectedHasDeliveryAt: nowPlusThreeDays.toISO(),
+              expectedHasDeliveryAt: nowPlusFourDays.toISO(),
             })
             .where(inArray(packages.id, packageIdsCanBeDelivered))
 
