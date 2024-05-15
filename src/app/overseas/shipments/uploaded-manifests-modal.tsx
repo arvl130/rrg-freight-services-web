@@ -105,7 +105,7 @@ function ListView(props: {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="px-4 py-3">
+    <div className="px-4 py-3 overflow-auto">
       {props.uploadedManifests.length === 0 ? (
         <div className="text-center">
           <p>No manifests have been uploaded.</p>
@@ -124,8 +124,8 @@ function ListView(props: {
           />
         </div>
       ) : (
-        <div>
-          <div className="flex justify-between ">
+        <div className="overflow-auto">
+          <div className="flex justify-between overflow-auto">
             <div className="flex items-center font-semibold">
               List of manifests uploaded
             </div>
@@ -145,7 +145,7 @@ function ListView(props: {
               />
             </div>
           </div>
-          <div className="grid grid-cols-[repeat(3,_auto),_1fr] mt-3">
+          <div className="grid grid-cols-[repeat(3,_auto),_1fr] mt-3 overflow-auto">
             <div className="grid grid-cols-subgrid col-span-4 border border-gray-300 bg-gray-100">
               <div className="font-semibold px-3 py-2 border-r border-gray-300">
                 ID
@@ -187,7 +187,7 @@ export function UploadedManifestsModal({
         />
         <Dialog.Content
           onEscapeKeyDown={onClose}
-          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_48rem)] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
+          className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(calc(100%_-_3rem),_56rem)] h-[min(calc(100%_-_3rem),_48rem)] grid grid-rows-[auto_1fr] rounded-2xl bg-white"
         >
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             Uploaded Manifests

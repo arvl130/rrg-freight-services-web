@@ -159,7 +159,7 @@ function SelectFileForm({
   onSwitchTab: (tab: "DND" | "REMOTE_FILE") => void
 }) {
   return (
-    <div className="px-4 py-3">
+    <div className="px-4 py-3 overflow-auto">
       {uploadedManifests.length === 0 ? (
         <div className="text-center">
           <p>No manifests have been uploaded.</p>
@@ -174,7 +174,7 @@ function SelectFileForm({
           </button>
         </div>
       ) : (
-        <div>
+        <div className="overflow-auto">
           <div className="flex justify-between ">
             <div className="flex items-center font-semibold">
               List of manifests uploaded
@@ -191,7 +191,7 @@ function SelectFileForm({
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-[repeat(4,_auto),_1fr] mt-3">
+          <div className="grid grid-cols-[repeat(4,_auto),_1fr] mt-3 overflow-auto">
             <div className="grid grid-cols-subgrid col-span-5 border border-gray-300 bg-gray-100">
               <div className="font-semibold px-3 py-2 border-r border-gray-300">
                 ID
