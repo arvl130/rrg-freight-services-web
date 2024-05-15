@@ -21,13 +21,13 @@ export function getEstimatedDeliveryOfPackage(_package: Package) {
       days: 2,
     })
 
-    const expectedHasDeliveryAtPlusThreeDays = expectedHasDeliveryAt.plus({
-      days: 3,
+    const expectedHasDeliveryAtPlusFourDays = expectedHasDeliveryAt.plus({
+      days: 4,
     })
 
     return `${expectedHasDeliveryAtPlusTwoDays.toLocaleString(
       DateTime.DATE_FULL,
-    )} - ${expectedHasDeliveryAtPlusThreeDays.toLocaleString(
+    )} - ${expectedHasDeliveryAtPlusFourDays.toLocaleString(
       DateTime.DATE_FULL,
     )}`
   }
