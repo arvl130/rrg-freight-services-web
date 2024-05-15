@@ -26,6 +26,7 @@ import { getHumanizedOfShipmentStatus } from "@/utils/humanize"
 import { EditDetailsModal } from "./edit-details-modal"
 import { ArchiveModal } from "./archive-modal"
 import { UnarchiveModal } from "./unarchive-modal"
+import { ViewChecklistModal } from "@/components/shipments/view-checklist-modal"
 
 type NormalizedForwarderTransferShipmentWithDetails =
   NormalizedForwarderTransferShipment & {
@@ -44,6 +45,7 @@ function TableItem({
     | null
     | "VIEW_DETAILS"
     | "EDIT_DETAILS"
+    | "VIEW_CHECKLIST"
     | "VIEW_LOCATIONS"
     | "ARCHIVE"
     | "UNARCHIVE"
@@ -110,6 +112,12 @@ function TableItem({
                 Edit Details
               </DropdownMenu.Item>
               <DropdownMenu.Item
+                className="transition-colors rounded-t-lg hover:bg-sky-50 px-3 py-2"
+                onClick={() => setVisibleModal("VIEW_CHECKLIST")}
+              >
+                View Checklist
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
                 className="transition-colors hover:bg-sky-50 px-3 py-2"
                 onClick={() => setVisibleModal("VIEW_LOCATIONS")}
               >
@@ -144,6 +152,11 @@ function TableItem({
         <EditDetailsModal
           shipment={item}
           isOpen={visibleModal === "EDIT_DETAILS"}
+          onClose={() => setVisibleModal(null)}
+        />
+        <ViewChecklistModal
+          shipmentId={item.id}
+          isOpen={visibleModal === "VIEW_CHECKLIST"}
           onClose={() => setVisibleModal(null)}
         />
         <ViewLocationsModal
