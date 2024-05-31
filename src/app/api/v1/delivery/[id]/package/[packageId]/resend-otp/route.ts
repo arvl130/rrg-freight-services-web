@@ -113,7 +113,13 @@ export async function GET(
           expireAt,
           createdAt,
         })
-        .onDuplicateKeyUpdate({ set: { code, expireAt, createdAt } })
+        .onConflictDoUpdate({
+          target: [
+            shipmentPackageOtps.shipmentId,
+            shipmentPackageOtps.packageId,
+          ],
+          set: { code, expireAt, createdAt },
+        })
 
       await batchNotifyBySms({
         messages: [

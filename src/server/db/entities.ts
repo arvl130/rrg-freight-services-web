@@ -1,4 +1,4 @@
-import type { MySql2Database } from "drizzle-orm/mysql2"
+import type { NodePgDatabase } from "drizzle-orm/node-postgres"
 import type * as schema from "@/server/db/schema"
 
 import type {
@@ -33,7 +33,7 @@ import type {
   missingPackages,
 } from "./schema"
 
-export type DbWithEntities = MySql2Database<typeof schema>
+export type DbWithEntities = NodePgDatabase<typeof schema>
 
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert

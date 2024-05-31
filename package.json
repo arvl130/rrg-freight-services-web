@@ -9,7 +9,7 @@
     "lint": "next lint --max-warnings 0",
     "format": "prettier src --write",
     "format:check": "prettier src --check",
-    "db:push": "tsx ./scripts/drop-all-db-tables.ts && drizzle-kit push:mysql && tsx ./scripts/db-seed.ts",
+    "db:push": "tsx ./scripts/drop-all-db-tables.ts && drizzle-kit push:pg && tsx ./scripts/db-seed.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
@@ -54,6 +54,7 @@
     "mysql2": "^3.6.5",
     "nanoid": "^5.0.4",
     "next": "14.2.3",
+    "pg": "^8.11.5",
     "postcss": "8.4.32",
     "qrcode": "^1.5.3",
     "react": "18.2.0",
@@ -80,6 +81,7 @@
     "@simplewebauthn/types": "^9.0.1",
     "@types/leaflet": "^1.9.8",
     "@types/luxon": "^3.3.7",
+    "@types/pg": "^8.11.6",
     "@types/qrcode": "^1.5.5",
     "@types/react-date-range": "^1.4.9",
     "@types/web-push": "^3.6.3",

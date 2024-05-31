@@ -1,15 +1,13 @@
 import { and, count, eq, isNull, lt, sql } from "drizzle-orm"
 import { protectedProcedure, router } from "../trpc"
-import { packageStatusLogs, packages } from "@/server/db/schema"
+import { packageStatusLogs } from "@/server/db/schema"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
-import { alias } from "drizzle-orm/mysql-core"
+import { alias } from "drizzle-orm/pg-core"
 import {
-  getDescriptionForNewPackageStatusLog,
   SUPPORTED_PACKAGE_STATUSES,
   type PackageStatus,
 } from "@/utils/constants"
-import { DateTime } from "luxon"
 
 export const packageStatusLogRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {

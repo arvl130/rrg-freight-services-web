@@ -15,57 +15,57 @@ import {
   SUPPORTED_UPLOADED_MANIFEST_STATUS,
 } from "../../utils/constants"
 import {
-  bigint,
-  mysqlTable,
+  bigserial,
+  pgTable,
   varchar,
   text,
-  mysqlEnum,
   timestamp,
-  tinyint,
-  int,
-  double,
+  integer,
+  doublePrecision,
   primaryKey,
-  datetime,
   decimal,
-} from "drizzle-orm/mysql-core"
+} from "drizzle-orm/pg-core"
 
-export const users = mysqlTable("users", {
-  id: varchar("id", { length: 28 }).primaryKey(),
+export const users = pgTable("users", {
+  id: text("id").primaryKey(),
   displayName: varchar("display_name", { length: 100 }).notNull(),
   photoUrl: text("photo_url"),
   emailAddress: varchar("email_address", { length: 100 }).notNull().unique(),
   hashedPassword: varchar("hashed_password", { length: 255 }).notNull(),
   contactNumber: varchar("contact_number", { length: 15 }).notNull(),
-  gender: mysqlEnum("gender", SUPPORTED_GENDERS).notNull(),
-  role: mysqlEnum("role", SUPPORTED_USER_ROLES).notNull(),
-  isEnabled: tinyint("is_enabled").notNull().default(1),
+  gender: text("gender", {
+    enum: SUPPORTED_GENDERS,
+  }).notNull(),
+  role: text("role", {
+    enum: SUPPORTED_USER_ROLES,
+  }).notNull(),
+  isEnabled: integer("is_enabled").notNull().default(1),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
 })
 
-export const sessions = mysqlTable("sessions", {
-  id: varchar("id", {
-    length: 255,
-  }).primaryKey(),
-  userId: varchar("user_id", {
-    length: 28,
+export const sessions = pgTable("sessions", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date",
   }).notNull(),
-  expiresAt: datetime("expires_at").notNull(),
 })
 
-export const warehouseStaffs = mysqlTable("warehouse_staffs", {
+export const warehouseStaffs = pgTable("warehouse_staffs", {
   userId: varchar("user_id", {
     length: 28,
   })
     .notNull()
     .primaryKey(),
-  warehouseId: bigint("warehouse_id", {
+  warehouseId: bigserial("warehouse_id", {
     mode: "number",
   }).notNull(),
 })
 
-export const drivers = mysqlTable("drivers", {
+export const drivers = pgTable("drivers", {
   userId: varchar("user_id", {
     length: 28,
   })
@@ -79,7 +79,7 @@ export const drivers = mysqlTable("drivers", {
   }).notNull(),
 })
 
-export const driverAssignedAreas = mysqlTable(
+export const driverAssignedAreas = pgTable(
   "driver_assigned_areas",
   {
     userId: varchar("user_id", {
@@ -94,7 +94,7 @@ export const driverAssignedAreas = mysqlTable(
   }),
 )
 
-export const overseasAgents = mysqlTable("overseas_agents", {
+export const overseasAgents = pgTable("overseas_agents", {
   userId: varchar("user_id", {
     length: 28,
   })
@@ -105,21 +105,21 @@ export const overseasAgents = mysqlTable("overseas_agents", {
   }).notNull(),
 })
 
-export const uploadedManifests = mysqlTable("uploaded_manifests", {
-  id: bigint("id", {
+export const uploadedManifests = pgTable("uploaded_manifests", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   userId: varchar("user_id", {
     length: 28,
   }).notNull(),
   downloadUrl: text("download_url").notNull(),
-  status: mysqlEnum("status", SUPPORTED_UPLOADED_MANIFEST_STATUS).notNull(),
+  status: text("status", {
+    enum: SUPPORTED_UPLOADED_MANIFEST_STATUS,
+  }).notNull(),
   reuploadRequestRemarks: varchar("reupload_request_remarks", {
     length: 100,
   }),
-  shipmentId: bigint("shipment_id", {
+  shipmentId: bigserial("shipment_id", {
     mode: "number",
   }),
   createdAt: varchar("created_at", {
@@ -127,7 +127,7 @@ export const uploadedManifests = mysqlTable("uploaded_manifests", {
   }).notNull(),
 })
 
-export const domesticAgents = mysqlTable("domestic_agents", {
+export const domesticAgents = pgTable("domestic_agents", {
   userId: varchar("user_id", {
     length: 28,
   })
@@ -138,26 +138,30 @@ export const domesticAgents = mysqlTable("domestic_agents", {
   }).notNull(),
 })
 
-export const shipments = mysqlTable("shipments", {
-  id: bigint("id", {
+export const shipments = pgTable("shipments", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
-  type: mysqlEnum("type", SUPPORTED_SHIPMENT_TYPES).notNull(),
-  status: mysqlEnum("status", SUPPORTED_SHIPMENT_STATUSES).notNull(),
-  isArchived: tinyint("is_archived").notNull().default(0),
+  }).primaryKey(),
+  type: text("type", {
+    enum: SUPPORTED_SHIPMENT_TYPES,
+  }).notNull(),
+  status: text("status", {
+    enum: SUPPORTED_SHIPMENT_STATUSES,
+  }).notNull(),
+  isArchived: integer("is_archived").notNull().default(0),
 })
 
-export const shipmentPackages = mysqlTable(
+export const shipmentPackages = pgTable(
   "shipment_packages",
   {
-    shipmentId: bigint("shipment_id", {
+    shipmentId: bigserial("shipment_id", {
       mode: "number",
     }).notNull(),
     packageId: varchar("package_id", { length: 36 }).notNull(),
-    status: mysqlEnum("status", SUPPORTED_SHIPMENT_PACKAGE_STATUSES).notNull(),
-    isDriverApproved: tinyint("is_driver_approved").notNull().default(0),
+    status: text("status", {
+      enum: SUPPORTED_SHIPMENT_PACKAGE_STATUSES,
+    }).notNull(),
+    isDriverApproved: integer("is_driver_approved").notNull().default(0),
     createdAt: varchar("created_at", {
       length: 255,
     }).notNull(),
@@ -169,15 +173,15 @@ export const shipmentPackages = mysqlTable(
   }),
 )
 
-export const shipmentPackageOtps = mysqlTable(
+export const shipmentPackageOtps = pgTable(
   "shipment_package_otps",
   {
-    shipmentId: bigint("shipment_id", {
+    shipmentId: bigserial("shipment_id", {
       mode: "number",
     }).notNull(),
     packageId: varchar("package_id", { length: 36 }).notNull(),
-    isValid: tinyint("is_valid").notNull().default(1),
-    code: int("code").notNull(),
+    isValid: integer("is_valid").notNull().default(1),
+    code: integer("code").notNull(),
     expireAt: varchar("expire_at", {
       length: 255,
     }).notNull(),
@@ -194,37 +198,29 @@ export const shipmentPackageOtps = mysqlTable(
   },
 )
 
-export const shipmentLocations = mysqlTable("shipment_locations", {
-  id: bigint("id", {
+export const shipmentLocations = pgTable("shipment_locations", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
-  shipmentId: bigint("shipment_id", {
+  }).primaryKey(),
+  shipmentId: bigserial("shipment_id", {
     mode: "number",
   }).notNull(),
-  long: double("long", {
-    precision: 12,
-    scale: 9,
-  }).notNull(),
-  lat: double("lat", {
-    precision: 12,
-    scale: 9,
-  }).notNull(),
+  long: doublePrecision("long").notNull(),
+  lat: doublePrecision("lat").notNull(),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
 
-export const incomingShipments = mysqlTable("incoming_shipments", {
-  shipmentId: bigint("shipment_id", {
+export const incomingShipments = pgTable("incoming_shipments", {
+  shipmentId: bigserial("shipment_id", {
     mode: "number",
   }).primaryKey(),
   sentByAgentId: varchar("sent_by_agent_id", {
     length: 28,
   }).notNull(),
-  destinationWarehouseId: bigint("destination_warehouse_id", {
+  destinationWarehouseId: bigserial("destination_warehouse_id", {
     mode: "number",
   }).notNull(),
   createdAt: varchar("created_at", {
@@ -232,48 +228,48 @@ export const incomingShipments = mysqlTable("incoming_shipments", {
   }).notNull(),
 })
 
-export const forwarderTransferShipments = mysqlTable(
+export const forwarderTransferShipments = pgTable(
   "forwarder_transfer_shipments",
   {
-    shipmentId: bigint("shipment_id", {
+    shipmentId: bigserial("shipment_id", {
       mode: "number",
     }).primaryKey(),
     driverId: varchar("driver_id", {
       length: 28,
     }).notNull(),
-    vehicleId: bigint("vehicle_id", {
+    vehicleId: bigserial("vehicle_id", {
       mode: "number",
     }).notNull(),
     sentToAgentId: varchar("sent_to_agent_id", {
       length: 28,
     }).notNull(),
-    departingWarehouseId: bigint("departing_warehouse_id", {
+    departingWarehouseId: bigserial("departing_warehouse_id", {
       mode: "number",
     }).notNull(),
     proofOfTransferImgUrl: text("proof_of_transfer_img_url"),
-    isTransferConfirmed: tinyint("is_transfer_confirmed").notNull().default(0),
+    isTransferConfirmed: integer("is_transfer_confirmed").notNull().default(0),
     createdAt: varchar("created_at", {
       length: 255,
     }).notNull(),
   },
 )
 
-export const warehouseTransferShipments = mysqlTable(
+export const warehouseTransferShipments = pgTable(
   "warehouse_transfer_shipments",
   {
-    shipmentId: bigint("shipment_id", {
+    shipmentId: bigserial("shipment_id", {
       mode: "number",
     }).primaryKey(),
     driverId: varchar("driver_id", {
       length: 28,
     }).notNull(),
-    vehicleId: bigint("vehicle_id", {
+    vehicleId: bigserial("vehicle_id", {
       mode: "number",
     }).notNull(),
-    sentFromWarehouseId: bigint("sent_from_warehouse_id", {
+    sentFromWarehouseId: bigserial("sent_from_warehouse_id", {
       mode: "number",
     }).notNull(),
-    sentToWarehouseId: bigint("sent_to_warehouse_id", {
+    sentToWarehouseId: bigserial("sent_to_warehouse_id", {
       mode: "number",
     }).notNull(),
     createdAt: varchar("created_at", {
@@ -282,21 +278,21 @@ export const warehouseTransferShipments = mysqlTable(
   },
 )
 
-export const deliveryShipments = mysqlTable("delivery_shipments", {
-  shipmentId: bigint("shipment_id", {
+export const deliveryShipments = pgTable("delivery_shipments", {
+  shipmentId: bigserial("shipment_id", {
     mode: "number",
   }).primaryKey(),
   driverId: varchar("driver_id", {
     length: 28,
   }).notNull(),
-  vehicleId: bigint("vehicle_id", {
+  vehicleId: bigserial("vehicle_id", {
     mode: "number",
   }).notNull(),
-  isExpress: tinyint("is_express").notNull(),
+  isExpress: integer("is_express").notNull(),
   departureAt: varchar("departure_at", {
     length: 100,
   }).notNull(),
-  departingWarehouseId: bigint("departing_warehouse_id", {
+  departingWarehouseId: bigserial("departing_warehouse_id", {
     mode: "number",
   }).notNull(),
   createdAt: varchar("created_at", {
@@ -307,36 +303,30 @@ export const deliveryShipments = mysqlTable("delivery_shipments", {
   }),
 })
 
-export const warehouses = mysqlTable("warehouses", {
-  id: bigint("id", {
+export const warehouses = pgTable("warehouses", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   displayName: varchar("display_name", {
     length: 100,
   }).notNull(),
-  volumeCapacityInCubicMeter: double("volume_capacity_in_cubic_meter", {
-    precision: 8,
-    scale: 2,
-  }).notNull(),
-  targetUtilization: double("target_utilization", {
-    precision: 8,
-    scale: 2,
-  }).notNull(),
-  isArchived: tinyint("is_archived").notNull().default(0),
+  volumeCapacityInCubicMeter: doublePrecision(
+    "volume_capacity_in_cubic_meter",
+  ).notNull(),
+  targetUtilization: doublePrecision("target_utilization").notNull(),
+  isArchived: integer("is_archived").notNull().default(0),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
 })
 
-export const vehicles = mysqlTable("vehicles", {
-  id: bigint("id", {
+export const vehicles = pgTable("vehicles", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
-  type: mysqlEnum("type", SUPPORTED_VEHICLE_TYPES).notNull(),
+  }).primaryKey(),
+  type: text("type", {
+    enum: SUPPORTED_VEHICLE_TYPES,
+  }).notNull(),
   displayName: varchar("display_name", {
     length: 100,
   }).notNull(),
@@ -345,24 +335,19 @@ export const vehicles = mysqlTable("vehicles", {
   })
     .notNull()
     .unique(),
-  weightCapacityInKg: double("weight_capacity_in_kg", {
-    precision: 8,
-    scale: 2,
-  }).notNull(),
-  isExpressAllowed: tinyint("is_express_allowed").notNull(),
-  isMaintenance: tinyint("is_maintenance").notNull(),
-  isArchived: tinyint("is_archived").notNull().default(0),
+  weightCapacityInKg: doublePrecision("weight_capacity_in_kg").notNull(),
+  isExpressAllowed: integer("is_express_allowed").notNull(),
+  isMaintenance: integer("is_maintenance").notNull(),
+  isArchived: integer("is_archived").notNull().default(0),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
 })
 
-export const inquiries = mysqlTable("inquiries", {
-  id: bigint("id", {
+export const inquiries = pgTable("inquiries", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   fullName: varchar("full_name", {
     length: 100,
   }).notNull(),
@@ -372,35 +357,31 @@ export const inquiries = mysqlTable("inquiries", {
   message: varchar("message", {
     length: 100,
   }).notNull(),
-  isArchived: tinyint("is_archived").notNull().default(0),
+  isArchived: integer("is_archived").notNull().default(0),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
 })
 
-export const survey = mysqlTable("survey", {
-  id: bigint("id", {
+export const survey = pgTable("survey", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   packageId: varchar("package_id", { length: 36 }).notNull(),
-  serviceRate: tinyint("service_rate", {}).notNull(),
+  serviceRate: integer("service_rate").notNull(),
   message: varchar("message", {
     length: 100,
   }).notNull(),
-  isArchived: tinyint("is_archived").notNull().default(0),
+  isArchived: integer("is_archived").notNull().default(0),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
 })
 
-export const packageCategories = mysqlTable("package_categories", {
-  id: bigint("id", {
+export const packageCategories = pgTable("package_categories", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   displayName: varchar("display_name", {
     length: 100,
   }).notNull(),
@@ -409,30 +390,23 @@ export const packageCategories = mysqlTable("package_categories", {
   }).notNull(),
 })
 
-export const packages = mysqlTable("packages", {
+export const packages = pgTable("packages", {
   id: varchar("id", { length: 36 }).primaryKey(),
-  preassignedId: varchar("preassigned_id", { length: 100 }).primaryKey(),
-  shippingMode: mysqlEnum(
-    "shipping_mode",
-    SUPPORTED_PACKAGE_SHIPPING_MODES,
-  ).notNull(),
-  shippingType: mysqlEnum(
-    "shippingtype",
-    SUPPORTED_PACKAGE_SHIPPING_TYPES,
-  ).notNull(),
-  receptionMode: mysqlEnum(
-    "reception_mode",
-    SUPPORTED_PACKAGE_RECEPTION_MODES,
-  ).notNull(),
-  remarks: mysqlEnum("remarks", SUPPORTED_PACKAGE_REMARKS),
-  weightInKg: double("weight_in_kg", {
-    precision: 8,
-    scale: 2,
+  preassignedId: varchar("preassigned_id", { length: 100 }).notNull(),
+  shippingMode: text("shipping_mode", {
+    enum: SUPPORTED_PACKAGE_SHIPPING_MODES,
   }).notNull(),
-  volumeInCubicMeter: double("volume_in_cubic_meter", {
-    precision: 8,
-    scale: 2,
+  shippingType: text("shippingtype", {
+    enum: SUPPORTED_PACKAGE_SHIPPING_TYPES,
   }).notNull(),
+  receptionMode: text("reception_mode", {
+    enum: SUPPORTED_PACKAGE_RECEPTION_MODES,
+  }).notNull(),
+  remarks: text("remarks", {
+    enum: SUPPORTED_PACKAGE_REMARKS,
+  }),
+  weightInKg: doublePrecision("weight_in_kg").notNull(),
+  volumeInCubicMeter: doublePrecision("volume_in_cubic_meter").notNull(),
   senderFullName: varchar("sender_full_name", { length: 100 }).notNull(),
   senderContactNumber: varchar("sender_contact_number", {
     length: 15,
@@ -452,7 +426,7 @@ export const packages = mysqlTable("packages", {
   // Uses ISO 3166-1 alpha-3 format.
   // See: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
   senderCountryCode: varchar("sender_country_code", { length: 3 }).notNull(),
-  senderPostalCode: int("sender_postal_code").notNull(),
+  senderPostalCode: integer("sender_postal_code").notNull(),
   receiverFullName: varchar("receiver_full_name", { length: 100 }).notNull(),
   receiverContactNumber: varchar("receiver_contact_number", {
     length: 15,
@@ -477,7 +451,7 @@ export const packages = mysqlTable("packages", {
   receiverCountryCode: varchar("receiver_country_code", {
     length: 3,
   }).notNull(),
-  receiverPostalCode: int("receiver_postal_code").notNull(),
+  receiverPostalCode: integer("receiver_postal_code").notNull(),
   proofOfDeliveryImgUrl: text("proof_of_delivery_img_url"),
   proofOfDeliverySignatureUrl: text("proof_of_delivery_sig_url"),
   createdAt: varchar("created_at", {
@@ -493,10 +467,10 @@ export const packages = mysqlTable("packages", {
     length: 255,
   }),
   updatedById: varchar("updated_by_id", { length: 28 }).notNull(),
-  isArchived: tinyint("is_archived").notNull().default(0),
-  isDeliverable: tinyint("is_deliverable").notNull(),
-  isUnmanifested: tinyint("is_unmanifested").notNull().default(0),
-  lastWarehouseId: bigint("last_warehouse_id", {
+  isArchived: integer("is_archived").notNull().default(0),
+  isDeliverable: integer("is_deliverable").notNull(),
+  isUnmanifested: integer("is_unmanifested").notNull().default(0),
+  lastWarehouseId: bigserial("last_warehouse_id", {
     mode: "number",
   }),
   lastCoordinates: varchar("last_coordinates", {
@@ -508,41 +482,33 @@ export const packages = mysqlTable("packages", {
   expectedIsDeliveredAt: varchar("expected_is_delivered_at", {
     length: 100,
   }),
-  isFragile: tinyint("is_fragile").notNull(),
-  status: mysqlEnum("status", SUPPORTED_PACKAGE_STATUSES).notNull(),
-  failedAttempts: tinyint("failed_attempts").notNull().default(0),
-  declaredValue: double("declared_value"),
+  isFragile: integer("is_fragile").notNull(),
+  status: text("status", {
+    enum: SUPPORTED_PACKAGE_STATUSES,
+  }).notNull(),
+  failedAttempts: integer("failed_attempts").notNull().default(0),
+  declaredValue: doublePrecision("declared_value"),
   areaCode: varchar("area_code", { length: 100 }).notNull(),
   sentByAgentId: varchar("sent_by_agent_id", { length: 28 }).notNull(),
 })
-export const missingPackages = mysqlTable("missing_packages", {
-  id: bigint("id", {
+export const missingPackages = pgTable("missing_packages", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   packageId: varchar("package_id", { length: 36 }).notNull(),
-  shipmentId: bigint("shipment_id", {
+  shipmentId: bigserial("shipment_id", {
     mode: "number",
   }).notNull(),
   preassignedId: varchar("preassigned_id", { length: 100 }).notNull(),
-  shippingMode: mysqlEnum(
-    "shipping_mode",
-    SUPPORTED_PACKAGE_SHIPPING_MODES,
-  ).notNull(),
-  shippingType: mysqlEnum(
-    "shippingtype",
-    SUPPORTED_PACKAGE_SHIPPING_TYPES,
-  ).notNull(),
+  shippingMode: text("shipping_mode", {
+    enum: SUPPORTED_PACKAGE_SHIPPING_MODES,
+  }).notNull(),
+  shippingType: text("shippingtype", {
+    enum: SUPPORTED_PACKAGE_SHIPPING_TYPES,
+  }).notNull(),
 
-  weightInKg: double("weight_in_kg", {
-    precision: 8,
-    scale: 2,
-  }).notNull(),
-  volumeInCubicMeter: double("volume_in_cubic_meter", {
-    precision: 8,
-    scale: 2,
-  }).notNull(),
+  weightInKg: doublePrecision("weight_in_kg").notNull(),
+  volumeInCubicMeter: doublePrecision("volume_in_cubic_meter").notNull(),
   senderFullName: varchar("sender_full_name", { length: 100 }).notNull(),
   senderContactNumber: varchar("sender_contact_number", {
     length: 15,
@@ -562,7 +528,7 @@ export const missingPackages = mysqlTable("missing_packages", {
   // Uses ISO 3166-1 alpha-3 format.
   // See: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
   senderCountryCode: varchar("sender_country_code", { length: 3 }).notNull(),
-  senderPostalCode: int("sender_postal_code").notNull(),
+  senderPostalCode: integer("sender_postal_code").notNull(),
   receiverFullName: varchar("receiver_full_name", { length: 100 }).notNull(),
   receiverContactNumber: varchar("receiver_contact_number", {
     length: 15,
@@ -587,24 +553,24 @@ export const missingPackages = mysqlTable("missing_packages", {
   receiverCountryCode: varchar("receiver_country_code", {
     length: 3,
   }).notNull(),
-  receiverPostalCode: int("receiver_postal_code").notNull(),
+  receiverPostalCode: integer("receiver_postal_code").notNull(),
 
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
 
-  isFragile: tinyint("is_fragile").notNull(),
+  isFragile: integer("is_fragile").notNull(),
 
   sentByAgentId: varchar("sent_by_agent_id", { length: 28 }).notNull(),
 })
 
-export const packageMonitoringAccessKeys = mysqlTable(
+export const packageMonitoringAccessKeys = pgTable(
   "package_monitoring_access_keys",
   {
     packageId: varchar("package_id", { length: 36 }).notNull(),
     accessKey: varchar("access_key", { length: 36 }).notNull(),
-    isValid: tinyint("is_valid").notNull().default(1),
+    isValid: integer("is_valid").notNull().default(1),
     createdAt: varchar("created_at", {
       length: 100,
     }).notNull(),
@@ -616,14 +582,14 @@ export const packageMonitoringAccessKeys = mysqlTable(
   }),
 )
 
-export const packageStatusLogs = mysqlTable("package_status_logs", {
-  id: bigint("id", {
+export const packageStatusLogs = pgTable("package_status_logs", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   packageId: varchar("package_id", { length: 36 }).notNull(),
-  status: mysqlEnum("status", SUPPORTED_PACKAGE_STATUSES).notNull(),
+  status: text("status", {
+    enum: SUPPORTED_PACKAGE_STATUSES,
+  }).notNull(),
   description: varchar("description", {
     length: 255,
   }).notNull(),
@@ -633,18 +599,22 @@ export const packageStatusLogs = mysqlTable("package_status_logs", {
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
 })
 
-export const activities = mysqlTable("activities", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  verb: mysqlEnum("verb", SUPPORTED_ACTIVITY_VERB).notNull(),
-  entity: mysqlEnum("entity", SUPPORTED_ACTIVITY_ENTITY).notNull(),
+export const activities = pgTable("activities", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  verb: text("verb", {
+    enum: SUPPORTED_ACTIVITY_VERB,
+  }).notNull(),
+  entity: text("entity", {
+    enum: SUPPORTED_ACTIVITY_ENTITY,
+  }).notNull(),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
   createdById: varchar("created_by_id", { length: 28 }).notNull(),
-  isArchived: tinyint("is_archived").notNull().default(0),
+  isArchived: integer("is_archived").notNull().default(0),
 })
 
-export const webpushSubscriptions = mysqlTable(
+export const webpushSubscriptions = pgTable(
   "webpush_subscriptions",
   {
     userId: varchar("user_id", {
@@ -654,7 +624,7 @@ export const webpushSubscriptions = mysqlTable(
       length: 64,
     }).notNull(),
     endpoint: text("endpoint").notNull(),
-    expirationTime: int("expiration_time"),
+    expirationTime: integer("expiration_time"),
     keyAuth: text("key_auth").notNull(),
     keyP256dh: text("key_p256dh").notNull(),
     createdAt: varchar("created_at", {
@@ -670,7 +640,7 @@ export const webpushSubscriptions = mysqlTable(
   },
 )
 
-export const webauthnChallenges = mysqlTable("webauthn_challenges", {
+export const webauthnChallenges = pgTable("webauthn_challenges", {
   userId: varchar("user_id", { length: 28 }).primaryKey(),
   challenge: text("challenge").notNull(),
   createdAt: varchar("created_at", {
@@ -678,7 +648,7 @@ export const webauthnChallenges = mysqlTable("webauthn_challenges", {
   }).notNull(),
 })
 
-export const webauthnCredentials = mysqlTable("webauthn_credentials", {
+export const webauthnCredentials = pgTable("webauthn_credentials", {
   id: varchar("id", {
     length: 256,
   }).primaryKey(),
@@ -688,13 +658,13 @@ export const webauthnCredentials = mysqlTable("webauthn_credentials", {
   userId: varchar("user_id", { length: 28 }).notNull(),
   key: text("key").notNull(),
   transports: text("transports").notNull(),
-  counter: int("counter").notNull(),
+  counter: integer("counter").notNull(),
   createdAt: varchar("created_at", {
     length: 255,
   }).notNull(),
 })
 
-export const expopushTokens = mysqlTable(
+export const expopushTokens = pgTable(
   "expopush_tokens",
   {
     userId: varchar("user_id", {
@@ -713,7 +683,7 @@ export const expopushTokens = mysqlTable(
   },
 )
 
-export const passwordResetTokens = mysqlTable(
+export const passwordResetTokens = pgTable(
   "password_reset_tokens",
   {
     userId: varchar("user_id", {
@@ -722,7 +692,7 @@ export const passwordResetTokens = mysqlTable(
     tokenHashed: varchar("token_hashed", {
       length: 64,
     }).notNull(),
-    isValid: tinyint("is_valid").notNull().default(1),
+    isValid: integer("is_valid").notNull().default(1),
     expireAt: varchar("expire_at", {
       length: 100,
     }).notNull(),
@@ -736,12 +706,10 @@ export const passwordResetTokens = mysqlTable(
   },
 )
 
-export const deliverableProvinces = mysqlTable("deliverable_provinces", {
-  id: bigint("id", {
+export const deliverableProvinces = pgTable("deliverable_provinces", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   displayName: varchar("display_name", {
     length: 100,
   }).notNull(),
@@ -750,30 +718,28 @@ export const deliverableProvinces = mysqlTable("deliverable_provinces", {
   }).notNull(),
 })
 
-export const assignedDrivers = mysqlTable("assigned_drivers", {
+export const assignedDrivers = pgTable("assigned_drivers", {
   driverId: varchar("user_id", {
     length: 28,
   }).primaryKey(),
-  shipmentId: bigint("shipment_id", {
+  shipmentId: bigserial("shipment_id", {
     mode: "number",
   }).notNull(),
 })
 
-export const assignedVehicles = mysqlTable("assigned_vehicles", {
-  vehicleId: bigint("id", {
+export const assignedVehicles = pgTable("assigned_vehicles", {
+  vehicleId: bigserial("id", {
     mode: "number",
   }).primaryKey(),
-  shipmentId: bigint("shipment_id", {
+  shipmentId: bigserial("shipment_id", {
     mode: "number",
   }).notNull(),
 })
 
-export const barangays = mysqlTable("barangays", {
-  id: bigint("id", {
+export const barangays = pgTable("barangays", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   code: varchar("code", {
     length: 9,
   }).notNull(),
@@ -789,7 +755,7 @@ export const barangays = mysqlTable("barangays", {
   cityId: varchar("city_id", {
     length: 6,
   }).notNull(),
-  published: tinyint("published").notNull().default(0),
+  published: integer("published").notNull().default(0),
   shippingFee: decimal("shipping_fee", {
     precision: 10,
     scale: 2,
@@ -798,12 +764,10 @@ export const barangays = mysqlTable("barangays", {
     .default("0.00"),
 })
 
-export const cities = mysqlTable("cities", {
-  id: bigint("id", {
+export const cities = pgTable("cities", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   code: varchar("code", {
     length: 9,
   }).notNull(),
@@ -819,15 +783,13 @@ export const cities = mysqlTable("cities", {
   cityId: varchar("city_id", {
     length: 6,
   }).notNull(),
-  published: tinyint("published").notNull().default(0),
+  published: integer("published").notNull().default(0),
 })
 
-export const provinces = mysqlTable("provinces", {
-  id: bigint("id", {
+export const provinces = pgTable("provinces", {
+  id: bigserial("id", {
     mode: "number",
-  })
-    .primaryKey()
-    .autoincrement(),
+  }).primaryKey(),
   code: varchar("code", {
     length: 9,
   }).notNull(),
@@ -840,5 +802,5 @@ export const provinces = mysqlTable("provinces", {
   provinceId: varchar("province_id", {
     length: 4,
   }).notNull(),
-  published: tinyint("published").notNull().default(0),
+  published: integer("published").notNull().default(0),
 })

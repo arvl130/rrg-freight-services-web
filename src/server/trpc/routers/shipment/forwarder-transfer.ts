@@ -18,7 +18,7 @@ import {
 import { getDescriptionForNewPackageStatusLog } from "@/utils/constants"
 import { TRPCError } from "@trpc/server"
 import { and, count, eq, getTableColumns, inArray, like } from "drizzle-orm"
-import { alias } from "drizzle-orm/mysql-core"
+import { alias } from "drizzle-orm/pg-core"
 import { createLog } from "@/utils/logging"
 import { DateTime } from "luxon"
 import { notifyByExpoPush, notifyByWebPush } from "@/server/notification"
@@ -319,12 +319,13 @@ export const forwarderTransferShipmentRouter = router({
           .from(expopushTokens)
           .where(eq(expopushTokens.userId, input.driverId))
 
-        const [{ insertId: shipmentId }] = await ctx.db
+        const [{ id: shipmentId }] = await ctx.db
           .insert(shipments)
           .values({
             type: "TRANSFER_FORWARDER",
             status: "PREPARING",
           })
+          .returning()
 
         await tx.insert(assignedDrivers).values({
           driverId: input.driverId,

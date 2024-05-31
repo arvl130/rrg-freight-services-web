@@ -3,7 +3,6 @@ import { db } from "@/server/db/client"
 import { shipments, shipmentLocations } from "@/server/db/schema"
 import { eq } from "drizzle-orm"
 import { DateTime } from "luxon"
-import type { ResultSetHeader } from "mysql2"
 import { ZodError, z } from "zod"
 
 const getLocationsSchema = z.object({
@@ -137,18 +136,21 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
 
     const createdAt = DateTime.now().toISO()
     const createdById = user.id
-    const [result] = (await db.insert(shipmentLocations).values({
-      shipmentId: transferShipmentId,
-      long: location.long,
-      lat: location.lat,
-      createdAt,
-      createdById,
-    })) as unknown as [ResultSetHeader]
+    const [result] = await db
+      .insert(shipmentLocations)
+      .values({
+        shipmentId: transferShipmentId,
+        long: location.long,
+        lat: location.lat,
+        createdAt,
+        createdById,
+      })
+      .returning()
 
     return Response.json({
       message: "Transfer shipment location recorded",
       newLocation: {
-        id: result.insertId,
+        id: result.id,
         transferShipmentId,
         long: location.long,
         lat: location.lat,

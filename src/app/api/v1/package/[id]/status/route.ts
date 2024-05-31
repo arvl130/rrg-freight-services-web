@@ -112,12 +112,15 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
         warehouseName: input.warehouseName!,
       })
 
-      const [{ insertId }] = await db.insert(packageStatusLogs).values({
-        ...input,
-        createdAt,
-        createdById,
-        description,
-      })
+      const [{ id: insertId }] = await db
+        .insert(packageStatusLogs)
+        .values({
+          ...input,
+          createdAt,
+          createdById,
+          description,
+        })
+        .returning()
 
       return Response.json({
         message: "Package status updated",
@@ -139,12 +142,15 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
         forwarderName: input.forwarderName!,
       })
 
-      const [{ insertId }] = await db.insert(packageStatusLogs).values({
-        ...input,
-        createdAt,
-        createdById,
-        description,
-      })
+      const [{ id: insertId }] = await db
+        .insert(packageStatusLogs)
+        .values({
+          ...input,
+          createdAt,
+          createdById,
+          description,
+        })
+        .returning()
 
       return Response.json({
         message: "Package status updated",
@@ -163,12 +169,15 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
         reason: input.failureReason!,
       })
 
-      const [{ insertId }] = await db.insert(packageStatusLogs).values({
-        ...input,
-        createdAt,
-        createdById,
-        description,
-      })
+      const [{ id: insertId }] = await db
+        .insert(packageStatusLogs)
+        .values({
+          ...input,
+          createdAt,
+          createdById,
+          description,
+        })
+        .returning()
 
       return Response.json({
         message: "Package status updated",
@@ -186,12 +195,15 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
         status: input.status,
       })
 
-      const [{ insertId }] = await db.insert(packageStatusLogs).values({
-        ...input,
-        createdAt,
-        createdById,
-        description,
-      })
+      const [{ id: insertId }] = await db
+        .insert(packageStatusLogs)
+        .values({
+          ...input,
+          createdAt,
+          createdById,
+          description,
+        })
+        .returning()
 
       return Response.json({
         message: "Package status updated",

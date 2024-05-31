@@ -518,7 +518,8 @@ export const userRouter = router({
               userId: input.id,
               warehouseId: input.warehouseId,
             })
-            .onDuplicateKeyUpdate({
+            .onConflictDoUpdate({
+              target: warehouseStaffs.userId,
               set: {
                 warehouseId: input.warehouseId,
               },
@@ -531,7 +532,8 @@ export const userRouter = router({
               licenseNumber: input.licenseNumber,
               licenseRegistrationDate: input.licenseRegistrationDate,
             })
-            .onDuplicateKeyUpdate({
+            .onConflictDoUpdate({
+              target: drivers.userId,
               set: {
                 licenseNumber: input.licenseNumber,
                 licenseRegistrationDate: input.licenseRegistrationDate,
@@ -555,7 +557,8 @@ export const userRouter = router({
               userId: input.id,
               companyName: input.companyName,
             })
-            .onDuplicateKeyUpdate({
+            .onConflictDoUpdate({
+              target: overseasAgents.userId,
               set: {
                 companyName: input.companyName,
               },
@@ -567,7 +570,8 @@ export const userRouter = router({
               userId: input.id,
               companyName: input.companyName,
             })
-            .onDuplicateKeyUpdate({
+            .onConflictDoUpdate({
+              target: domesticAgents.userId,
               set: {
                 companyName: input.companyName,
               },

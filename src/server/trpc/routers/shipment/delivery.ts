@@ -397,10 +397,13 @@ export const deliveryShipmentRouter = router({
           otp: generateOtp(),
         }))
 
-        const [{ insertId: shipmentId }] = await tx.insert(shipments).values({
-          type: "DELIVERY",
-          status: "PREPARING",
-        })
+        const [{ id: shipmentId }] = await tx
+          .insert(shipments)
+          .values({
+            type: "DELIVERY",
+            status: "PREPARING",
+          })
+          .returning()
 
         await tx.insert(assignedDrivers).values({
           driverId: input.driverId,

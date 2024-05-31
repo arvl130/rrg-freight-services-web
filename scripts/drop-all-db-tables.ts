@@ -1,10 +1,10 @@
 import "dotenv/config"
-import mysql from "mysql2/promise"
+import pg from "pg"
 import { serverEnv } from "@/server/env.mjs"
 import * as schema from "@/server/db/schema"
 
-const pool = mysql.createPool({
-  uri:
+const pool = new pg.Pool({
+  connectionString:
     serverEnv.APP_ENV === "production"
       ? serverEnv.PROD_DATABASE_URL
       : serverEnv.DEV_DATABASE_URL,
@@ -18,7 +18,7 @@ const tableNames = Object.keys(schema)
 
 await Promise.all(
   tableNames.map((tableName) =>
-    pool.execute(`DROP TABLE IF EXISTS ${tableName}`),
+    pool.query(`DROP TABLE IF EXISTS ${tableName}`),
   ),
 )
 await pool.end()

@@ -504,10 +504,13 @@ export const incomingShipmentRouter = router({
         await tx.insert(packages).values(newPackages)
         await tx.insert(packageStatusLogs).values(newPackageStatusLogs)
 
-        const [{ insertId: shipmentId }] = await tx.insert(shipments).values({
-          type: "INCOMING",
-          status: "IN_TRANSIT",
-        })
+        const [{ id: shipmentId }] = await tx
+          .insert(shipments)
+          .values({
+            type: "INCOMING",
+            status: "IN_TRANSIT",
+          })
+          .returning()
 
         await tx.insert(incomingShipments).values({
           shipmentId,

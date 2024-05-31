@@ -81,7 +81,10 @@ export const webauthnRouter = router({
           challenge: options.challenge,
           createdAt,
         })
-        .onDuplicateKeyUpdate({ set: { challenge: options.challenge } })
+        .onConflictDoUpdate({
+          target: [webauthnChallenges.userId],
+          set: { challenge: options.challenge },
+        })
     } catch (e) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
@@ -193,7 +196,10 @@ export const webauthnRouter = router({
             challenge: options.challenge,
             createdAt,
           })
-          .onDuplicateKeyUpdate({ set: { challenge: options.challenge } })
+          .onConflictDoUpdate({
+            target: webauthnChallenges.userId,
+            set: { challenge: options.challenge },
+          })
       } catch (e) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

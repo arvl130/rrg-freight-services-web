@@ -136,13 +136,16 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
 
     const createdAt = DateTime.now().toISO()
     const createdById = user.id
-    const [{ insertId }] = await db.insert(shipmentLocations).values({
-      shipmentId: shipmentId,
-      long: location.long,
-      lat: location.lat,
-      createdAt,
-      createdById,
-    })
+    const [{ id: insertId }] = await db
+      .insert(shipmentLocations)
+      .values({
+        shipmentId: shipmentId,
+        long: location.long,
+        lat: location.lat,
+        createdAt,
+        createdById,
+      })
+      .returning()
 
     return Response.json({
       message: "Shipment location recorded.",

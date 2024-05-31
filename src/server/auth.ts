@@ -3,7 +3,7 @@ import { getStorage, getDownloadURL } from "firebase-admin/storage"
 import { serverEnv } from "./env.mjs"
 import { clientEnv } from "@/utils/env.mjs"
 import { Lucia } from "lucia"
-import { DrizzleMySQLAdapter } from "@lucia-auth/adapter-drizzle"
+import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle"
 import { cache } from "react"
 import { cookies } from "next/headers"
 import type { UserRole } from "@/utils/constants"
@@ -63,7 +63,7 @@ export async function validateSessionWithHeaders({ req }: { req: Request }) {
   }
 }
 
-const adapter = new DrizzleMySQLAdapter(db, sessions, users)
+const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users)
 const lucia = new Lucia(adapter, {
   sessionCookie: {
     expires: false,

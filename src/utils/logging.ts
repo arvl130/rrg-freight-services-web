@@ -1,11 +1,10 @@
-import type * as schema from "@/server/db/schema"
 import { activities } from "@/server/db/schema"
-import type { MySql2Database } from "drizzle-orm/mysql2"
 import type { ActivityEntity, ActivityVerb } from "./constants"
 import { DateTime } from "luxon"
+import type { DbWithEntities } from "@/server/db/entities"
 
 export async function createLog(
-  db: MySql2Database<typeof schema>,
+  db: DbWithEntities,
   options: { verb: ActivityVerb; entity: ActivityEntity; createdById: string },
 ) {
   await db.insert(activities).values({

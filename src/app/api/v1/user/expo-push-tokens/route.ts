@@ -77,7 +77,8 @@ export async function POST(req: Request) {
         userId: session.userId,
         data: token,
       })
-      .onDuplicateKeyUpdate({
+      .onConflictDoUpdate({
+        target: [expopushTokens.userId, expopushTokens.data],
         set: {
           data: token,
         },
