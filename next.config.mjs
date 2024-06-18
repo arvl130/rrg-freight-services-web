@@ -1,5 +1,6 @@
 import "./src/server/env.mjs"
 import "./src/utils/env.mjs"
+import NextBundleAnalyzer from "@next/bundle-analyzer"
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -50,4 +51,10 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+const withBundleAnalyzer = NextBundleAnalyzer({
+  enabled: true,
+})
+
+export default process.env.ENABLE_ANALYZER === "1"
+  ? withBundleAnalyzer(nextConfig)
+  : nextConfig
