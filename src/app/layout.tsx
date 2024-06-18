@@ -1,8 +1,14 @@
 import "@/styles/globals.css"
-import { Fonts } from "./fonts"
 import { Toaster } from "react-hot-toast"
 import { Providers } from "@/providers/providers"
 import type { ReactNode } from "react"
+import { DM_Sans } from "next/font/google"
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  weight: ["400", "500", "600", "700", "800", "900"],
+})
 
 export const metadata = {
   title: "RRG Freight Services",
@@ -13,9 +19,8 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <Fonts />
       <Providers>
-        <body className="text-brand-black">
+        <body className={`text-brand-black ${dmSans.className}`}>
           <Toaster position="top-center" />
           {children}
         </body>
