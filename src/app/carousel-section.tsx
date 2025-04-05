@@ -40,7 +40,6 @@ export function CarouselSection() {
                   alt="ship"
                   width={632}
                   height={440}
-                  layout="responsive"
                   quality={100}
                   style={{ borderRadius: "10px" }}
                 />
