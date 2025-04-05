@@ -49,6 +49,7 @@ const nextConfig = {
       },
     ],
   },
+  serverExternalPackages: ["oslo"],
 }
 
 const withBundleAnalyzer = NextBundleAnalyzer({
