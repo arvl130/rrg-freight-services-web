@@ -7,14 +7,12 @@ function TrackingPageHead() {
   return <title>Tracking &#x2013; RRG Freight Services</title>
 }
 
-export default async function TrackingPage(
-  props: {
-    searchParams?: Promise<{
-      id?: string
-    }>
-  }
-) {
-  const searchParams = await props.searchParams;
+export default async function TrackingPage(props: {
+  searchParams?: Promise<{
+    id?: string
+  }>
+}) {
+  const searchParams = await props.searchParams
   const session = await validateSessionWithCookies()
 
   return (
