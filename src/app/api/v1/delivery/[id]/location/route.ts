@@ -9,7 +9,10 @@ const getLocationsSchema = z.object({
   deliveryId: z.number(),
 })
 
-export async function GET(req: Request, ctx: { params: { id: string } }) {
+export async function GET(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> },
+) {
   try {
     const { user } = await validateSessionWithHeaders({ req })
     if (user === null) {
@@ -21,8 +24,9 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
       )
     }
 
+    const params = await ctx.params
     const { deliveryId } = getLocationsSchema.parse({
-      deliveryId: Number(ctx.params.id),
+      deliveryId: Number(params.id),
     })
 
     const deliveryResults = await db
@@ -90,7 +94,10 @@ const newLocationSchema = z.object({
   }),
 })
 
-export async function POST(req: Request, ctx: { params: { id: string } }) {
+export async function POST(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> },
+) {
   try {
     const { user } = await validateSessionWithHeaders({ req })
     if (user === null) {
@@ -103,8 +110,9 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     }
 
     const body = await req.json()
+    const params = await ctx.params
     const { deliveryId, location } = newLocationSchema.parse({
-      deliveryId: Number(ctx.params.id),
+      deliveryId: Number(params.id),
       location: {
         long: body.long,
         lat: body.lat,

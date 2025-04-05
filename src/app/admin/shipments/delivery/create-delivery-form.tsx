@@ -14,7 +14,7 @@ import { ChooseProvinceWithPackages } from "./choose-province"
 
 export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
   const utils = api.useUtils()
-  const { isLoading, mutate } = api.shipment.delivery.create.useMutation({
+  const { isPending, mutate } = api.shipment.delivery.create.useMutation({
     onSuccess: () => {
       utils.shipment.delivery.getAll.invalidate()
       onClose()
@@ -211,7 +211,7 @@ export function CreateDeliveryForm({ onClose }: { onClose: () => void }) {
           type="button"
           className="font-medium px-4 py-2 bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 text-white transition-colors rounded-md"
           disabled={
-            isLoading ||
+            isPending ||
             selectedPackages.length === 0 ||
             hasExceededVehicleWeightCapacity
           }

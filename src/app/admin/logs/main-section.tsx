@@ -258,7 +258,7 @@ function ActivitiesTable({ items }: { items: ActivityWithUserDisplayName[] }) {
 export function MainSection() {
   const { status, data: activities, error } = api.activity.getAll.useQuery()
 
-  if (status === "loading")
+  if (status === "pending")
     return (
       <div className="flex justify-center pt-4">
         <LoadingSpinner />

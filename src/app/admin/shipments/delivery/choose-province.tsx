@@ -23,7 +23,7 @@ export function ChooseProvinceWithPackages({
   return (
     <div className="text-gray-700 mt-3">
       <label className="block font-medium">Delivery Area with Packages</label>
-      {status === "loading" && <>...</>}
+      {status === "pending" && <>...</>}
       {status === "error" && <>Error occured: {error.message}</>}
       {status === "success" && (
         <>

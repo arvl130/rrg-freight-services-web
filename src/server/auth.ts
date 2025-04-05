@@ -99,7 +99,8 @@ export async function createSessionForUserId(userId: string) {
   const session = await lucia.createSession(userId, {})
   const sessionCookie = lucia.createSessionCookie(session.id)
 
-  cookies().set(
+  const cookieStore = await cookies()
+  cookieStore.set(
     sessionCookie.name,
     sessionCookie.value,
     sessionCookie.attributes,
@@ -111,7 +112,8 @@ export async function createSessionForUserIdWithoutCookie(userId: string) {
 }
 
 export const validateSessionWithCookies = cache(async () => {
-  const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null
+  const cookieStore = await cookies()
+  const sessionId = cookieStore.get(lucia.sessionCookieName)?.value ?? null
   if (!sessionId) {
     return {
       user: null,
@@ -132,7 +134,9 @@ export const validateSessionWithCookies = cache(async () => {
     if (session) {
       if (session.fresh) {
         const sessionCookie = lucia.createSessionCookie(session.id)
-        cookies().set(
+
+        const cookieStore = await cookies()
+        cookieStore.set(
           sessionCookie.name,
           sessionCookie.value,
           sessionCookie.attributes,
@@ -140,7 +144,8 @@ export const validateSessionWithCookies = cache(async () => {
       }
     } else {
       const sessionCookie = lucia.createBlankSessionCookie()
-      cookies().set(
+      const cookieStore = await cookies()
+      cookieStore.set(
         sessionCookie.name,
         sessionCookie.value,
         sessionCookie.attributes,
@@ -158,7 +163,8 @@ export async function invalidateSessionById(sessionId: string) {
   await lucia.invalidateSession(sessionId)
   const sessionCookie = lucia.createBlankSessionCookie()
 
-  cookies().set(
+  const cookieStore = await cookies()
+  cookieStore.set(
     sessionCookie.name,
     sessionCookie.value,
     sessionCookie.attributes,

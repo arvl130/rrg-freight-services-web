@@ -35,7 +35,7 @@ export function MainSection(props: { package: Package }) {
 
   const apiUtils = api.useUtils()
   const router = useRouter()
-  const { mutate, isLoading, isSuccess } = api.survey.create.useMutation({
+  const { mutate, isPending, isSuccess } = api.survey.create.useMutation({
     onSuccess: () => {
       reset()
       toast.success("Survey updated.")
@@ -125,7 +125,7 @@ export function MainSection(props: { package: Package }) {
                   <button
                     type="submit"
                     className="bg-green-500 disabled:bg-green-300 text-white hover:bg-green-400 font-bold uppercase text-xs md:text-sm px-3 md:px-4 py-2 md:py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none ease-linear transition-all duration-150"
-                    disabled={isLoading || isSuccess}
+                    disabled={isPending || isSuccess}
                   >
                     Submit
                   </button>

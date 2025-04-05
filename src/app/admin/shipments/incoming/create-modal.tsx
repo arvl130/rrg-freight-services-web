@@ -32,7 +32,7 @@ export function CreateModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             New Incoming Shipment
           </Dialog.Title>
-          {status === "loading" && (
+          {status === "pending" && (
             <div>
               <LoadingSpinner />
             </div>

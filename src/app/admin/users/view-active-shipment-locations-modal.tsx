@@ -16,7 +16,7 @@ function ActiveShipment(props: { shipmentId: number }) {
 
   return (
     <>
-      {status === "loading" && <div className="text-center">Loading ...</div>}
+      {status === "pending" && <div className="text-center">Loading ...</div>}
       {status === "error" && (
         <div className="text-center">
           An error occured while retrieving locations: {error.message}
@@ -66,7 +66,7 @@ export function ViewActiveShipmentLocationsModal({
               <X size={20} />
             </button>
           </Dialog.Title>
-          {status === "loading" && (
+          {status === "pending" && (
             <div className="text-center">Loading ...</div>
           )}
           {status === "error" && (

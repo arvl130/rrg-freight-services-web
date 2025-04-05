@@ -689,7 +689,7 @@ const styles = StyleSheet.create({
   },
   headerImage: { width: "65px", height: "65px" },
   headerTitle: {
-    fontStyle: "Rokkitt",
+    fontFamily: "Rokkitt",
     fontSize: "21px",
     display: "flex",
     flexDirection: "column",

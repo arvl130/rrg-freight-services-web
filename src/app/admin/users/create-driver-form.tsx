@@ -237,7 +237,7 @@ export function CreateDriverForm(props: {
           type="submit"
           className="px-4 py-2 bg-blue-500 disabled:bg-blue-300 hover:bg-blue-400 rounded-md font-medium transition-colors duration-200 text-white"
           disabled={
-            createUserMutation.status === "loading" ||
+            createUserMutation.status === "pending" ||
             assignedAreaCodes.length === 0
           }
         >

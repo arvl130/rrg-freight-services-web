@@ -29,7 +29,7 @@ export function EditForm(props: { user: User; agent: OverseasAgent | null }) {
   })
 
   const utils = api.useUtils()
-  const { isLoading, mutate } = api.user.updateById.useMutation({
+  const { isPending, mutate } = api.user.updateById.useMutation({
     onSuccess: () => {
       reset()
       utils.user.getAll.invalidate()
@@ -71,7 +71,7 @@ export function EditForm(props: { user: User; agent: OverseasAgent | null }) {
             <input
               type="radio"
               className="rounded-lg px-4 py-2 text-gray-700 read-only:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-              readOnly={isLoading}
+              readOnly={isPending}
               value="YES"
               {...register("isEnabled")}
             />
@@ -81,7 +81,7 @@ export function EditForm(props: { user: User; agent: OverseasAgent | null }) {
             <input
               type="radio"
               className="rounded-lg px-4 py-2 text-gray-700 read-only:bg-gray-50 bg-white border border-cyan-500 focus:border-cyan-400 focus:ring-cyan-300 focus:ring-opacity-40 focus:outline-none focus:ring"
-              readOnly={isLoading}
+              readOnly={isPending}
               value="NO"
               {...register("isEnabled")}
             />
@@ -95,9 +95,9 @@ export function EditForm(props: { user: User; agent: OverseasAgent | null }) {
       <button
         type="submit"
         className="p-2 text-white	w-full bg-cyan-500 transition-colors disabled:bg-cyan-300 hover:bg-cyan-400 rounded-lg font-medium"
-        disabled={isLoading}
+        disabled={isPending}
       >
-        {isLoading ? "Saving ..." : "Save"}
+        {isPending ? "Saving ..." : "Save"}
       </button>
     </form>
   )
@@ -110,7 +110,7 @@ export function UpdateOverseasAgentForm(props: { user: User }) {
     },
   )
 
-  if (status === "loading") return <p className="mb-3">Loading ...</p>
+  if (status === "pending") return <p className="mb-3">Loading ...</p>
 
   if (status === "error")
     return (

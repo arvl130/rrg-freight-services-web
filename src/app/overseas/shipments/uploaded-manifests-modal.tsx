@@ -192,7 +192,7 @@ export function UploadedManifestsModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             Uploaded Manifests
           </Dialog.Title>
-          {status === "loading" && <div>...</div>}
+          {status === "pending" && <div>...</div>}
           {status === "error" && <div>Error occured: {error.message}</div>}
           {status === "success" && (
             <ListView uploadedManifests={data} onClose={onClose} />

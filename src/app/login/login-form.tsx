@@ -69,7 +69,7 @@ function NoUsers(props: {
 
   const [isSigningIn, setIsSigningIn] = useState(false)
   const isBtnDisabled =
-    generateAuthenticationOptionsMutation.isLoading || isSigningIn
+    generateAuthenticationOptionsMutation.isPending || isSigningIn
 
   return (
     <form
@@ -156,7 +156,7 @@ function LoginWithSelection(props: {
 
   const [isSigningIn, setIsSigningIn] = useState(false)
   const isBtnDisabled =
-    generateAuthenticationOptionsMutation.isLoading || isSigningIn
+    generateAuthenticationOptionsMutation.isPending || isSigningIn
 
   return (
     <form

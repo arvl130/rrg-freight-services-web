@@ -309,7 +309,7 @@ function PackageDetailsSections({ packageId }: { packageId: string }) {
     },
   )
 
-  if (status === "loading")
+  if (status === "pending")
     return (
       <div className="flex justify-center py-10">
         <LoadingSpinner></LoadingSpinner>

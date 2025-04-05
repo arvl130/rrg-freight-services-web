@@ -6,7 +6,7 @@ import toast from "react-hot-toast"
 
 function UpdateForm({ item, close }: { item: Shipment; close: () => void }) {
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.shipment.archiveById.useMutation({
+  const { mutate, isPending } = api.shipment.archiveById.useMutation({
     onSuccess: () => {
       apiUtils.shipment.warehouseTransfer.getAll.invalidate()
       close()
@@ -32,7 +32,7 @@ function UpdateForm({ item, close }: { item: Shipment; close: () => void }) {
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Archive
         </button>
@@ -66,7 +66,7 @@ export function ArchiveModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             Archive Shipment
           </Dialog.Title>
-          {status === "loading" && <div>Loading ...</div>}
+          {status === "pending" && <div>Loading ...</div>}
           {status === "error" && <div>Error occured: {error.message}</div>}
           {status === "success" && <UpdateForm item={data} close={close} />}
           <Dialog.Close asChild>

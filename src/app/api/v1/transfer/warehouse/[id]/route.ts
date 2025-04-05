@@ -8,7 +8,10 @@ const inputSchema = z.object({
   id: z.number(),
 })
 
-export async function GET(req: Request, ctx: { params: { id: string } }) {
+export async function GET(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> },
+) {
   const { user } = await validateSessionWithHeaders({ req })
   if (user === null) {
     return Response.json(
@@ -19,8 +22,9 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
     )
   }
 
+  const params = await ctx.params
   const { id } = inputSchema.parse({
-    id: Number(ctx.params.id),
+    id: Number(params.id),
   })
 
   const results = await db

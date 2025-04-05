@@ -73,7 +73,7 @@ function ToggleButtons(props: {
             utils.user.getWebPushSubscriptions.invalidate()
           },
           onSettled: () =>
-            queryClient.setQueryData(["getPushSubscription"], null),
+            queryClient.setQueryData(["getPushSubscription"], undefined),
         },
       )
     },
@@ -83,14 +83,14 @@ function ToggleButtons(props: {
     api.webpushSubscription.delete.useMutation()
 
   const isButtonDisabled =
-    subscribeMutation.isLoading ||
-    createPushSubscriptionMutation.isLoading ||
-    unsubscribeMutation.isLoading ||
-    deletePushSubscriptionMutation.isLoading
+    subscribeMutation.isPending ||
+    createPushSubscriptionMutation.isPending ||
+    unsubscribeMutation.isPending ||
+    deletePushSubscriptionMutation.isPending
 
-  if (userWebPushSubscriptionsQuery.status === "loading") return <>...</>
+  if (userWebPushSubscriptionsQuery.status === "pending") return <>...</>
   if (userWebPushSubscriptionsQuery.status === "error") return <>error</>
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>error</>
   if (pushSubscription === null)
     return (
@@ -169,7 +169,7 @@ function TogglePushNotifications() {
   return (
     <div className="flex items-center justify-between">
       <h2 className="font-semibold">Show Notification</h2>
-      {status === "loading" && <>...</>}
+      {status === "pending" && <>...</>}
       {status === "error" && <>error</>}
       {status === "success" && (
         <ToggleButtons serviceWorkerRegistration={data} />
@@ -182,13 +182,13 @@ function TestNotificationsButton(props: {
   endpoint: string
   isMutating: boolean
 }) {
-  const { isLoading, mutate } =
+  const { isPending, mutate } =
     api.webpushSubscription.testPublish.useMutation()
 
   return (
     <button
       type="button"
-      disabled={props.isMutating || isLoading}
+      disabled={props.isMutating || isPending}
       onClick={() =>
         mutate({
           endpoint: props.endpoint,

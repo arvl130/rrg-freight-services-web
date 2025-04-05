@@ -23,7 +23,7 @@ function CreateForm({ close }: { close: () => void }) {
   })
 
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.deliverableProvince.create.useMutation({
+  const { mutate, isPending } = api.deliverableProvince.create.useMutation({
     onSuccess: () => {
       toast.success("Deliverable province created.")
       apiUtils.deliverableProvince.getAll.invalidate()
@@ -55,7 +55,7 @@ function CreateForm({ close }: { close: () => void }) {
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Create
         </button>

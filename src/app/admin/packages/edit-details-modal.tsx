@@ -74,7 +74,7 @@ function PromptDeletePackageModal({
   close: () => void
 }) {
   const apiUtils = api.useUtils()
-  const { isLoading: loadingDeletion, mutate: deletePackage } =
+  const { isPending: loadingDeletion, mutate: deletePackage } =
     api.package.deletedById.useMutation({
       onSuccess: () => {
         apiUtils.package.getAll.invalidate()
@@ -133,7 +133,7 @@ export function EditDetailsModal({
   close: () => void
 }) {
   const apiUtils = api.useUtils()
-  const { isLoading, mutate } = api.package.updateById.useMutation({
+  const { isPending, mutate } = api.package.updateById.useMutation({
     onSuccess: () => {
       apiUtils.package.getAll.invalidate()
       toast.success("Update success!")
@@ -612,7 +612,7 @@ export function EditDetailsModal({
               <div>
                 <button
                   type="button"
-                  disabled={isLoading}
+                  disabled={isPending}
                   onClick={() => close()}
                   className="bg-red-500 hover:bg-red-400 disabled:bg-red-300 transition-colors text-white px-6 py-2 rounded-md mr-4"
                 >
@@ -620,7 +620,7 @@ export function EditDetailsModal({
                 </button>
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isPending}
                   className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 transition-colors text-white px-6 py-2 rounded-md"
                 >
                   Save

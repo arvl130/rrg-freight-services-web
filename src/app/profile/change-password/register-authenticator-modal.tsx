@@ -101,8 +101,8 @@ function RegisterForm({ onClose, user }: { onClose: () => void; user: User }) {
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
           disabled={
             isRegistering ||
-            generateRegistrationOptionsMutation.isLoading ||
-            verifyRegistrationResponseMutation.isLoading
+            generateRegistrationOptionsMutation.isPending ||
+            verifyRegistrationResponseMutation.isPending
           }
         >
           Register

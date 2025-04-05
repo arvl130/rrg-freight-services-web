@@ -12,7 +12,7 @@ function DeleteForm({
   onClose: () => void
 }) {
   const apiUtils = api.useUtils()
-  const { isLoading, mutate } = api.webauthn.deleteCredentialById.useMutation({
+  const { isPending, mutate } = api.webauthn.deleteCredentialById.useMutation({
     onSuccess: () => {
       apiUtils.webauthn.getCredentials.invalidate()
       onClose()
@@ -38,7 +38,7 @@ function DeleteForm({
         <button
           type="submit"
           className="px-4 py-2 bg-red-500 hover:bg-red-400 transition-colors duration-200 disabled:bg-red-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Delete
         </button>

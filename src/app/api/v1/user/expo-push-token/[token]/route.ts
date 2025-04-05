@@ -9,7 +9,10 @@ const inputSchema = z.object({
   token: z.string().min(1),
 })
 
-export async function DELETE(req: Request, ctx: { params: { token: string } }) {
+export async function DELETE(
+  req: Request,
+  ctx: { params: Promise<{ token: string }> },
+) {
   const { session } = await validateSessionWithHeaders({ req })
   if (session === null) {
     return Response.json(
@@ -21,8 +24,9 @@ export async function DELETE(req: Request, ctx: { params: { token: string } }) {
   }
 
   try {
+    const params = await ctx.params
     const { token } = inputSchema.parse({
-      token: ctx.params.token,
+      token: params.token,
     })
 
     if (!Expo.isExpoPushToken(token)) {

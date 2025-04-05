@@ -277,7 +277,7 @@ function ValidateRemainingCapacityOfWarehouse(props: {
       id: props.warehouseId,
     })
 
-  if (status === "loading") return <div>...</div>
+  if (status === "pending") return <div>...</div>
   if (status === "error") return <div>Error occured: {error.message}</div>
 
   const needed = props.sheetRows.reduce((prev, curr) => {
@@ -313,7 +313,7 @@ function ValidateRemainingCapacityOfWarehouse(props: {
       </div>
       {data.free > needed ? (
         <>
-          {getOverseasAgentsQuery.status === "loading" && (
+          {getOverseasAgentsQuery.status === "pending" && (
             <div>Loading agents ...</div>
           )}
           {getOverseasAgentsQuery.status === "error" && (
@@ -474,7 +474,7 @@ function ChooseAgentForm({
   onSuccess: (newShipmentId: number) => void
 }) {
   const apiUtils = api.useUtils()
-  const { isLoading, mutate } = api.shipment.incoming.create.useMutation({
+  const { isPending, mutate } = api.shipment.incoming.create.useMutation({
     onSuccess: ({ shipmentId }) => {
       apiUtils.shipment.incoming.getAll.invalidate()
       apiUtils.package.getInWarehouse.invalidate()
@@ -564,7 +564,7 @@ function ChooseAgentForm({
         <button
           type="submit"
           className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
-          disabled={isLoading || !isValid}
+          disabled={isPending || !isValid}
         >
           Import
         </button>
@@ -617,7 +617,7 @@ function ReceiverAddressValidity({
         gridColumn: `span ${expectedColumns.length} / span ${expectedColumns.length}`,
       }}
     >
-      {status === "loading" && <>Checking consignee address validity ...</>}
+      {status === "pending" && <>Checking consignee address validity ...</>}
       {status === "error" && <>Error occured: {error.message}</>}
       {status === "success" && (
         <>
@@ -809,7 +809,7 @@ function HasValidSheetRows({
       <div className="mt-3">
         {invalidAddressesCount === 0 ? (
           <>
-            {getWarehousesQuery.status === "loading" && (
+            {getWarehousesQuery.status === "pending" && (
               <div>Loading warehouses ...</div>
             )}
             {getWarehousesQuery.status === "error" && (

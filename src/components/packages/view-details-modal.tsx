@@ -46,7 +46,7 @@ function LogEntries({ packageId }: { packageId: string }) {
     packageId,
   })
 
-  if (status === "loading")
+  if (status === "pending")
     return <div className="max-w-sm mx-auto text-center">Loading ...</div>
 
   if (status === "error")

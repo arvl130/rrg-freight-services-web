@@ -232,7 +232,7 @@ function UploadFileForm({
   const [isUploading, setIsUploading] = useState(false)
 
   const apiUtils = api.useUtils()
-  const { isLoading, mutate } = api.uploadedManifest.create.useMutation({
+  const { isPending, mutate } = api.uploadedManifest.create.useMutation({
     onSuccess: () => {
       apiUtils.uploadedManifest.getByCurrentUser.invalidate()
       toast.success("Manifest Uploaded")
@@ -281,7 +281,7 @@ function UploadFileForm({
           <button
             type="button"
             className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-300 transition-colors text-white px-4 py-2 rounded-md font-medium"
-            disabled={isUploading || invalidAddressesCount > 0 || isLoading}
+            disabled={isUploading || invalidAddressesCount > 0 || isPending}
             onClick={async () => {
               setIsUploading(true)
               try {
@@ -354,7 +354,7 @@ function ReceiverAddressValidity({
         gridColumn: `span ${expectedColumns.length} / span ${expectedColumns.length}`,
       }}
     >
-      {status === "loading" && <>Checking consignee address validity ...</>}
+      {status === "pending" && <>Checking consignee address validity ...</>}
       {status === "error" && <>Error occured: {error.message}</>}
       {status === "success" && (
         <>

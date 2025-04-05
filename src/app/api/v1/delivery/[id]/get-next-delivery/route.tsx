@@ -26,7 +26,7 @@ const inputSchema = z.object({
 
 export async function POST(
   req: Request,
-  ctx: { params: { id: string; packageId: string } },
+  ctx: { params: Promise<{ id: string; packageId: string }> },
 ) {
   try {
     const { user } = await validateSessionWithHeaders({ req })
@@ -37,8 +37,9 @@ export async function POST(
       })
 
     const body = await req.json()
+    const params = await ctx.params
     const parseResult = inputSchema.safeParse({
-      shipmentId: Number(ctx.params.id),
+      shipmentId: Number(params.id),
       lat: body.lat,
       long: body.long,
     })

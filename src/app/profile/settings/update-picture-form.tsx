@@ -2,13 +2,18 @@ import "@/utils/firebase"
 import type { User } from "@/server/db/entities"
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
 import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle"
-import { useEffect, useRef, useState, useTransition } from "react"
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react"
 import Image from "next/image"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
-import { useFormState } from "react-dom"
 import { removePhotoUrlAction, updatePhotoUrlAction } from "./actions"
 import { getHumanizedOfUserRole } from "@/utils/humanize"
 
@@ -27,7 +32,7 @@ type UpdatePictureFormType = z.infer<typeof updatePictureFormSchema>
 
 export function UpdatePictureForm({ user }: { user: User }) {
   const [isPending, startTransition] = useTransition()
-  const [removeActionState, removeFormAction] = useFormState(
+  const [removeActionState, removeFormAction] = useActionState(
     removePhotoUrlAction,
     {
       success: false,
@@ -35,7 +40,7 @@ export function UpdatePictureForm({ user }: { user: User }) {
     },
   )
 
-  const [updateActionState, updateFormAction] = useFormState(
+  const [updateActionState, updateFormAction] = useActionState(
     updatePhotoUrlAction,
     {
       success: false,

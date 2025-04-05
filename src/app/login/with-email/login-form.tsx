@@ -3,11 +3,16 @@
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useRef, useState, useTransition } from "react"
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react"
 import { Eye } from "@phosphor-icons/react/dist/ssr/Eye"
 import { EyeSlash } from "@phosphor-icons/react/dist/ssr/EyeSlash"
 import { signInWithEmailAndPasswordAction } from "./actions"
-import { useFormState } from "react-dom"
 import { formSchema } from "./form-schema"
 import type { z } from "zod"
 import { InlineLoadingSpinner } from "@/components/spinner"
@@ -17,7 +22,7 @@ type FormType = z.infer<typeof formSchema>
 export function LoginForm() {
   const [isSigningIn, setIsSigningIn] = useState(false)
   const [incorrectCredentialsCount, setIncorrectCredentialsCount] = useState(0)
-  const [state, formAction] = useFormState(signInWithEmailAndPasswordAction, {
+  const [state, formAction] = useActionState(signInWithEmailAndPasswordAction, {
     message: "",
   })
 

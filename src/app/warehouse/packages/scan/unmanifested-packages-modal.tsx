@@ -75,7 +75,7 @@ export function UnmanifestedPackagesModal({
     declaredValue: 0,
   })
   const utils = api.useUtils()
-  const { isLoading, mutate } =
+  const { isPending, mutate } =
     api.shipment.incoming.createIndividual.useMutation({
       onSuccess: () => {
         utils.package.getIncomingStatusByShipmentId.invalidate()
@@ -605,11 +605,11 @@ export function UnmanifestedPackagesModal({
                 </button>
               </Dialog.Close>
               <input
-                disabled={isLoading}
+                disabled={isPending}
                 onClick={() => {}}
                 className="px-3 py-2 bg-[#3DE074] text-white	rounded-md	cursor-pointer	"
                 type="submit"
-                value={`${isLoading ? "Loading..." : "Add Package"}`}
+                value={`${isPending ? "Loading..." : "Add Package"}`}
               />
             </div>
           </form>

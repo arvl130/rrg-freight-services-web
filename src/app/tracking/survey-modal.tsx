@@ -38,7 +38,7 @@ export function SurveyModal({
   })
 
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.survey.create.useMutation({
+  const { mutate, isPending } = api.survey.create.useMutation({
     onSuccess: () => {
       toast.success("Answer submitted!")
       apiUtils.survey.getAll.invalidate()

@@ -22,7 +22,7 @@ const updatePasswordFormSchema = z
 type UpdatePasswordFormType = z.infer<typeof updatePasswordFormSchema>
 
 export function UpdatePasswordForm() {
-  const { isLoading, mutate } = api.user.updatePassword.useMutation({
+  const { isPending, mutate } = api.user.updatePassword.useMutation({
     onSuccess: () => {
       toast.success("Your password has been updated.")
       reset()
@@ -92,10 +92,10 @@ export function UpdatePasswordForm() {
       </div>
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isPending}
         className="p-2 text-white	w-full disabled:bg-cyan-300 bg-cyan-500 transition-colors hover:bg-cyan-400 rounded-lg font-medium"
       >
-        {isLoading ? "Saving ..." : "Save"}
+        {isPending ? "Saving ..." : "Save"}
       </button>
     </form>
   )

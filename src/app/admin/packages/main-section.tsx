@@ -29,7 +29,7 @@ function WarehouseDetails(props: { warehouseId: number }) {
     id: props.warehouseId,
   })
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>Error: {error.message}</>
 
   return <>{data.displayName}</>
@@ -567,8 +567,8 @@ export function MainSection() {
   const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
 
   if (
-    getAllPackagesQuery.status === "loading" ||
-    getAllWarehousesQuery.status === "loading"
+    getAllPackagesQuery.status === "pending" ||
+    getAllWarehousesQuery.status === "pending"
   )
     return (
       <div className="flex justify-center pt-4">

@@ -33,7 +33,7 @@ export function ContactSection() {
   })
 
   const apiUtils = api.useUtils()
-  const { mutate, isLoading, isSuccess } = api.inquiries.create.useMutation({
+  const { mutate, isPending, isSuccess } = api.inquiries.create.useMutation({
     onSuccess: () => {
       reset()
       toast.success("Inquiries sent!")
@@ -174,7 +174,7 @@ export function ContactSection() {
                   style={{ borderRadius: "10px" }}
                   className="p-2 bg-red-500 text-white font-semibold duration-500 hover:bg-red-800"
                   type="submit"
-                  disabled={isLoading || isSuccess}
+                  disabled={isPending || isSuccess}
                 >
                   Submit
                 </button>

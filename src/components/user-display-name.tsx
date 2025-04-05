@@ -5,7 +5,7 @@ export function UserDisplayName({ userId }: { userId: string }) {
     id: userId,
   })
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>error: {error.message}</>
 
   return <>{data?.displayName}</>

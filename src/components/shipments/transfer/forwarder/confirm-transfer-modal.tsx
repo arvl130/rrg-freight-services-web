@@ -9,7 +9,7 @@ function ConfirmTransferForm(props: {
   proofOfTransferImgUrl: string
 }) {
   const utils = api.useUtils()
-  const { isLoading, mutate } =
+  const { isPending, mutate } =
     api.shipment.forwarderTransfer.confirmTransferById.useMutation({
       onSuccess: () => {
         utils.shipment.forwarderTransfer.getAll.invalidate()
@@ -34,7 +34,7 @@ function ConfirmTransferForm(props: {
         <button
           type="button"
           className="bg-brand-cyan-500 text-white hover:bg-brand-cyan-600 disabled:bg-brand-cyan-350 px-4 py-2 rounded-md transition-colors font-medium"
-          disabled={isLoading}
+          disabled={isPending}
           onClick={() =>
             mutate({
               id: props.shipmentId,

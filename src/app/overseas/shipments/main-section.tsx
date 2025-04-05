@@ -394,8 +394,8 @@ export function MainSection(props: { userId: string }) {
   const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
 
   if (
-    getAllShipmentsByOverseasId.status === "loading" ||
-    getAllWarehousesQuery.status === "loading"
+    getAllShipmentsByOverseasId.status === "pending" ||
+    getAllWarehousesQuery.status === "pending"
   )
     return (
       <div className="flex justify-center pt-4">

@@ -36,7 +36,7 @@ function CreateForm({
   })
 
   const apiUtils = api.useUtils()
-  const { isLoading, mutate } =
+  const { isPending, mutate } =
     api.uploadedManifest.updateStatusToRequestReuploadById.useMutation({
       onSuccess: () => {
         apiUtils.uploadedManifest.getAll.invalidate()
@@ -76,7 +76,7 @@ function CreateForm({
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Request
         </button>

@@ -17,7 +17,7 @@ export function TotalPackageTile() {
     >
       <div className="flex flex-col justify-center items-start">
         <p className="text-4xl font-semibold">
-          {status === "loading" && <>...</>}
+          {status === "pending" && <>...</>}
           {status === "error" && <>error</>}
           {status === "success" && <>{data.count}</>}
         </p>
@@ -43,7 +43,7 @@ export function TotalArrivingShipmentTile() {
       <div className="flex flex-col justify-center items-start">
         <p className="text-4xl font-semibold"></p>
         <p className="text-4xl font-semibold">
-          {status === "loading" && <>...</>}
+          {status === "pending" && <>...</>}
           {status === "error" && <>error</>}
           {status === "success" && <>{data.count}</>}
         </p>

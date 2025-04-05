@@ -8,7 +8,10 @@ const getLocationsSchema = z.object({
   transferShipmentId: z.number(),
 })
 
-export async function GET(req: Request, ctx: { params: { id: string } }) {
+export async function GET(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> },
+) {
   try {
     const { user } = await validateSessionWithHeaders({ req })
     if (user === null) {
@@ -20,8 +23,9 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
       )
     }
 
+    const params = await ctx.params
     const { transferShipmentId } = getLocationsSchema.parse({
-      transferShipmentId: Number(ctx.params.id),
+      transferShipmentId: Number(params.id),
     })
 
     const transferShipmentsResults = await db

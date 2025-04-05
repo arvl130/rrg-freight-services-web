@@ -122,15 +122,16 @@ function ErrorView() {
   )
 }
 
-export default async function Page({
-  params,
-  searchParams,
-}: {
-  params: { packageId: string }
-  searchParams?: {
-    accessKey?: string
+export default async function Page(
+  props: {
+    params: Promise<{ packageId: string }>
+    searchParams?: Promise<{
+      accessKey?: string
+    }>
   }
-}) {
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const accessKey = searchParams?.accessKey
 
   if (accessKey === undefined) return <ErrorView />

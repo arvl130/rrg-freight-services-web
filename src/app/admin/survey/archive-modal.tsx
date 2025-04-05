@@ -6,7 +6,7 @@ import toast from "react-hot-toast"
 
 function UpdateForm({ survey, close }: { survey: Survey; close: () => void }) {
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.survey.archiveById.useMutation({
+  const { mutate, isPending } = api.survey.archiveById.useMutation({
     onSuccess: () => {
       apiUtils.survey.getAll.invalidate()
       close()
@@ -32,7 +32,7 @@ function UpdateForm({ survey, close }: { survey: Survey; close: () => void }) {
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Archive
         </button>
@@ -68,7 +68,7 @@ export function ArchiveModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             Archive Survey
           </Dialog.Title>
-          {status === "loading" && <div>Loading ...</div>}
+          {status === "pending" && <div>Loading ...</div>}
           {status === "error" && <div>Error occured: {error.message}</div>}
           {status === "success" && <UpdateForm survey={survey} close={close} />}
           <Dialog.Close asChild>

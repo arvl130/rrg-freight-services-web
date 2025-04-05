@@ -9,7 +9,10 @@ const getLocationsInputSchema = z.object({
   shipmentId: z.number(),
 })
 
-export async function GET(req: Request, ctx: { params: { id: string } }) {
+export async function GET(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> },
+) {
   try {
     const { user } = await validateSessionWithHeaders({ req })
     if (user === null) {
@@ -21,8 +24,9 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
       )
     }
 
+    const params = await ctx.params
     const { shipmentId } = getLocationsInputSchema.parse({
-      shipmentId: Number(ctx.params.id),
+      shipmentId: Number(params.id),
     })
 
     const shipmentResults = await db
@@ -90,7 +94,10 @@ const newLocationInputSchema = z.object({
   }),
 })
 
-export async function POST(req: Request, ctx: { params: { id: string } }) {
+export async function POST(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> },
+) {
   try {
     const { user } = await validateSessionWithHeaders({ req })
     if (user === null) {
@@ -103,8 +110,9 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
     }
 
     const body = await req.json()
+    const params = await ctx.params
     const { shipmentId, location } = newLocationInputSchema.parse({
-      shipmentId: Number(ctx.params.id),
+      shipmentId: Number(params.id),
       location: {
         long: body.long,
         lat: body.lat,

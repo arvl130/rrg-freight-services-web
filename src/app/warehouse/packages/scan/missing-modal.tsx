@@ -30,7 +30,7 @@ export function MissingPackagesModal({
   //     },
   //   })
   const utils = api.useUtils()
-  const { isLoading, mutate } =
+  const { isPending, mutate } =
     api.package.tagAsMissingByShipmentId.useMutation({
       onSuccess: () => {
         utils.package.getIncomingStatusByShipmentId.invalidate()
@@ -107,7 +107,7 @@ export function MissingPackagesModal({
               </button>
             </Dialog.Close>
             <input
-              //   disabled={isLoading}
+              //   disabled={isPending}
 
               onClick={() => {
                 mutate({
@@ -149,10 +149,10 @@ export function MissingPackagesModal({
                   })),
                 })
               }}
-              disabled={isLoading}
+              disabled={isPending}
               className="px-3 py-2 bg-[#3DE074] text-white	rounded-md	cursor-pointer	"
               type="submit"
-              value={`${isLoading ? "Loading..." : "Tag Missing"}`}
+              value={`${isPending ? "Loading..." : "Tag Missing"}`}
               //   value={"Tag as Missing"}
             />
           </div>

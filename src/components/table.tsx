@@ -215,7 +215,7 @@ export function ExportButton({
   records: Record<string, unknown>[]
 }) {
   return (
-    <button
+    (<button
       type="button"
       className="inline-flex text-sm items-center gap-1 hover:bg-sky-400 bg-sky-500 disabled:bg-sky-300 text-white transition-colors px-6 py-2 font-medium"
       disabled={records.length === 0}
@@ -243,6 +243,6 @@ export function ExportButton({
     >
       <Export size={16} />
       <span>Export</span>
-    </button>
-  )
+    </button>)
+  );
 }

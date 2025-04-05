@@ -3,9 +3,8 @@ import type { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { api } from "@/utils/api"
-import { useFormState } from "react-dom"
 import { updateDetailsAction } from "./actions"
-import { useEffect, useRef, useTransition } from "react"
+import { useActionState, useEffect, useRef, useTransition } from "react"
 import { updateDetailsInputSchema } from "./form-schema"
 import toast from "react-hot-toast"
 type UpdateInformationFormType = z.infer<typeof updateDetailsInputSchema>
@@ -14,7 +13,7 @@ export function UpdateInformationForm({ user }: { user: User }) {
   const formRef = useRef<HTMLFormElement>(null)
 
   const [isPending, startTransition] = useTransition()
-  const [state, formAction] = useFormState(updateDetailsAction, {
+  const [state, formAction] = useActionState(updateDetailsAction, {
     success: false,
     message: "",
   })

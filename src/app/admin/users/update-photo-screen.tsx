@@ -43,7 +43,7 @@ export function UpdatePhotoScreen({
   const [isUploading, setIsUploading] = useState(false)
 
   const utils = api.useUtils()
-  const { isLoading: isLoadingUpdatePhotoUrl, mutate: updatePhotoUrl } =
+  const { isPending: isPendingUpdatePhotoUrl, mutate: updatePhotoUrl } =
     api.user.updatePhotoUrlById.useMutation({
       onSuccess: () => {
         reset()
@@ -51,7 +51,7 @@ export function UpdatePhotoScreen({
       },
     })
 
-  const { isLoading: isLoadingRemovePhotoUrl, mutate: removePhotoUrl } =
+  const { isPending: isPendingRemovePhotoUrl, mutate: removePhotoUrl } =
     api.user.removePhotoUrlById.useMutation({
       onSuccess: () => {
         reset()
@@ -59,8 +59,8 @@ export function UpdatePhotoScreen({
       },
     })
 
-  const isLoading =
-    isLoadingUpdatePhotoUrl || isLoadingRemovePhotoUrl || isUploading
+  const isPending =
+    isPendingUpdatePhotoUrl || isPendingRemovePhotoUrl || isUploading
 
   return (
     <form
@@ -123,10 +123,10 @@ export function UpdatePhotoScreen({
                     id: user.id,
                   })
                 }
-                disabled={isLoading}
+                disabled={isPending}
                 className="w-full p-2 text-white bg-red-500 rounded-lg font-medium transition-colors disabled:bg-red-300 hover:bg-red-400"
               >
-                {isLoadingRemovePhotoUrl || isUploading
+                {isPendingRemovePhotoUrl || isUploading
                   ? "Deleting ..."
                   : "Delete"}
               </button>
@@ -136,9 +136,9 @@ export function UpdatePhotoScreen({
           <button
             type="submit"
             className="p-2 text-white	w-full bg-cyan-500 transition-colors disabled:bg-cyan-300 hover:bg-cyan-400 rounded-lg font-medium"
-            disabled={isLoading || !isValid}
+            disabled={isPending || !isValid}
           >
-            {isLoadingUpdatePhotoUrl || isUploading ? "Saving ..." : "Save"}
+            {isPendingUpdatePhotoUrl || isUploading ? "Saving ..." : "Save"}
           </button>
         </div>
       </div>

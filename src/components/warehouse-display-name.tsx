@@ -5,7 +5,7 @@ export function WarehouseDisplayName({ id }: { id: number }) {
     id,
   })
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>error: {error.message}</>
 
   return <>{data?.displayName}</>

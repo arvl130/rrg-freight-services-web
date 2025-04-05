@@ -28,7 +28,7 @@ const getLocationsSchema = z.object({
 
 export async function GET(
   req: Request,
-  ctx: { params: { id: string; packageId: string } },
+  ctx: { params: Promise<{ id: string; packageId: string }> },
 ) {
   const createdAt = DateTime.now().toISO()
 
@@ -40,9 +40,10 @@ export async function GET(
         statusCode: HTTP_STATUS_UNAUTHORIZED,
       })
 
+    const params = await ctx.params
     const parseResult = getLocationsSchema.safeParse({
-      shipmentId: Number(ctx.params.id),
-      packageId: ctx.params.packageId,
+      shipmentId: Number(params.id),
+      packageId: params.packageId,
     })
 
     if (!parseResult.success)

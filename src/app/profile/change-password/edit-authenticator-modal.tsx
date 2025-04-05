@@ -33,7 +33,7 @@ function EditForm({
   })
 
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } =
+  const { mutate, isPending } =
     api.webauthn.updateCredentialDeviceNameById.useMutation({
       onSuccess: () => {
         apiUtils.webauthn.getCredentials.invalidate()
@@ -69,7 +69,7 @@ function EditForm({
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Edit
         </button>

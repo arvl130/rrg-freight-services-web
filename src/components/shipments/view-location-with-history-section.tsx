@@ -39,7 +39,7 @@ function EstimatedTimeOfArrival(props: {
   const { status, data, error } =
     api.shipment.location.getEstimatedTimeOfArrival.useQuery(props)
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>Error occured: {error.message}</>
 
   return <>{data}</>

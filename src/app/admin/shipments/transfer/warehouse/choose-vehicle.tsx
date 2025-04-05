@@ -24,7 +24,7 @@ export function ChooseVehicle({
   return (
     <div className="mt-3">
       <label className="font-medium block">Vehicle</label>
-      {status === "loading" && <p>Loading ...</p>}
+      {status === "pending" && <p>Loading ...</p>}
       {status === "error" && <p>Error: {error.message}</p>}
       {status === "success" && (
         <>

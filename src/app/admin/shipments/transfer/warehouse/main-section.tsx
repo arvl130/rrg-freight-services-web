@@ -460,8 +460,8 @@ export function MainSection() {
   const getAllWarehousesQuery = api.warehouse.getAll.useQuery()
 
   if (
-    getAllWarehouseTransfersQuery.status === "loading" ||
-    getAllWarehousesQuery.status === "loading"
+    getAllWarehouseTransfersQuery.status === "pending" ||
+    getAllWarehousesQuery.status === "pending"
   )
     return (
       <div className="flex justify-center pt-4">

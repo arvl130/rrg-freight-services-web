@@ -114,7 +114,7 @@ function PackagesTable({
   const [scannedPackageIds, setScannedPackageIds] = useState<string[]>([])
 
   const utils = api.useUtils()
-  const { isLoading, mutate } =
+  const { isPending, mutate } =
     api.shipment.package.updateManyToCompletedStatus.useMutation({
       onSuccess: () => {
         utils.package.getWithLatestStatusByShipmentId.invalidate({
@@ -128,7 +128,7 @@ function PackagesTable({
       },
     })
 
-  if (status === "loading") return <div>Loading ...</div>
+  if (status === "pending") return <div>Loading ...</div>
   if (status === "error") return <div>Error: {error.message}</div>
 
   return (
@@ -191,7 +191,7 @@ function PackagesTable({
                 <button
                   type="button"
                   className="font-medium bg-red-500 hover:bg-red-400 disabled:bg-red-300 text-white transition-colors px-2 py-1 rounded-md"
-                  disabled={isLoading}
+                  disabled={isPending}
                   onClick={() => {
                     setScannedPackageIds((currScannedPackageIds) =>
                       currScannedPackageIds.filter((id) => id !== _package.id),
@@ -210,7 +210,7 @@ function PackagesTable({
         <button
           type="button"
           className="font-medium bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 text-white transition-colors px-4 py-2 rounded-md"
-          disabled={isLoading || scannedPackageIds.length === 0}
+          disabled={isPending || scannedPackageIds.length === 0}
           onClick={() => {
             const createdAt = DateTime.now().toISO()
 
@@ -290,7 +290,7 @@ function ShipmentSelector({
           }}
         />
       </div>
-      {status === "loading" && (
+      {status === "pending" && (
         <div>
           <p className="px-4 py-2 text-center">Loading ...</p>
         </div>
@@ -391,7 +391,7 @@ function MarkAsInTransit({
   })
 
   const utils = api.useUtils()
-  const { isLoading, mutate } =
+  const { isPending, mutate } =
     api.shipment.warehouseTransfer.updateStatusToInTransitById.useMutation({
       onSuccess: () => {
         utils.shipment.warehouseTransfer.getPreparing.invalidate()
@@ -402,7 +402,7 @@ function MarkAsInTransit({
       },
     })
 
-  if (status === "loading") return <p>Loading ...</p>
+  if (status === "pending") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
   if (packages.length === 0) return <p>No packages.</p>
 
@@ -413,7 +413,7 @@ function MarkAsInTransit({
   return (
     <button
       type="button"
-      disabled={isLoading || hasPendingPackages}
+      disabled={isPending || hasPendingPackages}
       className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 text-white px-4 py-2 rounded-lg transition-colors font-medium"
       onClick={() => {
         mutate({

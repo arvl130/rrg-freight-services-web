@@ -31,7 +31,7 @@ function RequestForm({
     },
   })
 
-  const { mutate, isLoading } = api.monitoringLink.sendEmail.useMutation({
+  const { mutate, isPending } = api.monitoringLink.sendEmail.useMutation({
     onSuccess: () => {
       toast.success("Monitoring link sent.")
       onClose()
@@ -71,7 +71,7 @@ function RequestForm({
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Request
         </button>

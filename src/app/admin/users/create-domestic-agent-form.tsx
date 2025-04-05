@@ -194,7 +194,7 @@ export function CreateDomesticAgentForm(props: {
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 disabled:bg-blue-300 hover:bg-blue-400 rounded-md font-medium transition-colors duration-200 text-white"
-          disabled={createUserMutation.status === "loading"}
+          disabled={createUserMutation.status === "pending"}
         >
           Create
         </button>

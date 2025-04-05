@@ -11,7 +11,7 @@ function DeleteForm({
   close: () => void
 }) {
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.vehicle.deleteById.useMutation({
+  const { mutate, isPending } = api.vehicle.deleteById.useMutation({
     onSuccess: () => {
       apiUtils.vehicle.getAll.invalidate()
       close()
@@ -37,7 +37,7 @@ function DeleteForm({
         <button
           type="submit"
           className="px-4 py-2 bg-red-500 hover:bg-red-400 transition-colors duration-200 disabled:bg-red-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Delete
         </button>
@@ -73,7 +73,7 @@ export function DeleteModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             Delete Vehicle
           </Dialog.Title>
-          {status === "loading" && <div>Loading ...</div>}
+          {status === "pending" && <div>Loading ...</div>}
           {status === "error" && <div>Error occured: {error.message}</div>}
           {status === "success" && (
             <DeleteForm vehicle={vehicle} close={close} />

@@ -55,7 +55,7 @@ export function ViewWaybillsModal({
               Waybills will be generated for the following packages.
             </div>
 
-            {status === "loading" && <div>loading ...</div>}
+            {status === "pending" && <div>loading ...</div>}
             {status === "error" && <div>An error occured: {error.message}</div>}
             {status === "success" && (
               <div className="">

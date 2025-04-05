@@ -142,7 +142,7 @@ export function AddAssignedAreaModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             Add Assigned Area
           </Dialog.Title>
-          {status === "loading" && <p>...</p>}
+          {status === "pending" && <p>...</p>}
           {status === "error" && <p>Error occured: {error.message}</p>}
           {status === "success" && (
             <AddForm

@@ -16,7 +16,7 @@ const inputSchema = z.object({
 
 export async function POST(
   req: Request,
-  ctx: { params: { id: string; packageId: string } },
+  ctx: { params: Promise<{ id: string; packageId: string }> },
 ) {
   try {
     const { user } = await validateSessionWithHeaders({ req })
@@ -26,9 +26,10 @@ export async function POST(
         statusCode: HTTP_STATUS_UNAUTHORIZED,
       })
 
+    const params = await ctx.params
     const parseResult = inputSchema.safeParse({
-      shipmentId: Number(ctx.params.id),
-      packageId: ctx.params.packageId,
+      shipmentId: Number(params.id),
+      packageId: params.packageId,
     })
 
     if (!parseResult.success)

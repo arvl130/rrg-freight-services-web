@@ -40,99 +40,10 @@ function EstimatedTimeOfArrival(props: {
   const { status, data, error } =
     api.shipment.location.getEstimatedTimeOfArrival.useQuery(props)
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>Error occured: {error.message}</>
 
   return <>{data}</>
-}
-
-function LocationAccessPrompt(props: { lat: number; long: number }) {
-  const [isLocating, setIsLocating] = useState(false)
-  const [coordinates, setCoordinates] = useState<null | {
-    lat: number
-    long: number
-  }>(null)
-  const { isLoading, state, error } = usePermission("geolocation")
-
-  useEffect(() => {
-    if (!isLoading && state !== "denied" && coordinates === null) {
-      setIsLocating(true)
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCoordinates({
-            long: position.coords.longitude,
-            lat: position.coords.latitude,
-          })
-          setIsLocating(false)
-        },
-        (error) => {
-          setIsLocating(false)
-        },
-      )
-    }
-  }, [isLoading, state, coordinates])
-
-  if (isLoading) return <SmallLoadingSpinner />
-  if (error) return <>{error}</>
-
-  return (
-    <div className="px-4 py-2">
-      {state === "denied" && (
-        <p>
-          Location access is required to get an estimate on the time of arrival.
-        </p>
-      )}
-
-      {isLocating ? (
-        <div className="inline-flex gap-2">
-          <SmallLoadingSpinner />
-          Estimating time of arrival ...
-        </div>
-      ) : (
-        <div className="flex justify-between gap-1 items-center">
-          <div>
-            The package should arrive at your location in about{" "}
-            <span className="font-semibold">
-              {coordinates !== null && (
-                <EstimatedTimeOfArrival
-                  source={{
-                    lat: props.lat,
-                    long: props.long,
-                  }}
-                  destination={{
-                    lat: coordinates.lat,
-                    long: coordinates.long,
-                  }}
-                />
-              )}
-            </span>
-            .
-          </div>
-          <button
-            type="button"
-            className="ml-2 font-medium bg-green-500 hover:bg-green-400 transition-colors duration-200 text-white px-4 py-2 rounded-md"
-            onClick={() => {
-              setIsLocating(true)
-              navigator.geolocation.getCurrentPosition(
-                (position) => {
-                  setCoordinates({
-                    long: position.coords.longitude,
-                    lat: position.coords.latitude,
-                  })
-                  setIsLocating(false)
-                },
-                (error) => {
-                  setIsLocating(false)
-                },
-              )
-            }}
-          >
-            Re-run Estimation
-          </button>
-        </div>
-      )}
-    </div>
-  )
 }
 
 export function ViewLocationWithHistorySection({

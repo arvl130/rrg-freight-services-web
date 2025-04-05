@@ -214,7 +214,7 @@ export function MainSection(props: {
       <div>
         <Navbar packageId={props.package.id} />
       </div>
-      {status === "loading" && (
+      {status === "pending" && (
         <>
           <div></div>
           <div className="flex justify-center items-center">

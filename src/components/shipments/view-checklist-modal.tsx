@@ -68,7 +68,7 @@ export function ViewChecklistModal({
               </button>
             </span>
           </Dialog.Title>
-          {status === "loading" && <div>loading ...</div>}
+          {status === "pending" && <div>loading ...</div>}
           {status === "error" && <div>An error occured: {error.message}</div>}
           {status === "success" && (
             <div className="overflow-auto">

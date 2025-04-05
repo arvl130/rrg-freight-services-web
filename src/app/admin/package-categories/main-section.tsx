@@ -218,7 +218,7 @@ export function MainSection() {
     error,
   } = api.packageCategory.getAll.useQuery()
 
-  if (status === "loading")
+  if (status === "pending")
     return (
       <div className="flex justify-center pt-4">
         <LoadingSpinner />

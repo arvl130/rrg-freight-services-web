@@ -275,7 +275,7 @@ export function HeaderSection() {
 export function MainSection() {
   const { status, data: inquiries, error } = api.inquiries.getAll.useQuery()
 
-  if (status === "loading")
+  if (status === "pending")
     return (
       <div className="flex justify-center pt-4">
         <LoadingSpinner />

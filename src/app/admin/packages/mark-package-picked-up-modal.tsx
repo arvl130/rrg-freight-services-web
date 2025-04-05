@@ -5,7 +5,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 
 function UpdateForm({ item, onClose }: { item: Package; onClose: () => void }) {
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.package.markAsPickedUpById.useMutation({
+  const { mutate, isPending } = api.package.markAsPickedUpById.useMutation({
     onSuccess: () => {
       apiUtils.package.getAll.invalidate()
       onClose()
@@ -30,7 +30,7 @@ function UpdateForm({ item, onClose }: { item: Package; onClose: () => void }) {
         <button
           type="submit"
           className="px-4 py-2 bg-purple-500 hover:bg-purple-400 transition-colors duration-200 disabled:bg-purple-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Mark as Picked Up
         </button>

@@ -187,7 +187,7 @@ export function CreateWarehouseStaffForm(props: {
         className="block w-full placeholder-gray-400/70 rounded-lg border border-gray-200 bg-white disabled:bg-gray-100 px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
         {...register("warehouseId")}
       >
-        {getAllWarehousesQuery.status === "loading" && (
+        {getAllWarehousesQuery.status === "pending" && (
           <option value="">Loading ...</option>
         )}
         {getAllWarehousesQuery.status === "error" && (
@@ -214,7 +214,7 @@ export function CreateWarehouseStaffForm(props: {
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 disabled:bg-blue-300 hover:bg-blue-400 rounded-md font-medium transition-colors duration-200 text-white"
-          disabled={createUserMutation.status === "loading"}
+          disabled={createUserMutation.status === "pending"}
         >
           Create
         </button>

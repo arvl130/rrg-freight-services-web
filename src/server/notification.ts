@@ -43,7 +43,7 @@ export async function notifyByEmailWithHtmlifiedComponent({
 }) {
   if (serverEnv.OFFLINE_MODE === "1") return
   if (serverEnv.IS_EMAIL_ENABLED === "1") {
-    const componentTextVersion = render(component, {
+    const componentTextVersion = await render(component, {
       plainText: true,
     })
 

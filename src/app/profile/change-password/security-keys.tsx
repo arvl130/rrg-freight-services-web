@@ -78,7 +78,7 @@ export function SecurityKeysSection(props: { user: User }) {
   return (
     <section className="mt-6">
       <h2 className="font-semibold mb-3">Authenticators</h2>
-      {credentialsQuery.status === "loading" && <div>Loading ...</div>}
+      {credentialsQuery.status === "pending" && <div>Loading ...</div>}
       {credentialsQuery.status === "error" && (
         <div>Error: {credentialsQuery.error.message}</div>
       )}

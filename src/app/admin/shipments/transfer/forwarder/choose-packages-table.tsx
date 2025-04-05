@@ -176,7 +176,7 @@ export function ChoosePackageTable({
           </div>
         </div>
       </div>
-      {status === "loading" && (
+      {status === "pending" && (
         <article className="bg-white rounded-lg px-6 py-3 text-center flex justify-center items-center">
           Loading ...
         </article>

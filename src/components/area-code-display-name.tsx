@@ -5,7 +5,7 @@ function ProvinceDisplayName(props: { areaCode: string }) {
     id: props.areaCode,
   })
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>Error occured: {error.message}</>
 
   return <>{data.name}</>
@@ -16,7 +16,7 @@ function CityDisplayName(props: { areaCode: string }) {
     id: props.areaCode,
   })
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>Error occured: {error.message}</>
 
   return (
@@ -31,7 +31,7 @@ function BarangayDisplayName(props: { areaCode: string }) {
     id: props.areaCode,
   })
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>Error occured: {error.message}</>
 
   return (

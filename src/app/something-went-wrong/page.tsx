@@ -9,7 +9,11 @@ export default async function SomethingWentWrongPage() {
   }
 
   return (
-    <form action={signOutAction}>
+    <form
+      action={async () => {
+        await signOutAction()
+      }}
+    >
       <p>Something went wrong. Please try again.</p>
       <button type="submit">logout</button>
     </form>

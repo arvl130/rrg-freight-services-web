@@ -46,7 +46,7 @@ export function ViewLocationsModal({
               <X size={20} />
             </button>
           </Dialog.Title>
-          {status === "loading" && (
+          {status === "pending" && (
             <div className="text-center">Loading ...</div>
           )}
           {status === "error" && (

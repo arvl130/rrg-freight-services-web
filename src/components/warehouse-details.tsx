@@ -5,7 +5,7 @@ export function WarehouseDetails(props: { warehouseId: number }) {
     id: props.warehouseId,
   })
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>Error: {error.message}</>
 
   return <>{data.displayName}</>

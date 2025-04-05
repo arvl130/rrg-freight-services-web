@@ -82,7 +82,7 @@ function CreateForm({ onClose }: { onClose: () => void }) {
   })
 
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.vehicle.create.useMutation({
+  const { mutate, isPending } = api.vehicle.create.useMutation({
     onSuccess: () => {
       toast.success("Vehicle created.")
       apiUtils.vehicle.getAll.invalidate()
@@ -169,7 +169,7 @@ function CreateForm({ onClose }: { onClose: () => void }) {
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Create
         </button>

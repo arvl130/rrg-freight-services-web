@@ -15,7 +15,10 @@ const inputSchema = z.object({
     .optional(),
 })
 
-export async function GET(req: Request, ctx: { params: { id: string } }) {
+export async function GET(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> },
+) {
   try {
     const { user } = await validateSessionWithHeaders({ req })
     if (user === null) {
@@ -30,8 +33,9 @@ export async function GET(req: Request, ctx: { params: { id: string } }) {
     const { searchParams } = new URL(req.url)
     const currLat = searchParams.get("lat")
     const currLong = searchParams.get("long")
+    const params = await ctx.params
     const { deliveryId, orderRelativeTo } = inputSchema.parse({
-      deliveryId: Number(ctx.params.id),
+      deliveryId: Number(params.id),
       orderRelativeTo:
         currLat !== null && currLong !== null
           ? {

@@ -6,11 +6,11 @@ import { UpdateInformationForm } from "./update-profile-info-form"
 import type { User } from "lucia"
 
 export function RightColumn({ user }: { user: User }) {
-  const { isLoading, isError, data } = api.user.getById.useQuery({
+  const { isPending, isError, data } = api.user.getById.useQuery({
     id: user.id,
   })
 
-  if (isLoading || isError) {
+  if (isPending || isError) {
     return <article></article>
   }
 

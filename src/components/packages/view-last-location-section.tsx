@@ -12,7 +12,7 @@ function EstimatedTimeOfArrivalWithCoordinates(props: {
   const { status, data, error } =
     api.shipment.location.getEstimatedTimeOfArrival.useQuery(props)
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>Error occured: {error.message}</>
 
   return <>{data}</>
@@ -27,7 +27,7 @@ function EstimatedTimeOfArrivalWithAddress(props: {
       props,
     )
 
-  if (status === "loading") return <>...</>
+  if (status === "pending") return <>...</>
   if (status === "error") return <>Error occured: {error.message}</>
 
   return <>{data}</>
@@ -102,7 +102,7 @@ function HasNoDestinationCoordinates(props: {
         <div></div>
       )}
 
-      {status === "loading" && (
+      {status === "pending" && (
         <div className="flex justify-center items-center">
           <LoadingSpinner />
         </div>

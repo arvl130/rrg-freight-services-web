@@ -192,7 +192,7 @@ function PackagesTable({
   const [scannedPackageIds, setScannedPackageIds] = useState<string[]>([])
 
   const utils = api.useUtils()
-  const { isLoading, mutate } =
+  const { isPending, mutate } =
     api.shipment.package.updateManyToCompletedStatusFromIncompleteDelivery.useMutation(
       {
         onSuccess: () => {
@@ -208,11 +208,11 @@ function PackagesTable({
       },
     )
 
-  if (packagesQuery.status === "loading") return <div>Loading ...</div>
+  if (packagesQuery.status === "pending") return <div>Loading ...</div>
   if (packagesQuery.status === "error")
     return <div>Error: {packagesQuery.error.message}</div>
 
-  if (packageCategoriesQuery.status === "loading") return <div>Loading ...</div>
+  if (packageCategoriesQuery.status === "pending") return <div>Loading ...</div>
   if (packageCategoriesQuery.status === "error")
     return <div>Error: {packageCategoriesQuery.error.message}</div>
 
@@ -244,7 +244,7 @@ function PackagesTable({
             key={_package.id}
             item={_package}
             isScanned={scannedPackageIds.includes(_package.id)}
-            isUpdatingStatus={isLoading}
+            isUpdatingStatus={isPending}
             packageCategories={packageCategoriesQuery.data}
             undoScan={() => {
               setScannedPackageIds((currScannedPackageIds) =>
@@ -259,7 +259,7 @@ function PackagesTable({
         <button
           type="button"
           className="font-medium bg-blue-500 hover:bg-blue-400 disabled:bg-blue-300 text-white transition-colors px-4 py-2 rounded-md"
-          disabled={isLoading || scannedPackageIds.length === 0}
+          disabled={isPending || scannedPackageIds.length === 0}
           onClick={() => {
             mutate({
               shipmentId,
@@ -334,7 +334,7 @@ function ShipmentSelector({
           }}
         />
       </div>
-      {status === "loading" && (
+      {status === "pending" && (
         <div>
           <p className="px-4 py-2 text-center">Loading ...</p>
         </div>
@@ -431,7 +431,7 @@ function MarkAsComplete({
   })
 
   const utils = api.useUtils()
-  const { isLoading, mutate } =
+  const { isPending, mutate } =
     api.shipment.delivery.updateStatusToCompletedById.useMutation({
       onSuccess: () => {
         utils.shipment.delivery.getInTransit.invalidate()
@@ -442,7 +442,7 @@ function MarkAsComplete({
       },
     })
 
-  if (status === "loading") return <p>Loading ...</p>
+  if (status === "pending") return <p>Loading ...</p>
   if (status === "error") return <p>Error {error.message}</p>
   if (packages.length === 0) return <p>No packages.</p>
 
@@ -454,7 +454,7 @@ function MarkAsComplete({
   return (
     <button
       type="button"
-      disabled={isLoading || hasOutOfWarehouseOrUndeliveredPackages}
+      disabled={isPending || hasOutOfWarehouseOrUndeliveredPackages}
       className="bg-green-500 hover:bg-green-400 disabled:bg-green-300 text-white px-4 py-2 rounded-lg transition-colors font-medium"
       onClick={() => {
         mutate({

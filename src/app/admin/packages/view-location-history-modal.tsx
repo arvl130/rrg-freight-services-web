@@ -43,7 +43,7 @@ function MultipleShipmentsMapView(props: {
       },
     )
 
-  if (status === "loading")
+  if (status === "pending")
     return (
       <div className="flex justify-center items-center">
         <LoadingSpinner />
@@ -77,7 +77,7 @@ function ShipmentMapView(props: {
       },
     )
 
-  if (status === "loading")
+  if (status === "pending")
     return (
       <div className="flex justify-center items-center">
         <LoadingSpinner />
@@ -464,7 +464,7 @@ export function ViewLocationHistoryModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             View Location History
           </Dialog.Title>
-          {status === "loading" && (
+          {status === "pending" && (
             <div className="flex justify-center items-center">
               <LoadingSpinner />
             </div>

@@ -24,7 +24,7 @@ export function ChooseDestinationWarehouse({
   return (
     <div className="text-gray-700 mt-3">
       <label className="block font-medium">Destination Warehouse</label>
-      {status === "loading" && <p>Loading ...</p>}
+      {status === "pending" && <p>Loading ...</p>}
       {status === "error" && <p>Error: {error.message}</p>}
       {status === "success" && (
         <>

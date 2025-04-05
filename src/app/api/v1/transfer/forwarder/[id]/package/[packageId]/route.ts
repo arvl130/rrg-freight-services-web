@@ -11,7 +11,7 @@ const inputSchema = z.object({
 
 export async function GET(
   req: Request,
-  ctx: { params: { id: string; packageId: string } },
+  ctx: { params: Promise<{ id: string; packageId: string }> },
 ) {
   try {
     const { user } = await validateSessionWithHeaders({ req })
@@ -24,9 +24,10 @@ export async function GET(
       )
     }
 
+    const params = await ctx.params
     const input = inputSchema.parse({
-      shipmentId: Number(ctx.params.id),
-      packageId: ctx.params.packageId,
+      shipmentId: Number(params.id),
+      packageId: params.packageId,
     })
 
     const packageColumns = getTableColumns(packages)

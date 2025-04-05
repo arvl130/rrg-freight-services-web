@@ -33,7 +33,7 @@ function EditForm({
   })
 
   const apiUtils = api.useUtils()
-  const { mutate, isLoading } = api.deliverableProvince.updateById.useMutation({
+  const { mutate, isPending } = api.deliverableProvince.updateById.useMutation({
     onSuccess: () => {
       toast.success("Deliverable province updated.")
       apiUtils.deliverableProvince.getById.invalidate({
@@ -73,7 +73,7 @@ function EditForm({
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 hover:bg-blue-400 transition-colors duration-200 disabled:bg-blue-300 rounded-md text-white font-medium"
-          disabled={isLoading}
+          disabled={isPending}
         >
           Edit
         </button>
@@ -109,7 +109,7 @@ export function EditModal({
           <Dialog.Title className="text-white font-bold text-center items-center py-2 [background-color:_#78CFDC] h-full rounded-t-2xl">
             Edit Deliverable Province
           </Dialog.Title>
-          {status === "loading" && <div>Loading ...</div>}
+          {status === "pending" && <div>Loading ...</div>}
           {status === "error" && <div>Error occured: {error.message}</div>}
           {status === "success" && (
             <EditForm deliverableProvince={data} onClose={onClose} />

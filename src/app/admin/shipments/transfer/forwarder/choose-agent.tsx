@@ -19,7 +19,7 @@ export function ChooseAgent({
   return (
     <div className="text-gray-700 mt-3">
       <label className="font-medium">Agent</label>
-      {status === "loading" && <p>Loading ...</p>}
+      {status === "pending" && <p>Loading ...</p>}
       {status === "error" && <p>Error: {error.message}</p>}
       {status === "success" && (
         <>

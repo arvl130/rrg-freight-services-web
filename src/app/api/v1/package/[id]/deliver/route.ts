@@ -11,7 +11,10 @@ const inputSchema = z.object({
   imageUrl: z.string().url(),
 })
 
-export async function POST(req: Request, ctx: { params: { id: string } }) {
+export async function POST(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> },
+) {
   const { user } = await validateSessionWithHeaders({ req })
   if (user === null) {
     return Response.json(
@@ -23,8 +26,9 @@ export async function POST(req: Request, ctx: { params: { id: string } }) {
   }
 
   const body = await req.json()
+  const params = await ctx.params
   const parseResult = inputSchema.safeParse({
-    id: ctx.params.id,
+    id: params.id,
     imageUrl: body.imageUrl,
   })
 
