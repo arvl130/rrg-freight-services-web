@@ -12,7 +12,7 @@ export function DeliveryTruckWithPeople() {
         width="1096"
         height="734"
         fill="url(#pattern0_3312_2373)"
-        fill-opacity="0.8"
+        fillOpacity="0.8"
       />
 
       <defs>
