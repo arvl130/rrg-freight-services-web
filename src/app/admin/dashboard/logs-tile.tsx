@@ -36,7 +36,6 @@ export function LogsTile(props: { logs: Logs }) {
             </tr>
           ) : (
             <>
-              {" "}
               {props.logs.map((activity) => (
                 <tr key={activity.activities.id}>
                   <td>{activity.users.displayName}</td>
