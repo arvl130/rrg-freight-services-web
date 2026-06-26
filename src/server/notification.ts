@@ -24,7 +24,7 @@ export async function notifyByEmail({
   if (serverEnv.OFFLINE_MODE === "1") return
   if (serverEnv.IS_EMAIL_ENABLED === "1") {
     await resend.emails.send({
-      from: `RRG Freight Services Updates <noreply@${serverEnv.MAIL_FROM_URL}>`,
+      from: `RRG Freight Services Updates <rrg@${serverEnv.MAIL_FROM_URL}>`,
       to,
       subject,
       html: htmlBody,
@@ -48,7 +48,7 @@ export async function notifyByEmailWithHtmlifiedComponent({
     })
 
     await resend.emails.send({
-      from: `RRG Freight Services Updates <noreply@${serverEnv.MAIL_FROM_URL}>`,
+      from: `RRG Freight Services Updates <rrg@${serverEnv.MAIL_FROM_URL}>`,
       to,
       subject,
       react: component,
@@ -142,7 +142,7 @@ export async function batchNotifyByEmailWithHtmlifiedComponent(options: {
   if (serverEnv.OFFLINE_MODE === "1") return
   if (serverEnv.IS_EMAIL_ENABLED === "1") {
     const messagesWithTextVersion = options.messages.map((message) => ({
-      from: `RRG Freight Services Updates <noreply@${serverEnv.MAIL_FROM_URL}>`,
+      from: `RRG Freight Services Updates <rrg@${serverEnv.MAIL_FROM_URL}>`,
       to: message.to,
       subject: message.subject,
       react: message.component,
